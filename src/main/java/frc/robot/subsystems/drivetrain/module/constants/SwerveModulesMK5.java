@@ -14,54 +14,54 @@ import io.github.captainsoccer.basicmotor.gains.PIDGains;
 public enum SwerveModulesMK5 {
 
     FRONT_LEFT(
-            6,  0, 12
+            6,  0.06, 12
             ,
             new PIDGains(0, 0, 0, 0, 0, 0),
             new FeedForwardsGains(0),
             0.13666,
             4,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(22, 0, 0, 0, 0, 0),
             new FeedForwardsGains(0),
-            0.5,0.5,
-            new Translation2d(0, 0)),
+            0,0,
+            new Translation2d(0.3, 0.3)),
 
 
     FRONT_RIGHT(
-            9,  0, 13
+            9,  0.05, 13
             ,
             new PIDGains(0, 0, 0, 0, 0, 0),
             new FeedForwardsGains(0),
             0.13666,
             5,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(22, 0, 0, 0, 0, 0),
             new FeedForwardsGains(0),
-            0.5,0.5,
-            new Translation2d(0, 0)),
+            0,0,
+            new Translation2d(0.3, -0.3)),
 
     BACK_LEFT(
-            7,  0, 11
+            7,  -0.23, 11
             ,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(0.1, 0, 0, 0, 0, 0),
             new FeedForwardsGains(0),
             0.13666,
             3,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(22, 0, 0, 0, 0, 0),
             new FeedForwardsGains(0),
-            0.5,0.5,
-            new Translation2d(0, 0)),
+            0,0,
+            new Translation2d(-0.3, 0.3)),
 
 
     BACK_RIGHT(
-            8,  0, 10
+            8,  0.74, 10
             ,
             new PIDGains(0, 0, 0, 0, 0, 0),
             new FeedForwardsGains(0),
             0.13666,
             2,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(22, 0, 0, 0, 0, 0),
             new FeedForwardsGains(0),
-            0.5,0.5,
-            new Translation2d(0, 0)),;
+            0,0,
+            new Translation2d(-0.3, 0.3)),;
 
 
     SwerveModulesMK5(int canCoderID,
