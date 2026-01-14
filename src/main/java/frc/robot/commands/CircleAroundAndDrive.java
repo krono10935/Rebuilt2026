@@ -42,7 +42,6 @@ public class CircleAroundAndDrive extends Command {
         MIN_ANGULAR_SPEED = drivetrain.getConstants().MIN_ANGULAR_SPEED;
 
         angularPID = new PIDController(1,0,0);
-        angularPID.enableContinuousInput(0,360);
     }
 
     private Rotation2d angleFieldRelative(){
@@ -50,28 +49,34 @@ public class CircleAroundAndDrive extends Command {
                 drivetrain.getGyroAngle():drivetrain.getGyroAngle().rotateBy(Rotation2d.k180deg) ;
     }
 
-
+    /**
+     * drive while looking at the point
+     */
     @Override
     public void execute() {
         double speed = lerp(1 - controller.getRightTriggerAxis());
-        double angularSpeed = angularLerp(angularPID.calculate(
+        double angularSpeed = angularPID.calculate(
                 angleFieldRelative().getDegrees(),
-                AngleToLook().getDegrees()));
+                AngleToLook().getDegrees());
 
 
         double xSpeed = deadband(-controller.getLeftX()) * speed;
         double ySpeed = deadband(controller.getLeftY()) * speed;
 
 
-
-        drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angularSpeed, angleFieldRelative()));
+        drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed,
+                angularSpeed, angleFieldRelative()));
     }
 
+    /**
+     * calculate the angle to look at specific point
+     * @return the angle to look at specific point
+     */
     public Rotation2d AngleToLook(){
         Translation2d currentPos = drivetrain.getEstimatedPosition().getTranslation();
 
-        double dx = -(currentPos.getX() - posToLook.getX());
-        double dy = (currentPos.getY() - posToLook.getY());
+        double dx = (posToLook.getX() - currentPos.getX());
+        double dy = (posToLook.getY() - currentPos.getY());
 
         return Rotation2d.fromRadians(Math.atan2(dy,dx));
     }
