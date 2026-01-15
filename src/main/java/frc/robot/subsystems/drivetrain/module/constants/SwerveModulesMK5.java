@@ -113,7 +113,7 @@ public enum SwerveModulesMK5 {
 
         var driveConfig = new BasicTalonFXConfig();
 
-        driveConfig.motorConfig.gearRatio = 6.03;
+        driveConfig.motorConfig.gearRatio = gearRatio.l2.driveRatio;
         driveConfig.motorConfig.unitConversion = 2 * Math.PI * 0.0508;
         driveConfig.motorConfig.idleMode = BasicMotor.IdleMode.COAST;
         driveConfig.motorConfig.motorType = DCMotor.getKrakenX60(1);
@@ -144,5 +144,19 @@ public enum SwerveModulesMK5 {
             constants[i] = values()[i].constants;
         }
         return constants;
+    }
+
+    public enum gearRatio{
+        l1(7.03),
+
+        l2(6.03),
+
+        l3(5.27);
+
+        public final double driveRatio;
+
+        gearRatio(double driveRatio){
+            this.driveRatio = driveRatio;
+        }
     }
 }

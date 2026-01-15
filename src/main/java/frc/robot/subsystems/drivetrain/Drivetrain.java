@@ -11,6 +11,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -189,6 +190,24 @@ public class Drivetrain extends SubsystemBase {
     public void driveWithoutPP(ChassisSpeeds speeds) {
 
         var targetSpeeds = kinematics.toWheelSpeeds(speeds);
+        for (int i = 0; i < 4; i++){
+            targetSpeeds[i].optimize(io[i].getState().angle);
+            targetSpeeds[i].cosineScale(io[i].getState().angle);
+        }
+        previousSetpoint = new SwerveSetpoint(speeds,kinematics.toSwerveModuleStates(speeds),ZEROS);
+
+        for (int i = 0; i < 4; i++){
+
+            io[i].setTargetState(targetSpeeds[i]);
+        }
+        Logger.recordOutput("drivetrain/requested speeds", speeds);
+        Logger.recordOutput("drivetrain/target speeds", previousSetpoint.robotRelativeSpeeds());
+        Logger.recordOutput("drivetrain/target states", previousSetpoint.moduleStates());
+    }
+
+    public void driveWithoutPP(ChassisSpeeds speeds, Translation2d posToLook) {
+
+        var targetSpeeds = kinematics.toSwerveModuleStates(speeds, posToLook);
         for (int i = 0; i < 4; i++){
             targetSpeeds[i].optimize(io[i].getState().angle);
             targetSpeeds[i].cosineScale(io[i].getState().angle);
