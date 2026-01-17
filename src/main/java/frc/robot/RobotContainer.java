@@ -5,7 +5,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -25,6 +24,8 @@ public class RobotContainer
 
     private final Shooter shooter;
 
+    private final CommandXboxController xboxController;
+
     // private final Drivetrain drivetrain;
 
     // private final LoggedDashboardChooser<Command> chooser;
@@ -42,6 +43,8 @@ public class RobotContainer
 
         shooter = new Shooter();
 
+        xboxController = new CommandXboxController(0);
+
         // drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         configureBindings();
@@ -49,7 +52,8 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-        shooter.shoot();
+        xboxController.a().onTrue(new InstantCommand(() -> shooter.shoot(0)));
+        xboxController.b().onTrue(new InstantCommand(() -> shooter.shoot(1)));
 
     }
     

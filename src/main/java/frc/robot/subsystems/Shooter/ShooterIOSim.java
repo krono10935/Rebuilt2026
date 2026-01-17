@@ -13,8 +13,8 @@ public class ShooterIOSim implements ShooterIO {
     }
 
     @Override
-    public void shoot(double speed) {
-        shootingMotor.setControl(speed, ControlMode.VELOCITY);  
+    public void shoot(double speed, int pidSlot) {
+        shootingMotor.setControl(speed, ControlMode.VELOCITY, pidSlot);  
     }
 
     public void stop(){

@@ -15,8 +15,8 @@ public class Shooter extends SubsystemBase {
     io = RobotBase.isReal() ? new ShooterIOReal() : new ShooterIOSim();
   }
 
-  public void shoot(){
-    io.shoot(ShooterConstants.SHOOTING_SPEED);
+  public void shoot(int pidSlot){
+    io.shoot(ShooterConstants.SHOOTING_SPEED, pidSlot);
   }
 
   public void stop(){
