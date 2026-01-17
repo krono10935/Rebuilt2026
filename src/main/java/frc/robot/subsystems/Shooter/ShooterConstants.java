@@ -2,12 +2,11 @@ package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
-import io.github.captainsoccer.basicmotor.gains.PIDGains;
 
 public class ShooterConstants {
     public static final BasicMotorConfig SHOOTING_MOTOR_CONFIG = new BasicMotorConfig();
 
-    public static final double SHOOTING_SPEED = 1; // rots/sec
+    public static final double SHOOTING_SPEED = 2; // rots/sec
 
     static {
         SHOOTING_MOTOR_CONFIG.motorConfig.id = 0;
@@ -17,5 +16,8 @@ public class ShooterConstants {
         SHOOTING_MOTOR_CONFIG.slot0Config.pidConfig.kP = 1;
         SHOOTING_MOTOR_CONFIG.slot0Config.pidConfig.kI = 0;
         SHOOTING_MOTOR_CONFIG.slot0Config.pidConfig.kD = 0;
+        SHOOTING_MOTOR_CONFIG.simulationConfig.kA = 0.1;
+        SHOOTING_MOTOR_CONFIG.simulationConfig.kV = 0.1;
+        SHOOTING_MOTOR_CONFIG.slot0Config.pidConfig.tolerance = 0.01;
     }
 }

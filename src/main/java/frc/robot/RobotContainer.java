@@ -27,7 +27,7 @@ public class RobotContainer
 
     // private final Drivetrain drivetrain;
 
-    private final LoggedDashboardChooser<Command> chooser;
+    // private final LoggedDashboardChooser<Command> chooser;
 
 
     public static RobotContainer getInstance(){
@@ -45,7 +45,7 @@ public class RobotContainer
         // drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         configureBindings();
-        chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
+        // chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
@@ -56,7 +56,8 @@ public class RobotContainer
     
     public Command getAutonomousCommand()
     {
-        return chooser.get();
+        return null;
+        // return chooser.get();
     }
 
 

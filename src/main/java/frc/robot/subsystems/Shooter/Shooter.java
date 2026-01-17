@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
@@ -11,8 +12,7 @@ public class Shooter extends SubsystemBase {
   private ShooterIO io;
 
   public Shooter() {
-    io = new ShooterIOReal();
-
+    io = RobotBase.isReal() ? new ShooterIOReal() : new ShooterIOSim();
   }
 
   public void shoot(){
@@ -25,6 +25,6 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    io.update();
   }
 }

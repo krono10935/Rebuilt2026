@@ -2,16 +2,14 @@ package frc.robot.subsystems.Shooter;
 
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
-import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
+import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
-public class ShooterIOReal implements ShooterIO {
-    private BasicMotor shootingMotor;
+public class ShooterIOSim implements ShooterIO {
+    private BasicMotorSim shootingMotor;
 
-    public ShooterIOReal(){
-        shootingMotor = new BasicSparkFlex(ShooterConstants.SHOOTING_MOTOR_CONFIG);
-        SmartDashboard.putData(shootingMotor.getController());
+    public ShooterIOSim(){
+        shootingMotor = new BasicMotorSim(ShooterConstants.SHOOTING_MOTOR_CONFIG);
     }
 
     @Override
@@ -24,7 +22,7 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     public void update(){
-        
+        SmartDashboard.putData(shootingMotor.getController());
     }
     
 }
