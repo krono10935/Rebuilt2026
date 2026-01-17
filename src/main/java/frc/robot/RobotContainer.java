@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import org.littletonrobotics.conduit.ConduitApi;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -22,7 +23,9 @@ public class RobotContainer
 
     private static RobotContainer instance;
 
-    public final Drivetrain drivetrain;
+    private final Shooter shooter;
+
+    // private final Drivetrain drivetrain;
 
     private final LoggedDashboardChooser<Command> chooser;
 
@@ -37,13 +40,16 @@ public class RobotContainer
     private RobotContainer()
     {
 
-        drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
+        shooter = new Shooter();
+
+        // drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         configureBindings();
         chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
+        shooter.shoot();
 
     }
     
