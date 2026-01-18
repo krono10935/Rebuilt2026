@@ -6,15 +6,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.drivetrain.Drivetrain;
-import org.littletonrobotics.conduit.ConduitApi;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.DriveToPose;
-import com.pathplanner.lib.path.DriveToPoseConstants;
 import edu.wpi.first.wpilibj2.command.*;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 
 public class RobotContainer
@@ -52,8 +45,7 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-        xboxController.a().onTrue(new InstantCommand(() -> shooter.shoot(0)));
-        xboxController.b().onTrue(new InstantCommand(() -> shooter.shoot(1)));
+
 
     }
     

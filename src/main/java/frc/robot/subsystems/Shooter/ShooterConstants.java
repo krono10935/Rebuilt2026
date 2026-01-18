@@ -1,35 +1,113 @@
 package frc.robot.subsystems.Shooter;
 
+import java.util.function.Function;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import io.github.captainsoccer.basicmotor.BasicMotorConfig;
+import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class ShooterConstants {
-    public static final BasicMotorConfig SHOOTING_MOTOR_CONFIG = new BasicMotorConfig();
 
     public static final double SHOOTING_SPEED = 7; // m/s
 
-    public static final double WHEEL_DIAMETER = 0.11; //m
+    public static final double FLYWHEEL_DIAMETER = 0.11; //m
+
+    public static final int SHOOTING_PID_SLOT = 0;
+
+    public static final int SPIN_UP_PID_SLOT = 1;
+
+    public static final double KICKER_PERCENT_OUTPUT = 0.7;
+
+    public static final boolean IS_DEVBOT = true;
+
+    /* function for adding more to the setpoint for maintaining speed during shooting
+    TODO: set actual function
+     */
+    public static final Function<Double,Double> SHOOTING_SPEED_MODIFIER = (speed) -> 0.0;
+
+    /**
+     * 
+     * @return the motor config for shooting motor
+     */
+    public static BasicSparkConfig getShootingMotorConfig(){
+
+        final BasicSparkConfig config = new BasicSparkConfig();
+        config.motorConfig.id = 27;
+        config.motorConfig.motorType = DCMotor.getNeoVortex(1);
+        config.motorConfig.gearRatio = 1;
+        config.motorConfig.name = "Shooting Motor";
+        // config.motorConfig.unitConversion = FLYWHEEL_DIAMETER * Math.PI;
     
+        config.slot0Config.pidConfig.kP = 0;
+        config.slot0Config.pidConfig.kI = 0;
+        config.slot0Config.pidConfig.kD = 0;
 
-    static {
-        SHOOTING_MOTOR_CONFIG.motorConfig.id = 27;
-        SHOOTING_MOTOR_CONFIG.motorConfig.motorType = DCMotor.getNeoVortex(1);
-        SHOOTING_MOTOR_CONFIG.motorConfig.gearRatio = 1;
-        SHOOTING_MOTOR_CONFIG.motorConfig.name = "Skebob";
-        SHOOTING_MOTOR_CONFIG.motorConfig.unitConversion = WHEEL_DIAMETER * Math.PI;
+        //TODO: set actual calc if MA calcs dont work
+        double maxFreeSpeedMetersPerSec = (Rotation2d.fromRadians(config.motorConfig.motorType.freeSpeedRadPerSec).getRotations());
+    
+        
+        config.slot0Config.feedForwardConfig.setpointFeedForward = maxFreeSpeedMetersPerSec == 0 ? 0 : 12 / maxFreeSpeedMetersPerSec  ;
 
-        SHOOTING_MOTOR_CONFIG.slot0Config.pidConfig.kP = 0;
-        SHOOTING_MOTOR_CONFIG.slot0Config.pidConfig.kI = 0;
-        SHOOTING_MOTOR_CONFIG.slot0Config.pidConfig.kD = 0;
-        SHOOTING_MOTOR_CONFIG.slot0Config.feedForwardConfig.simpleFeedForward = 2;
+        config.slot1Config.pidConfig.kP = 0.0001;
+        config.slot1Config.pidConfig.kI = 0;
+        config.slot1Config.pidConfig.kD = 0;
+        config.slot1Config.feedForwardConfig.simpleFeedForward = 2;
 
-        SHOOTING_MOTOR_CONFIG.slot1Config.pidConfig.kP = 0.0001;
-        SHOOTING_MOTOR_CONFIG.slot1Config.pidConfig.kI = 0;
-        SHOOTING_MOTOR_CONFIG.slot1Config.pidConfig.kD = 0;
-        SHOOTING_MOTOR_CONFIG.slot1Config.feedForwardConfig.simpleFeedForward = 2;
+        config.simulationConfig.kA = 0.1;
+        config.simulationConfig.kV = 0.1;
+        config.slot1Config.pidConfig.tolerance = 0.1;
 
-        SHOOTING_MOTOR_CONFIG.simulationConfig.kA = 0.1;
-        SHOOTING_MOTOR_CONFIG.simulationConfig.kV = 0.1;
-        SHOOTING_MOTOR_CONFIG.slot1Config.pidConfig.tolerance = 0.1;
+        return config;
     }
+
+    /**
+     * 
+     * @return the motor config for hood motor
+     */
+    public static BasicSparkConfig getHoodMotorConfig(){
+
+        final BasicSparkConfig config = new BasicSparkConfig();
+        config.motorConfig.id = 27;
+        config.motorConfig.motorType = DCMotor.getNEO(1);
+        config.motorConfig.gearRatio = 1;
+        config.motorConfig.name = "Hood Motor";
+
+        config.slot0Config.pidConfig.kP = 1;
+        config.slot0Config.pidConfig.kI = 0;
+        config.slot0Config.pidConfig.kD = 0;
+        config.slot0Config.feedForwardConfig.simpleFeedForward = 2;
+
+        config.simulationConfig.kA = 0.1;
+        config.simulationConfig.kV = 0.1;
+        config.slot1Config.pidConfig.tolerance = 0.01;
+
+        return config;
+    }
+
+    /**
+     * 
+     * @return the motor config for kicker motor
+     */
+    public static BasicSparkConfig getKickerMotorConfig(){
+
+        final BasicSparkConfig config = new BasicSparkConfig();
+        config.motorConfig.id = 27;
+        config.motorConfig.motorType = DCMotor.getNEO(1);
+        config.motorConfig.gearRatio = 1;
+        config.motorConfig.name = "Kicker Motor";
+
+        config.slot0Config.pidConfig.kP = 1;
+        config.slot0Config.pidConfig.kI = 0;
+        config.slot0Config.pidConfig.kD = 0;
+        config.slot0Config.feedForwardConfig.simpleFeedForward = 2;
+
+        config.simulationConfig.kA = 0.1;
+        config.simulationConfig.kV = 0.1;
+        config.slot1Config.pidConfig.tolerance = 0.01;
+
+        return config;
+    }
+
+
+    
 }

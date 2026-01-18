@@ -1,27 +1,19 @@
 package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
-import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
-public class ShooterIOReal implements ShooterIO {
+public class ShooterIODevBot implements ShooterIO {
 
     private final BasicSparkFlex shootingMotor;
 
-    private final BasicSparkMAX hoodMotor;
-
-    private final BasicSparkMAX kickerMotor;
-
     private boolean isKickerActive;
 
-    public ShooterIOReal(){
+    public ShooterIODevBot(){
 
         shootingMotor = new BasicSparkFlex(ShooterConstants.getShootingMotorConfig());
-
-        hoodMotor =  new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
-
-        kickerMotor =  new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
 
         isKickerActive = false;
 
@@ -48,35 +40,26 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     @Override
-    public void toggleKicker(boolean isActive){
-        if(isActive){
-            kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
-        }
-        else{
-            kickerMotor.stop();
-        }
-
-        isKickerActive = isActive;
-    }
+    public void toggleKicker(boolean isActive){}
 
     @Override
-    public void setHoodAngle(Rotation2d angle){
-        hoodMotor.setControl(angle.getRotations(), ControlMode.POSITION);
-    }
+    public void setHoodAngle(Rotation2d angle){}
 
     @Override
     public boolean isHoodAtSetpoint(){
-        return hoodMotor.atSetpoint();
+        return false;
     }
 
     @Override
     public void update(ShooterInputs inputs){
 
-        inputs.hoodAngle = Rotation2d.fromRotations(hoodMotor.getPosition());
+        inputs.hoodAngle = Rotation2d.kZero;
 
         inputs.isKickerActive = this.isKickerActive;
 
         inputs.shooterSpeed = shootingMotor.getVelocity();
+
+        SmartDashboard.putData(shootingMotor.getController());
         
     }   
 }

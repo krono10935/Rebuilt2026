@@ -4,27 +4,104 @@
 
 package frc.robot.subsystems.Shooter;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  /** Creates a new Shooter. */
-  private ShooterIO io;
 
+  private final ShooterIO io;
+
+  private final ShooterInputsAutoLogged inputs;
+
+  /**
+   * Create a shooter IO based on the robot's state (sim, dev, comp)
+   */
   public Shooter() {
-    io = RobotBase.isReal() ? new ShooterIOReal() : new ShooterIOSim();
-  }
 
-  public void shoot(int pidSlot){
-    io.shoot(ShooterConstants.SHOOTING_SPEED, pidSlot);
-  }
+    if (!RobotBase.isReal()){
+      io = new ShooterIOSim();
+    }
+    else if(ShooterConstants.IS_DEVBOT){
+      io = new ShooterIODevBot();
+    }
+    else{
+      io = new ShooterIOReal();
+    }
 
-  public void stop(){
-    io.stop();
+    inputs = new ShooterInputsAutoLogged();
+
   }
+  
 
   @Override
-  public void periodic() {
-    io.update();
+  public void periodic(){
+
+    io.update(inputs);
+
+    Logger.processInputs(getName(), inputs);
+
+    Logger.recordOutput("Shooter/current command", getCurrentCommand() == null? "None" : getCurrentCommand().getName());
+    Logger.recordOutput("Shooter/is hood at setpoint", isHoodAtSetpoint());
+    Logger.recordOutput("Shooter/is shooter at setpoint", isShooterAtSetpoint());
+
   }
+  
+  /**
+   * 
+   * @param speedMPS speed to shoot at 
+   */
+  public void shoot(double speedMPS){
+    io.shoot(speedMPS);
+  }
+
+  /**
+   * 
+   * @param speedMPS speed to spinUp to
+   */
+  public void spinUp(double speedMPS){
+    io.spinUp(speedMPS);
+  }
+
+  /**
+   * stop the flywheel
+   */
+  public void stopFlyWheel(){
+    io.stopFlyWheel();
+  }
+
+  /**
+   * 
+   * @return is shooter at setpoint
+   */
+  public boolean isShooterAtSetpoint(){
+    return io.isShooterAtSetpoint();
+  }
+
+  /**
+   * 
+   * @param isActive toggle on or off the kicker
+   */
+  public void toggleKicker(boolean isActive){
+    io.toggleKicker(isActive);
+  }
+
+  /**
+   * 
+   * @return is hood at setpoint
+   */
+  public boolean isHoodAtSetpoint(){
+    return io.isHoodAtSetpoint();
+  }
+
+  /**
+   * 
+   * @param angle angle to set the hood to
+   */
+  public void setHoodAngle(Rotation2d angle){
+    io.setHoodAngle(angle);
+  }
+ 
 }
