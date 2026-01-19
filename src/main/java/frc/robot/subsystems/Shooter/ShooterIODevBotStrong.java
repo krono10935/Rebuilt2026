@@ -5,15 +5,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 
-public class ShooterIODevBot implements ShooterIO {
+public class ShooterIODevBotStrong implements ShooterIO {
 
-    private final BasicSparkFlex shootingMotor;
+    private final BasicSparkFlex leadShootingMotor;
+    private final BasicSparkFlex followShootingMotor;
 
     private boolean isKickerActive;
 
-    public ShooterIODevBot(){
+    public ShooterIODevBotStrong(){
 
-        shootingMotor = new BasicSparkFlex(ShooterConstants.getLeadShootingMotorConfig());
+        leadShootingMotor = new BasicSparkFlex(ShooterConstants.getLeadShootingMotorConfig());
+        followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
+        followShootingMotor.followMotor(followShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
+        
 
         isKickerActive = false;
 
@@ -21,26 +25,26 @@ public class ShooterIODevBot implements ShooterIO {
 
     @Override
     public void shoot(double speedMPS){
-        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
     }
 
     @Override
     public void spinUp(double speedMPS){
-        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
     }
 
     @Override
     public void stopFlyWheel(){
-        shootingMotor.stop();
+        leadShootingMotor.stop();
     }
 
     @Override
     public boolean isShooterAtSetpoint(){
-        return shootingMotor.atSetpoint();
+        return leadShootingMotor.atSetpoint();
     }
 
     public void setFlyWheelVoltage(double voltage){
-        shootingMotor.setVoltage(voltage);
+        leadShootingMotor.setVoltage(voltage);
     }
 
     @Override
@@ -61,9 +65,9 @@ public class ShooterIODevBot implements ShooterIO {
 
         inputs.isKickerActive = this.isKickerActive;
 
-        inputs.shooterSpeed = shootingMotor.getVelocity();
+        inputs.shooterSpeed = leadShootingMotor.getVelocity();
 
-        SmartDashboard.putData(shootingMotor.getController());
+        SmartDashboard.putData(leadShootingMotor.getController());
         
     }   
 }

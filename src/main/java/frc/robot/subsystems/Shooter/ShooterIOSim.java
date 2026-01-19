@@ -2,11 +2,13 @@ package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
+import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
 public class ShooterIOSim implements ShooterIO {
 
-    private final BasicMotorSim shootingMotor;
+    private final BasicMotorSim leadShootingMotor;
+    private final BasicMotorSim followShootingMotor;
 
     private final BasicMotorSim hoodMotor;
 
@@ -15,8 +17,10 @@ public class ShooterIOSim implements ShooterIO {
     private boolean isKickerActive;
 
     public ShooterIOSim(){
+        leadShootingMotor = new BasicMotorSim(ShooterConstants.getLeadShootingMotorConfig());
+        followShootingMotor = new BasicMotorSim(ShooterConstants.getFollowShootingMotorConfig());
+        followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
-        shootingMotor = new BasicMotorSim(ShooterConstants.getShootingMotorConfig());
 
         hoodMotor =  new BasicMotorSim(ShooterConstants.getHoodMotorConfig());
 
@@ -28,22 +32,26 @@ public class ShooterIOSim implements ShooterIO {
 
     @Override
     public void shoot(double speedMPS){
-        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
     }
 
     @Override
     public void spinUp(double speedMPS){
-        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
     }
 
     @Override
     public void stopFlyWheel(){
-        shootingMotor.stop();
+        leadShootingMotor.stop();
     }
 
     @Override
     public boolean isShooterAtSetpoint(){
-        return shootingMotor.atSetpoint();
+        return leadShootingMotor.atSetpoint();
+    }
+
+    public void setFlyWheelVoltage(double voltage){
+        leadShootingMotor.setVoltage(voltage);
     }
 
     @Override
@@ -75,7 +83,7 @@ public class ShooterIOSim implements ShooterIO {
 
         inputs.isKickerActive = this.isKickerActive;
 
-        inputs.shooterSpeed = shootingMotor.getVelocity();
+        inputs.shooterSpeed = leadShootingMotor.getVelocity();
         
     }   
 }

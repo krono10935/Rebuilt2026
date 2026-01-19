@@ -7,7 +7,8 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
 public class ShooterIOReal implements ShooterIO {
 
-    private final BasicSparkFlex shootingMotor;
+    private final BasicSparkFlex leadShootingMotor;
+    private final BasicSparkFlex followShootingMotor;
 
     private final BasicSparkMAX hoodMotor;
 
@@ -17,7 +18,10 @@ public class ShooterIOReal implements ShooterIO {
 
     public ShooterIOReal(){
 
-        shootingMotor = new BasicSparkFlex(ShooterConstants.getShootingMotorConfig());
+        leadShootingMotor = new BasicSparkFlex(ShooterConstants.getLeadShootingMotorConfig());
+        followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
+        followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
+
 
         hoodMotor =  new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
 
@@ -29,22 +33,26 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void shoot(double speedMPS){
-        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
     }
 
     @Override
     public void spinUp(double speedMPS){
-        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
     }
 
     @Override
     public void stopFlyWheel(){
-        shootingMotor.stop();
+        leadShootingMotor.stop();
     }
 
     @Override
     public boolean isShooterAtSetpoint(){
-        return shootingMotor.atSetpoint();
+        return leadShootingMotor.atSetpoint();
+    }
+
+    public void setFlyWheelVoltage(double voltage){
+        leadShootingMotor.setVoltage(voltage);
     }
 
     @Override
@@ -76,7 +84,7 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.isKickerActive = this.isKickerActive;
 
-        inputs.shooterSpeed = shootingMotor.getVelocity();
+        inputs.shooterSpeed = leadShootingMotor.getVelocity();
         
     }   
 }

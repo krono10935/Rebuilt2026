@@ -82,6 +82,14 @@ public class Shooter extends SubsystemBase {
 
   /**
    * 
+   * @param voltage apply the voltage to the flywheel motor(s)
+   */
+  public void setVoltage(double voltage){
+    io.setFlyWheelVoltage(voltage);
+  }
+
+  /**
+   * 
    * @param isActive toggle on or off the kicker
    */
   public void toggleKicker(boolean isActive){

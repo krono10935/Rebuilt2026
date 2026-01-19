@@ -20,6 +20,8 @@ public class ShooterConstants {
 
     public static final boolean IS_DEVBOT = true;
 
+    public static final boolean FLYWHEEL_MOTORS_OPPOSITE = false;
+
     /* function for adding more to the setpoint for maintaining speed during shooting
     TODO: set actual function
      */
@@ -29,7 +31,42 @@ public class ShooterConstants {
      * 
      * @return the motor config for shooting motor
      */
-    public static BasicSparkConfig getShootingMotorConfig(){
+    public static BasicSparkConfig getLeadShootingMotorConfig(){
+
+        final BasicSparkConfig config = new BasicSparkConfig();
+        config.motorConfig.id = 27;
+        config.motorConfig.motorType = DCMotor.getNeoVortex(1);
+        config.motorConfig.gearRatio = 1;
+        config.motorConfig.name = "Shooting Motor";
+        // config.motorConfig.unitConversion = FLYWHEEL_DIAMETER * Math.PI;
+    
+        config.slot0Config.pidConfig.kP = 0;
+        config.slot0Config.pidConfig.kI = 0;
+        config.slot0Config.pidConfig.kD = 0;
+
+        //TODO: set actual calc if MA calcs dont work
+        double maxFreeSpeedMetersPerSec = (Rotation2d.fromRadians(config.motorConfig.motorType.freeSpeedRadPerSec).getRotations());
+    
+        
+        config.slot0Config.feedForwardConfig.setpointFeedForward = maxFreeSpeedMetersPerSec == 0 ? 0 : 12 / maxFreeSpeedMetersPerSec  ;
+
+        config.slot1Config.pidConfig.kP = 0.0001;
+        config.slot1Config.pidConfig.kI = 0;
+        config.slot1Config.pidConfig.kD = 0;
+        config.slot1Config.feedForwardConfig.simpleFeedForward = 2;
+
+        config.simulationConfig.kA = 0.1;
+        config.simulationConfig.kV = 0.1;
+        config.slot1Config.pidConfig.tolerance = 0.1;
+
+        return config;
+    }
+
+    /**
+     * 
+     * @return the motor config for shooting motor
+     */
+    public static BasicSparkConfig getFollowShootingMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
         config.motorConfig.id = 27;

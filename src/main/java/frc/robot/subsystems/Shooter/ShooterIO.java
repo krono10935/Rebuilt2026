@@ -43,6 +43,12 @@ public interface ShooterIO {
 
     /**
      * 
+     * @param voltage to apply to the flywheel motor(s)
+     */
+    void setFlyWheelVoltage(double voltage);
+
+    /**
+     * 
      * @param isActive is the kicker active
      */
     void toggleKicker(boolean isActive);
