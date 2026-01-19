@@ -1,26 +1,23 @@
 package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
-import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
+import io.github.captainsoccer.basicmotor.sim.flywheel.BasicFlywheelSim;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
 public class ShooterIOSim implements ShooterIO {
 
-    private final BasicMotorSim leadShootingMotor;
-    private final BasicMotorSim followShootingMotor;
+    private final BasicMotor leadShootingMotor;
 
-    private final BasicMotorSim hoodMotor;
+    private final BasicMotor hoodMotor;
 
-    private final BasicMotorSim kickerMotor;
+    private final BasicMotor kickerMotor;
 
     private boolean isKickerActive;
 
     public ShooterIOSim(){
-        leadShootingMotor = new BasicMotorSim(ShooterConstants.getLeadShootingMotorConfig());
-        followShootingMotor = new BasicMotorSim(ShooterConstants.getFollowShootingMotorConfig());
-        followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
-
+        leadShootingMotor = new BasicFlywheelSim(ShooterConstants.getLeadShootingMotorConfig());
 
         hoodMotor =  new BasicMotorSim(ShooterConstants.getHoodMotorConfig());
 
@@ -31,13 +28,8 @@ public class ShooterIOSim implements ShooterIO {
     }
 
     @Override
-    public void shoot(double speedMPS){
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
-    }
-
-    @Override
     public void spinUp(double speedMPS){
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY);
     }
 
     @Override

@@ -60,7 +60,7 @@ public class ShootCommand extends Command {
       
       shooter.toggleKicker(false);
 
-      shooter.shoot(0);
+      shooter.spinUp(0);
 
     }
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 
@@ -9,24 +10,24 @@ public class ShooterIODevBot implements ShooterIO {
 
     private final BasicSparkFlex shootingMotor;
 
+    private final BasicMotorConfig config;
+
     private boolean isKickerActive;
 
     public ShooterIODevBot(){
+        config = ShooterConstants.getLeadShootingMotorConfig();
 
-        shootingMotor = new BasicSparkFlex(ShooterConstants.getLeadShootingMotorConfig());
+        shootingMotor = new BasicSparkFlex(config);
 
         isKickerActive = false;
+        
+        SmartDashboard.putData(shootingMotor.getController());
 
-    }
-
-    @Override
-    public void shoot(double speedMPS){
-        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
     }
 
     @Override
     public void spinUp(double speedMPS){
-        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
+        shootingMotor.setControl(speedMPS , ControlMode.VELOCITY);
     }
 
     @Override
@@ -61,9 +62,6 @@ public class ShooterIODevBot implements ShooterIO {
 
         inputs.isKickerActive = this.isKickerActive;
 
-        inputs.shooterSpeed = shootingMotor.getVelocity();
-
-        SmartDashboard.putData(shootingMotor.getController());
-        
+        inputs.shooterSpeed = shootingMotor.getVelocity();        
     }   
 }

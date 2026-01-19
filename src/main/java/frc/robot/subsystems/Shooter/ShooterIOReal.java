@@ -32,13 +32,8 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     @Override
-    public void shoot(double speedMPS){
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
-    }
-
-    @Override
     public void spinUp(double speedMPS){
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY);
     }
 
     @Override

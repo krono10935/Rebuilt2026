@@ -49,13 +49,6 @@ public class Shooter extends SubsystemBase {
 
   }
   
-  /**
-   * 
-   * @param speedMPS speed to shoot at 
-   */
-  public void shoot(double speedMPS){
-    io.shoot(speedMPS);
-  }
 
   /**
    * 

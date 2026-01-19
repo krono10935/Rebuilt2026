@@ -12,15 +12,11 @@ public class ShooterConstants {
 
     public static final double FLYWHEEL_DIAMETER = 0.11; //m
 
-    public static final int SHOOTING_PID_SLOT = 0;
-
-    public static final int SPIN_UP_PID_SLOT = 1;
-
     public static final double KICKER_PERCENT_OUTPUT = 0.7;
 
     public static final boolean IS_DEVBOT = true;
 
-    public static final boolean FLYWHEEL_MOTORS_OPPOSITE = false;
+    public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
 
     /* function for adding more to the setpoint for maintaining speed during shooting
     TODO: set actual function
@@ -50,14 +46,8 @@ public class ShooterConstants {
         
         config.slot0Config.feedForwardConfig.setpointFeedForward = maxFreeSpeedMetersPerSec == 0 ? 0 : 12 / maxFreeSpeedMetersPerSec  ;
 
-        config.slot1Config.pidConfig.kP = 0.0001;
-        config.slot1Config.pidConfig.kI = 0;
-        config.slot1Config.pidConfig.kD = 0;
-        config.slot1Config.feedForwardConfig.simpleFeedForward = 2;
-
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
-        config.slot1Config.pidConfig.tolerance = 0.1;
 
         return config;
     }
@@ -85,14 +75,8 @@ public class ShooterConstants {
         
         config.slot0Config.feedForwardConfig.setpointFeedForward = maxFreeSpeedMetersPerSec == 0 ? 0 : 12 / maxFreeSpeedMetersPerSec  ;
 
-        config.slot1Config.pidConfig.kP = 0.0001;
-        config.slot1Config.pidConfig.kI = 0;
-        config.slot1Config.pidConfig.kD = 0;
-        config.slot1Config.feedForwardConfig.simpleFeedForward = 2;
-
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
-        config.slot1Config.pidConfig.tolerance = 0.1;
 
         return config;
     }
@@ -116,7 +100,6 @@ public class ShooterConstants {
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
-        config.slot1Config.pidConfig.tolerance = 0.01;
 
         return config;
     }
@@ -140,7 +123,6 @@ public class ShooterConstants {
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
-        config.slot1Config.pidConfig.tolerance = 0.01;
 
         return config;
     }

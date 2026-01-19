@@ -2,13 +2,14 @@ package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 
 public class ShooterIODevBotStrong implements ShooterIO {
 
-    private final BasicSparkFlex leadShootingMotor;
-    private final BasicSparkFlex followShootingMotor;
+    private final BasicMotor leadShootingMotor;
+    private final BasicMotor followShootingMotor;
 
     private boolean isKickerActive;
 
@@ -16,6 +17,7 @@ public class ShooterIODevBotStrong implements ShooterIO {
 
         leadShootingMotor = new BasicSparkFlex(ShooterConstants.getLeadShootingMotorConfig());
         followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
+        
         followShootingMotor.followMotor(followShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
         
 
@@ -24,13 +26,8 @@ public class ShooterIODevBotStrong implements ShooterIO {
     }
 
     @Override
-    public void shoot(double speedMPS){
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SHOOTING_PID_SLOT);
-    }
-
-    @Override
     public void spinUp(double speedMPS){
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, ShooterConstants.SPIN_UP_PID_SLOT);
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY);
     }
 
     @Override

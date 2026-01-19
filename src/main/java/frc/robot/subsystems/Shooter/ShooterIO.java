@@ -19,12 +19,6 @@ public interface ShooterIO {
 
     /**
      * 
-     * @param speedMPS speed to shoot at
-     */
-    void shoot(double speedMPS);
-
-    /**
-     * 
      * @param speedMPS speeed to spin up the flywheel to
      */
 
