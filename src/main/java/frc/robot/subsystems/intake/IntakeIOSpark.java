@@ -2,14 +2,19 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import io.github.captainsoccer.basicmotor.BasicMotor;
+import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
 public class IntakeIOSpark implements IntakeIO {
-    private final BasicMotor motor;
+    private final BasicMotor intakeMotor;
+    private final BasicMotor openCloseMotor;
     private final DigitalInput beamBreak;
 
     public IntakeIOSpark() {
-        motor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
+
+        intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
+        openCloseMotor = new BasicSparkMAX(IntakeConstants.openCloseMotorConfig);
+
         beamBreak = new DigitalInput(IntakeConstants.BEAM_BREAK_CHANNEL);
     }
 
@@ -20,7 +25,7 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void stopMotor() {
-        motor.stop();
+        intakeMotor.stop();
     }
 
     @Override
@@ -29,8 +34,18 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
+    public double getPos(){
+        return openCloseMotor.getPosition();
+    }
+
+    @Override
+    public void setPos(double pos){
+        openCloseMotor.setControl(pos, ControlMode.POSITION);
+    }
+
+    @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.temp = motor.getSensorData().temperature();
+        inputs.temp = intakeMotor.getSensorData().temperature();
     }
 
     
