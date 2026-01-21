@@ -2,25 +2,27 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface IntakeIO {
     @AutoLog
     class IntakeInputs {
-        double temp;
-
-
+        Rotation2d Angle;
+        double power ;
+        double velocity;
     }
 
-    public boolean getBeamBrake();
+    boolean getBeamBrake();
 
-    public void stopMotor();
+    void stopMotor();
 
-    public double getMotorPower();
+    void setPercentOutput(double percentOutput);
 
-    public double getPos();
+    Rotation2d getPos();
 
-    public void setPos(double pos);
+    void setActivationMotorPos(Rotation2d pos);
 
-    public void updateInputs(IntakeInputs inputs);
+    void updateInputs(IntakeInputs inputs);
 
 
 

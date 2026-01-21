@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
@@ -29,23 +31,28 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
-    public double getMotorPower() {
-        return IntakeConstants.MOTOR_POWER_PRECENT;
+    public void setPercentOutput(double percentOutput){
+        intakeMotor.setPercentOutput(percentOutput);
+
     }
 
     @Override
-    public double getPos(){
-        return openCloseMotor.getPosition();
+    public Rotation2d getPos(){
+        return Rotation2d.fromRotations(openCloseMotor.getPosition());
     }
 
     @Override
-    public void setPos(double pos){
-        openCloseMotor.setControl(pos, ControlMode.POSITION);
+    public void setActivationMotorPos(Rotation2d pos){
+        openCloseMotor.setControl(pos.getRotations(), ControlMode.POSITION);
     }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.temp = intakeMotor.getSensorData().temperature();
+        inputs.Angle = Rotation2d.fromRotations(openCloseMotor.getPosition());
+        inputs.power = IntakeConstants.INTAKE_KT 
+            * intakeMotor.getSensorData().currentOutput()
+            * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
+        inputs.velocity = intakeMotor.getVelocity(); 
     }
 
     

@@ -7,6 +7,7 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 
@@ -25,17 +26,23 @@ public class Intake extends SubsystemBase {
 
   }
 
-  public void keepPos(){
-    io.setPos(io.getPos());
+
+  public void toggleActivationMotor(Rotation2d setActivation){
+    io.setActivationMotorPos(setActivation);
+  }
+
+  public void startIntake(){
+    io.setPercentOutput(IntakeConstants.MOTOR_POWER_PRECENT);
   }
 
   public void stopMotor(){
     io.stopMotor();
   }
 
-  public boolean isMotorOnFire(){
-    return inputs.temp >= IntakeConstants.MAX_MOTOR_TEMP;
+  public double getPower(){
+    return inputs.power;
   }
+
  
   @Override
   public void periodic() {
