@@ -25,7 +25,7 @@ public class Shooter extends SubsystemBase {
       io = new ShooterIOSim();
     }
     else if(ShooterConstants.IS_DEVBOT){
-      io = new ShooterIODevBot();
+      io = new ShooterIODevBotStrong();
     }
     else{
       io = new ShooterIOReal();
