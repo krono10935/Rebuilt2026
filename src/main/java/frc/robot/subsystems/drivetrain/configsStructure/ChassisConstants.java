@@ -8,6 +8,7 @@ import frc.robot.subsystems.drivetrain.configsStructure.moduleConfig.ModuleConst
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Chassis-level container for swerve drivetrain configuration.
@@ -97,7 +98,6 @@ public class ChassisConstants {
 
         //         If no alliance is set, do not flip the path.
         return currentAlliance.filter(alliance -> alliance == DriverStation.Alliance.Red).isPresent();
-
     }
 
 

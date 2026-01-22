@@ -3,7 +3,6 @@ package frc.utils;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 public class ModeFileHandling {
     private static boolean fmsAttached = false;

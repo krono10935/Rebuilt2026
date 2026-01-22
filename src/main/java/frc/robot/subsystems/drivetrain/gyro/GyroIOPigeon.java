@@ -12,7 +12,7 @@ import java.util.Optional;
 public final class GyroIOPigeon implements GyroIO{
     private final Pigeon2 gyro;
 
-    private Rotation2d angleOffset = Rotation2d.kZero;
+    private Rotation2d angleOffset = Rotation2d.fromDegrees(180);
 
     public GyroIOPigeon(int id){
         this.gyro = new Pigeon2(id);

@@ -5,15 +5,17 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+
 import org.littletonrobotics.conduit.ConduitApi;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.DriveToPose;
-import com.pathplanner.lib.path.DriveToPoseConstants;
-import edu.wpi.first.wpilibj2.command.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 
@@ -23,8 +25,9 @@ public class RobotContainer
     private static RobotContainer instance;
 
     public final Drivetrain drivetrain;
-
+    public final CommandXboxController Xbox;
     private final LoggedDashboardChooser<Command> chooser;
+
 
 
     public static RobotContainer getInstance(){
@@ -38,14 +41,24 @@ public class RobotContainer
     {
 
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
+        Xbox = new CommandXboxController(0);
+
+
+
 
         configureBindings();
         chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
+
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, Xbox));
+
     }
 
     private void configureBindings() {
+        Xbox.a().onTrue(new InstantCommand( () -> drivetrain.reset(new Pose2d(
+            drivetrain.getEstimatedPosition().getTranslation(),  Rotation2d.kZero
+        ))));
 
-    }
+     }
     
     
     public Command getAutonomousCommand()

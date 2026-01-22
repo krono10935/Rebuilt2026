@@ -363,6 +363,7 @@ public class Drivetrain extends SubsystemBase {
         String currentCommand = getCurrentCommand() == null ? "None" : getCurrentCommand().getName();
 
         Logger.recordOutput("drivetrain/current command", currentCommand);
+
     }
 }
 
