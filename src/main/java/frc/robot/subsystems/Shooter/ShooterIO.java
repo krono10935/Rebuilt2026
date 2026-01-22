@@ -14,15 +14,18 @@ public interface ShooterIO {
         public double shooterSpeed; // m/s
 
         public boolean isKickerActive;
-        
     }
 
     /**
      * 
      * @param speedMPS speeed to spin up the flywheel to
      */
-
     void spinUp(double speedMPS);
+
+    /**
+     * Keep the current velocity
+     */
+    void keepVelocity();
 
     /**
      * stops the flywheel

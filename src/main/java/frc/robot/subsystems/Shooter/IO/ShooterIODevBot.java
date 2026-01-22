@@ -15,6 +15,7 @@ public class ShooterIODevBot implements ShooterIO {
     private final BasicMotorConfig config;
 
     private boolean isKickerActive;
+    private double targetVelocity;
 
     public ShooterIODevBot(){
         config = ShooterConstants.getLeadShootingMotorConfig();
@@ -27,9 +28,20 @@ public class ShooterIODevBot implements ShooterIO {
 
     }
 
-    @Override
+     @Override
     public void spinUp(double speedMPS){
+        targetVelocity = speedMPS;
         shootingMotor.setControl(speedMPS , ControlMode.VELOCITY);
+    }
+
+    @Override
+    public void keepVelocity(){
+        double kA = 0;
+        double accel = shootingMotor.getMeasurement().acceleration();
+        if(accel < 0){
+            kA = -accel * config.simulationConfig.kA;
+        }
+        shootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 0);
     }
 
     @Override

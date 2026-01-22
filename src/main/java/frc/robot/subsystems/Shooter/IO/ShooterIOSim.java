@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import io.github.captainsoccer.basicmotor.BasicMotor;
+import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.sim.flywheel.BasicFlywheelSim;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
@@ -16,10 +17,14 @@ public class ShooterIOSim implements ShooterIO {
 
     private final BasicMotor kickerMotor;
 
+    private final BasicMotorConfig shooterConfig;
+
     private boolean isKickerActive;
+    private double targetVelocity;
 
     public ShooterIOSim(){
-        leadShootingMotor = new BasicFlywheelSim(ShooterConstants.getLeadShootingMotorConfig());
+        shooterConfig = ShooterConstants.getLeadShootingMotorConfig();
+        leadShootingMotor = new BasicFlywheelSim(shooterConfig);
 
         hoodMotor =  new BasicMotorSim(ShooterConstants.getHoodMotorConfig());
 
@@ -29,9 +34,20 @@ public class ShooterIOSim implements ShooterIO {
 
     }
 
-    @Override
+        @Override
     public void spinUp(double speedMPS){
+        targetVelocity = speedMPS;
         leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY);
+    }
+
+    @Override
+    public void keepVelocity(){
+        double kA = 0;
+        double accel = leadShootingMotor.getMeasurement().acceleration();
+        if(accel < 0){
+            kA = -accel * shooterConfig.simulationConfig.kA;
+        }
+        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 0);
     }
 
     @Override

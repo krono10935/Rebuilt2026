@@ -6,7 +6,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.Shooter.KeepVelocity;
+import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterSysID;
 import edu.wpi.first.wpilibj2.command.*;
 
 
@@ -46,7 +50,9 @@ public class RobotContainer
 
     private void configureBindings() {
 
-
+        xboxController.a()
+        .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
+        .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
     }
     
     

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import io.github.captainsoccer.basicmotor.BasicMotor;
+import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 
@@ -13,14 +14,18 @@ public class ShooterIODevBotStrong implements ShooterIO {
     private final BasicMotor leadShootingMotor;
     private final BasicMotor followShootingMotor;
 
+    private final BasicMotorConfig leadConfig;
+
     private boolean isKickerActive;
+    private double targetVelocity;
 
     public ShooterIODevBotStrong(){
+        leadConfig = ShooterConstants.getLeadShootingMotorConfig();
 
-        leadShootingMotor = new BasicSparkFlex(ShooterConstants.getLeadShootingMotorConfig());
+        leadShootingMotor = new BasicSparkFlex(leadConfig);
         followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
         
-        followShootingMotor.followMotor(followShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
+        followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
         
 
         isKickerActive = false;
@@ -29,7 +34,18 @@ public class ShooterIODevBotStrong implements ShooterIO {
 
     @Override
     public void spinUp(double speedMPS){
+        targetVelocity = speedMPS;
         leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY);
+    }
+
+    @Override
+    public void keepVelocity(){
+        double kA = 0;
+        double accel = leadShootingMotor.getMeasurement().acceleration();
+        if(accel < 0){
+            kA = -accel * leadConfig.simulationConfig.kA;
+        }
+        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 0);
     }
 
     @Override
@@ -44,6 +60,7 @@ public class ShooterIODevBotStrong implements ShooterIO {
 
     public void setFlyWheelVoltage(double voltage){
         leadShootingMotor.setVoltage(voltage);
+        
     }
 
     @Override

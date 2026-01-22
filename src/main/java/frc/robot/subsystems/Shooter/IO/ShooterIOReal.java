@@ -3,6 +3,7 @@ package frc.robot.subsystems.Shooter.IO;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
+import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
@@ -16,11 +17,15 @@ public class ShooterIOReal implements ShooterIO {
 
     private final BasicSparkMAX kickerMotor;
 
+    private final BasicMotorConfig leadConfig;
+
     private boolean isKickerActive;
+    private double targetVelocity;
 
     public ShooterIOReal(){
+        leadConfig = ShooterConstants.getLeadShootingMotorConfig();
 
-        leadShootingMotor = new BasicSparkFlex(ShooterConstants.getLeadShootingMotorConfig());
+        leadShootingMotor = new BasicSparkFlex(leadConfig);
         followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
@@ -35,7 +40,18 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void spinUp(double speedMPS){
+        targetVelocity = speedMPS;
         leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY);
+    }
+
+    @Override
+    public void keepVelocity(){
+        double kA = 0;
+        double accel = leadShootingMotor.getMeasurement().acceleration();
+        if(accel < 0){
+            kA = -accel * leadConfig.simulationConfig.kA;
+        }
+        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 0);
     }
 
     @Override

@@ -8,9 +8,9 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class ShooterConstants {
 
-    public static final double SHOOTING_SPEED = 7; // m/s
+    public static final double SHOOTING_SPEED = 4000 / 60; // m/s TODO stop using arab rpm
 
-    public static final double FLYWHEEL_DIAMETER = 0.11; //m
+    public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
 
     public static final double KICKER_PERCENT_OUTPUT = 0.7;
 
@@ -31,23 +31,21 @@ public class ShooterConstants {
 
         final BasicSparkConfig config = new BasicSparkConfig();
         config.motorConfig.id = 27;
-        config.motorConfig.motorType = DCMotor.getNeoVortex(1);
+        config.motorConfig.motorType = DCMotor.getNeoVortex(2);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Shooting Motor";
-        // config.motorConfig.unitConversion = FLYWHEEL_DIAMETER * Math.PI;
+        // config.motorConfig.unitConversion = FLYWHEEL_CICUMFRENCE;
     
-        config.slot0Config.pidConfig.kP = 0;
+        config.slot0Config.pidConfig.kP = 0.0001;
         config.slot0Config.pidConfig.kI = 0;
-        config.slot0Config.pidConfig.kD = 0;
-
-        //TODO: set actual calc if MA calcs dont work
-        double maxFreeSpeedMetersPerSec = (Rotation2d.fromRadians(config.motorConfig.motorType.freeSpeedRadPerSec).getRotations());
-    
+        config.slot0Config.pidConfig.kD = 0;   
+        config.slot0Config.pidConfig.tolerance = 3 * 60; 
         
-        config.slot0Config.feedForwardConfig.setpointFeedForward = maxFreeSpeedMetersPerSec == 0 ? 0 : 12 / maxFreeSpeedMetersPerSec  ;
+        config.slot0Config.feedForwardConfig.setpointFeedForward = 0.10793;/// FLYWHEEL_CICUMFRENCE;
+        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.12745;
 
-        config.simulationConfig.kA = 0.1;
-        config.simulationConfig.kV = 0.1;
+        config.simulationConfig.kA = 0;/// FLYWHEEL_CICUMFRENCE;
+        config.simulationConfig.kV = 0.10793;/// FLYWHEEL_CICUMFRENCE;
 
         return config;
     }
@@ -60,23 +58,7 @@ public class ShooterConstants {
 
         final BasicSparkConfig config = new BasicSparkConfig();
         config.motorConfig.id = 25;
-        config.motorConfig.motorType = DCMotor.getNeoVortex(1);
-        config.motorConfig.gearRatio = 1;
-        config.motorConfig.name = "Shooting Motor";
-        // config.motorConfig.unitConversion = FLYWHEEL_DIAMETER * Math.PI;
-    
-        config.slot0Config.pidConfig.kP = 0;
-        config.slot0Config.pidConfig.kI = 0;
-        config.slot0Config.pidConfig.kD = 0;
-
-        //TODO: set actual calc if MA calcs dont work
-        double maxFreeSpeedMetersPerSec = (Rotation2d.fromRadians(config.motorConfig.motorType.freeSpeedRadPerSec).getRotations());
-    
-        
-        config.slot0Config.feedForwardConfig.setpointFeedForward = maxFreeSpeedMetersPerSec == 0 ? 0 : 12 / maxFreeSpeedMetersPerSec;
-
-        config.simulationConfig.kA = 0.1;
-        config.simulationConfig.kV = 0.1;
+        config.motorConfig.name = "Shooting Motor follower";
 
         return config;
     }

@@ -61,6 +61,10 @@ public class Shooter extends SubsystemBase {
     io.spinUp(speedMPS);
   }
 
+  public void keepVelocity(){
+    io.keepVelocity();
+  }
+
   /**
    * stop the flywheel
    */
