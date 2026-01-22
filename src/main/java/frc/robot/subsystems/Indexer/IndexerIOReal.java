@@ -15,15 +15,23 @@ public class IndexerIOReal implements IndexerIO {
 
     @Override
     public void turnOn() {
+<<<<<<< HEAD
         motorLeft.setPercentOutput(IndexerConstants.LEFT_MOTOR_SPINNING_PERCENT_OUTPUT);
         motorRight.setPercentOutput(IndexerConstants.RIGHT_MOTOR_SPINNING_PERCENT_OUTPUT);
+=======
+        motor.setPercentOutput(IndexerConstants.SPINNING_PERCENT_OUTPUT);
+>>>>>>> origin/Indexer
         isSpinning = true;
     }
 
     @Override
     public void turnOff() {
+<<<<<<< HEAD
         motorLeft.stop();
         motorRight.stop();
+=======
+        motor.stop();
+>>>>>>> origin/Indexer
         isSpinning = false;
     }
 
