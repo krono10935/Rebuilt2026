@@ -1,6 +1,8 @@
-package frc.robot.subsystems.Shooter;
+package frc.robot.subsystems.Shooter.IO;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.ShooterIO;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;

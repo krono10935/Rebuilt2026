@@ -9,6 +9,9 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Shooter.IO.ShooterIODevBotStrong;
+import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
+import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 
 public class Shooter extends SubsystemBase {
 

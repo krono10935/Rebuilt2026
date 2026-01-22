@@ -9,11 +9,11 @@ public interface ShooterIO {
     @AutoLog
     class ShooterInputs{
         
-        Rotation2d hoodAngle;
+        public Rotation2d hoodAngle;
 
-        double shooterSpeed; // m/s
+        public double shooterSpeed; // m/s
 
-        boolean isKickerActive;
+        public boolean isKickerActive;
         
     }
 

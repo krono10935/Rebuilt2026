@@ -59,7 +59,7 @@ public class ShooterConstants {
     public static BasicSparkConfig getFollowShootingMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 27;
+        config.motorConfig.id = 25;
         config.motorConfig.motorType = DCMotor.getNeoVortex(1);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Shooting Motor";
