@@ -10,20 +10,20 @@ public class IndexerIOReal implements IndexerIO {
     public IndexerIOReal( ){
         this.motorLeft = new BasicSparkMAX(IndexerConstants.getLeftMotorConfig());
         this.motorRight = new BasicSparkMAX(IndexerConstants.getRightMotorConfig());
+
+        motorRight.followMotor(motorLeft, true);
         isSpinning = false;
     }
 
     @Override
     public void turnOn() {
-        motorLeft.setPercentOutput(IndexerConstants.LEFT_MOTOR_SPINNING_PERCENT_OUTPUT);
-        motorRight.setPercentOutput(IndexerConstants.RIGHT_MOTOR_SPINNING_PERCENT_OUTPUT);
+        motorLeft.setPercentOutput(IndexerConstants.SPINNING_PRECENT_OUTPUT);
         isSpinning = true;
     }
 
     @Override
     public void turnOff() {
         motorLeft.stop();
-        motorRight.stop();
         isSpinning = false;
     }
 

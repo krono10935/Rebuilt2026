@@ -10,19 +10,18 @@ public class IndexerIOSim implements IndexerIO {
     public IndexerIOSim() {
         this.motorLeft = new BasicMotorSim(IndexerConstants.getLeftMotorConfig());
         this.motorRight = new BasicMotorSim(IndexerConstants.getRightMotorConfig());
+        motorRight.followMotor(motorLeft, true);
     }
 
     @Override
     public void turnOn() {
-        motorLeft.setPercentOutput(IndexerConstants.LEFT_MOTOR_SPINNING_PERCENT_OUTPUT);
-        motorRight.setPercentOutput(IndexerConstants.RIGHT_MOTOR_SPINNING_PERCENT_OUTPUT);
+        motorLeft.setPercentOutput(IndexerConstants.SPINNING_PRECENT_OUTPUT);
         isSpinning = true;
     }
 
     @Override
     public void turnOff() {
         motorLeft.stop();
-        motorRight.stop();
         isSpinning = false;
     }
 

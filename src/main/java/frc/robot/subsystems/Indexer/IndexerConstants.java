@@ -6,8 +6,7 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 public class IndexerConstants {
 
 
-    public static final double LEFT_MOTOR_SPINNING_PERCENT_OUTPUT = 0.5;
-    public static final double RIGHT_MOTOR_SPINNING_PERCENT_OUTPUT = 0.5;
+    public static final double SPINNING_PRECENT_OUTPUT = 0.5;
 
     public static BasicSparkConfig getLeftMotorConfig() {
         BasicSparkConfig configLeftMotor = new BasicSparkConfig();
