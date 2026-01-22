@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Indexer;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
@@ -18,10 +20,32 @@ public class Indexer extends SubsystemBase {
         io.update(inputs);
     }
 
-    public void start(){
-        io.start();
+    /**
+     * sets the spindexer motor precent to the constant
+     */
+    public void turnOn(){
+        io.turnOn();
     }
-    public void stop(){
-        io.stop();
+
+    /**
+     * stops the motor
+     */
+    public void turnOff(){
+        io.turnOff();
     }
+
+    /**
+     * @return command which turn's on the indexer
+     */
+    public Command turnOnIndexerCommand(){
+        return new InstantCommand(() -> turnOn(), this);
+    }
+
+    /**
+     * @return command which turn's off the indexer
+     */
+    public Command turnOffIndexerCommand(){
+        return new InstantCommand(() -> turnOff(), this);
+    }
+
 }

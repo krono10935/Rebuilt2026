@@ -1,14 +1,18 @@
 package frc.robot.subsystems.Indexer;
 
-import io.github.captainsoccer.basicmotor.BasicMotor;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IndexerIO {
 
-    void start();
+    /**
+     * sets the spindexer motor percent to the constant
+     */
+    void turnOn();
 
-    void stop();
-
+    /**
+     * stops the motor
+     */
+    void turnOff();
 
     @AutoLog
     class IndexerInputs{
