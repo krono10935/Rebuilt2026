@@ -5,15 +5,9 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class IndexerConstants {
 
-<<<<<<< HEAD
+
     public static final double LEFT_MOTOR_SPINNING_PERCENT_OUTPUT = 0.5;
     public static final double RIGHT_MOTOR_SPINNING_PERCENT_OUTPUT = 0.5;
-=======
-    public static final double SPINNING_PERCENT_OUTPUT = 0.5;
-
-    public static BasicSparkConfig getConfig() {
-        BasicSparkConfig config = new BasicSparkConfig();
->>>>>>> origin/Indexer
 
     public static BasicSparkConfig getLeftMotorConfig() {
         BasicSparkConfig configLeftMotor = new BasicSparkConfig();
@@ -26,13 +20,13 @@ public class IndexerConstants {
         configLeftMotor.simulationConfig.kA = 0.2;
         configLeftMotor.simulationConfig.kV = 0.2;
 
-<<<<<<< HEAD
+
         configLeftMotor.slot0Config.pidConfig.kP = 1;
 
         return configLeftMotor;
     }
 
-    public static BasicSparkConfig getRightMotorConfig() {
+    public static BasicSparkConfig getRightMotorConfig(){
         BasicSparkConfig configRightMotor = new BasicSparkConfig();
 
         configRightMotor.motorConfig.id = 31;
@@ -47,9 +41,5 @@ public class IndexerConstants {
 
         return configRightMotor;
     }
-=======
-        return config;
-    }
 
->>>>>>> origin/Indexer
 }
