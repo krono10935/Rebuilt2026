@@ -73,7 +73,7 @@ public class ShooterConstants {
         double maxFreeSpeedMetersPerSec = (Rotation2d.fromRadians(config.motorConfig.motorType.freeSpeedRadPerSec).getRotations());
     
         
-        config.slot0Config.feedForwardConfig.setpointFeedForward = maxFreeSpeedMetersPerSec == 0 ? 0 : 12 / maxFreeSpeedMetersPerSec  ;
+        config.slot0Config.feedForwardConfig.setpointFeedForward = maxFreeSpeedMetersPerSec == 0 ? 0 : 12 / maxFreeSpeedMetersPerSec;
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
