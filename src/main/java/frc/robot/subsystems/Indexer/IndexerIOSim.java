@@ -3,22 +3,26 @@ package frc.robot.subsystems.Indexer;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
 public class IndexerIOSim implements IndexerIO {
-    private final BasicMotorSim motor;
+    private final BasicMotorSim motorLeft;
+    private final BasicMotorSim motorRight;
     private boolean isSpinning;
 
     public IndexerIOSim() {
-        this.motor = new BasicMotorSim(IndexerConstants.getConfig());
+        this.motorLeft = new BasicMotorSim(IndexerConstants.getLeftMotorConfig());
+        this.motorRight = new BasicMotorSim(IndexerConstants.getRightMotorConfig());
     }
 
     @Override
     public void turnOn() {
-        motor.setPercentOutput(IndexerConstants.SPINNING_PERCENT_OUTPUT);
+        motorLeft.setPercentOutput(IndexerConstants.LEFT_MOTOR_SPINNING_PERCENT_OUTPUT);
+        motorRight.setPercentOutput(IndexerConstants.RIGHT_MOTOR_SPINNING_PERCENT_OUTPUT);
         isSpinning = true;
     }
 
     @Override
     public void turnOff() {
-        motor.stop();
+        motorLeft.stop();
+        motorRight.stop();
         isSpinning = false;
     }
 
