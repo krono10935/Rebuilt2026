@@ -11,13 +11,13 @@ public class IndexerIOSim implements IndexerIO {
     }
 
     @Override
-    public void start() {
+    public void turnOn() {
         motor.setPercentOutput(IndexerConstants.SPINNING_PERCENT_OUTPUT);
         isSpinning = true;
     }
 
     @Override
-    public void stop() {
+    public void turnOff() {
         motor.stop();
         isSpinning = false;
     }

@@ -5,6 +5,8 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class IndexerConstants {
 
+    public static final double SPINNING_PERCENT_OUTPUT = 0.5;
+
     public static BasicSparkConfig getConfig() {
         BasicSparkConfig config = new BasicSparkConfig();
 
@@ -18,9 +20,7 @@ public class IndexerConstants {
 
         config.slot0Config.pidConfig.kP = 1;
 
-
         return config;
     }
 
-    public static double SPINNING_PERCENT_OUTPUT = 50;
 }
