@@ -2,18 +2,18 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.function.Function;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class ShooterConstants {
 
-    public static final double SHOOTING_SPEED = 4000 / 60; // m/s TODO stop using arab rpm
+    public static final double SHOOTING_SPEED = 3100 / 60; // m/s TODO stop using arab rpm
 
     public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
 
     public static final double KICKER_PERCENT_OUTPUT = 0.7;
 
+    
     public static final boolean IS_DEVBOT = true;
 
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
@@ -36,16 +36,20 @@ public class ShooterConstants {
         config.motorConfig.name = "Shooting Motor";
         // config.motorConfig.unitConversion = FLYWHEEL_CICUMFRENCE;
     
-        config.slot0Config.pidConfig.kP = 0.0001;
+        config.slot0Config.pidConfig.kP = 0.001;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;   
-        config.slot0Config.pidConfig.tolerance = 3 * 60; 
+        config.slot0Config.pidConfig.tolerance = 1; 
         
-        config.slot0Config.feedForwardConfig.setpointFeedForward = 0.10793;/// FLYWHEEL_CICUMFRENCE;
+        config.slot0Config.feedForwardConfig.setpointFeedForward = 0.1035;/// FLYWHEEL_CICUMFRENCE;
         config.slot0Config.feedForwardConfig.frictionFeedForward = 0.12745;
 
         config.simulationConfig.kA = 0;/// FLYWHEEL_CICUMFRENCE;
         config.simulationConfig.kV = 0.10793;/// FLYWHEEL_CICUMFRENCE;
+
+
+        config.slot0Config.pidConfig.kP = 0.001;
+        
 
         return config;
     }
