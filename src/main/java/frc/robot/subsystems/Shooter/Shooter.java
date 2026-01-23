@@ -48,7 +48,7 @@ public class Shooter extends SubsystemBase {
 
     Logger.recordOutput("Shooter/current command", getCurrentCommand() == null? "None" : getCurrentCommand().getName());
     Logger.recordOutput("Shooter/is hood at setpoint", isHoodAtSetpoint());
-    Logger.recordOutput("Shooter/is shooter at setpoint", isShooterAtSetpoint());
+    Logger.recordOutput("Shooter/is shooter at setpoint", isShooterAtGoal());
 
   }
   
@@ -76,8 +76,8 @@ public class Shooter extends SubsystemBase {
    * 
    * @return is shooter at setpoint
    */
-  public boolean isShooterAtSetpoint(){
-    return io.isShooterAtSetpoint();
+  public boolean isShooterAtGoal(){
+    return io.isShooterAtGoal();
   }
 
   /**

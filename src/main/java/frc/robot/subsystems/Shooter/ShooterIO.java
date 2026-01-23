@@ -36,7 +36,7 @@ public interface ShooterIO {
      * 
      * @return whether or not the shooter is at it's setpoint
      */
-    boolean isShooterAtSetpoint();
+    boolean isShooterAtGoal();
 
     /**
      * 

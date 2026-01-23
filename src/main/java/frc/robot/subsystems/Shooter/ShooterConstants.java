@@ -13,6 +13,7 @@ public class ShooterConstants {
 
     public static final double KICKER_PERCENT_OUTPUT = 0.7;
 
+    public static final double MIN_ACCEL_TO_RESIST = 0;
     
     public static final boolean IS_DEVBOT = true;
 
@@ -44,11 +45,18 @@ public class ShooterConstants {
         config.slot0Config.feedForwardConfig.setpointFeedForward = 0.1035;/// FLYWHEEL_CICUMFRENCE;
         config.slot0Config.feedForwardConfig.frictionFeedForward = 0.12745;
 
+        config.slot0Config.profileConfig.maximumMeasurementAcceleration = 5; // TODO Decide the optimal number here 
+        config.slot0Config.profileConfig.maximumMeasurementVelocity = 5; // TODO Decide the optimal number here
+
+
+
+        config.slot1Config.feedForwardConfig.setpointFeedForward = 0.1035;/// FLYWHEEL_CICUMFRENCE;
+        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.12745;
+
         config.simulationConfig.kA = 0;/// FLYWHEEL_CICUMFRENCE;
         config.simulationConfig.kV = 0.10793;/// FLYWHEEL_CICUMFRENCE;
 
 
-        config.slot0Config.pidConfig.kP = 0.001;
         
 
         return config;

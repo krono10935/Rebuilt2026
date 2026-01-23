@@ -56,7 +56,7 @@ public class ShootCommand extends Command {
     }
 
     // otherwise if the shooter isn't ready to shoot, close to kicker and get it ready to shoot
-    else if(!shooter.isShooterAtSetpoint()){
+    else if(!shooter.isShooterAtGoal()){
       
       shooter.toggleKicker(false);
 
