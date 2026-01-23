@@ -24,6 +24,8 @@ public class RobotContainer
 
     public final Drivetrain drivetrain;
 
+    private final CommandXboxController controller;
+
     private final LoggedDashboardChooser<Command> chooser;
 
 
@@ -36,6 +38,7 @@ public class RobotContainer
 
     private RobotContainer()
     {
+        controller = new CommandXboxController(0);
 
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
@@ -44,7 +47,7 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, controller));
     }
     
     

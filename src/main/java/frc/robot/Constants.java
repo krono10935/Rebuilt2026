@@ -5,5 +5,5 @@ import frc.robot.subsystems.drivetrain.constants.ChassisType;
 
 public class Constants {
 
-    public static final ChassisType CHASSIS_TYPE = ChassisType.COMPBOT;
+    public static final ChassisType CHASSIS_TYPE = ChassisType.DEVBOT;
 }
