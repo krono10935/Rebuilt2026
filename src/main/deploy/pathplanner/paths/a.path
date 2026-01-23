@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 3.2484776088169642,
+        "y": 6.120648251488095
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4792380136986303,
-        "y": 7.4433433219178085
+        "x": 3.7277156225155945,
+        "y": 6.563991573405904
       },
       "isLocked": false,
       "linkedName": null
@@ -34,16 +34,16 @@
   "eventMarkers": [
     {
       "name": "driveToPose",
-      "waypointRelativePos": 0.49050332383665807,
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 120.0,
+    "maxAngularAcceleration": 120.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -57,5 +57,5 @@
     "velocity": 0.0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
