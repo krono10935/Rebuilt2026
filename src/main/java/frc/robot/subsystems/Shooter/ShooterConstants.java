@@ -7,9 +7,10 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class ShooterConstants {
 
-    public static final double SHOOTING_SPEED = 3100 / 60; // m/s TODO stop using arab rpm
-
     public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
+    
+    public static final double SHOOTING_SPEED = (3100 / 60) / FLYWHEEL_CICUMFRENCE; // m/s
+
 
     public static final double KICKER_PERCENT_OUTPUT = 0.7;
 
@@ -35,26 +36,26 @@ public class ShooterConstants {
         config.motorConfig.motorType = DCMotor.getNeoVortex(2);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Shooting Motor";
-        // config.motorConfig.unitConversion = FLYWHEEL_CICUMFRENCE;
+        config.motorConfig.unitConversion = FLYWHEEL_CICUMFRENCE;
     
-        config.slot0Config.pidConfig.kP = 0.001;
+        config.slot0Config.pidConfig.kP = 0.001  / FLYWHEEL_CICUMFRENCE;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;   
         config.slot0Config.pidConfig.tolerance = 1; 
         
-        config.slot0Config.feedForwardConfig.setpointFeedForward = 0.1035;/// FLYWHEEL_CICUMFRENCE;
-        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.12745;
+        config.slot0Config.feedForwardConfig.setpointFeedForward = 0.1035 / FLYWHEEL_CICUMFRENCE;
+        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.12745 / FLYWHEEL_CICUMFRENCE;
 
         config.slot0Config.profileConfig.maximumMeasurementAcceleration = 5; // TODO Decide the optimal number here 
         config.slot0Config.profileConfig.maximumMeasurementVelocity = 5; // TODO Decide the optimal number here
 
 
 
-        config.slot1Config.feedForwardConfig.setpointFeedForward = 0.1035;/// FLYWHEEL_CICUMFRENCE;
-        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.12745;
+        config.slot1Config.feedForwardConfig.setpointFeedForward = 0.1035 / FLYWHEEL_CICUMFRENCE;
+        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.12745 / FLYWHEEL_CICUMFRENCE;
 
-        config.simulationConfig.kA = 0;/// FLYWHEEL_CICUMFRENCE;
-        config.simulationConfig.kV = 0.10793;/// FLYWHEEL_CICUMFRENCE;
+        config.simulationConfig.kA = 0  / FLYWHEEL_CICUMFRENCE;
+        config.simulationConfig.kV = 0.10793 / FLYWHEEL_CICUMFRENCE;
 
 
         
