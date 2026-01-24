@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Shooter.IO.ShooterIODevBotStrong;
+import frc.robot.subsystems.Shooter.IO.ShooterIONonBasicMotor;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 
@@ -33,6 +34,7 @@ public class Shooter extends SubsystemBase {
     else{
       io = new ShooterIOReal();
     }
+    // io = new ShooterIONonBasicMotor();
 
     inputs = new ShooterInputsAutoLogged();
 
@@ -50,6 +52,10 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/is hood at setpoint", isHoodAtSetpoint());
     Logger.recordOutput("Shooter/is shooter at setpoint", isShooterAtGoal());
 
+  }
+
+  public void logSysID(){
+    io.logSysID();
   }
   
 

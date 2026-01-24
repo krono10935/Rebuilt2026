@@ -99,5 +99,11 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
         
+    }
+
+    @Override
+    public void logSysID() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'logSysID'");
     }   
 }

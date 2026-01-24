@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooter.IO;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -29,23 +31,26 @@ public class ShooterIODevBotStrong implements ShooterIO {
         
 
         isKickerActive = false;
-
+        leadShootingMotor.getController().getControllerGains().setSendableSlot(1);
+        SmartDashboard.putData(leadShootingMotor.getController());
     }
 
     @Override
     public void spinUp(double speedMPS){
-        targetVelocity = speedMPS;
+        targetVelocity = speedMPS / ShooterConstants.FLYWHEEL_CICUMFRENCE;
         leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 0);
+        Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
     public void keepVelocity(){
-        double kA = 0;
-        double accel = leadShootingMotor.getMeasurement().acceleration();
-        if(accel < ShooterConstants.MIN_ACCEL_TO_RESIST){
-            kA = -accel * leadConfig.simulationConfig.kA;
-        }
-        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 1);
+        // double kA = 0;
+        // double accel = leadShootingMotor.getMeasurement().acceleration();
+        Logger.recordOutput("Shooter/keeping", true);
+        // if(accel < ShooterConstants.MIN_ACCEL_TO_RESIST){
+        //     kA = -accel * leadConfig.simulationConfig.kA;
+        // }
+        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
     }
 
     @Override
@@ -82,8 +87,12 @@ public class ShooterIODevBotStrong implements ShooterIO {
         inputs.isKickerActive = this.isKickerActive;
 
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
-
-        SmartDashboard.putData(leadShootingMotor.getController());
         
+    }
+
+    @Override
+    public void logSysID() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'logSysID'");
     }   
 }

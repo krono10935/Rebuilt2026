@@ -68,4 +68,6 @@ public interface ShooterIO {
      * @param inputs advantage kit inputs object to update
      */
     void update(ShooterInputs inputs);
+
+    void logSysID();
 }

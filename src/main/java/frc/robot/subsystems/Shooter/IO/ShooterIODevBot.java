@@ -78,5 +78,11 @@ public class ShooterIODevBot implements ShooterIO {
         inputs.isKickerActive = this.isKickerActive;
 
         inputs.shooterSpeed = shootingMotor.getVelocity();        
+    }
+
+    @Override
+    public void logSysID() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'logSysID'");
     }   
 }
