@@ -33,6 +33,9 @@ public class Climb extends SubsystemBase {
     Logger.recordOutput(getName()+"/isAtSetPoint", isAtSetPoint());
   }
 
+  public ClimbConstants.ClimbState getClimbState(){
+    return io.getClimbState();
+  }
   /**
    * closes the climb
    */

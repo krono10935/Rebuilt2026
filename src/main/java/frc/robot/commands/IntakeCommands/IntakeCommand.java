@@ -33,4 +33,7 @@ public class IntakeCommand extends Command {
     double actualPower = intake.getPower();
   }
 
+
+  //TODO is finished command
+
 }
