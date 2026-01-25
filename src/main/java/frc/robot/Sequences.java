@@ -17,12 +17,12 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 
 public class Sequences {
-
+    //TODO fix the sequences
     public static Command shoot(Shooter shooter, Indexer indexer) {
         SequentialCommandGroup shooterCommand = new SequentialCommandGroup();
         //shooterCommand.addCommands(new HomeHoodCommand())
-        shooterCommand.addCommands(new SpinUp(shooter).until(shooter::isShooterAtSetpoint).alongWith(indexer.turnOnIndexerCommand()));
-        //shooterCommand.addCommandshootCommand());
+        shooterCommand.addCommands(new SpinUp(shooter).alongWith(indexer.turnOnIndexerCommand()));
+        //shooterCommand.addCommandshootCommand().alongWith);
         return shooterCommand;
     }
 
