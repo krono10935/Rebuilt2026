@@ -2,18 +2,20 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.function.Function;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class ShooterConstants {
 
-    public static final double SHOOTING_SPEED = 4000 / 60; // m/s TODO stop using arab rpm
-
     public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
+    
+    public static final double SHOOTING_SPEED = 17.5; // m/s
+
 
     public static final double KICKER_PERCENT_OUTPUT = 0.7;
 
+    public static final double MIN_ACCEL_TO_RESIST = 0;
+    
     public static final boolean IS_DEVBOT = true;
 
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
@@ -36,16 +38,39 @@ public class ShooterConstants {
         config.motorConfig.name = "Shooting Motor";
         // config.motorConfig.unitConversion = FLYWHEEL_CICUMFRENCE;
     
-        config.slot0Config.pidConfig.kP = 0.0001;
+        config.slot0Config.pidConfig.kP = 0  / FLYWHEEL_CICUMFRENCE;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;   
-        config.slot0Config.pidConfig.tolerance = 3 * 60; 
+        config.slot0Config.pidConfig.tolerance = 0.1 * FLYWHEEL_CICUMFRENCE; 
         
-        config.slot0Config.feedForwardConfig.setpointFeedForward = 0.10793;/// FLYWHEEL_CICUMFRENCE;
-        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.12745;
+        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.10811;
+        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.043261;
 
-        config.simulationConfig.kA = 0;/// FLYWHEEL_CICUMFRENCE;
-        config.simulationConfig.kV = 0.10793;/// FLYWHEEL_CICUMFRENCE;
+        config.slot0Config.profileConfig.maximumMeasurementAcceleration = 5; // TODO Decide the optimal number here 
+        config.slot0Config.profileConfig.maximumMeasurementVelocity = 5; // TODO Decide the optimal number here
+
+
+
+        config.slot1Config.feedForwardConfig.velocityFeedforward = 0.10811;
+        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.043261;
+
+        config.slot0Config.pidConfig.kP = 0;
+        config.slot0Config.pidConfig.kI = 0;
+        config.slot0Config.pidConfig.kD = 0;   
+        config.slot0Config.pidConfig.tolerance = 1;
+
+        config.simulationConfig.kA = 0.0065362;
+        config.simulationConfig.kV = 0.10811;
+
+        config.slot1Config.pidConfig.kP = 0.002;
+        config.slot0Config.pidConfig.kI = 0;
+        config.slot0Config.pidConfig.kD = 0;   
+        config.slot1Config.pidConfig.tolerance = 0.5;
+
+
+        config.constraintsConfig.minOutput = 0;
+
+        
 
         return config;
     }
@@ -78,7 +103,6 @@ public class ShooterConstants {
         config.slot0Config.pidConfig.kP = 1;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;
-        config.slot0Config.feedForwardConfig.simpleFeedForward = 2;
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
@@ -101,7 +125,6 @@ public class ShooterConstants {
         config.slot0Config.pidConfig.kP = 1;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;
-        config.slot0Config.feedForwardConfig.simpleFeedForward = 2;
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;

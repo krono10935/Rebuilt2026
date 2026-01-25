@@ -50,7 +50,10 @@ public class ShooterSysID {
             new SysIdRoutine.Config(Units.Volts.per(Units.Second).of(VOLT_RAMP_RATE),
                     Volts.of(VOLT),
                     Second.of(TIMEOUT),
-                    (state) -> Logger.recordOutput("SysIdTestState", state.toString())
+                    (state) -> {
+                        Logger.recordOutput("SysIdTestState", state.toString());
+                        shooter.logSysID();
+                    }
             ),
 
             new SysIdRoutine.Mechanism(

@@ -36,7 +36,7 @@ public interface ShooterIO {
      * 
      * @return whether or not the shooter is at it's setpoint
      */
-    boolean isShooterAtSetpoint();
+    boolean isShooterAtGoal();
 
     /**
      * 
@@ -68,4 +68,6 @@ public interface ShooterIO {
      * @param inputs advantage kit inputs object to update
      */
     void update(ShooterInputs inputs);
+
+    void logSysID();
 }
