@@ -49,7 +49,7 @@ public class ShooterConstants {
         config.slot0Config.profileConfig.maximumMeasurementAcceleration = 5; // TODO Decide the optimal number here 
         config.slot0Config.profileConfig.maximumMeasurementVelocity = 5; // TODO Decide the optimal number here
 
-
+        config.enableVoltageCompensation = false;
 
         config.slot1Config.feedForwardConfig.velocityFeedforward = 0.10811;
         config.slot1Config.feedForwardConfig.frictionFeedForward = 0.043261;
