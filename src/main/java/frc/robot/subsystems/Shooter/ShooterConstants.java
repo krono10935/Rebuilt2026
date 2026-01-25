@@ -43,7 +43,7 @@ public class ShooterConstants {
         config.slot0Config.pidConfig.kD = 0;   
         config.slot0Config.pidConfig.tolerance = 0.1 * FLYWHEEL_CICUMFRENCE; 
         
-        config.slot0Config.feedForwardConfig.setpointFeedForward = 0.10811;
+        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.10811;
         config.slot0Config.feedForwardConfig.frictionFeedForward = 0.043261;
 
         config.slot0Config.profileConfig.maximumMeasurementAcceleration = 5; // TODO Decide the optimal number here 
@@ -51,7 +51,7 @@ public class ShooterConstants {
 
 
 
-        config.slot1Config.feedForwardConfig.setpointFeedForward = 0.10811;
+        config.slot1Config.feedForwardConfig.velocityFeedforward = 0.10811;
         config.slot1Config.feedForwardConfig.frictionFeedForward = 0.043261;
 
         config.slot0Config.pidConfig.kP = 0;
@@ -103,7 +103,6 @@ public class ShooterConstants {
         config.slot0Config.pidConfig.kP = 1;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;
-        config.slot0Config.feedForwardConfig.simpleFeedForward = 2;
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
@@ -126,7 +125,6 @@ public class ShooterConstants {
         config.slot0Config.pidConfig.kP = 1;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;
-        config.slot0Config.feedForwardConfig.simpleFeedForward = 2;
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
