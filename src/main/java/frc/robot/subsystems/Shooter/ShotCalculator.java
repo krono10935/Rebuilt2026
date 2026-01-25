@@ -42,7 +42,7 @@ public class ShotCalculator {
         public record ShootingParameters(
             boolean isValid,
             Rotation2d robotAngle,
-            double turretVelocity,
+            double robotVelocity,
             double hoodAngle,
             double hoodVelocity,
             double flywheelSpeed) {}
