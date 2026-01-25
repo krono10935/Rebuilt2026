@@ -2,12 +2,17 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.function.Function;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class ShooterConstants {
 
     public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
+
+    public static final Transform3d ROBOT_TO_SHOOTER = 
+        new Transform3d(0.0, 0.0, 0.0, Rotation3d.kZero); // Find real translation
     
     public static final double SHOOTING_SPEED = 17.5; // m/s
 
