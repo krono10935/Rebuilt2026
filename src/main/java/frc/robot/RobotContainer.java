@@ -8,11 +8,18 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.Vision.VisionConsumer;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+
+import java.util.function.Supplier;
+
 import org.littletonrobotics.conduit.ConduitApi;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.DriveToPose;
 import com.pathplanner.lib.path.DriveToPoseConstants;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -20,11 +27,12 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer
 {
 
+    public static Vision vision;
     private static RobotContainer instance;
 
-    public final Drivetrain drivetrain;
+    //public final Drivetrain drivetrain;
 
-    private final LoggedDashboardChooser<Command> chooser;
+    //private final LoggedDashboardChooser<Command> chooser;
 
 
     public static RobotContainer getInstance(){
@@ -34,13 +42,15 @@ public class RobotContainer
         return instance;
     }
 
+    Supplier<Pose2d>lastPoseSupplier = () -> Pose2d.kZero;
+
     private RobotContainer()
     {
 
-        drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
+        //drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         configureBindings();
-        chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
+        //chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
@@ -50,7 +60,7 @@ public class RobotContainer
     
     public Command getAutonomousCommand()
     {
-        return chooser.get();
+        return null;//chooser.get();
     }
 
 
