@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 3.556390090215774,
+        "y": 7.424586239769345
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9801228841145828,
-        "y": 3.0782792154947933
+        "x": 1.001084347647645,
+        "y": 4.569117281825859
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "*Nz* Trench (L) - Trench (L) - Climb"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 3.080012497674852
+        "x": 1.0653067452566964,
+        "y": 4.641801699683779
       },
       "prevControl": {
-        "x": 2.0088749767485115,
-        "y": 7.006967192150298
+        "x": 3.6042101080733167,
+        "y": 7.472591150266202
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Testing",
+  "folder": "Trench (L) - Trench (L) - Climb",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 4.0,
+    "rotation": -0.6022268177755207
   },
   "useDefaultConstraints": true
 }

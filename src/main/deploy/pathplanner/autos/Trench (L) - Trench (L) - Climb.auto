@@ -7,13 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "a"
+            "pathName": "Az - Trench - Nz"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "b"
+            "pathName": "Collecting"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Nz - Trench - Az"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climb"
           }
         }
       ]

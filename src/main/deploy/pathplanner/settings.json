@@ -2,10 +2,20 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [],
-  "autoFolders": [],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 3.0,
+  "pathFolders": [
+    "Bump (L) - Trench (L) - Climb",
+    "Bump (R) - Trench (R) - Climb",
+    "Depot - Climb",
+    "Outpost - Climb",
+    "Testing",
+    "Trench (L) - Trench (L) - Climb",
+    "Trench (R) - Trench (R) - Climb"
+  ],
+  "autoFolders": [
+    "Testing"
+  ],
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,

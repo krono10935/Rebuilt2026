@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 7.790594540550595,
+        "y": 6.702470296223959
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9801228841145828,
-        "y": 3.0782792154947933
+        "x": 7.7819937976025795,
+        "y": 5.253132638778666
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "*Az* Trench (L) - Trench (L) - Climb"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 3.080012497674852
+        "x": 7.790594540550595,
+        "y": 5.105556640625
       },
       "prevControl": {
-        "x": 2.0088749767485115,
-        "y": 7.006967192150298
+        "x": 7.782899301896168,
+        "y": 6.53282516372715
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "*Collecting* Trench (L) - Trench (L) - Climb "
     }
   ],
   "rotationTargets": [],
@@ -41,13 +41,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
+    "velocity": 4.0,
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Testing",
+  "folder": "Trench (L) - Trench (L) - Climb",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 4.0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true
