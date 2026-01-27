@@ -54,10 +54,10 @@ public class RobotContainer
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, controller));
         SwerveSysID sysID = new SwerveSysID(drivetrain, controller);
-        controller.a().whileTrue(sysID.sysIdDynamicSpin(SysIdRoutine.Direction.kForward));
-        controller.b().whileTrue(sysID.sysIdDynamicSpin(SysIdRoutine.Direction.kReverse));
-        controller.y().whileTrue(sysID.sysIdQuasistaticSpin(SysIdRoutine.Direction.kForward));
-        controller.x().whileTrue(sysID.sysIdQuasistaticSpin(SysIdRoutine.Direction.kReverse));
+        controller.a().whileTrue(sysID.sysIdDynamicDrive(SysIdRoutine.Direction.kForward));
+        controller.b().whileTrue(sysID.sysIdDynamicDrive(SysIdRoutine.Direction.kReverse));
+        controller.y().whileTrue(sysID.sysIdQuasistaticDrive(SysIdRoutine.Direction.kForward));
+        controller.x().whileTrue(sysID.sysIdQuasistaticDrive(SysIdRoutine.Direction.kReverse));
         controller.rightBumper().onTrue(new InstantCommand(() ->
                 drivetrain.reset(new Pose2d(drivetrain.getEstimatedPosition().getTranslation(), new Rotation2d())))
                 .ignoringDisable(true));

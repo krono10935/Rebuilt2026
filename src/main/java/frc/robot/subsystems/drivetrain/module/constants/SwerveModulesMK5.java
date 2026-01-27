@@ -16,9 +16,9 @@ public enum SwerveModulesMK5 {
     FRONT_LEFT(
             6,  0.067, 12
             ,
-            new PIDGains(3, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(2.2564, 0.22283),
-            0.43556,
+            new PIDGains(3.5, 0.1, 0, 0, 0, 0),
+            new FeedForwardsGains(2.0253, 0.17665),
+            0.15671,
             4,
             new PIDGains(35, 0, 0, 0, 0, 0),
             new FeedForwardsGains(2.6642, 0.31235),
@@ -29,9 +29,9 @@ public enum SwerveModulesMK5 {
     FRONT_RIGHT(
             9,  0.052, 13
             ,
-            new PIDGains(3, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(2.252, 0.24746),
-            0.43111,
+            new PIDGains(3.5, 0.1, 0, 0, 0, 0),
+            new FeedForwardsGains(2.0305, 0.15701),
+            0.20883,
             5,
             new PIDGains(35, 0, 0, 0, 0, 0),
             new FeedForwardsGains(2.727, 0.37299),
@@ -41,9 +41,9 @@ public enum SwerveModulesMK5 {
     BACK_LEFT(
             7,  -0.24, 11
             ,
-            new PIDGains(3, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(2.2663, 0.20489),
-            0.48042,
+            new PIDGains(3.5, 0.1, 0, 0, 0, 0),
+            new FeedForwardsGains(1.9818, 0.20351),
+            0.32864,
             3,
             new PIDGains(35, 0, 0, 0, 0, 0),
             new FeedForwardsGains(2.6894, 0.41461),
@@ -54,9 +54,9 @@ public enum SwerveModulesMK5 {
     BACK_RIGHT(
             8,  -0.25, 10
             ,
-            new PIDGains(3, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(2.2667, 0.21765),
-            0.42812,
+            new PIDGains(3.5, 0.1, 0, 0, 0, 0),
+            new FeedForwardsGains(2.0061, 0.17404),
+            0.24125,
             2,
             new PIDGains(35, 0, 0, 0, 0, 0),
             new FeedForwardsGains(2.6566, 0.37504),
@@ -113,7 +113,7 @@ public enum SwerveModulesMK5 {
 
         var driveConfig = new BasicTalonFXConfig();
 
-        driveConfig.motorConfig.gearRatio = 6.03;
+        driveConfig.motorConfig.gearRatio = 5.27;
         driveConfig.motorConfig.unitConversion = 2 * Math.PI * 0.0508;
         driveConfig.motorConfig.idleMode = BasicMotor.IdleMode.COAST;
         driveConfig.motorConfig.motorType = DCMotor.getKrakenX60(1);

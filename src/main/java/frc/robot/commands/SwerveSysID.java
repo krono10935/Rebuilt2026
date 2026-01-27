@@ -46,12 +46,12 @@ public class SwerveSysID {
     /**
      * Voltage to use in dynamic mode for SYSID
      */
-   public static final double VOLT = 2;
+   public static final double VOLT = 4;
 
     /**
      * How many volts/second to add per second of the SYSID routine
      */
-   public static final double VOLT_RAMP_RATE = 0.5;
+   public static final double VOLT_RAMP_RATE = 4;
 
     /**
      * How many seconds to perform the test for the sysID routine
