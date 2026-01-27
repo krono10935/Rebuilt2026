@@ -10,6 +10,9 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
@@ -20,6 +23,8 @@ public class ShootCommand extends Command {
   private final Supplier<Pose2d> robotPoseSupplier;
 
   private final Function<Pose2d, Boolean> shouldShootFunction;
+
+  private final Drivetrain drivetrain;
   
 
   /**
@@ -28,12 +33,13 @@ public class ShootCommand extends Command {
    * @param robotPoseSupplier robot pose supplier
    * @param shouldShootFunction function to translate from pose2d to whether or not to shoot 
    */
-  public ShootCommand(Shooter shooter, Supplier<Pose2d> robotPoseSupplier, Function<Pose2d, Boolean> shouldShootFunction) {
+  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Supplier<Pose2d> robotPoseSupplier, Function<Pose2d, Boolean> shouldShootFunction) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
     this.robotPoseSupplier = robotPoseSupplier;
     this.shouldShootFunction = shouldShootFunction;
+    this.drivetrain = drivetrain;
 
     addRequirements(shooter);
 
@@ -41,16 +47,18 @@ public class ShootCommand extends Command {
 
   @Override
   public void execute() {
+    shooter.updateShootingParameters(drivetrain);
+    ShootingParameters params = shooter.getShootParameters();
     
     // is the robot is in the shooting zone 
-    boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get());
+    boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && params.isValid();
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
     if (!shouldShoot){
 
       shooter.toggleKicker(false);
 
-      shooter.spinUp(100);
+      shooter.spinUp(ShooterConstants.BASE_SPINUP_SPEED);
 
 
     }
@@ -60,7 +68,7 @@ public class ShootCommand extends Command {
       
       shooter.toggleKicker(false);
 
-      shooter.spinUp(0);
+      shooter.spinUp(params.flywheelSpeed());
 
     }
 

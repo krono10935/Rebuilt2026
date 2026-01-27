@@ -7,18 +7,23 @@ package frc.robot.subsystems.Shooter;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Shooter.IO.ShooterIODevBotStrong;
 import frc.robot.subsystems.Shooter.IO.ShooterIONonBasicMotor;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class Shooter extends SubsystemBase {
 
   private final ShooterIO io;
 
   private final ShooterInputsAutoLogged inputs;
+
+  private ShootingParameters shooterParams;
 
   /**
    * Create a shooter IO based on the robot's state (sim, dev, comp)
@@ -57,7 +62,17 @@ public class Shooter extends SubsystemBase {
   public void logSysID(){
     io.logSysID();
   }
-  
+
+  public void updateShootingParameters(Drivetrain drivetrain){
+    ShotCalculator.getInstance().clearShootingParameters();
+    shooterParams = ShotCalculator.getInstance().getParameters(drivetrain::getEstimatedPosition,
+     drivetrain::getChassisSpeeds, 
+     () -> ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
+  }
+
+  public ShootingParameters getShootParameters(){
+    return shooterParams;
+  }
 
   /**
    * 

@@ -11,6 +11,10 @@ import frc.robot.commands.Shooter.KeepVelocity;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterSysID;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+
+import org.littletonrobotics.conduit.ConduitApi;
+
 import edu.wpi.first.wpilibj2.command.*;
 
 
@@ -23,7 +27,7 @@ public class RobotContainer
 
     private final CommandXboxController xboxController;
 
-    // private final Drivetrain drivetrain;
+    private final Drivetrain drivetrain;
 
     // private final LoggedDashboardChooser<Command> chooser;
 
@@ -42,7 +46,7 @@ public class RobotContainer
 
         xboxController = new CommandXboxController(0);
 
-        // drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
+        drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         configureBindings();
         // chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
