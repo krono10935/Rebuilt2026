@@ -9,7 +9,6 @@ import org.photonvision.simulation.VisionSystemSim;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 
 /**
@@ -25,11 +24,6 @@ public class VisionIOPhotonSim extends VisionIOPhoton {
     // Simulated camera
     PhotonCameraSim cameraSim;
 
-    // Supplies the latest robot pose (used to update sim)
-    private final Supplier<Pose2d> lastPoseSupplier;
-
-    // Actual PhotonVision camera reference (even though we're simulating)
-    PhotonCamera camera;
 
 
     /**
@@ -39,8 +33,7 @@ public class VisionIOPhotonSim extends VisionIOPhoton {
      */
     public VisionIOPhotonSim(CamerasConstants camConst, Supplier<Pose2d> lastPoseSupplier) {
         // Call the parent constructor
-        super(camConst, lastPoseSupplier);
-        this.lastPoseSupplier = lastPoseSupplier;
+        super(camConst, lastPoseSupplier);  
 
         // Create a new VisionSystemSim if it doesn't exist yet
         if(visionSim == null){
@@ -52,15 +45,22 @@ public class VisionIOPhotonSim extends VisionIOPhoton {
         // Define simulated camera properties (resolution, FOV, latency, etc.)
         SimCameraProperties cameraProp = new SimCameraProperties();
         cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(91.1)); // resolution + diagonal FOV
-        cameraProp.setAvgLatencyMs(20); // simulate network/processing delay (tunable)
+        cameraProp.setAvgLatencyMs(35); // simulate network/processing delay (tunable)
         
-        // Create a PhotonCamera instance with the configured camera name
-        camera = new PhotonCamera(camConst.CAMERA_NAME);
         
         // Create a simulated PhotonCamera based on our properties
         cameraSim = new PhotonCameraSim(camera, cameraProp);
 
-        visionSim.addCamera(cameraSim, CamerasConstants.FRONT_CAMERA.ROBOT_TO_CAMERA);
+        visionSim.addCamera(cameraSim,camConst.ROBOT_TO_CAMERA);
+
+        // Enable the raw and processed streams. These are enabled by default.
+        cameraSim.enableRawStream(true);
+        cameraSim.enableProcessedStream(true);
+
+        // Enable drawing a wireframe visualization of the field to the camera streams.
+        // This is extremely resource-intensive and is disabled by default.
+        cameraSim.enableDrawWireframe(true);
+
     }
 
 

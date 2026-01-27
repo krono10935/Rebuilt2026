@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Vision.VisionInputsAutoLogged;
@@ -71,6 +72,10 @@ public class Vision extends SubsystemBase {
       return new VisionCamera(new VisionIOPhoton(constants, lastPoseSupplier), constants.CAMERA_NAME, constants);
     }
 
+    public static VisionCamera fromPhotonSim(CamerasConstants constants, Supplier<Pose2d> lastPoseSupplier) {
+      return new VisionCamera(new VisionIOPhotonSim(constants, lastPoseSupplier), constants.CAMERA_NAME, constants);
+    }
+
     /**
      * Updates camera inputs and logs them using AdvantageKit.
      */
@@ -93,9 +98,12 @@ public class Vision extends SubsystemBase {
    * @param lastPoseSupplier Supplier for the last estimated robot pose
    */
   public Vision(VisionConsumer estimateListener, Supplier<Pose2d> lastPoseSupplier) {
-      this.cameras = Arrays.stream(CamerasConstants.values())
+      if (RobotBase.isReal()){this.cameras = Arrays.stream(CamerasConstants.values())
           .map(constants -> VisionCamera.fromPhoton(constants,lastPoseSupplier))
-          .toList();
+          .toList();}
+           else {this.cameras = Arrays.stream(CamerasConstants.values())
+          .map(constants -> VisionCamera.fromPhotonSim(constants,lastPoseSupplier))
+          .toList();}
       this.poseConsumer = estimateListener;
   }
 

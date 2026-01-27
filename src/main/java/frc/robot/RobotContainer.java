@@ -20,8 +20,10 @@ import com.pathplanner.lib.path.DriveToPose;
 import com.pathplanner.lib.path.DriveToPoseConstants;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 
 public class RobotContainer
@@ -29,6 +31,14 @@ public class RobotContainer
 
     public static Vision vision;
     private static RobotContainer instance;
+
+    private LoggedNetworkNumber poseX;
+    private LoggedNetworkNumber poseY;
+
+    private LoggedNetworkNumber poseYaw;
+
+
+
 
     //public final Drivetrain drivetrain;
 
@@ -42,10 +52,17 @@ public class RobotContainer
         return instance;
     }
 
-    Supplier<Pose2d>lastPoseSupplier = () -> Pose2d.kZero;
+    Supplier<Pose2d>lastPoseSupplier;
 
     private RobotContainer()
     {
+        poseX = new LoggedNetworkNumber("PoseX", 0);
+        poseY = new LoggedNetworkNumber("PoseY", 0);
+
+        poseYaw = new LoggedNetworkNumber("PoseYaw", 0);
+
+        lastPoseSupplier = () -> new Pose2d(poseX.get(), poseY.get(), Rotation2d.fromDegrees(poseYaw.get()));
+        vision = new Vision(VisionConsumer.NO_OP, lastPoseSupplier);
 
         //drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 

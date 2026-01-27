@@ -2,9 +2,11 @@ package frc.robot.subsystems.Vision;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import java.net.ProtocolFamily;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -21,11 +23,11 @@ import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 public class VisionIOPhoton implements VisionIO {
 
     /** Underlying PhotonVision camera interface */
-    private final PhotonCamera camera;
+    protected final PhotonCamera camera;
     /** Pose estimator using fiducial targets and field layout */
     private final PhotonPoseEstimator poseEstimator;
     /** Supplier for the last known robot pose, used as reference for pose estimation */
-    private final Supplier<Pose2d> lastPoseSupplier;
+    protected final Supplier<Pose2d> lastPoseSupplier;
 
     /**
      * Constructs a VisionIOPhoton instance.
@@ -139,6 +141,8 @@ public class VisionIOPhoton implements VisionIO {
             .flatMap(r -> r.getTargets().stream())
             .mapToInt(target -> target.getFiducialId())
             .toArray();
+
+        Logger.recordOutput("VisionIO/Last pose", lastPoseSupplier.get());
     }
 
 }
