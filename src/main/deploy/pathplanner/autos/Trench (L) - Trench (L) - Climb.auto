@@ -7,25 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Az - Trench - Nz"
+            "pathName": "Stoping To Shoot Trench (L) - Trench (L) - Climb"
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Collecting"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Nz - Trench - Az"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climb"
+            "waitTime": 0.0
           }
         }
       ]

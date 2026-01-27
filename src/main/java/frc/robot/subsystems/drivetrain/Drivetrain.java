@@ -281,11 +281,6 @@ public class Drivetrain extends SubsystemBase {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Command driveToPose(Pose2d goalPose, double distanceToStopPP){
-        return AutoBuilder.pathfindToPose(goalPose, constants.PATH_FINDING_CONSTRAINTS,
-                0, distanceToStopPP);
-    }
-
     /**
      * Set if the module is Brake or Coast
      * @param isBrake whether the module motor should resist outside change in disable
