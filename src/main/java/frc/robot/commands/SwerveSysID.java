@@ -127,7 +127,7 @@ public class SwerveSysID {
      */
    public void driveWithController(double voltage) {
 
-      Rotation2d fieldRelativeAngle = new Translation2d(-controller.getLeftX(), -controller.getLeftY()).getAngle();
+      Rotation2d fieldRelativeAngle = new Translation2d(-controller.getLeftY(), -controller.getLeftX()).getAngle();
       Rotation2d robotRelativeAngle = fieldRelativeToRobotRelative(fieldRelativeAngle, drivetrain);
       Rotation2d[] angleArray = {robotRelativeAngle, robotRelativeAngle, robotRelativeAngle, robotRelativeAngle};
 
@@ -139,9 +139,9 @@ public class SwerveSysID {
      */
    private final Rotation2d[] spinAngleArray = {
            Rotation2d.fromDegrees(135),
+           Rotation2d.fromDegrees(135-90),
            Rotation2d.fromDegrees(135+90),
-           Rotation2d.fromDegrees(135+180),
-           Rotation2d.fromDegrees(135+270)
+           Rotation2d.fromDegrees(135+180)
    };
 
     /**

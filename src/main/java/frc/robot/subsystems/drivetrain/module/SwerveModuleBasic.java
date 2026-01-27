@@ -2,6 +2,7 @@ package frc.robot.subsystems.drivetrain.module;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drivetrain.configsStructure.moduleConfig.ModuleConstants;
 import io.github.captainsoccer.basicmotor.ctre.talonfx.BasicTalonFX;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
@@ -34,12 +35,13 @@ public class SwerveModuleBasic extends SwerveModuleIO {
 
             // steeringMotor.resetEncoder(canCoder.getAbsolutePosition().getValueAsDouble());
 
-            ((BasicTalonFX)steeringMotor).useRemoteCanCoder(canCoder);
+//            ((BasicTalonFX)steeringMotor).useRemoteCanCoder(canCoder);
+            ((BasicTalonFX)steeringMotor).useFusedCanCoder(canCoder, 1);
 
             canCoder.getMagnetHealth().setUpdateFrequency(4);
             canCoder.optimizeBusUtilization();
-            
 
+            SmartDashboard.putData(drivingMotor.getController());
 
 
         }

@@ -5,9 +5,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.SwerveSysID;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import org.littletonrobotics.conduit.ConduitApi;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -47,7 +51,16 @@ public class RobotContainer
     }
 
     private void configureBindings() {
+
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, controller));
+        SwerveSysID sysID = new SwerveSysID(drivetrain, controller);
+        controller.a().whileTrue(sysID.sysIdDynamicSpin(SysIdRoutine.Direction.kForward));
+        controller.b().whileTrue(sysID.sysIdDynamicSpin(SysIdRoutine.Direction.kReverse));
+        controller.y().whileTrue(sysID.sysIdQuasistaticSpin(SysIdRoutine.Direction.kForward));
+        controller.x().whileTrue(sysID.sysIdQuasistaticSpin(SysIdRoutine.Direction.kReverse));
+        controller.rightBumper().onTrue(new InstantCommand(() ->
+                drivetrain.reset(new Pose2d(drivetrain.getEstimatedPosition().getTranslation(), new Rotation2d())))
+                .ignoringDisable(true));
     }
     
     
