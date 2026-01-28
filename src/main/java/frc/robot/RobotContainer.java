@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -70,7 +71,7 @@ public class RobotContainer
                 drivetrain.reset(new Pose2d(drivetrain.getEstimatedPosition().getTranslation(), new Rotation2d())))
                 .ignoringDisable(true));
 
-        DriveToPoseConstants.ANGULAR_PID_GAINS = new ProfiledPIDController(2,1.00,0,
+        DriveToPoseConstants.ANGULAR_PID_GAINS = new ProfiledPIDController(12,25.00,0,
         new TrapezoidProfile.Constraints(3, Units.degreesToRadians(45)));
         DriveToPoseConstants.MAX_LINEAR_SPEED = 3;
         DriveToPoseConstants.ANGLE_TOLERANCE = Units.degreesToRadians(5);
@@ -79,6 +80,7 @@ public class RobotContainer
         DriveToPoseConstants.FF_MAX_DISTANCE = 0.15;
         DriveToPoseConstants.FF_MIN_DISTANCE = 0.05;
         SmartDashboard.putData(DriveToPoseConstants.LINEAR_PID_GAINS);
+        DriveToPoseConstants.LINEAR_PID_GAINS = new PIDController(10,2,0);
         DriveToPoseConstants.POSE_TOLERANCE = 0.01;
         DriveToPoseConstants.LINEAR_PID_GAINS.setIntegratorRange(
             Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
