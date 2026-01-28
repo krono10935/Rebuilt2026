@@ -7,6 +7,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.DriveCommand;
+import frc.robot.commands.Shooter.AutoShootAndAim;
 import frc.robot.commands.Shooter.KeepVelocity;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -48,15 +50,18 @@ public class RobotContainer
 
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+
+        shooter.setDefaultCommand(new AutoShootAndAim(shooter, drivetrain));
         configureBindings();
         // chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
 
-        xboxController.a()
-        .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
-        .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
+        // xboxController.a()
+        // .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
+        // .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
     }
     
     

@@ -18,6 +18,7 @@ public class AutoShootAndAim extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
     this.drivetrain = drivetrain;
+    addRequirements(shooter);
   }
 
 
