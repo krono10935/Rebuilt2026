@@ -5,16 +5,24 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.SwerveSysID;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.constants.ChassisType;
+import io.github.captainsoccer.basicmotor.gains.PIDGains;
+
 import org.littletonrobotics.conduit.ConduitApi;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.DriveToPose;
 import com.pathplanner.lib.path.DriveToPoseConstants;
 import edu.wpi.first.wpilibj2.command.*;
@@ -61,9 +69,21 @@ public class RobotContainer
         controller.rightBumper().onTrue(new InstantCommand(() ->
                 drivetrain.reset(new Pose2d(drivetrain.getEstimatedPosition().getTranslation(), new Rotation2d())))
                 .ignoringDisable(true));
+
+        DriveToPoseConstants.ANGULAR_PID_GAINS = new ProfiledPIDController(2,1.00,0,
+        new TrapezoidProfile.Constraints(3, Units.degreesToRadians(45)));
+        DriveToPoseConstants.MAX_LINEAR_SPEED = 3;
+        DriveToPoseConstants.ANGLE_TOLERANCE = Units.degreesToRadians(5);
+        DriveToPoseConstants.FF_MIN_ANGLE = Units.degreesToRadians(1);
+        SmartDashboard.putData(DriveToPoseConstants.ANGULAR_PID_GAINS);
+        DriveToPoseConstants.FF_MAX_DISTANCE = 0.15;
+        DriveToPoseConstants.FF_MIN_DISTANCE = 0.05;
+        SmartDashboard.putData(DriveToPoseConstants.LINEAR_PID_GAINS);
+        DriveToPoseConstants.POSE_TOLERANCE = 0.01;
+        DriveToPoseConstants.LINEAR_PID_GAINS.setIntegratorRange(
+            Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    
     }
-    
-    
     public Command getAutonomousCommand()
     {
         return chooser.get();

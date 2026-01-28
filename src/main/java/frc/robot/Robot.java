@@ -106,6 +106,7 @@ public class Robot extends LoggedRobot
         {
 
             autonomousCommand.cancel();
+            RobotContainer.getInstance().drivetrain.stop();
         }
 
     }

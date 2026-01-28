@@ -139,7 +139,7 @@ public class Drivetrain extends SubsystemBase {
                 this::getEstimatedPosition, // Robot pose supplier
                 this::reset, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> drive(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                (speeds, feedforwards) -> driveWithoutPP(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
                 new PPController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                             constants.PP_CONFIG.PID_CONSTANTS(), constants.PP_CONFIG.ANGULAR_PID_CONSTANTS() // Rotation PID constants
                 ),
@@ -187,7 +187,6 @@ public class Drivetrain extends SubsystemBase {
      * @param speeds the target speed of the robot
      */
     public void driveWithoutPP(ChassisSpeeds speeds) {
-
         var targetSpeeds = kinematics.toWheelSpeeds(speeds);
         for (int i = 0; i < 4; i++){
             targetSpeeds[i].optimize(io[i].getState().angle);
