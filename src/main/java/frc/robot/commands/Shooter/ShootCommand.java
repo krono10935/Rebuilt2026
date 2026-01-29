@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
+import frc.robot.subsystems.Shooter.ShotCalculator.ValidityState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -51,7 +52,7 @@ public class ShootCommand extends Command {
     ShootingParameters params = shooter.getShootParameters();
     
     // is the robot is in the shooting zone 
-    boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && params.isValid();
+    boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && params.validityState() == ValidityState.VALID;
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
     if (!shouldShoot){

@@ -14,12 +14,20 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.utils.AllianceFlipUtil;
 
 public class ShotCalculator {
     private static ShotCalculator instance;
+
+    public enum ValidityState{
+        VALID,
+        OUT_OF_RANGE,
+        TOO_MUCH_OMEGA_SPEED,
+        HUB_INACTIVE
+    }
 
     private final LinearFilter robotAngleFilter = 
         LinearFilter.movingAverage((int) (0.1 / Constants.LOOP_PERIOD_SECONDS));
@@ -40,9 +48,8 @@ public class ShotCalculator {
         }
 
         public record ShootingParameters(
-            boolean isValid,
+            ValidityState validityState,
             Rotation2d robotAngle,
-            double robotVelocity,
             double hoodAngle,
             double hoodVelocity,
             double flywheelSpeed) {}
@@ -108,14 +115,11 @@ public class ShotCalculator {
      * @param robotFieldVelocitySupplier Field-relative velocity
      * @return ShootingParameters based on these parameters
      */
-    public ShootingParameters getParameters(Supplier<Pose2d> estimatedPoseSupplier, Supplier<ChassisSpeeds> robotRelativeVelocitySupplier, Supplier<ChassisSpeeds> robotFieldVelocitySupplier){
+    public ShootingParameters getParameters(Pose2d estimatedPose, ChassisSpeeds robotRelativeVelocity, ChassisSpeeds robotVelocityFieldRelative){
         if (latestParameters != null){
             return latestParameters;
         }
-
-        Pose2d estimatedPose = estimatedPoseSupplier.get();
-        ChassisSpeeds robotRelativeVelocity = robotRelativeVelocitySupplier.get();
-
+        
         // Estimate where the robot will be by the time the calculation finished
         estimatedPose = 
             estimatedPose.exp(new Twist2d(
@@ -137,21 +141,15 @@ public class ShotCalculator {
 
         // Calculate distance from the shooter to the target
         Pose2d shooterPosition = estimatedPose.transformBy(transform);
-        double shooterToTargetDistance = target.getDistance(shooterPosition.getTranslation());
+        double shooterToTargetDistance = target.getDistance(shooterPosition.getTranslation());       
 
-        // Find the current robot velocity on the different axis
-        ChassisSpeeds robotVelocityCurrent = robotFieldVelocitySupplier.get();
-        double robotAngleCurrent = estimatedPose.getRotation().getRadians();
+        //TODO: see if this calcs can be removed eniterly
+        double shooterVelocityX = robotVelocityFieldRelative.vxMetersPerSecond;
         
-        double shooterVelocityX = robotVelocityCurrent.vxMetersPerSecond + 
-            robotVelocityCurrent.omegaRadiansPerSecond * (ShooterConstants.ROBOT_TO_SHOOTER.getY() * Math.cos(robotAngleCurrent) 
-            - ShooterConstants.ROBOT_TO_SHOOTER.getY() * Math.sin(robotAngleCurrent));
-        
-        double shooterVelocityY = robotVelocityCurrent.vxMetersPerSecond + 
-            robotVelocityCurrent.omegaRadiansPerSecond * (ShooterConstants.ROBOT_TO_SHOOTER.getX() * Math.cos(robotAngleCurrent) 
-            - ShooterConstants.ROBOT_TO_SHOOTER.getY() * Math.sin(robotAngleCurrent));
+        double shooterVelocityY = robotVelocityFieldRelative.vyMetersPerSecond;
 
         // Regress to the optimal shooting calculation for distance to shoot
+        // We assume that this is to calculate the v0(m/s) that the robot gives the ball in fieldRelative terms
         double timeOfFlight;
         Pose2d lookaheadPose = shooterPosition;
         double lookaheadShooterToTargetDistance = shooterToTargetDistance;
@@ -188,18 +186,33 @@ public class ShotCalculator {
         lastRobotAngle = robotAngle;
         lastHoodAngle = hoodAngle;
 
+        ValidityState state = ValidityState.VALID;
+
+        if (!Constants.HubTiming.isActive(DriverStation.getMatchTime())){
+            state = ValidityState.HUB_INACTIVE;
+        }
+
+        if (Math.abs(robotRelativeVelocity.omegaRadiansPerSecond) > ShooterConstants.ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES){
+                state = ValidityState.TOO_MUCH_OMEGA_SPEED;
+        }
+
+        if (lookaheadShooterToTargetDistance >= minDistance &&
+            lookaheadShooterToTargetDistance <= maxDistance){
+                state = ValidityState.OUT_OF_RANGE;
+        }
+
+        Constants.HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage());
+
         // Build new shooting params record
         latestParameters = 
-            new ShootingParameters(lookaheadShooterToTargetDistance >= minDistance &&
-            lookaheadShooterToTargetDistance <= maxDistance,
+            new ShootingParameters(state,
             robotAngle,
-            robotVelocity,
             hoodAngle,
             hoodVelocity,
             shotFlywheelSpeedMap.get(lookaheadShooterToTargetDistance));
 
         Logger.recordOutput("ShotCalculator/LookaheadPose", lookaheadPose);
-        Logger.recordOutput("ShotCalculator/TurretToTargetDistance", lookaheadShooterToTargetDistance);
+        Logger.recordOutput("ShotCalculator/ShooterToTargetDistance", lookaheadShooterToTargetDistance);
 
         return latestParameters;
     }

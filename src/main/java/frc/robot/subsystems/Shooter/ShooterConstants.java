@@ -26,6 +26,8 @@ public class ShooterConstants {
 
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
 
+    public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
+
     /* function for adding more to the setpoint for maintaining speed during shooting
     TODO: set actual function
      */
