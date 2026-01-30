@@ -13,6 +13,7 @@ public class IntakeIOSim implements IntakeIO {
  private final BasicMotor openCloseMotor;
     private final DigitalInput beamBreak;
 
+
     public IntakeIOSim() {
         intakeMotor = new BasicMotorSim(IntakeConstants.intakeMotorConfig);
         openCloseMotor = new BasicMotorSim(IntakeConstants.openCloseMotorConfig);

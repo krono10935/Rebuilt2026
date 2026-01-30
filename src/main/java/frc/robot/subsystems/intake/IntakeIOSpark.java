@@ -12,6 +12,7 @@ public class IntakeIOSpark implements IntakeIO {
     private final BasicMotor openCloseMotor;
     private final DigitalInput beamBreak;
 
+
     public IntakeIOSpark() {
 
         intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);

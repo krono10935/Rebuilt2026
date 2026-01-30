@@ -21,7 +21,7 @@ public class IntakeCommand extends Command {
 
   @Override
   public void initialize(){
-    intake.startIntake();
+    intake.startIntakeMotor();
   }
 
 
@@ -33,7 +33,5 @@ public class IntakeCommand extends Command {
     double actualPower = intake.getPower();
   }
 
-
-  //TODO is finished command
 
 }

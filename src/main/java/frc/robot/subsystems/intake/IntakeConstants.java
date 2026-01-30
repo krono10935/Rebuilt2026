@@ -20,6 +20,7 @@ public class IntakeConstants {
 
     public static final double INTAKE_KT = DCMotor.getNEO(1).withReduction(1).KtNMPerAmp;
 
+
     public static final BasicMotorConfig intakeMotorConfig = new BasicSparkConfig();
     static{
         intakeMotorConfig.motorConfig.name = "Intake motor";

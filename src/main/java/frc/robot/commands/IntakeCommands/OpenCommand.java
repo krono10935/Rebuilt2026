@@ -12,11 +12,10 @@ import frc.robot.subsystems.intake.IntakeConstants;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class OpenCommand extends Command {
   private Intake intake;
-  private IntakeConstants constants;
-  public OpenCommand(Intake intake, IntakeConstants constants) {
+
+  public OpenCommand(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.intake = intake;
-    this.constants = constants;
     addRequirements(intake);
 
   }
@@ -24,8 +23,9 @@ public class OpenCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.stopMotor();
-    intake.toggleActivationMotor(constants.OPEN_ANGLE);
+    intake.stopIntakeMotor();
+    intake.toggleActivationMotor(IntakeConstants.OPEN_ANGLE);
+    intake.setIsIntakeOpen(true);
   }
 
 

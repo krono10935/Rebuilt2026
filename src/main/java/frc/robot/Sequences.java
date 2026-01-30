@@ -1,7 +1,10 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
@@ -21,24 +24,30 @@ public class Sequences {
     public static Command shoot(Shooter shooter, Indexer indexer,Drivetrain drivetrain ) {
         SequentialCommandGroup shooterCommand = new SequentialCommandGroup();
         shooterCommand.addCommands(new HomeHoodCommand(shooter, drivetrain::getEstimatedPosition,(pose) -> Rotation2d.kZero));
-        shooterCommand.addCommands(new SpinUp(shooter).alongWith(indexer.turnOnIndexerCommand()));
+        shooterCommand.addCommands(indexer.turnOnIndexerCommand());
         shooterCommand.addCommands(new ShootCommand(shooter,drivetrain::getEstimatedPosition,(pose) -> true));
         return shooterCommand;
     }
 
-    public static Command delivery(Shooter shooter, Indexer indexer, Intake intake, Drivetrain drivetrain,IntakeConstants intakeConstants ) {
+    public static Command delivery(Shooter shooter, Indexer indexer, Intake intake, Drivetrain drivetrain) {
         SequentialCommandGroup deliveryCommand = new SequentialCommandGroup();
-        deliveryCommand.addCommands(Sequences.openIntakeStart(intake,intakeConstants));
-        deliveryCommand.addCommands(new HomeHoodCommand(shooter, drivetrain::getEstimatedPosition,(pose) -> Rotation2d.kZero));
-        deliveryCommand.addCommands(Sequences.shoot(shooter,indexer,drivetrain));
+        deliveryCommand.addCommands(Sequences.openIntakeStart(intake));
+        deliveryCommand.addCommands(new InstantCommand(()-> shooter.setHoodAngle(Rotation2d.fromDegrees(45))));
+        deliveryCommand.addCommands(indexer.turnOnIndexerCommand());
+        deliveryCommand.addCommands(new ShootCommand(shooter,drivetrain::getEstimatedPosition,(pose) -> true));
         return deliveryCommand;
     }
 
-    public static Command Climb(Intake intake, IntakeConstants intakeConstands, Climb climb,Indexer indexer){
+    public static Command Climb(Intake intake, Climb climb, Indexer indexer,Shooter shooter, Drivetrain drivetrain) {
         SequentialCommandGroup climbCommand = new SequentialCommandGroup();
         if(climb.getClimbState() == ClimbConstants.ClimbState.CLOSED) {
-            climbCommand.addCommands(Sequences.closeIntakeStop(intake,intakeConstands));
-            climbCommand.addCommands(indexer.turnOffIndexerCommand());
+            ParallelCommandGroup closeSubsystems = new ParallelCommandGroup();
+            closeSubsystems.addCommands(Sequences.closeIntakeStop(intake));
+            closeSubsystems.addCommands(indexer.turnOffIndexerCommand());
+            closeSubsystems.addCommands(new ShootCommand(shooter,drivetrain::getEstimatedPosition,(pose) -> false));
+            climbCommand.addCommands(closeSubsystems);
+            //climbCommand.addCommands(drivetrain.driveToPose(new Pose2d()));
+            //TODO add drive to pose command
             climbCommand.addCommands(climb.openCommand());
         }else if(climb.getClimbState() == ClimbConstants.ClimbState.OPEN) {
             climbCommand.addCommands(climb.closeCommand());
@@ -46,17 +55,21 @@ public class Sequences {
         return climbCommand;
     }
 
-    public static Command openIntakeStart(Intake intake, IntakeConstants intakeConstants){
+    public static Command toggleIntake(Intake intake) {
+        return intake.getIsIntakeOpen() ? closeIntakeStop(intake) : openIntakeStart(intake);
+    }
+
+    public static Command openIntakeStart(Intake intake){
         SequentialCommandGroup intakeCommand = new SequentialCommandGroup();
-        intakeCommand.addCommands(new OpenCommand(intake,intakeConstants));
-        intakeCommand.addCommands(new IntakeCommand(intake));
+        intakeCommand.addCommands(intake.openIntake());
+        intakeCommand.addCommands(intake.startIntake());
         return intakeCommand;
     }
 
-    public static Command closeIntakeStop(Intake intake, IntakeConstants intakeConstands){
+    public static Command closeIntakeStop(Intake intake){
         SequentialCommandGroup intakeCommand = new SequentialCommandGroup();
-        intakeCommand.addCommands(new CloseCommand(intake,intakeConstands));
-        intakeCommand.addCommands(new IntakeCommand(intake));
+        intakeCommand.addCommands(intake.stopIntake());
+        intakeCommand.addCommands(intake.closeIntake());
         return intakeCommand;
     }
 }
