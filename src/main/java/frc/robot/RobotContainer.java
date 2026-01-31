@@ -5,16 +5,19 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.Shooter.AutoShootAndAim;
+import frc.robot.commands.Shooter.KeepVelocity;
+import frc.robot.commands.Shooter.SpinUp;
+import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterSysID;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+
 import org.littletonrobotics.conduit.ConduitApi;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.DriveToPose;
-import com.pathplanner.lib.path.DriveToPoseConstants;
+
 import edu.wpi.first.wpilibj2.command.*;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 
 public class RobotContainer
@@ -22,9 +25,13 @@ public class RobotContainer
 
     private static RobotContainer instance;
 
-    public final Drivetrain drivetrain;
+    private final Shooter shooter;
 
-    private final LoggedDashboardChooser<Command> chooser;
+    private final CommandXboxController xboxController;
+
+    private final Drivetrain drivetrain;
+
+    // private final LoggedDashboardChooser<Command> chooser;
 
 
     public static RobotContainer getInstance(){
@@ -37,20 +44,31 @@ public class RobotContainer
     private RobotContainer()
     {
 
+        shooter = new Shooter();
+
+        xboxController = new CommandXboxController(0);
+
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+
+        shooter.setDefaultCommand(new AutoShootAndAim(shooter, drivetrain));
         configureBindings();
-        chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
+        // chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
 
+        // xboxController.a()
+        // .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
+        // .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
     }
     
     
     public Command getAutonomousCommand()
     {
-        return chooser.get();
+        return null;
+        // return chooser.get();
     }
 
 
