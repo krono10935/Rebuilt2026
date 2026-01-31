@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
+import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig.AbsoluteEncoderConfig.AbsoluteEncoderRange;
 
 public class ShooterConstants {
 
@@ -27,6 +28,14 @@ public class ShooterConstants {
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
 
     public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
+
+    public static final boolean IS_ABSOLUTE_ENCODER_INVERTED = false;
+
+    public static final double ENCODER_ZERO_OFFSET = 0;
+
+    public static final double MOTOR_TO_ENCODER_RATIO = 1.0/8;
+
+    public static final AbsoluteEncoderRange ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.HALF_REVOLUTION;
 
     /* function for adding more to the setpoint for maintaining speed during shooting
     TODO: set actual function

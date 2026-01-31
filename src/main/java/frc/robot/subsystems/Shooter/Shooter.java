@@ -11,7 +11,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Shooter.IO.ShooterIODevBotStrong;
-import frc.robot.subsystems.Shooter.IO.ShooterIONonBasicMotor;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;

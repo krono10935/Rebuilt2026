@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooter.IO;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
@@ -38,16 +40,13 @@ public class ShooterIOSim implements ShooterIO {
     public void spinUp(double speedMPS){
         targetVelocity = speedMPS;
         leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 0);
+        Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
     public void keepVelocity(){
-        double kA = 0;
-        double accel = leadShootingMotor.getMeasurement().acceleration();
-        if(accel < ShooterConstants.MIN_ACCEL_TO_RESIST){
-            kA = -accel * shooterConfig.simulationConfig.kA;
-        }
-        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 1);
+        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
+        Logger.recordOutput("Shooter/keeping", true);
     }
 
     @Override

@@ -6,13 +6,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.Shooter.AutoShootAndAim;
-import frc.robot.commands.Shooter.KeepVelocity;
-import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShooterSysID;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.leds.LedLocation;
 import frc.robot.leds.LedManager;
@@ -27,7 +22,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj.util.Color;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 
 public class RobotContainer

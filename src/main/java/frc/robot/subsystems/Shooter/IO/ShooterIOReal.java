@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooter.IO;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
@@ -31,6 +33,13 @@ public class ShooterIOReal implements ShooterIO {
 
 
         hoodMotor =  new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
+        
+        hoodMotor.useAbsoluteEncoder(
+            ShooterConstants.IS_ABSOLUTE_ENCODER_INVERTED,
+            ShooterConstants.ENCODER_ZERO_OFFSET, 
+            ShooterConstants.MOTOR_TO_ENCODER_RATIO, 
+            ShooterConstants.ABSOLUTE_ENCODER_RANGE
+        );
 
         kickerMotor =  new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
 
@@ -42,16 +51,13 @@ public class ShooterIOReal implements ShooterIO {
     public void spinUp(double speedMPS){
         targetVelocity = speedMPS;
         leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY,0);
+        Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
     public void keepVelocity(){
-        double kA = 0;
-        double accel = leadShootingMotor.getMeasurement().acceleration();
-        if(accel < ShooterConstants.MIN_ACCEL_TO_RESIST){
-            kA = -accel * leadConfig.simulationConfig.kA;
-        }
-        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 1);
+        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
+        Logger.recordOutput("Shooter/keeping", true);
     }
 
     @Override

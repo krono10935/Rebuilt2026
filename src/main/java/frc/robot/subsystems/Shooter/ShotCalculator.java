@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Shooter;
 
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.filter.LinearFilter;
