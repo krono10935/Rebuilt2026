@@ -14,6 +14,7 @@ import frc.robot.Robot;
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
+  public int balls;
 
   /** Creates a new Intake. */
   public Intake() {
@@ -43,6 +44,18 @@ public class Intake extends SubsystemBase {
     return inputs.power;
   }
 
+  public void removeBalls(int removeBalls){
+    balls -= removeBalls;
+  
+  }
+
+  public void addBalls(int ballsAdd){
+    balls += ballsAdd;
+  }
+
+  public int getBalls(){
+    return balls;
+  }
  
   @Override
   public void periodic() {
