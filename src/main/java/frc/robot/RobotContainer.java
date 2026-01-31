@@ -68,8 +68,6 @@ public class RobotContainer
         // .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
         // .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
     }
-    
-    
     public Command getAutonomousCommand()
     {
         return null;
