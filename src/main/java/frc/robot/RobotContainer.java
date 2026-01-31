@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.*;
 public class RobotContainer
 {
 
+    public static Vision vision;
     private static RobotContainer instance;
 
     private final Shooter shooter;
@@ -41,8 +42,12 @@ public class RobotContainer
         return instance;
     }
 
+    Supplier<Pose2d>lastPoseSupplier;
+
     private RobotContainer()
     {
+        poseX = new LoggedNetworkNumber("PoseX", 0);
+        poseY = new LoggedNetworkNumber("PoseY", 0);
 
         shooter = new Shooter();
 
