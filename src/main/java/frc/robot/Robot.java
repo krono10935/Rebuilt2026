@@ -105,18 +105,14 @@ public class Robot extends LoggedRobot
     {
         if (autonomousCommand != null)
         {
-
             autonomousCommand.cancel();
-            RobotContainer.getInstance().drivetrain.stop();
         }
 
     }
     
     
     @Override
-    public void teleopPeriodic() {
-//        RobotContainer.getInstance().drivetrain.drive(new ChassisSpeeds(2,0,2));
-    }
+    public void teleopPeriodic() {}
     
     
     @Override
