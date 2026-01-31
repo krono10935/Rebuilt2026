@@ -14,6 +14,10 @@ import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterSysID;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.leds.LedLocation;
+import frc.robot.leds.LedManager;
+import frc.robot.leds.LedPattern;
+import frc.robot.leds.LedState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 import org.littletonrobotics.conduit.ConduitApi;
@@ -22,12 +26,15 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj.util.Color;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 
 public class RobotContainer
 {   
     private static RobotContainer instance;
 
+    public final LedManager ledManager;
     private final Vision vision;
 
     private final Shooter shooter;
@@ -59,6 +66,8 @@ public class RobotContainer
         chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
 
         configureBindings();
+        ledManager = new LedManager();
+        ledManager.setColors(new LedState(LedPattern.BRWON, Color.kDarkBlue, Color.kCyan, 0.25, 0.7, LedLocation.BASE));
     }
 
     private void configureBindings() {

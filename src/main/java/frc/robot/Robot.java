@@ -7,9 +7,15 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.util.StatusLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.leds.LedLocation;
+import frc.robot.leds.LedPattern;
+import frc.robot.leds.LedState;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
 import io.github.captainsoccer.basicmotor.motorManager.MotorManager;
@@ -50,6 +56,8 @@ public class Robot extends LoggedRobot
 
         
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
+
+        SmartDashboard.putBoolean("test", false);
     }
 
 
@@ -58,6 +66,10 @@ public class Robot extends LoggedRobot
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
 
+        if(SmartDashboard.getBoolean("test", false)){
+            RobotContainer.getInstance().ledManager.setColors(new LedState(LedPattern.BLUE_PULSE, Color.kDarkBlue, Color.kCyan, 0.15, 0.7, LedLocation.ALL));
+            SmartDashboard.putBoolean("test", false);
+        }
     }
     
     
