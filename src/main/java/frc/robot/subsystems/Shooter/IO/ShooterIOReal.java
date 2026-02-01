@@ -46,12 +46,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void keepVelocity(){
-        double kA = 0;
-        double accel = leadShootingMotor.getMeasurement().acceleration();
-        if(accel < ShooterConstants.MIN_ACCEL_TO_RESIST){
-            kA = -accel * leadConfig.simulationConfig.kA;
-        }
-        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 1);
+        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
     }
 
     @Override
