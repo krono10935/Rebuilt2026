@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -50,6 +51,8 @@ public class ShootCommand extends Command {
   public void execute() {
     shooter.updateShootingParameters(drivetrain);
     ShootingParameters params = shooter.getShootParameters();
+
+    shooter.setHoodAngle(Rotation2d.fromDegrees(params.hoodAngle()));
     
     // is the robot is in the shooting zone 
     boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && params.validityState() == ValidityState.VALID;
