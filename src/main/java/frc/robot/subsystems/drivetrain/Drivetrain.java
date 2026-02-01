@@ -281,7 +281,7 @@ public class Drivetrain extends SubsystemBase {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Command driveToPose(Pose2d goalPose, double distanceToStopPP){
+    public Command driveToPose(Pose2d goalPose){
         return AutoBuilder.pathfindToPose(goalPose, constants.PATH_FINDING_CONSTRAINTS,
                 0, distanceToStopPP);
     }

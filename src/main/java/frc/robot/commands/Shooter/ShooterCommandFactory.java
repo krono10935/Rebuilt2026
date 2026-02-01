@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 
 public class ShooterCommandFactory {
@@ -18,11 +19,11 @@ public class ShooterCommandFactory {
      * @param robotPoseSupplier supplier of the pose of the robot
      * @return a command to shoot and aim the shooter based on its location
      */
-    public static Command AutoShoot(Shooter shooter,
+    public static Command AutoShoot(Shooter shooter,Indexer indexer,
      Function<Pose2d,Boolean> shouldShoot, Function<Pose2d,Rotation2d> poseToHoodAngle, 
      Supplier<Pose2d> robotPoseSupplier){
 
-        return new ShootCommand(shooter, robotPoseSupplier, shouldShoot).alongWith(new HomeHoodCommand(shooter, robotPoseSupplier, poseToHoodAngle));
+        return new ShootCommand(shooter,indexer, robotPoseSupplier, shouldShoot).alongWith(new HomeHoodCommand(shooter, robotPoseSupplier, poseToHoodAngle));
 
     }
 

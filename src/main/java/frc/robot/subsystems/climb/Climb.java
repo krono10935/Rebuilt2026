@@ -66,9 +66,9 @@ public class Climb extends SubsystemBase {
   public Command closeCommand(){
     return new FunctionalCommand(this::close, ()->{}, (interrupted)->{}, this::isAtSetPoint, this);
   }
-  
+
   /**
-   * 
+   *
    * @return the open command
    */
   public Command openCommand(){

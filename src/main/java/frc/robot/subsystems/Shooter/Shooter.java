@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -117,5 +119,9 @@ public class Shooter extends SubsystemBase {
   public void setHoodAngle(Rotation2d angle){
     io.setHoodAngle(angle);
   }
- 
+
+  public Command stopShooter(){
+      return new InstantCommand(this::stopFlyWheel, this);
+  }
+
 }
