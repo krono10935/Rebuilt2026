@@ -6,6 +6,7 @@ package frc.robot.commands.IntakeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeCommand extends Command {
@@ -21,16 +22,18 @@ public class IntakeCommand extends Command {
 
   @Override
   public void initialize(){
-    intake.startIntake();
+    intake.setVelocityOutput(IntakeConstants.INTAKE_VELOCITY);
   }
-
-
-
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double actualPower = intake.getPower();
+    //TODO find out how to do the counter
+
+  }
+  @Override
+  public boolean isFinished(){
+    return intake.intakeAtSetPoint();
   }
 
 }

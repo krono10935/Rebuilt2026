@@ -26,13 +26,24 @@ public class Intake extends SubsystemBase {
 
   }
 
-
-  public void toggleActivationMotor(Rotation2d setActivation){
-    io.setActivationMotorPos(setActivation);
+  public boolean getBeamBrake(){
+    return io.getBeamBrake();
   }
 
-  public void startIntake(){
-    io.setPercentOutput(IntakeConstants.MOTOR_POWER_PRECENT);
+  public boolean getLimitSwitch(){
+    return io.getLimitSwitch();
+  }
+
+  public void setVelocityOutput(Rotation2d pos){
+    io.setVelocityOutput(pos);
+  }
+
+  public double getPos(){
+    return io.getPos();
+  }
+
+  public void setPosition(double pos){
+    io.setPositionMotor(pos);
   }
 
   public void stopMotor(){
@@ -43,6 +54,17 @@ public class Intake extends SubsystemBase {
     return inputs.power;
   }
 
+  public double getVelocity(){
+    return inputs.velocity;
+  }
+
+  public boolean intakeAtSetPoint(){
+    return io.intakeAtSetPoint();
+  }
+
+  public boolean positionAtSetPoint(){
+    return io.positionAtSetPoint();
+  }
  
   @Override
   public void periodic() {
@@ -50,7 +72,7 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs(getName(), inputs);
 
-    String currCommand = getCurrentCommand() == null? "Null" : getCurrentCommand().getName();
+    String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
     Logger.recordOutput("Intake/Current Command ", currCommand);
   }
 }
