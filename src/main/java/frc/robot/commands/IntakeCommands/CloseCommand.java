@@ -8,23 +8,26 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class CloseCommand extends Command {
+
   private Intake intake;
-  private IntakeConstants constants;
-  public CloseCommand(Intake intake, IntakeConstants constants) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  
+  public CloseCommand(Intake intake) {
+
     this.intake = intake;
-    this.constants = constants;
     addRequirements(intake);
 
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     intake.stopMotor();
-    intake.toggleActivationMotor(constants.CLOSE_ANGLE);
+    intake.setPosition(IntakeConstants.CLOSE_POSITION);
+  }
+
+  @Override
+  public boolean isFinished(){
+    return intake.positionAtSetPoint();
   }
 
 
