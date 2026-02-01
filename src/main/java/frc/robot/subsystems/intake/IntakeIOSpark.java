@@ -11,13 +11,15 @@ public class IntakeIOSpark implements IntakeIO {
     private final BasicMotor intakeMotor;
     private final BasicMotor openCloseMotor;
     private final DigitalInput beamBreak;
+    private final DigitalInput limitSwitch;
 
     public IntakeIOSpark() {
 
         intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
         openCloseMotor = new BasicSparkMAX(IntakeConstants.openCloseMotorConfig);
-
         beamBreak = new DigitalInput(IntakeConstants.BEAM_BREAK_CHANNEL);
+        limitSwitch = new DigitalInput(IntakeConstants.LIMIT_SWITCH_CHANNEL);
+
     }
 
     @Override

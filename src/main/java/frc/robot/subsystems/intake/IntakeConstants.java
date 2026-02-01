@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
@@ -11,6 +12,7 @@ public class IntakeConstants {
     public static final double MOTOR_POWER_PRECENT = 0.7;
 
     public static final int BEAM_BREAK_CHANNEL = 0;
+    public static final int LIMIT_SWITCH_CHANNEL = 1; //TODO: find out
 
     public static final Rotation2d CLOSE_ANGLE = Rotation2d.kZero;
     public static final Rotation2d OPEN_ANGLE = Rotation2d.kZero;
@@ -61,12 +63,5 @@ public class IntakeConstants {
           var specifConfig = (BasicSparkConfig)openCloseMotorConfig;
 
         specifConfig.currentLimitConfig.stallCurrentLimit = 40;
-
-        
-
-
     }
-
-    
-
 }
