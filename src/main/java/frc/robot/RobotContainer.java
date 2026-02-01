@@ -7,10 +7,16 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.DriveCommand;
+import frc.robot.commands.Shooter.AutoShootAndAim;
 import frc.robot.commands.Shooter.KeepVelocity;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterSysID;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+
+import org.littletonrobotics.conduit.ConduitApi;
+
 import edu.wpi.first.wpilibj2.command.*;
 
 
@@ -23,7 +29,7 @@ public class RobotContainer
 
     private final CommandXboxController xboxController;
 
-    // private final Drivetrain drivetrain;
+    private final Drivetrain drivetrain;
 
     // private final LoggedDashboardChooser<Command> chooser;
 
@@ -42,17 +48,20 @@ public class RobotContainer
 
         xboxController = new CommandXboxController(0);
 
-        // drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
+        drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+
+        shooter.setDefaultCommand(new AutoShootAndAim(shooter, drivetrain));
         configureBindings();
         // chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
 
-        xboxController.a()
-        .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
-        .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
+        // xboxController.a()
+        // .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
+        // .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
     }
     
     

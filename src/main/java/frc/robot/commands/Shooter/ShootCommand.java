@@ -11,6 +11,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
+import frc.robot.subsystems.Shooter.ShotCalculator.ValidityState;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
@@ -23,6 +27,8 @@ public class ShootCommand extends Command {
   private final Supplier<Pose2d> robotPoseSupplier;
 
   private final Function<Pose2d, Boolean> shouldShootFunction;
+
+  private final Drivetrain drivetrain;
   
 
   /**
@@ -38,6 +44,7 @@ public class ShootCommand extends Command {
     this.indexer = indexer;
     this.robotPoseSupplier = robotPoseSupplier;
     this.shouldShootFunction = shouldShootFunction;
+    this.drivetrain = drivetrain;
 
     addRequirements(shooter, indexer);
 
@@ -45,14 +52,30 @@ public class ShootCommand extends Command {
 
   @Override
   public void execute() {
+    shooter.updateShootingParameters(drivetrain);
+    ShootingParameters params = shooter.getShootParameters();
     
     // is the robot is in the shooting zone 
-    boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && shooter.isShooterAtGoal();
+    boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && params.validityState() == ValidityState.VALID;
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
     if (shouldShoot){
         indexer.turnOn();
         shooter.toggleKicker(true);
+
+      shooter.toggleKicker(false);
+
+      shooter.spinUp(ShooterConstants.BASE_SPINUP_SPEED);
+
+
+    }
+
+    // otherwise if the shooter isn't ready to shoot, close to kicker and get it ready to shoot
+    else if(!shooter.isShooterAtGoal()){
+      
+      shooter.toggleKicker(false);
+
+      shooter.spinUp(params.flywheelSpeed());
 
     }
 
