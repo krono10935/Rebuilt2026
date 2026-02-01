@@ -46,11 +46,16 @@ public class Constants {
 
     public static class HubTiming{
         
-
-        private static final boolean isRed = DriverStation.isFMSAttached() && DriverStation.getAlliance().get() == Alliance.Red;
         private static boolean isActiveFirst;
 
-        public static void setStartingTeam(String team){
+        /**
+         * 
+         * @param team Get from driverstations game specific message the team
+         * @param alliance Get from driverstation
+         */
+        public static void setStartingTeam(String team, Alliance alliance){
+            boolean isRed = alliance == Alliance.Red; 
+
             if (team == "R" && isRed || team == "B" && !isRed){
                 isActiveFirst = false;
             } else {
@@ -58,6 +63,11 @@ public class Constants {
             }
         }
 
+        /**
+         * 
+         * @param time time to check if the hub would be activated during
+         * @return whether or not at a given timestamp the hub would be active for your team
+         */
         public static boolean isActive(double time){
             Phase phase = Phase.getActivePhase(time);
 
@@ -73,13 +83,8 @@ public class Constants {
                 default:
                     return false;
             }
-
             
         }
-
-
-
-
 
     }
 }
