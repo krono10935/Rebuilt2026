@@ -18,6 +18,7 @@ public class IntakeIOSim implements IntakeIO {
 
     }
 
+
     @Override
     public boolean intakeMotorAtSetPoint() {
         return intakeMotor.atSetpoint();
@@ -66,6 +67,7 @@ public class IntakeIOSim implements IntakeIO {
     @Override
     public void updateInputs(IntakeInputs inputs) {
         inputs.position = positionMotor.getPosition();
+
         inputs.power = IntakeConstants.INTAKE_KT 
             * intakeMotor.getSensorData().currentOutput()
             * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());

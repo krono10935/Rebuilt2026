@@ -63,6 +63,7 @@ public interface IntakeIO {
      */
     boolean getLimitSwitch();
 
+
     void updateInputs(IntakeInputs inputs);
 
 }

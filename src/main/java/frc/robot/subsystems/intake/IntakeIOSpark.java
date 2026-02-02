@@ -69,7 +69,7 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.Angle = Rotation2d.fromRotations(positionMotor.getPosition());
+        inputs.position = positionMotor.getPosition();
         inputs.power = IntakeConstants.INTAKE_KT 
             * intakeMotor.getSensorData().currentOutput()
             * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
