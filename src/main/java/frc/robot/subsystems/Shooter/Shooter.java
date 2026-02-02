@@ -45,6 +45,8 @@ public class Shooter extends SubsystemBase {
 
     inputs = new ShooterInputsAutoLogged();
 
+    ShotCalculator.getInstance().warmUpShotCalculator();
+
   }
   
 
