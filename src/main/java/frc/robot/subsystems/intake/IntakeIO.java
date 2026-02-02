@@ -7,8 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface IntakeIO {
     @AutoLog
     class IntakeInputs {
-        Rotation2d Angle;
-        double power ;
+        double position;
+        double power;
         double velocity;
     }
 
@@ -16,19 +16,46 @@ public interface IntakeIO {
      * 
      * @return if the intake motor is at the setPoint
      */
-    boolean intakeAtSetPoint();
-    
+    boolean intakeMotorAtSetPoint();
+
+    /**
+     * 
+     * @param velocity velocity per second
+     */
+    void setIntakeMotorVelocity(Rotation2d velocity);
+
+    /**
+     * stops the intake motor
+     */
+    void stopIntakeMotor();
+
+    /**
+     * sets the power of the motor in percent
+     */
+    void setPositionMotorPercentOutput(double percent);
+
     /**
      * 
      * @return if the position motor is at the setPoint
      */
-    boolean positionAtSetPoint();
+    boolean positionMotorAtSetPoint();
 
     /**
-     * 
-     * @return if the beam break is broken
+     * resets the position motor's encoder to 0
      */
-    boolean getBeamBrake();
+    void resetPositionMotorEncoder();
+ 
+    /**
+     * 
+     * @return position of the motor in meters
+     */
+    double getIntakePosition();
+
+    /**
+     * sets the postion of the intake
+     * @param positionMeters the current position of the intake motor in meters
+     */
+    void setPositionMotor(double positionMeters);
 
     /**
      * 
@@ -36,33 +63,6 @@ public interface IntakeIO {
      */
     boolean getLimitSwitch();
 
-    /**
-     * stops the motor
-     */
-    void stopMotor();
-
-    /**
-     * 
-     * @param velocity velocity per second
-     */
-    void setVelocityOutput(Rotation2d velocity);
-
-    /**
-     * 
-     * @return position of the motor in meters
-     */
-    double getPos();
-
-    /**
-     * sets the postion of the intake
-     * @param pos the current position of the intake motor in meters
-     */
-    void setPositionMotor(double pos);
-
     void updateInputs(IntakeInputs inputs);
-
-
-
-
 
 }

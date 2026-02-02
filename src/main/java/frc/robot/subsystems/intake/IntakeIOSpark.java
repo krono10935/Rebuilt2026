@@ -10,7 +10,6 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 public class IntakeIOSpark implements IntakeIO {
     private final BasicMotor intakeMotor;
     private final BasicMotor positionMotor;
-    private final DigitalInput beamBreak;
     private final DigitalInput limitSwitch;
 
     public IntakeIOSpark() {
@@ -18,43 +17,54 @@ public class IntakeIOSpark implements IntakeIO {
         intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
 
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
-
-        beamBreak = new DigitalInput(IntakeConstants.BEAM_BREAK_CHANNEL);
-
+        
         limitSwitch = new DigitalInput(IntakeConstants.LIMIT_SWITCH_CHANNEL);
-
-    }
-
-
-    @Override
-    public boolean getBeamBrake() {
-        return beamBreak.get();
+        
     }
 
     @Override
-    public boolean getLimitSwitch(){
-        return limitSwitch.get();
+    public boolean intakeMotorAtSetPoint() {
+        return intakeMotor.atSetpoint();
     }
 
     @Override
-    public void stopMotor() {
+    public void setIntakeMotorVelocity(Rotation2d velocity) {
+        intakeMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY);
+    }
+
+    @Override
+    public void stopIntakeMotor() {
         intakeMotor.stop();
     }
 
     @Override
-    public void setVelocityOutput(Rotation2d pos){
-        intakeMotor.setControl(pos.getRotations(), ControlMode.VELOCITY);
-
+    public void setPositionMotorPercentOutput(double percent){
+        positionMotor.setPercentOutput(percent);
     }
 
     @Override
-    public double getPos(){
+    public boolean positionMotorAtSetPoint() {
+        return positionMotor.atSetpoint();
+    }
+
+    @Override
+    public void resetPositionMotorEncoder() {
+        positionMotor.resetEncoder(0);
+    }
+
+    @Override
+    public double getIntakePosition() {
         return positionMotor.getPosition();
     }
 
     @Override
-    public void setPositionMotor(double pos){
+    public void setPositionMotor(double pos) {
         positionMotor.setControl(pos, ControlMode.POSITION);
+    }
+
+    @Override
+    public boolean getLimitSwitch() {
+        return limitSwitch.get();
     }
 
     @Override
@@ -65,19 +75,5 @@ public class IntakeIOSpark implements IntakeIO {
             * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
         inputs.velocity = intakeMotor.getVelocity(); 
     }
-
-
-    @Override
-    public boolean intakeAtSetPoint() {
-       return intakeMotor.atSetpoint();
-    }
-
-
-    @Override
-    public boolean positionAtSetPoint() {
-        return positionMotor.atSetpoint();
-    }
-
-    
 
 }

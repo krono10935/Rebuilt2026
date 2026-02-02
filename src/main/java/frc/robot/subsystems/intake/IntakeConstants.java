@@ -7,9 +7,7 @@ import io.github.captainsoccer.basicmotor.BasicMotorConfig.SlotConfig;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class IntakeConstants {
-    public static final double MOTOR_POWER_PRECENT = 0.7;
 
-    public static final int BEAM_BREAK_CHANNEL = 0;
     public static final int LIMIT_SWITCH_CHANNEL = 1; //TODO: find out
 
     public static final double CLOSE_POSITION = 0;
@@ -23,6 +21,8 @@ public class IntakeConstants {
     public static final double PINION_DIAMETER = 1; //TODO: find out, in meters
 
     public static final double INTAKE_KT = DCMotor.getNEO(1).withReduction(1).KtNMPerAmp;
+
+    public static final double INTAKE_POWER_BALL_COUNTER_DEADBAND = 11;
 
     public static final BasicMotorConfig intakeMotorConfig = new BasicSparkConfig();
     static{

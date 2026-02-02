@@ -18,56 +18,57 @@ public class IntakeIOSim implements IntakeIO {
 
     }
 
-
     @Override
-    public boolean getBeamBrake() {
-        return false;
+    public boolean intakeMotorAtSetPoint() {
+        return intakeMotor.atSetpoint();
     }
 
     @Override
-    public boolean getLimitSwitch(){
-        return false;
+    public void setIntakeMotorVelocity(Rotation2d velocity) {
+        intakeMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY);
     }
 
     @Override
-    public void stopMotor() {
+    public void stopIntakeMotor() {
         intakeMotor.stop();
     }
 
     @Override
-    public void setVelocityOutput(Rotation2d pos){
-        intakeMotor.setControl(pos.getRotations(), ControlMode.VELOCITY);
-
+    public void setPositionMotorPercentOutput(double percent){
+        positionMotor.setPercentOutput(percent);
     }
 
     @Override
-    public double getPos(){
+    public boolean positionMotorAtSetPoint() {
+        return positionMotor.atSetpoint();
+    }
+
+    @Override
+    public void resetPositionMotorEncoder() {
+        positionMotor.resetEncoder(0);
+    }
+
+    @Override
+    public double getIntakePosition() {
         return positionMotor.getPosition();
     }
 
     @Override
-    public void setPositionMotor(double pos){
-        positionMotor.setControl(pos, ControlMode.POSITION);
+    public void setPositionMotor(double positionMeters) {
+        positionMotor.setControl(positionMeters, ControlMode.POSITION);
+    }
+
+    @Override
+    public boolean getLimitSwitch() {
+        return false; 
     }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.Angle = Rotation2d.fromRotations(positionMotor.getPosition());
+        inputs.position = positionMotor.getPosition();
         inputs.power = IntakeConstants.INTAKE_KT 
             * intakeMotor.getSensorData().currentOutput()
             * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
         inputs.velocity = intakeMotor.getVelocity(); 
-    }
-
-
-    @Override
-    public boolean intakeAtSetPoint() {
-        return intakeMotor.atSetpoint();
-    }
-
-
-    @Override
-    public boolean positionAtSetPoint() {
-        return positionMotor.atSetpoint();
     }
 }

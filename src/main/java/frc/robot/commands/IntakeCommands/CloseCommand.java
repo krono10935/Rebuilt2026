@@ -21,7 +21,7 @@ public class CloseCommand extends Command {
 
   @Override
   public void initialize() {
-    intake.stopMotor();
+    intake.stopIntakeMotor();
     intake.setPosition(IntakeConstants.CLOSE_POSITION);
   }
 
