@@ -37,6 +37,8 @@ public class ShooterConstants {
 
     public static final AbsoluteEncoderRange ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.HALF_REVOLUTION;
 
+    public static final boolean SHOOT_WITH_MOVEMENT = false;
+
     /* function for adding more to the setpoint for maintaining speed during shooting
     TODO: set actual function
      */
