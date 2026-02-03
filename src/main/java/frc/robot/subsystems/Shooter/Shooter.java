@@ -63,7 +63,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public void updateShootingParameters(Drivetrain drivetrain){
-    ShotCalculator.getInstance().clearShootingParameters();
     shooterParams = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
      drivetrain.getChassisSpeeds(), 
      ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
