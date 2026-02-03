@@ -28,6 +28,8 @@ public class ShooterConstants {
 
     public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
 
+    public static final double ZERO_LINEAR_SPEED_TOLERANCE_MPS = 0.005;
+
     public static final boolean SHOOT_WITH_MOVEMENT = false;
 
     /* function for adding more to the setpoint for maintaining speed during shooting

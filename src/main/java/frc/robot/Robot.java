@@ -10,6 +10,7 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
 import io.github.captainsoccer.basicmotor.motorManager.MotorManager;
@@ -110,7 +111,7 @@ public class Robot extends LoggedRobot
     
     @Override
     public void teleopPeriodic() {
-//        RobotContainer.getInstance().drivetrain.drive(new ChassisSpeeds(2,0,2));
+        ShotCalculator.getInstance().clearShootingParameters();
     }
     
     
