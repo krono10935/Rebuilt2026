@@ -121,7 +121,6 @@ public class Robot extends LoggedRobot
         {
             autonomousCommand.cancel();
             Constants.HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
-
         }
 
     }

@@ -37,7 +37,7 @@ public class ShotCalculator {
     public record ShootingParameters(
         ValidityState validityState,
         Rotation2d robotAngle,
-        double hoodAngle,
+        Rotation2d hoodAngle,
         double flywheelSpeed) {}
         
     private ShootingParameters latestParameters = null;
@@ -71,16 +71,17 @@ public class ShotCalculator {
         shotHoodAngleMap.put(5.57, Rotation2d.fromDegrees(32.0));
         shotHoodAngleMap.put(5.60, Rotation2d.fromDegrees(35.0));
 
-        shotFlywheelSpeedMap.put(1.34, 210.0);
-        shotFlywheelSpeedMap.put(1.78, 220.0);
-        shotFlywheelSpeedMap.put(2.17, 220.0);
-        shotFlywheelSpeedMap.put(2.81, 230.0);
-        shotFlywheelSpeedMap.put(3.82, 250.0);
-        shotFlywheelSpeedMap.put(4.09, 255.0);
-        shotFlywheelSpeedMap.put(4.40, 260.0);
-        shotFlywheelSpeedMap.put(4.77, 265.0);
-        shotFlywheelSpeedMap.put(5.57, 275.0);
-        shotFlywheelSpeedMap.put(5.60, 290.0);
+
+        shotFlywheelSpeedMap.put(1.34, 210.0/60);
+        shotFlywheelSpeedMap.put(1.78, 220.0/60);
+        shotFlywheelSpeedMap.put(2.17, 220.0/60);
+        shotFlywheelSpeedMap.put(2.81, 230.0/60);
+        shotFlywheelSpeedMap.put(3.82, 250.0/60);
+        shotFlywheelSpeedMap.put(4.09, 255.0/60);
+        shotFlywheelSpeedMap.put(4.40, 260.0/60);
+        shotFlywheelSpeedMap.put(4.77, 265.0/60);
+        shotFlywheelSpeedMap.put(5.57, 275.0/60);
+        shotFlywheelSpeedMap.put(5.60, 290.0/60);
 
         timeOfFlightMap.put(5.68, 1.16);
         timeOfFlightMap.put(4.55, 1.12);
@@ -135,7 +136,7 @@ public class ShotCalculator {
         Translation2d hub = 
             AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
      
-        Translation2d shooterFieldRelativeSpeeds = getShooterFieldRelativeSpeeds(robotRelativeVelocity,shooterPosition);
+        Translation2d shooterFieldRelativeSpeeds = getShooterFieldRelativeSpeeds(robotVelocityFieldRelative,shooterPosition);
 
         if (ShooterConstants.SHOOT_WITH_MOVEMENT){
 
@@ -158,9 +159,9 @@ public class ShotCalculator {
 
         ValidityState state = ValidityState.VALID;
 
-        if (!Constants.HubTiming.isActive(DriverStation.getMatchTime() + timeOfFlightMap.get(lookaheadShooterToTargetDistance))){
-            state = ValidityState.HUB_INACTIVE;
-        }
+        // if (!Constants.HubTiming.isActive(DriverStation.getMatchTime() + timeOfFlightMap.get(lookaheadShooterToTargetDistance))){
+        //     state = ValidityState.HUB_INACTIVE;
+        // }
 
         if (Math.abs(robotRelativeVelocity.omegaRadiansPerSecond) > ShooterConstants.ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES){
                 state = ValidityState.TOO_MUCH_OMEGA_SPEED;
@@ -170,8 +171,8 @@ public class ShotCalculator {
             state = ValidityState.SHOULD_NOT_BE_MOVING;
         }
 
-        if (lookaheadShooterToTargetDistance >= minDistance &&
-            lookaheadShooterToTargetDistance <= maxDistance){
+        if (lookaheadShooterToTargetDistance <= minDistance ||
+            lookaheadShooterToTargetDistance >= maxDistance){
                 state = ValidityState.OUT_OF_RANGE;
         }
 
@@ -227,6 +228,9 @@ public class ShotCalculator {
             tangentRobotAngularSpeed, tangentRobotAngleFieldRelative
         );
 
+        Logger.recordOutput("ShotCalculator/AngularToFieldRelative", angularToLinearFieldRelativeSpeed);
+        Logger.recordOutput("ShotCalculator/LinearSpeeds", linearSpeed);
+
         return linearSpeed.plus(angularToLinearFieldRelativeSpeed);
 
     }
@@ -246,6 +250,8 @@ public class ShotCalculator {
         ShootCalculatorWithMovementParams shootWithMovementParams = 
                 ShootCalculatorWithMovement.regressFuturePositionParams(shooterPosition, timeOfFlightMap,
                 shooterFieldRelativeSpeeds, hub);
+        
+        Logger.recordOutput("ShotCalculator/shootWithMovementParams", shootWithMovementParams);
             
         Pose2d lookaheadPose = shootWithMovementParams.lookaheadPose();
         double lookaheadShooterToTargetDistance = shootWithMovementParams.lookaheadShooterToTargetDistance();
@@ -254,7 +260,7 @@ public class ShotCalculator {
         Rotation2d robotAngle = hub.minus(lookaheadPose.getTranslation()).getAngle();
 
         // Calculate the optimal hood angle
-        double hoodAngle = shotHoodAngleMap.get(lookaheadShooterToTargetDistance).getRotations();
+        var hoodAngle = shotHoodAngleMap.get(lookaheadShooterToTargetDistance);
 
         ValidityState state = findValidityState(robotRelativeVelocity, shooterFieldRelativeSpeeds, lookaheadShooterToTargetDistance);
 
@@ -267,6 +273,10 @@ public class ShotCalculator {
 
         Logger.recordOutput("ShotCalculator/LookaheadPose", lookaheadPose);
         Logger.recordOutput("ShotCalculator/ShooterToTargetDistance", lookaheadShooterToTargetDistance);
+
+
+        Logger.recordOutput("ShotCalculator/output", latestParameters);
+
 
         return latestParameters;
 
@@ -288,7 +298,7 @@ public class ShotCalculator {
         Rotation2d robotAngle = hub.minus(shooterPosition.getTranslation()).getAngle();
 
         // Calculate the optimal hood angle
-        double hoodAngle = shotHoodAngleMap.get(distanceFromHub).getRotations();
+        var hoodAngle = shotHoodAngleMap.get(distanceFromHub);
 
         ValidityState state = findValidityState(robotRelativeVelocity, shooterFieldRelativeSpeeds, distanceFromHub);
 
@@ -298,6 +308,9 @@ public class ShotCalculator {
             robotAngle,
             hoodAngle,
             shotFlywheelSpeedMap.get(distanceFromHub));
+
+
+        Logger.recordOutput("ShotCalculator/output", latestParameters);
 
         return latestParameters;
     }

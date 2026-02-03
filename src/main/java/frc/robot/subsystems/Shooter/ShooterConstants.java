@@ -13,7 +13,7 @@ public class ShooterConstants {
     public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
 
     public static final Transform3d ROBOT_TO_SHOOTER = 
-        new Transform3d(0.0, 0.0, 0.0, Rotation3d.kZero); // Find real translation
+        new Transform3d(0.3, 0.0, 0.0, Rotation3d.kZero); // Find real translation
     
     public static final double SHOOTING_SPEED = 17.5; // m/s
 
@@ -39,7 +39,7 @@ public class ShooterConstants {
 
     public static final double ZERO_LINEAR_SPEED_TOLERANCE_MPS = 0.005;
 
-    public static final boolean SHOOT_WITH_MOVEMENT = false;
+    public static final boolean SHOOT_WITH_MOVEMENT = true;
 
     /* function for adding more to the setpoint for maintaining speed during shooting
     TODO: set actual function

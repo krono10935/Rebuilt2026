@@ -7,6 +7,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.Shooter.ShootCommand;
+import frc.robot.commands.Shooter.AutoShootAndAim;
+import frc.robot.commands.Shooter.KeepVelocity;
+import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.leds.LedLocation;
@@ -21,6 +25,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color;
 
 
@@ -66,6 +72,7 @@ public class RobotContainer
 
     private void configureBindings() {
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        shooter.setDefaultCommand(new ShootCommand(shooter, drivetrain, () -> new Pose2d(), (pose) -> true));
     }
     public Command getAutonomousCommand()
     {
