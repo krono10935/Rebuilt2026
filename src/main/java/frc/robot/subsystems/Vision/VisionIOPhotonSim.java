@@ -44,9 +44,8 @@ public class VisionIOPhotonSim extends VisionIOPhoton {
 
         // Define simulated camera properties (resolution, FOV, latency, etc.)
         SimCameraProperties cameraProp = new SimCameraProperties();
-        cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(91.1)); // resolution + diagonal FOV
+        cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(89.5)); // resolution + diagonal FOV
         cameraProp.setAvgLatencyMs(35); // simulate network/processing delay (tunable)
-        
         
         // Create a simulated PhotonCamera based on our properties
         cameraSim = new PhotonCameraSim(camera, cameraProp);

@@ -8,6 +8,8 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 
 public class VisionConstants {
       /**
@@ -29,11 +31,11 @@ public class VisionConstants {
         // Define the camera constants for the front camera
         FRONT_CAMERA(
             PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
-            "FrontCamera",
+            "dolev",
             new Transform3d(
-                new Translation3d(0.2, 0.0, 0.5),
-                new Rotation3d(0, 0, 0)
-                
+                new Translation3d(0.3, 0.3, 0.08),
+                new Rotation3d(0, Units.degreesToRadians(-55),Units.degreesToRadians(-90))
+    
             ),
             0.1, // XY standard deviation factor
             0.1, // Theta standard deviation factor
@@ -115,7 +117,7 @@ public class VisionConstants {
         
     }
     /**
-     * The field layout for the 2025 FRC game "Reefscape"
+     * The field layout for the 2026 FRC game "Rebuilt"
      */
-    public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+    public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 }
