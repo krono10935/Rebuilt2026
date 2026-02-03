@@ -61,7 +61,8 @@ public class RobotContainer
 
         poseYaw = new LoggedNetworkNumber("PoseYaw", 0);
 
-        lastPoseSupplier = () -> Pose2d.kZero;
+        lastPoseSupplier = () -> new Pose2d(poseX.get(), poseY.get(), Rotation2d.fromDegrees(poseYaw.get()));
+
         vision = new Vision(VisionConsumer.NO_OP, lastPoseSupplier);
 
         //drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);

@@ -33,8 +33,8 @@ public class VisionConstants {
             PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
             "dolev",
             new Transform3d(
-                new Translation3d(0.25, 0.065, 0.08),
-                new Rotation3d(0, Units.degreesToRadians(-55),0)
+                new Translation3d(0.3, 0.3, 0.08),
+                new Rotation3d(0, Units.degreesToRadians(-55),Units.degreesToRadians(-90))
     
             ),
             0.1, // XY standard deviation factor
@@ -117,7 +117,7 @@ public class VisionConstants {
         
     }
     /**
-     * The field layout for the 2025 FRC game "Reefscape"
+     * The field layout for the 2026 FRC game "Rebuilt"
      */
     public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 }
