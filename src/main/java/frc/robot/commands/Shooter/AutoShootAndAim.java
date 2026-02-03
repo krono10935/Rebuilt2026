@@ -28,7 +28,7 @@ public class AutoShootAndAim extends Command {
     shooter.updateShootingParameters(drivetrain);
 
     shooter.spinUp(shooter.getShootParameters().flywheelSpeed());
-    shooter.setHoodAngle(Rotation2d.fromDegrees(shooter.getShootParameters().hoodAngle()));
+    shooter.setHoodAngle(shooter.getShootParameters().hoodAngle());
   }
 
 }

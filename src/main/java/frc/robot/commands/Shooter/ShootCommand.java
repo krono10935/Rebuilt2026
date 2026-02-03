@@ -7,6 +7,8 @@ package frc.robot.commands.Shooter;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -50,9 +52,13 @@ public class ShootCommand extends Command {
   public void execute() {
     shooter.updateShootingParameters(drivetrain);
     ShootingParameters params = shooter.getShootParameters();
+
+
+    shooter.setHoodAngle(params.hoodAngle());
     
     // is the robot is in the shooting zone 
     boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && params.validityState() == ValidityState.VALID;
+
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
     if (!shouldShoot){
@@ -75,6 +81,8 @@ public class ShootCommand extends Command {
 
     // otherwise open the kicker and start letting the shooter shoot
     else{
+
+      shooter.keepVelocity();
 
       shooter.toggleKicker(true);
 

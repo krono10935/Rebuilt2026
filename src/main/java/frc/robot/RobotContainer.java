@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.AutoShootAndAim;
 import frc.robot.commands.Shooter.KeepVelocity;
 import frc.robot.commands.Shooter.SpinUp;
@@ -18,6 +19,8 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import org.littletonrobotics.conduit.ConduitApi;
 
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.util.Color;
 
 
 public class RobotContainer
@@ -58,10 +61,8 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-
-        // xboxController.a()
-        // .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
-        // .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        shooter.setDefaultCommand(new ShootCommand(shooter, drivetrain, () -> new Pose2d(), (pose) -> true));
     }
     
     

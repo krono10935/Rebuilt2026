@@ -48,7 +48,7 @@ public class HomeHoodCommand extends Command {
   @Override
   public void execute() {
     shooter.updateShootingParameters(drivetrain);
-    shooter.setHoodAngle(Rotation2d.fromDegrees(shooter.getShootParameters().hoodAngle()));
+    shooter.setHoodAngle(shooter.getShootParameters().hoodAngle());
     //shooter.setHoodAngle(poseToHoodAngle.apply(robotPoseSupplier.get()));
   }
 
