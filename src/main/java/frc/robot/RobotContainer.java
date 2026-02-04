@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.Shooter.ShootCommand;
@@ -64,6 +65,8 @@ public class RobotContainer
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
         chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
+
+        chooser.addOption("shit", drivetrain.driveToPose(new Pose2d(3, 5, Rotation2d.kZero)));
 
         configureBindings();
         ledManager = new LedManager();
