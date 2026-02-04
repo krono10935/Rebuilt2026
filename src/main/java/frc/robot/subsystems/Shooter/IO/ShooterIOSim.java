@@ -44,7 +44,7 @@ public class ShooterIOSim implements ShooterIO {
     }
 
     @Override
-    public void keepVelocity(){
+    public void keepVelocity(double speedMPS){
         leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }

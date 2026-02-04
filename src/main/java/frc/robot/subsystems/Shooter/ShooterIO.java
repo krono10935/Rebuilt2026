@@ -25,7 +25,7 @@ public interface ShooterIO {
     /**
      * Keep the current velocity
      */
-    void keepVelocity();
+    void keepVelocity(double speedMPS);
 
     /**
      * stops the flywheel
