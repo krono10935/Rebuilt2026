@@ -52,6 +52,7 @@ public class Robot extends LoggedRobot
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
+        ShotCalculator.getInstance().clearShootingParameters();
 
     }
     
@@ -109,9 +110,7 @@ public class Robot extends LoggedRobot
     
     
     @Override
-    public void teleopPeriodic() {
-        ShotCalculator.getInstance().clearShootingParameters();
-    }
+    public void teleopPeriodic() {}
     
     
     @Override

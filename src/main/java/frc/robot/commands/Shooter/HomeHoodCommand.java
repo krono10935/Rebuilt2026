@@ -9,8 +9,11 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class HomeHoodCommand extends Command {
@@ -47,8 +50,10 @@ public class HomeHoodCommand extends Command {
    */
   @Override
   public void execute() {
-    shooter.updateShootingParameters(drivetrain);
-    shooter.setHoodAngle(shooter.getShootParameters().hoodAngle());
+    ShootingParameters parameters = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
+     drivetrain.getChassisSpeeds(), 
+     ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
+    shooter.setHoodAngle(parameters.hoodAngle());
     //shooter.setHoodAngle(poseToHoodAngle.apply(robotPoseSupplier.get()));
   }
 

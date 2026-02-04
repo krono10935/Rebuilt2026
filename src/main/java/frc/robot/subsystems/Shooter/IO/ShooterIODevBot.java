@@ -1,62 +1,71 @@
 package frc.robot.subsystems.Shooter.IO;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
+import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 
 public class ShooterIODevBot implements ShooterIO {
 
-    private final BasicSparkFlex shootingMotor;
+    private final BasicMotor leadShootingMotor;
+    private final BasicMotor followShootingMotor;
 
-    private final BasicMotorConfig config;
+    private final BasicMotorConfig leadConfig;
 
     private boolean isKickerActive;
     private double targetVelocity;
 
     public ShooterIODevBot(){
-        config = ShooterConstants.getLeadShootingMotorConfig();
+        leadConfig = ShooterConstants.getLeadShootingMotorConfig();
 
-        shootingMotor = new BasicSparkFlex(config);
+        leadShootingMotor = new BasicSparkFlex(leadConfig);
+        followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
+        
+        followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
+        
 
         isKickerActive = false;
-        
-        SmartDashboard.putData(shootingMotor.getController());
-
+        leadShootingMotor.getController().getControllerGains().setSendableSlot(1);
+        SmartDashboard.putData(leadShootingMotor.getController());
     }
 
-     @Override
+    @Override
     public void spinUp(double speedMPS){
-        targetVelocity = speedMPS;
-        shootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 0);
+        targetVelocity = speedMPS / ShooterConstants.FLYWHEEL_CICUMFRENCE;
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 0);
+        Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
     public void keepVelocity(){
-        double kA = 0;
-        double accel = shootingMotor.getMeasurement().acceleration();
-        if(accel < ShooterConstants.MIN_ACCEL_TO_RESIST){
-            kA = -accel * config.simulationConfig.kA;
-        }
-        shootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, kA, 1);
+        // double kA = 0;
+        // double accel = leadShootingMotor.getMeasurement().acceleration();
+        Logger.recordOutput("Shooter/keeping", true);
+        // if(accel < ShooterConstants.MIN_ACCEL_TO_RESIST){
+        //     kA = -accel * leadConfig.simulationConfig.kA;
+        // }
+        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
     }
 
     @Override
     public void stopFlyWheel(){
-        shootingMotor.stop();
+        leadShootingMotor.stop();
     }
 
     @Override
     public boolean isShooterAtGoal(){
-        return shootingMotor.atGoal();
+        return leadShootingMotor.atGoal();
     }
 
     public void setFlyWheelVoltage(double voltage){
-        shootingMotor.setVoltage(voltage);
+        leadShootingMotor.setVoltage(voltage);
+        
     }
 
     @Override
@@ -77,7 +86,8 @@ public class ShooterIODevBot implements ShooterIO {
 
         inputs.isKickerActive = this.isKickerActive;
 
-        inputs.shooterSpeed = shootingMotor.getVelocity();        
+        inputs.shooterSpeed = leadShootingMotor.getVelocity();
+        
     }
 
     @Override
