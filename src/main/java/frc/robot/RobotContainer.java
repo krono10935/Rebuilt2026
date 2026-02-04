@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.AutoShootAndAim;
-import frc.robot.commands.Shooter.KeepVelocity;
-import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.leds.LedLocation;

@@ -4,9 +4,11 @@
 
 package frc.robot.commands.Shooter;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -25,10 +27,12 @@ public class AutoShootAndAim extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.updateShootingParameters(drivetrain);
+    ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
+     drivetrain.getChassisSpeeds(), 
+     ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
 
-    shooter.spinUp(shooter.getShootParameters().flywheelSpeed());
-    shooter.setHoodAngle(shooter.getShootParameters().hoodAngle());
+    shooter.spinUp(params.flywheelSpeed());
+    shooter.setHoodAngle(params.hoodAngle());
   }
 
 }

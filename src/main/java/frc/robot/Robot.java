@@ -67,6 +67,7 @@ public class Robot extends LoggedRobot
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
+        ShotCalculator.getInstance().clearShootingParameters();
 
         if(SmartDashboard.getBoolean("test", false)){
             RobotContainer.getInstance().ledManager.setColors(new LedState(LedPattern.BLUE_PULSE, Color.kDarkBlue, Color.kCyan, 0.15, 0.7, LedLocation.ALL));
@@ -127,9 +128,7 @@ public class Robot extends LoggedRobot
     
     
     @Override
-    public void teleopPeriodic() {
-        ShotCalculator.getInstance().clearShootingParameters();
-    }
+    public void teleopPeriodic() {}
     
     
     @Override
