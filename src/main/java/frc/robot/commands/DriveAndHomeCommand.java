@@ -10,9 +10,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
-import java.util.function.Supplier;
 
 
 public class DriveAndHomeCommand extends Command {
@@ -24,14 +25,11 @@ public class DriveAndHomeCommand extends Command {
 
     private final ProfiledPIDController angularController;
 
-    private final Supplier<Rotation2d> rotationSupplier;
-
     private static final double DEADBAND = 0.1;
 
-    public DriveAndHomeCommand(Drivetrain drivetrain, CommandXboxController controller, Supplier<Rotation2d> rotationSupplier) {
+    public DriveAndHomeCommand(Drivetrain drivetrain, CommandXboxController controller) {
         this.drivetrain = drivetrain;
         this.controller = controller;
-        this.rotationSupplier = rotationSupplier;
         addRequirements(drivetrain);
 
         var gains = DriveToPoseConstants.ANGULAR_PID_GAINS;
@@ -56,9 +54,14 @@ public class DriveAndHomeCommand extends Command {
 
         double xSpeed = deadband(-controller.getLeftX()) * speed;
         double ySpeed = deadband(controller.getLeftY()) * speed;
+
+        ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
+        drivetrain.getChassisSpeeds(), 
+        ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
+
         double thetaSpeed =
                 angularController.calculate(
-                        drivetrain.getEstimatedPosition().getRotation().getRadians(), rotationSupplier.get().getRadians());
+                        drivetrain.getEstimatedPosition().getRotation().getRadians(), params.robotAngle().getRadians());
         drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed, ySpeed, thetaSpeed, angleFieldRelative()));
     }
