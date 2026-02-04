@@ -7,17 +7,21 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.AutoShootAndAim;
 import frc.robot.commands.Shooter.KeepVelocity;
 import frc.robot.commands.Shooter.SpinUp;
+import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.leds.LedLocation;
 import frc.robot.leds.LedManager;
 import frc.robot.leds.LedPattern;
 import frc.robot.leds.LedState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.intake.Intake;
 
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -35,15 +39,22 @@ public class RobotContainer
     private static RobotContainer instance;
 
     public final LedManager ledManager;
+
     private final Vision vision;
 
     private final Shooter shooter;
 
-    private final CommandXboxController xboxController;
+    public final CommandXboxController xboxController;
 
     private final Drivetrain drivetrain;
 
     private final LoggedDashboardChooser<Command> chooser;
+
+    private final Indexer indexer;
+
+    private final Climb climb;
+
+    private final Intake intake;
 
 
     public static RobotContainer getInstance(){
@@ -61,6 +72,12 @@ public class RobotContainer
 
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
+        indexer = new Indexer();
+
+        climb = new Climb();
+
+        intake = new Intake();
+
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
         chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
@@ -71,8 +88,22 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
-        shooter.setDefaultCommand(new ShootCommand(shooter, drivetrain, () -> new Pose2d(), (pose) -> true));
+        drivetrain.setDefaultCommand(Sequences.shoot(shooter, indexer, drivetrain, xboxController));
+
+        /**
+         * intake controls 
+         * right bumper to open and start intake
+         * left bumper to close and stop intake
+         * only while right bumper is held is the intake running
+         */
+        xboxController.rightBumper().onTrue(Sequences.openIntakeStart(intake));
+        xboxController.rightBumper().onFalse(new InstantCommand(intake::stopIntakeMotor));
+        xboxController.leftBumper().onTrue(Sequences.closeIntakeStop(intake));
+
+        xboxController.y().toggleOnTrue(Sequences.FullClimb(intake, climb, indexer, shooter, drivetrain));
+        xboxController.x().toggleOnTrue(Sequences.delivery(shooter, indexer, intake, drivetrain, xboxController));
+        xboxController.b().toggleOnTrue(new DriveCommand(drivetrain, xboxController));
+
     }
     public Command getAutonomousCommand()
     {

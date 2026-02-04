@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Indexer;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,6 +20,8 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         io.update(inputs);
+        
+        Logger.processInputs(getName(), inputs);
     }
 
     /**

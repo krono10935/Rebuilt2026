@@ -2,13 +2,16 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeCommand;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.commands.Shooter.ShootCommand;
+import frc.robot.commands.Shooter.ShootWithoutAiming;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.climb.Climb;
@@ -34,6 +37,8 @@ public class Sequences {
                         alongWith(
                                 new DriveAndHomeCommand(drivetrain,
                                         CommandXboxController,()-> shooter.getShootParameters().robotAngle())));
+
+        shooterCommand.setName("Shooting Sequence");
         return shooterCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
     }
 
@@ -45,13 +50,20 @@ public class Sequences {
      * @param drivetrain
      * @return
      */
-    public static Command delivery(Shooter shooter, Indexer indexer, Intake intake, Drivetrain drivetrain) {
+    public static Command delivery(Shooter shooter, Indexer indexer, Intake intake, Drivetrain drivetrain, CommandXboxController controller) {
         SequentialCommandGroup deliveryCommand = new SequentialCommandGroup();
+        
+        if(drivetrain.getCurrentCommand() != null)
+            drivetrain.getCurrentCommand().cancel();
+            
+        deliveryCommand.addCommands(new DriveCommand(drivetrain, controller));
         deliveryCommand.addCommands(Sequences.openIntakeStart(intake));
         deliveryCommand.addCommands(new InstantCommand(()-> shooter.setHoodAngle(Rotation2d.fromDegrees(45))));
         deliveryCommand.addCommands(indexer.turnOnIndexerCommand());
-        deliveryCommand.addCommands(new ShootCommand(shooter,drivetrain,drivetrain::getEstimatedPosition,(pose) -> true));
-        return deliveryCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
+        deliveryCommand.addCommands(new ShootWithoutAiming(shooter));
+        deliveryCommand.setName("Delivery Sequence");
+        // return deliveryCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
+        return deliveryCommand;
     }
 
     /**
@@ -63,12 +75,11 @@ public class Sequences {
      */
     private static Command Climber(Climb climb,Drivetrain drivetrain){
         SequentialCommandGroup climbCommand = new SequentialCommandGroup();
-
         climbCommand.addCommands(drivetrain.driveToPose(new Pose2d(1,1, Rotation2d.fromDegrees(1))));
         climbCommand.addCommands(climb.openCommand());
         climbCommand.addCommands(drivetrain.driveToPose(new Pose2d(1,1.5, Rotation2d.fromDegrees(1))));
         climbCommand.addCommands(climb.closeCommand());
-
+        climbCommand.setName("Climber Sequence");
         return climbCommand;
 
     }
@@ -98,7 +109,7 @@ public class Sequences {
                 closeSubsystems,
                 Climber(climb,drivetrain)
         );
-
+        fullClimbCommand.setName("Full Climb Sequence");
         return fullClimbCommand;
     }
 
@@ -109,10 +120,11 @@ public class Sequences {
      * @param intake
      * @return
      */
-    private static Command openIntakeStart(Intake intake){
+    public static Command openIntakeStart(Intake intake){
         SequentialCommandGroup intakeCommand = new SequentialCommandGroup();
         intakeCommand.addCommands(new OpenCommand(intake));
         intakeCommand.addCommands(new IntakeCommand(intake));
+        intakeCommand.setName("Open Intake and Start Intake Command");
         return intakeCommand;
     }
 
@@ -121,10 +133,11 @@ public class Sequences {
      * @param intake
      * @return
      */
-    private static Command closeIntakeStop(Intake intake){
+    public static Command closeIntakeStop(Intake intake){
         SequentialCommandGroup intakeCommand = new SequentialCommandGroup();
         intakeCommand.addCommands(new InstantCommand(intake::stopIntakeMotor));
         intakeCommand.addCommands(new CloseCommand(intake));
+        intakeCommand.setName("Close Intake and Stop Intake Command");
         return intakeCommand;
     }
 }

@@ -33,6 +33,11 @@ public class IntakeConstants {
         intakeMotorConfig.motorConfig.gearRatio = 1;
         intakeMotorConfig.motorConfig.motorType = DCMotor.getNEO(1);
 
+        intakeMotorConfig.slot0Config.pidConfig.kP = 0;
+        intakeMotorConfig.slot0Config.pidConfig.kI = 0;
+        intakeMotorConfig.slot0Config.pidConfig.kD = 0;
+        intakeMotorConfig.slot0Config.pidConfig.tolerance = 0.1;
+
         intakeMotorConfig.simulationConfig.kA = 0.1;
         intakeMotorConfig.simulationConfig.kV = 0.1;
 
@@ -57,6 +62,7 @@ public class IntakeConstants {
         posConfig.pidConfig.kP = 0;
         posConfig.pidConfig.kI = 0;
         posConfig.pidConfig.kD = 0;
+        posConfig.pidConfig.tolerance = 0.1;
 
         positionMotorConfig.constraintsConfig.maxValue = 1;
         positionMotorConfig.constraintsConfig.minValue = 0;
