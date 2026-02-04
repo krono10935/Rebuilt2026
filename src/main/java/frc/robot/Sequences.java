@@ -33,7 +33,7 @@ public class Sequences {
                 (new ShootCommand(shooter,drivetrain,drivetrain::getEstimatedPosition, (pose) -> true).
                         alongWith(
                                 new DriveAndHomeCommand(drivetrain,
-                                        CommandXboxController,()-> shooter.getShootParameters().robotAngle())));
+                                        CommandXboxController)));
         return shooterCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
     }
 
