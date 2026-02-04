@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4792380136986303,
-        "y": 7.4433433219178085
+        "x": 2.9387689664181043,
+        "y": 6.254782180630346
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.9389360700334817,
-        "y": 5.175790405273437
+        "x": 3.90982671828497,
+        "y": 5.599593040829614
       },
       "prevControl": {
-        "x": 5.213912671232877,
-        "y": 6.496725171232876
+        "x": 2.997298827888776,
+        "y": 6.323327681961704
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "a"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "driveToPose",
-      "waypointRelativePos": 0.49050332383665807,
+      "waypointRelativePos": 0.5,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -48,13 +48,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Testing",
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true

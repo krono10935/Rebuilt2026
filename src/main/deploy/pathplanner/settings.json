@@ -2,8 +2,18 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [],
-  "autoFolders": [],
+  "pathFolders": [
+    "Bump (L) - Trench (L) - Climb",
+    "Bump (R) - Trench (R) - Climb",
+    "Depot - Climb",
+    "Outpost - Climb",
+    "Testing",
+    "Trench (L) - Trench (L) - Climb",
+    "Trench (R) - Trench (R) - Climb"
+  ],
+  "autoFolders": [
+    "Testing"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
@@ -13,8 +23,8 @@
   "robotMOI": 6.884,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.0508,
-  "driveGearing": 6.75,
-  "maxDriveSpeed": 4.0,
+  "driveGearing": 5.27,
+  "maxDriveSpeed": 5.0,
   "driveMotorType": "krakenX60",
   "driveCurrentLimit": 100.0,
   "wheelCOF": 1.0,

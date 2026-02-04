@@ -3,6 +3,7 @@ package frc.robot.subsystems.drivetrain;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.DriveToPoseConstants;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
@@ -139,7 +140,7 @@ public class Drivetrain extends SubsystemBase {
                 this::getEstimatedPosition, // Robot pose supplier
                 this::reset, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> drive(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                (speeds, feedforwards) -> driveWithoutPP(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
                 new PPController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                             constants.PP_CONFIG.PID_CONSTANTS(), constants.PP_CONFIG.ANGULAR_PID_CONSTANTS() // Rotation PID constants
                 ),
@@ -187,7 +188,6 @@ public class Drivetrain extends SubsystemBase {
      * @param speeds the target speed of the robot
      */
     public void driveWithoutPP(ChassisSpeeds speeds) {
-
         var targetSpeeds = kinematics.toWheelSpeeds(speeds);
         for (int i = 0; i < 4; i++){
             targetSpeeds[i].optimize(io[i].getState().angle);
@@ -281,11 +281,6 @@ public class Drivetrain extends SubsystemBase {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Command driveToPose(Pose2d goalPose, double distanceToStopPP){
-        return AutoBuilder.pathfindToPose(goalPose, constants.PATH_FINDING_CONSTRAINTS,
-                0, distanceToStopPP);
-    }
-
     /**
      * Set if the module is Brake or Coast
      * @param isBrake whether the module motor should resist outside change in disable
@@ -316,6 +311,16 @@ public class Drivetrain extends SubsystemBase {
         for (int i = 0; i < 4; i++){
             io[i].setDriveVoltageAndSteerAngle(voltage, angle[i]);
         }
+    }
+
+    /**
+     *
+     * @param goalPose goal position to drive to
+     * @return a command which drives the chasis to a position
+     */
+    public Command driveToPose(Pose2d goalPose){
+        return AutoBuilder.pathfindToPose(goalPose, constants.PATH_FINDING_CONSTRAINTS,
+                0, DriveToPoseConstants.DISTANCE_TO_STOP_PP);
     }
 
 

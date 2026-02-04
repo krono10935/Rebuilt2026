@@ -5,27 +5,44 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.Shooter.KeepVelocity;
-import frc.robot.commands.Shooter.SpinUp;
+import frc.robot.commands.DriveCommand;
+import frc.robot.commands.Shooter.ShootCommand;
+import frc.robot.commands.Shooter.AutoShootAndAim;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShooterSysID;
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.leds.LedLocation;
+import frc.robot.leds.LedManager;
+import frc.robot.leds.LedPattern;
+import frc.robot.leds.LedState;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+
+import org.littletonrobotics.conduit.ConduitApi;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color;
 
 
 public class RobotContainer
-{
-
+{   
     private static RobotContainer instance;
+
+    public final LedManager ledManager;
+    private final Vision vision;
 
     private final Shooter shooter;
 
     private final CommandXboxController xboxController;
 
-    // private final Drivetrain drivetrain;
+    private final Drivetrain drivetrain;
 
-    // private final LoggedDashboardChooser<Command> chooser;
+    private final LoggedDashboardChooser<Command> chooser;
 
 
     public static RobotContainer getInstance(){
@@ -37,29 +54,30 @@ public class RobotContainer
 
     private RobotContainer()
     {
-
         shooter = new Shooter();
 
         xboxController = new CommandXboxController(0);
 
-        // drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
+        drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
+
+        vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
+
+        chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
+
+        chooser.addOption("shit", drivetrain.driveToPose(new Pose2d(3, 5, Rotation2d.kZero)));
 
         configureBindings();
-        // chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
+        ledManager = new LedManager();
+        ledManager.setColors(new LedState(LedPattern.BRWON, Color.kDarkBlue, Color.kCyan, 0.25, 0.7, LedLocation.BASE));
     }
 
     private void configureBindings() {
-
-        xboxController.a()
-        .whileTrue(new SpinUp(shooter).andThen(new KeepVelocity(shooter)))
-        .onFalse(new InstantCommand(()-> shooter.stopFlyWheel()).ignoringDisable(true));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        shooter.setDefaultCommand(new ShootCommand(shooter, drivetrain, () -> new Pose2d(), (pose) -> true));
     }
-    
-    
     public Command getAutonomousCommand()
     {
-        return null;
-        // return chooser.get();
+        return chooser.get();
     }
 
 

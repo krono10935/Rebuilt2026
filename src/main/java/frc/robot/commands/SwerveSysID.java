@@ -42,12 +42,12 @@ public class SwerveSysID {
     /**
      * Voltage to use in dynamic mode for SYSID
      */
-   public static final double VOLT = 2;
+   public static final double VOLT = 4;
 
     /**
      * How many volts/second to add per second of the SYSID routine
      */
-   public static final double VOLT_RAMP_RATE = 0.5;
+   public static final double VOLT_RAMP_RATE = 4;
 
     /**
      * How many seconds to perform the test for the sysID routine
@@ -123,7 +123,7 @@ public class SwerveSysID {
      */
    public void driveWithController(double voltage) {
 
-      Rotation2d fieldRelativeAngle = new Translation2d(-controller.getLeftX(), -controller.getLeftY()).getAngle();
+      Rotation2d fieldRelativeAngle = new Translation2d(-controller.getLeftY(), -controller.getLeftX()).getAngle();
       Rotation2d robotRelativeAngle = fieldRelativeToRobotRelative(fieldRelativeAngle, drivetrain);
       Rotation2d[] angleArray = {robotRelativeAngle, robotRelativeAngle, robotRelativeAngle, robotRelativeAngle};
 
@@ -135,9 +135,9 @@ public class SwerveSysID {
      */
    private final Rotation2d[] spinAngleArray = {
            Rotation2d.fromDegrees(135),
+           Rotation2d.fromDegrees(135-90),
            Rotation2d.fromDegrees(135+90),
-           Rotation2d.fromDegrees(135+180),
-           Rotation2d.fromDegrees(135+270)
+           Rotation2d.fromDegrees(135+180)
    };
 
     /**

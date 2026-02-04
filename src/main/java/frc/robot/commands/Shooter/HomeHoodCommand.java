@@ -9,9 +9,14 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
+@Deprecated
 public class HomeHoodCommand extends Command {
 
   private final Shooter shooter;
@@ -19,6 +24,8 @@ public class HomeHoodCommand extends Command {
   private final Supplier<Pose2d> robotPoseSupplier;
 
   private final Function<Pose2d, Rotation2d> poseToHoodAngle;
+
+  private final Drivetrain drivetrain;
   
   /**
    * 
@@ -26,13 +33,15 @@ public class HomeHoodCommand extends Command {
    * @param robotPoseSupplier supplier for the pose of the robot
    * @param poseToHoodAngle a function to convert the pose to the angle for hood
    */
-  public HomeHoodCommand(Shooter shooter, Supplier<Pose2d> robotPoseSupplier, Function<Pose2d, Rotation2d> poseToHoodAngle) {
+  public HomeHoodCommand(Shooter shooter,Drivetrain drivetrain, Supplier<Pose2d> robotPoseSupplier, Function<Pose2d, Rotation2d> poseToHoodAngle) {
 
     this.shooter = shooter;
 
     this.robotPoseSupplier = robotPoseSupplier;
 
     this.poseToHoodAngle = poseToHoodAngle;
+
+    this.drivetrain = drivetrain;
 
     addRequirements(shooter);
   }
@@ -42,7 +51,11 @@ public class HomeHoodCommand extends Command {
    */
   @Override
   public void execute() {
-    shooter.setHoodAngle(poseToHoodAngle.apply(robotPoseSupplier.get()));
+    ShootingParameters parameters = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
+     drivetrain.getChassisSpeeds(), 
+     ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
+    shooter.setHoodAngle(parameters.hoodAngle());
+    //shooter.setHoodAngle(poseToHoodAngle.apply(robotPoseSupplier.get()));
   }
 
 }

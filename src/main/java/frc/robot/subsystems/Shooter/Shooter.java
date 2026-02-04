@@ -9,8 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Shooter.IO.ShooterIODevBotStrong;
-import frc.robot.subsystems.Shooter.IO.ShooterIONonBasicMotor;
+import frc.robot.subsystems.Shooter.IO.ShooterIODevBot;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 
@@ -29,7 +28,7 @@ public class Shooter extends SubsystemBase {
       io = new ShooterIOSim();
     }
     else if(ShooterConstants.IS_DEVBOT){
-      io = new ShooterIODevBotStrong();
+      io = new ShooterIODevBot();
     }
     else{
       io = new ShooterIOReal();
@@ -57,7 +56,6 @@ public class Shooter extends SubsystemBase {
   public void logSysID(){
     io.logSysID();
   }
-  
 
   /**
    * 

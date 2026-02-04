@@ -2,58 +2,75 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.RobotState;
-import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
 public class IntakeIOSim implements IntakeIO {
- private final BasicMotor intakeMotor;
- private final BasicMotor openCloseMotor;
-    private final DigitalInput beamBreak;
+    private final BasicMotorSim intakeMotor;
+    private final BasicMotorSim positionMotor;
+
 
     public IntakeIOSim() {
+
         intakeMotor = new BasicMotorSim(IntakeConstants.intakeMotorConfig);
-        openCloseMotor = new BasicMotorSim(IntakeConstants.openCloseMotorConfig);
-        beamBreak = new DigitalInput(IntakeConstants.BEAM_BREAK_CHANNEL);
+
+        positionMotor = new BasicMotorSim(IntakeConstants.positionMotorConfig);
+
+    }
+
+
+    @Override
+    public boolean intakeMotorAtSetPoint() {
+        return intakeMotor.atSetpoint();
     }
 
     @Override
-    public boolean getBeamBrake() {
-        return beamBreak.get();
+    public void setIntakeMotorVelocity(Rotation2d velocity) {
+        intakeMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY);
     }
 
     @Override
-    public void stopMotor() {
+    public void stopIntakeMotor() {
         intakeMotor.stop();
     }
 
-
     @Override
-    public void setPercentOutput(double percentOutput){
-        intakeMotor.setPercentOutput(percentOutput);
-
-    }
-
-
-    @Override
-    public Rotation2d getPos(){
-        return Rotation2d.fromRotations(openCloseMotor.getPosition());
+    public void setPositionMotorPercentOutput(double percent){
+        positionMotor.setPercentOutput(percent);
     }
 
     @Override
-    public void setActivationMotorPos(Rotation2d pos){
-        openCloseMotor.setControl(pos.getRotations(), ControlMode.POSITION);
+    public boolean positionMotorAtSetPoint() {
+        return positionMotor.atSetpoint();
+    }
+
+    @Override
+    public void resetPositionMotorEncoder() {
+        positionMotor.resetEncoder(0);
+    }
+
+    @Override
+    public double getIntakePosition() {
+        return positionMotor.getPosition();
+    }
+
+    @Override
+    public void setPositionMotor(double positionMeters) {
+        positionMotor.setControl(positionMeters, ControlMode.POSITION);
+    }
+
+    @Override
+    public boolean getLimitSwitch() {
+        return false; 
     }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.Angle = Rotation2d.fromRotations(openCloseMotor.getPosition());
+        inputs.position = positionMotor.getPosition();
+
         inputs.power = IntakeConstants.INTAKE_KT 
             * intakeMotor.getSensorData().currentOutput()
             * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
         inputs.velocity = intakeMotor.getVelocity(); 
     }
-
 }

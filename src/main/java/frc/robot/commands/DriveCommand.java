@@ -46,8 +46,8 @@ public class DriveCommand extends Command {
     double speed = lerp(1 - controller.getRightTriggerAxis());
     double angularSpeed = angularLerp(1 - controller.getRightTriggerAxis());
 
-    double xSpeed = deadband(-controller.getLeftX()) * speed;
-    double ySpeed = deadband(controller.getLeftY()) * speed;
+    double xSpeed = deadband(-controller.getLeftY()) * speed;
+    double ySpeed = deadband(-controller.getLeftX()) * speed;
     double thetaSpeed = deadband(-controller.getRightX()) * angularSpeed;
 
     drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, thetaSpeed, angleFieldRelative()));
