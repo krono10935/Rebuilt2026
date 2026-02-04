@@ -17,11 +17,6 @@ public class ClimbIOReal implements ClimbIO{
     }
 
     @Override
-    public ClimbState getClimbState(){
-        return state;
-    }
-
-    @Override
     public void close() {
         motor.setControl(ClimbConstants.CLOSED_ANGLE.getRotations(), ControlMode.POSITION);
         state = ClimbState.CLOSING;
