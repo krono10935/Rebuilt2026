@@ -54,7 +54,7 @@ public class ShootCommand extends Command {
     shooter.updateShootingParameters(drivetrain);
     ShootingParameters params = shooter.getShootParameters();
 
-    shooter.setHoodAngle(Rotation2d.fromDegrees(params.hoodAngle()));
+    shooter.setHoodAngle(params.hoodAngle());
     
     // is the robot is in the shooting zone 
     boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && params.validityState() == ValidityState.VALID;

@@ -3,6 +3,7 @@ package frc.robot.subsystems.drivetrain;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.DriveToPoseConstants;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -309,6 +311,16 @@ public class Drivetrain extends SubsystemBase {
         for (int i = 0; i < 4; i++){
             io[i].setDriveVoltageAndSteerAngle(voltage, angle[i]);
         }
+    }
+
+    /**
+     *
+     * @param goalPose goal position to drive to
+     * @return a command which drives the chasis to a position
+     */
+    public Command driveToPose(Pose2d goalPose){
+        return AutoBuilder.pathfindToPose(goalPose, constants.PATH_FINDING_CONSTRAINTS,
+                0, DriveToPoseConstants.DISTANCE_TO_STOP_PP);
     }
 
 
