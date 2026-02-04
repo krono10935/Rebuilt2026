@@ -8,41 +8,45 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/**
+ * the intake command
+ */
 public class IntakeCommand extends Command {
   /** Creates a new IntakeCommand. */
   private Intake intake;
+  private double powerSum;
+  private double energy;
+
   public IntakeCommand(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.intake = intake;
     addRequirements(intake);
+    energy = 0;
+    powerSum = 0;
   }
 
   @Override
   public void initialize(){
-    intake.startIntake();
+    intake.setIntakeMotorVelocity(IntakeConstants.INTAKE_VELOCITY);
   }
 
-
-
-
-  // Called every time the scheduler runs while the command is scheduled.
+  /**
+   * by knowing the energy it takes for a single ball to be intaked, the motor's energy is known by the sum of the intake motor's power over time and then subtracting the balls already in the intake (previous energy invested) from the total energy. then the amount of balls added to the ballsCounter is the total energy devided by the energy per ball required.
+   */
   @Override
   public void execute() {
-    double actualPower = intake.getPower() - IntakeConstants.IDLE_POWER;
-    double totalEnergy = actualPower * 0.02;
-
-    intake.addBalls(ballsAddition(totalEnergy));
+    powerSum+=intake.getPower() - IntakeConstants.IDLE_POWER;
+    
+    if(intake.getPower() >= IntakeConstants.INTAKE_POWER_BALL_COUNTER_DEADBAND){
+      energy = powerSum*0.02;
+      energy -= intake.getBalls()*IntakeConstants.BALL_INTAKE_ENERGY;
+      intake.addBalls((int)(energy/IntakeConstants.BALL_INTAKE_ENERGY));
+    }
   }
 
-  public int ballsAddition(double energy){
-    if(energy < IntakeConstants.BALL_INTAKE_ENERGY){
-      return 0;
-    }
-
-    else{
-      return ballsAddition(energy - IntakeConstants.BALL_INTAKE_ENERGY) + 1;
-    }
+  @Override
+  public boolean isFinished(){
+    return intake.intakeMotorAtSetPoint();
   }
 
 }

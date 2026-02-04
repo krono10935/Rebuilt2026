@@ -14,10 +14,10 @@ import frc.robot.Robot;
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
-  public int balls;
-
+  private int ballsCounter;
   /** Creates a new Intake. */
   public Intake() {
+
     if(Robot.isReal()){
       io = new IntakeIOSpark();
     }
@@ -25,45 +25,70 @@ public class Intake extends SubsystemBase {
       io = new IntakeIOSim();
     }
 
+    ballsCounter = 0;
+
   }
 
-
-  public void toggleActivationMotor(Rotation2d setActivation){
-    io.setActivationMotorPos(setActivation);
+  public boolean getLimitSwitch(){
+    return io.getLimitSwitch();
   }
 
-  public void startIntake(){
-    io.setPercentOutput(IntakeConstants.MOTOR_POWER_PRECENT);
+  public void setIntakeMotorVelocity(Rotation2d velocity){
+    io.setIntakeMotorVelocity(velocity);
   }
 
-  public void stopMotor(){
-    io.stopMotor();
+  public double getIntakePosition(){
+    return io.getIntakePosition();
+  }
+
+  public void setPosition(double pos){
+    io.setPositionMotor(pos);
+  }
+
+  public void stopIntakeMotor(){
+    io.stopIntakeMotor();
+  }
+
+  public void setPositionMotorPercentOutput(double percent){
+    io.setPositionMotorPercentOutput(percent);
   }
 
   public double getPower(){
     return inputs.power;
   }
 
-  public void removeBalls(int removeBalls){
-    balls -= removeBalls;
+  public boolean intakeMotorAtSetPoint(){
+    return io.intakeMotorAtSetPoint();
+  }
+
+  public boolean positionAtSetPoint(){
+    return io.positionMotorAtSetPoint();
+  }
+
+  public void resetPositionMotorEncoder(){
+    io.resetPositionMotorEncoder();
+  }
   
-  }
-
-  public void addBalls(int ballsAdd){
-    balls += ballsAdd;
-  }
-
   public int getBalls(){
-    return balls;
+    return ballsCounter;
   }
- 
+
+  public void removeBalls(int decrease){
+    ballsCounter -= decrease;
+  }
+
+  public void addBalls(int add){
+    ballsCounter += add;
+  } 
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
     Logger.processInputs(getName(), inputs);
 
-    String currCommand = getCurrentCommand() == null? "Null" : getCurrentCommand().getName();
+    String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
     Logger.recordOutput("Intake/Current Command ", currCommand);
+
   }
 }
