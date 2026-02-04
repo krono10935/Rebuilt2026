@@ -15,7 +15,11 @@ public interface ClimbIO {
     class ClimbInputs{
         ClimbState state;
     }
-    
+
+    /**
+     * returns the climb state
+     */
+    ClimbState getClimbState();
     /**
      * closes the climb
      */

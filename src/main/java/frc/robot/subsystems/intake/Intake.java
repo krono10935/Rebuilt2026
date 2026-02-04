@@ -5,6 +5,8 @@
 package frc.robot.subsystems.intake;
 
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -91,4 +93,13 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/Current Command ", currCommand);
 
   }
+
+  public Command openIntake(){ return new InstantCommand(() -> {toggleActivationMotor(IntakeConstants.OPEN_ANGLE);setIsIntakeOpen(true);}, this);}
+
+  public Command closeIntake(){ return new InstantCommand(() -> {toggleActivationMotor(IntakeConstants.CLOSE_ANGLE);setIsIntakeOpen(false);},this);}
+
+  public Command stopIntake(){return new InstantCommand(() -> stopIntakeMotor(), this);}
+
+  public Command startIntake(){return new InstantCommand(() -> startIntakeMotor(), this);}
+
 }

@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
@@ -23,6 +24,8 @@ public class ShootCommand extends Command {
   /** Creates a new ShootCommand. */
 
   private final Shooter shooter;
+
+  private final Indexer indexer;
 
   private final Supplier<Pose2d> robotPoseSupplier;
 
@@ -37,15 +40,16 @@ public class ShootCommand extends Command {
    * @param robotPoseSupplier robot pose supplier
    * @param shouldShootFunction function to translate from pose2d to whether or not to shoot 
    */
-  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Supplier<Pose2d> robotPoseSupplier, Function<Pose2d, Boolean> shouldShootFunction) {
+  public ShootCommand(Shooter shooter,Indexer indexer, Supplier<Pose2d> robotPoseSupplier, Function<Pose2d, Boolean> shouldShootFunction) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
+    this.indexer = indexer;
     this.robotPoseSupplier = robotPoseSupplier;
     this.shouldShootFunction = shouldShootFunction;
     this.drivetrain = drivetrain;
 
-    addRequirements(shooter);
+    addRequirements(shooter, indexer);
 
   }
 
@@ -61,7 +65,9 @@ public class ShootCommand extends Command {
 
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
-    if (!shouldShoot){
+    if (shouldShoot){
+        indexer.turnOn();
+        shooter.toggleKicker(true);
 
       shooter.toggleKicker(false);
 
@@ -81,12 +87,19 @@ public class ShootCommand extends Command {
 
     // otherwise open the kicker and start letting the shooter shoot
     else{
+        indexer.turnOff();
+        shooter.toggleKicker(false);
+    }
 
       shooter.keepVelocity();
 
       shooter.toggleKicker(true);
 
-    }
-    
+  @Override
+  public void end(boolean interrupted) {
+      indexer.turnOff();
+      shooter.toggleKicker(false);
+      shooter.stopFlyWheel();
   }
+
 }
