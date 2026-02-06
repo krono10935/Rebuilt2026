@@ -7,22 +7,17 @@ package frc.robot.subsystems.Shooter;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Shooter.IO.ShooterIODevBotStrong;
+import frc.robot.subsystems.Shooter.IO.ShooterIODevBot;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
-import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
-import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class Shooter extends SubsystemBase {
 
   private final ShooterIO io;
 
   private final ShooterInputsAutoLogged inputs;
-
-  private ShootingParameters shooterParams;
 
   /**
    * Create a shooter IO based on the robot's state (sim, dev, comp)
@@ -33,10 +28,10 @@ public class Shooter extends SubsystemBase {
       io = new ShooterIOSim();
     }
     else if(ShooterConstants.IS_DEVBOT){
-      io = new ShooterIODevBotStrong();
+      io = new ShooterIODevBot();
     }
     else{
-      io = new ShooterIOReal();
+      io = new ShooterIODevBot();
     }
     // io = new ShooterIONonBasicMotor();
 
@@ -62,16 +57,6 @@ public class Shooter extends SubsystemBase {
     io.logSysID();
   }
 
-  public void updateShootingParameters(Drivetrain drivetrain){
-    shooterParams = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
-     drivetrain.getChassisSpeeds(), 
-     ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
-  }
-
-  public ShootingParameters getShootParameters(){
-    return shooterParams;
-  }
-
   /**
    * 
    * @param speedMPS speed to spinUp to
@@ -80,8 +65,8 @@ public class Shooter extends SubsystemBase {
     io.spinUp(speedMPS);
   }
 
-  public void keepVelocity(){
-    io.keepVelocity();
+  public void keepVelocity(double speedMPS){
+    io.keepVelocity(speedMPS);
   }
 
   /**
@@ -131,4 +116,7 @@ public class Shooter extends SubsystemBase {
     io.setHoodAngle(angle);
   }
  
+  public boolean readyToShoot(){
+    return isHoodAtSetpoint() && isShooterAtGoal();
+  }
 }

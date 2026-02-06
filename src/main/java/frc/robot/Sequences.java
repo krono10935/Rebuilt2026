@@ -29,11 +29,11 @@ public class Sequences {
      * @return
      */
     public static Command shoot(Shooter shooter, Indexer indexer,
-                                Drivetrain drivetrain , CommandXboxController  CommandXboxController) {
+                                Drivetrain drivetrain , CommandXboxController CommandXboxController) {
         SequentialCommandGroup shooterCommand = new SequentialCommandGroup();
         shooterCommand.addCommands(indexer.turnOnIndexerCommand());
         shooterCommand.addCommands
-                (new ShootCommand(shooter,drivetrain,drivetrain::getEstimatedPosition, (pose) -> true).
+                (ShootCommand.shootCommandFactory(shooter,drivetrain, CommandXboxController).
                         alongWith(
                                 new DriveAndHomeCommand(drivetrain,
                                         CommandXboxController,()-> shooter.getShootParameters().robotAngle())));
@@ -63,7 +63,7 @@ public class Sequences {
         deliveryCommand.addCommands(new ShootWithoutAiming(shooter));
         deliveryCommand.setName("Delivery Sequence");
         // return deliveryCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
-        return deliveryCommand;
+        return deliveryCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
     }
 
     /**

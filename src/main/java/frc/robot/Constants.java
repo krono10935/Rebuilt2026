@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
@@ -22,12 +21,13 @@ public class Constants {
             Invalid(0,0);
 
 
+            public static final double EXTRA_TIME_TO_SCORE = 3;
             public final double STARTING_TIME;
             public final double FINSIHING_TIME;
             
             Phase(double StartingTime, double FinishingTime){
                 STARTING_TIME = StartingTime;
-                FINSIHING_TIME = FinishingTime;
+                FINSIHING_TIME = FinishingTime + EXTRA_TIME_TO_SCORE;
             }
 
             public static Phase getActivePhase(double time){
