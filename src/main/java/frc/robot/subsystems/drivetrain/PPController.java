@@ -12,10 +12,16 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
+import java.util.Optional;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 public class PPController implements PathFollowingController {
     private final PIDController xController;
     private final PIDController yController;
     private final PIDController rotationController;
+
+    private static Optional<DoubleSupplier> thetaOutputOverride = Optional.empty();
 
     public PPController(PIDConstants translationConstants, PIDConstants rotationConstants, double period) {
 
@@ -53,10 +59,24 @@ public class PPController implements PathFollowingController {
 
         double rotationFeedback = this.rotationController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
 
-        return ChassisSpeeds.fromFieldRelativeSpeeds(xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback, currentPose.getRotation());
+        double rotationOutput = rotationFeedback + rotationFF;
+
+        if(thetaOutputOverride.isPresent()){
+            rotationOutput = thetaOutputOverride.get().getAsDouble();
+        }
+
+        return ChassisSpeeds.fromFieldRelativeSpeeds(xFF + xFeedback, yFF + yFeedback, rotationOutput, currentPose.getRotation());
     }
 
     public boolean isHolonomic() {
         return true;
+    }
+
+    public static void setThetaOverride(DoubleSupplier output){
+        thetaOutputOverride = Optional.of(output);
+    }
+
+    public static void clearThetaOverride(){
+        thetaOutputOverride = Optional.empty();
     }
 }

@@ -5,19 +5,27 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.AutoShootAndAim;
+import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.leds.LedLocation;
 import frc.robot.leds.LedManager;
 import frc.robot.leds.LedPattern;
 import frc.robot.leds.LedState;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
+import frc.robot.subsystems.drivetrain.PPController;
+import frc.robot.subsystems.intake.Intake;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -27,6 +35,8 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color;
+
+import java.util.function.Supplier;
 
 
 public class RobotContainer
@@ -78,6 +88,20 @@ public class RobotContainer
     public Command getAutonomousCommand()
     {
         return chooser.get();
+    }
+
+    public void registerNamedCommand(DriveAndHomeCommand DriveAndHomeCommand){
+
+        Command aimRobot = new StartEndCommand(() -> {
+            PPController.setThetaOverride(DriveAndHomeCommand::calculateThetaPID);
+        }, PPController::clearThetaOverride);
+
+        NamedCommands.registerCommand("shootAndAim", new ShootCommand().alongWith(aimRobot));
+        NamedCommands.registerCommand("spinUp", new SpinUp());
+        NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
+                new Intake().getBalls()== 0));
+        NamedCommands.registerCommand("openClimb", new Climb().openCommand());
+        NamedCommands.registerCommand("closeClimb", new Climb().closeCommand());
     }
 
 

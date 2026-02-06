@@ -15,6 +15,8 @@ import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 
+import java.util.function.Supplier;
+
 
 public class DriveAndHomeCommand extends Command {
     private final Drivetrain drivetrain;
@@ -24,6 +26,7 @@ public class DriveAndHomeCommand extends Command {
     private static double MIN_LINEAR_SPEED ;
 
     private final ProfiledPIDController angularController;
+    private final Supplier<Rotation2d> targetAngleSupplier;
 
     private static final double DEADBAND = 0.1;
 
@@ -39,6 +42,11 @@ public class DriveAndHomeCommand extends Command {
 
         MAX_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.maxLinearSpeed();
         MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed();
+
+        targetAngleSupplier = () -> ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
+                drivetrain.getChassisSpeeds(),
+                ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(),
+                        drivetrain.getGyroAngle())).robotAngle();
     }
 
     private Rotation2d angleFieldRelative(){
@@ -64,6 +72,11 @@ public class DriveAndHomeCommand extends Command {
                         drivetrain.getEstimatedPosition().getRotation().getRadians(), params.robotAngle().getRadians());
         drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed, ySpeed, thetaSpeed, angleFieldRelative()));
+    }
+
+    public double calculateThetaPID(){
+        return angularController.calculate(
+                drivetrain.getEstimatedPosition().getRotation().getRadians(), targetAngleSupplier.get().getRadians());
     }
 
     /**
