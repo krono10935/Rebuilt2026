@@ -61,7 +61,7 @@ public class RobotContainer
 
         poseYaw = new LoggedNetworkNumber("PoseYaw", 0);
 
-        lastPoseSupplier = () -> new Pose2d(poseX.get(), poseY.get(), Rotation2d.fromDegrees(poseYaw.get()));
+        lastPoseSupplier = () -> Pose2d.kZero;
 
         vision = new Vision(VisionConsumer.NO_OP, lastPoseSupplier);
 
