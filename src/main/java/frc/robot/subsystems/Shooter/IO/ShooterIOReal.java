@@ -35,10 +35,10 @@ public class ShooterIOReal implements ShooterIO {
         hoodMotor =  new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
         
         hoodMotor.useAbsoluteEncoder(
-            ShooterConstants.IS_ABSOLUTE_ENCODER_INVERTED,
-            ShooterConstants.ENCODER_ZERO_OFFSET, 
-            ShooterConstants.MOTOR_TO_ENCODER_RATIO, 
-            ShooterConstants.ABSOLUTE_ENCODER_RANGE
+            ShooterConstants.IS_SHOOTER_ABSOLUTE_ENCODER_INVERTED,
+            ShooterConstants.SHOOTER_ENCODER_ZERO_OFFSET, 
+            ShooterConstants.SHOOTER_MOTOR_TO_ENCODER_RATIO, 
+            ShooterConstants.SHOOTER_ABSOLUTE_ENCODER_RANGE
         );
 
         kickerMotor =  new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());

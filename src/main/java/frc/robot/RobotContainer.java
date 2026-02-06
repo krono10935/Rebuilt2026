@@ -19,6 +19,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -42,6 +43,8 @@ public class RobotContainer
 
     private final LoggedDashboardChooser<Command> chooser;
 
+    private final LoggedNetworkNumber hoodAngle;
+
 
     public static RobotContainer getInstance(){
         if (instance == null){
@@ -52,6 +55,7 @@ public class RobotContainer
 
     private RobotContainer()
     {
+        hoodAngle = new LoggedNetworkNumber("HoodAngle", 0);
         shooter = new Shooter();
 
         xboxController = new CommandXboxController(0);
@@ -70,11 +74,13 @@ public class RobotContainer
     }
 
     private void configureBindings() {
+
         // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
         xboxController.a().onTrue(new InstantCommand(() -> shooter.spinUp(17)));
         xboxController.b().whileTrue(new InstantCommand(() -> shooter.keepVelocity(17)).repeatedly());
         xboxController.x().onTrue(new InstantCommand(() -> shooter.stopFlyWheel()));
         // shooter.setDefaultCommand(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController));
+        xboxController.y().onTrue(new InstantCommand(() -> shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.getAsDouble()))));
     }
     public Command getAutonomousCommand()
     {

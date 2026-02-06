@@ -3,6 +3,8 @@ package frc.robot.subsystems.Shooter.IO;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
+import com.revrobotics.AbsoluteEncoder;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -34,15 +36,17 @@ public class ShooterIODevBot implements ShooterIO {
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
         hoodMotor = new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
+        ((BasicSparkMAX)hoodMotor).useAbsoluteEncoder(
+            ShooterConstants.IS_HOOD_ABSOLUTE_ENCODER_INVERTED,
+            ShooterConstants.HOOD_ENCODER_ZERO_OFFSET, 
+            ShooterConstants.HOOD_MOTOR_TO_ENCODER_RATIO, 
+            ShooterConstants.HOOD_ABSOLUTE_ENCODER_RANGE
+        );
         
 
         isKickerActive = false;
-        SmartDashboard.putData(leadShootingMotor.getController());
+        SmartDashboard.putData(hoodMotor.getController());
 
-        leadShootingMotor.getController().setSendableSlot(1);
-        SmartDashboard.putData(leadShootingMotor.getController());
-
-        
     }
 
     @Override
@@ -79,7 +83,7 @@ public class ShooterIODevBot implements ShooterIO {
 
     @Override
     public void setHoodAngle(Rotation2d angle){
-        hoodMotor.setControl(angle.getDegrees(), ControlMode.POSITION);
+        hoodMotor.setControl(angle.getRotations(), ControlMode.POSITION);
     }
 
     @Override

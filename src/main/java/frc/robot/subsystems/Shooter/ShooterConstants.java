@@ -11,38 +11,49 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig.AbsoluteEncoderCo
 
 public class ShooterConstants {
 
-    public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
-
     public static final Transform3d ROBOT_TO_SHOOTER = 
         new Transform3d(0.3, 0.0, 0.0, Rotation3d.kZero); // Find real translation
     
+    public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
+    
+    
+    
     public static final double SHOOTING_SPEED = 17.5; // m/s
 
-    public static final double BASE_SPINUP_SPEED = 10;
-
-    public static final double KICKER_PERCENT_OUTPUT = 0.7;
-
-    public static final double MIN_ACCEL_TO_RESIST = 0;
-    
-    public static final boolean IS_DEVBOT = true;
+    public static final double SHOOTING_SPEED_TOLERANCE = 0.1;
 
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
 
+
+
+    public static final boolean IS_SHOOTER_ABSOLUTE_ENCODER_INVERTED = false;
+
+    public static final double SHOOTER_ENCODER_ZERO_OFFSET = 0;
+
+    public static final double SHOOTER_MOTOR_TO_ENCODER_RATIO = 1.0/8;
+
+    public static final AbsoluteEncoderRange SHOOTER_ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.HALF_REVOLUTION;
+
+
+
+    public static final boolean IS_HOOD_ABSOLUTE_ENCODER_INVERTED = false;
+
+    public static final double HOOD_ENCODER_ZERO_OFFSET = 0.011;
+
+    public static final double HOOD_MOTOR_TO_ENCODER_RATIO = 1.0/8;
+
+    public static final AbsoluteEncoderRange HOOD_ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.ZERO_TO_ONE;
+
+
+
+
+    public static final double KICKER_PERCENT_OUTPUT = 0.7;
+
     public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
-
-    public static final boolean IS_ABSOLUTE_ENCODER_INVERTED = false;
-
-    public static final double ENCODER_ZERO_OFFSET = 0;
-
-    public static final double MOTOR_TO_ENCODER_RATIO = 1.0/8;
-
-    public static final AbsoluteEncoderRange ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.HALF_REVOLUTION;
-
+    
     public static final double ZERO_LINEAR_SPEED_TOLERANCE_MPS = 0.005;
 
     public static final boolean SHOOT_WITH_MOVEMENT = true;
-
-    public static final double SHOOTING_SPEED_TOLERANCE = 0.1;
 
 
     /**
@@ -123,7 +134,7 @@ public class ShooterConstants {
         config.slot0Config.pidConfig.kP = 0.1;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;
-        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(1).getRotations();
+        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(0.5).getRotations();
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;

@@ -9,9 +9,11 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Shooter.IO.ShooterIODevBot;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
+import frc.robot.subsystems.drivetrain.constants.ChassisType;
 
 public class Shooter extends SubsystemBase {
 
@@ -27,7 +29,7 @@ public class Shooter extends SubsystemBase {
     if (!RobotBase.isReal()){
       io = new ShooterIOSim();
     }
-    else if(ShooterConstants.IS_DEVBOT){
+    else if(Constants.CHASSIS_TYPE == ChassisType.DEVBOT){
       io = new ShooterIODevBot();
     }
     else{
