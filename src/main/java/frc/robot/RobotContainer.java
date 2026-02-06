@@ -55,17 +55,12 @@ public class RobotContainer
     private final Intake intake;
 
     private final CommandXboxController xboxController;
-    public final CommandXboxController xboxController;
 
     public final Drivetrain drivetrain;
 
     private final LoggedDashboardChooser<Command> chooser;
 
-    private final Indexer indexer;
-
     private final Climb climb;
-
-    private final Intake intake;
 
 
     public static RobotContainer getInstance(){
@@ -87,11 +82,7 @@ public class RobotContainer
 
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
-        indexer = new Indexer();
-
         climb = new Climb();
-
-        intake = new Intake();
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
