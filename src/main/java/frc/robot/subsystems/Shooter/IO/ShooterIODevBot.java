@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Shooter.IO;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +20,8 @@ public class ShooterIODevBot implements ShooterIO {
     private final BasicMotorConfig leadConfig;
 
     private boolean isKickerActive;
-    private double targetVelocity;
+
+    private LoggedNetworkNumber shiityP;
 
     public ShooterIODevBot(){
         leadConfig = ShooterConstants.getLeadShootingMotorConfig();
@@ -27,24 +29,34 @@ public class ShooterIODevBot implements ShooterIO {
         leadShootingMotor = new BasicSparkFlex(leadConfig);
         followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
         
+        leadShootingMotor.getController().setSendableSlot(1);
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
         
 
         isKickerActive = false;
-        leadShootingMotor.getController().getControllerGains().setSendableSlot(1);
         SmartDashboard.putData(leadShootingMotor.getController());
+
+        shiityP = new LoggedNetworkNumber("p");
+        shiityP.setDefault(0);
+        
     }
 
     @Override
     public void spinUp(double speedMPS){
-        targetVelocity = speedMPS / ShooterConstants.FLYWHEEL_CICUMFRENCE;
-        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 0);
+        // double targetVelocity = speedMPS / ShooterConstants.FLYWHEEL_CICUMFRENCE;
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, 0);
         Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
-    public void keepVelocity(){
-        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
+    public void keepVelocity(double speedMPS){
+        // double targetVelocity = speedMPS / ShooterConstants.FLYWHEEL_CICUMFRENCE;
+
+        double shitP = leadShootingMotor.getController().getGoalAsDouble() - leadShootingMotor.getVelocity();
+
+        shitP *= shiityP.getAsDouble();
+
+        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, Math.max(0, shitP), 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
 

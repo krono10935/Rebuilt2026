@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeCommand;
@@ -26,11 +27,11 @@ public class Sequences {
      * @return
      */
     public static Command shoot(Shooter shooter, Indexer indexer,
-                                Drivetrain drivetrain , CommandXboxController  CommandXboxController) {
+                                Drivetrain drivetrain , CommandXboxController CommandXboxController) {
         SequentialCommandGroup shooterCommand = new SequentialCommandGroup();
         shooterCommand.addCommands(indexer.turnOnIndexerCommand());
         shooterCommand.addCommands
-                (new ShootCommand(shooter,drivetrain,drivetrain::getEstimatedPosition, (pose) -> true).
+                (ShootCommand.shootCommandFactory(shooter,drivetrain, CommandXboxController).
                         alongWith(
                                 new DriveAndHomeCommand(drivetrain,
                                         CommandXboxController)));
@@ -50,7 +51,7 @@ public class Sequences {
         deliveryCommand.addCommands(Sequences.openIntakeStart(intake));
         deliveryCommand.addCommands(new InstantCommand(()-> shooter.setHoodAngle(Rotation2d.fromDegrees(45))));
         deliveryCommand.addCommands(indexer.turnOnIndexerCommand());
-        deliveryCommand.addCommands(new ShootCommand(shooter,drivetrain,drivetrain::getEstimatedPosition,(pose) -> true));
+        // deliveryCommand.addCommands(new ShootCommand(shooter,drivetrain,XboxController)); //TODO make this make sense
         return deliveryCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
     }
 
