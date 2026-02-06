@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeCommand;
@@ -11,12 +10,12 @@ import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.commands.Shooter.ShootCommand;
-import frc.robot.commands.Shooter.ShootWithoutAiming;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.commands.Shooter.DeliveryCommand;
 
 
 public class Sequences {
@@ -36,7 +35,7 @@ public class Sequences {
                 (ShootCommand.shootCommandFactory(shooter,drivetrain, CommandXboxController).
                         alongWith(
                                 new DriveAndHomeCommand(drivetrain,
-                                        CommandXboxController,()-> shooter.getShootParameters().robotAngle())));
+                                        CommandXboxController)));
 
         shooterCommand.setName("Shooting Sequence");
         return shooterCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
@@ -60,7 +59,7 @@ public class Sequences {
         deliveryCommand.addCommands(Sequences.openIntakeStart(intake));
         deliveryCommand.addCommands(new InstantCommand(()-> shooter.setHoodAngle(Rotation2d.fromDegrees(45))));
         deliveryCommand.addCommands(indexer.turnOnIndexerCommand());
-        deliveryCommand.addCommands(new ShootWithoutAiming(shooter));
+        deliveryCommand.addCommands(new DeliveryCommand(shooter));
         deliveryCommand.setName("Delivery Sequence");
         // return deliveryCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
         return deliveryCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);

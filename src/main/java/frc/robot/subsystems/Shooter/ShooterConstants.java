@@ -17,6 +17,8 @@ public class ShooterConstants {
     
     public static final double SHOOTING_SPEED = 17.5; // m/s
 
+    public static final double DELIVERY_VELOCITY = 20; // m/s
+
     public static final double BASE_SPINUP_SPEED = 10;
 
     public static final double KICKER_PERCENT_OUTPUT = 0.7;
