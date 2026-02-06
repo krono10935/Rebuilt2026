@@ -4,14 +4,12 @@
 
 package frc.robot.commands.Shooter;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.Shooter.ShotCalculator.ValidityState;
@@ -23,9 +21,7 @@ public class ShootCommand extends Command {
 
   private final Shooter shooter;
 
-  private final Supplier<Pose2d> robotPoseSupplier;
-
-  private final Function<Pose2d, Boolean> shouldShootFunction;
+  private final BooleanSupplier thetaAtSetpoint;
 
   private final Drivetrain drivetrain;
   
@@ -36,56 +32,46 @@ public class ShootCommand extends Command {
    * @param robotPoseSupplier robot pose supplier
    * @param shouldShootFunction function to translate from pose2d to whether or not to shoot 
    */
-  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Supplier<Pose2d> robotPoseSupplier, Function<Pose2d, Boolean> shouldShootFunction) {
+  private ShootCommand(Shooter shooter, Drivetrain drivetrain, BooleanSupplier thetaAtSetpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
-    this.robotPoseSupplier = robotPoseSupplier;
-    this.shouldShootFunction = shouldShootFunction;
+    this.thetaAtSetpoint = thetaAtSetpoint;
     this.drivetrain = drivetrain;
 
     addRequirements(shooter);
+  }
 
+  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller){
+    DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
+    ShootCommand shootCommand = new ShootCommand(shooter, drivetrain, driveCommand::atTargetAngle);
+
+    return driveCommand.alongWith(shootCommand);
   }
 
   @Override
   public void execute() {
     ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
-     drivetrain.getChassisSpeeds(), 
-     ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
+     drivetrain.getChassisSpeeds());
 
+    shooter.keepVelocity(params.flywheelSpeed());
     shooter.setHoodAngle(params.hoodAngle());
-    
-    // is the robot is in the shooting zone 
-    boolean shouldShoot = shouldShootFunction.apply(robotPoseSupplier.get()) && params.validityState() == ValidityState.VALID;
 
+
+        // is the robot is in the shooting zone 
+    boolean shouldShoot =
+      params.validityState() == ValidityState.VALID &&
+      thetaAtSetpoint.getAsBoolean() &&
+      shooter.readyToShoot();
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
-    if (!shouldShoot){
-
-      shooter.toggleKicker(false);
-
-      shooter.spinUp(ShooterConstants.BASE_SPINUP_SPEED);
-
-
-    }
-
-    // otherwise if the shooter isn't ready to shoot, close to kicker and get it ready to shoot
-    else if(!shooter.isShooterAtGoal()){
-      
-      shooter.toggleKicker(false);
-
-      shooter.spinUp(params.flywheelSpeed());
-
+    if (shouldShoot){
+      shooter.toggleKicker(true);
     }
 
     // otherwise open the kicker and start letting the shooter shoot
     else{
-
-      shooter.keepVelocity();
-
-      shooter.toggleKicker(true);
-
+      shooter.toggleKicker(false);
     }
     
   }

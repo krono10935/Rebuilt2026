@@ -34,7 +34,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color;
 
 import java.util.function.Supplier;
 
@@ -50,7 +49,7 @@ public class RobotContainer
 
     private final CommandXboxController xboxController;
 
-    private final Drivetrain drivetrain;
+    public final Drivetrain drivetrain;
 
     private final LoggedDashboardChooser<Command> chooser;
 
@@ -82,8 +81,11 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
-        shooter.setDefaultCommand(new ShootCommand(shooter, drivetrain, () -> new Pose2d(), (pose) -> true));
+        // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        xboxController.a().onTrue(new InstantCommand(() -> shooter.spinUp(17)));
+        xboxController.b().whileTrue(new InstantCommand(() -> shooter.keepVelocity(17)).repeatedly());
+        xboxController.x().onTrue(new InstantCommand(() -> shooter.stopFlyWheel()));
+        // shooter.setDefaultCommand(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController));
     }
     public Command getAutonomousCommand()
     {

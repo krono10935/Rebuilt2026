@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
       io = new ShooterIODevBot();
     }
     else{
-      io = new ShooterIOReal();
+      io = new ShooterIODevBot();
     }
     // io = new ShooterIONonBasicMotor();
 
@@ -65,8 +65,8 @@ public class Shooter extends SubsystemBase {
     io.spinUp(speedMPS);
   }
 
-  public void keepVelocity(){
-    io.keepVelocity();
+  public void keepVelocity(double speedMPS){
+    io.keepVelocity(speedMPS);
   }
 
   /**
@@ -116,4 +116,7 @@ public class Shooter extends SubsystemBase {
     io.setHoodAngle(angle);
   }
  
+  public boolean readyToShoot(){
+    return isHoodAtSetpoint() && isShooterAtGoal();
+  }
 }

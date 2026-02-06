@@ -97,23 +97,20 @@ public class ShotCalculator {
     public void warmUpShotCalculator(){
         Pose2d warmUpPose = new Pose2d();
         ChassisSpeeds robotRelativeChassisSpeeds = new ChassisSpeeds();
-        ChassisSpeeds fieldRelativeChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeChassisSpeeds, warmUpPose.getRotation());
 
-        getParameters(warmUpPose, robotRelativeChassisSpeeds, fieldRelativeChassisSpeeds);
+        getParameters(warmUpPose, robotRelativeChassisSpeeds);
         clearShootingParameters();
 
         warmUpPose = new Pose2d(1,1,Rotation2d.fromDegrees(90));
         robotRelativeChassisSpeeds = new ChassisSpeeds(1,0,90);
-        fieldRelativeChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeChassisSpeeds, warmUpPose.getRotation());
 
-        getParameters(warmUpPose, robotRelativeChassisSpeeds, fieldRelativeChassisSpeeds);
+        getParameters(warmUpPose, robotRelativeChassisSpeeds);
         clearShootingParameters();
 
         warmUpPose = new Pose2d(-10,32,Rotation2d.fromDegrees(67));
         robotRelativeChassisSpeeds = new ChassisSpeeds(10,9,35);
-        fieldRelativeChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeChassisSpeeds, warmUpPose.getRotation());
 
-        getParameters(warmUpPose, robotRelativeChassisSpeeds, fieldRelativeChassisSpeeds);
+        getParameters(warmUpPose, robotRelativeChassisSpeeds);
         clearShootingParameters();
     }
 
@@ -121,10 +118,9 @@ public class ShotCalculator {
      * 
      * @param estimatedPoseSupplier Estimated robot pose
      * @param robotRelativeVelocitySupplier Robot-relative velocity
-     * @param robotFieldVelocitySupplier Field-relative velocity
      * @return ShootingParameters based on these parameters
      */
-    public ShootingParameters getParameters(Pose2d estimatedPose, ChassisSpeeds robotRelativeVelocity, ChassisSpeeds robotVelocityFieldRelative){
+    public ShootingParameters getParameters(Pose2d estimatedPose, ChassisSpeeds robotRelativeVelocity){
         if (latestParameters != null){
             return latestParameters;
         }
@@ -134,7 +130,9 @@ public class ShotCalculator {
         Translation2d hub = 
             AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
      
-        Translation2d shooterFieldRelativeSpeeds = getShooterFieldRelativeSpeeds(robotVelocityFieldRelative,shooterPosition);
+        Translation2d shooterFieldRelativeSpeeds = 
+            getShooterFieldRelativeSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeVelocity, estimatedPose.getRotation()),
+            shooterPosition);
 
         if (ShooterConstants.SHOOT_WITH_MOVEMENT){
 
@@ -152,6 +150,7 @@ public class ShotCalculator {
      * @param shootWithMovmentParams The shoot with movement params
      * @return the validity state of the calculation
      */
+    @SuppressWarnings("unused")
     private ValidityState findValidityState(ChassisSpeeds robotRelativeVelocity, Translation2d shooterFieldRelativeSpeeds,
      double lookaheadShooterToTargetDistance){
 

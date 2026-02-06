@@ -60,16 +60,20 @@ public class DriveAndHomeCommand extends Command {
         double speed = lerp(1 - controller.getRightTriggerAxis());
 
 
-        double xSpeed = deadband(-controller.getLeftX()) * speed;
+        double xSpeed = deadband(controller.getLeftX()) * speed;
         double ySpeed = deadband(controller.getLeftY()) * speed;
+        double thetaSpeedDriver = deadband(controller.getRightY()) * speed;
 
         ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
-        drivetrain.getChassisSpeeds(), 
-        ChassisSpeeds.fromFieldRelativeSpeeds(drivetrain.getChassisSpeeds(), drivetrain.getGyroAngle()));
+        drivetrain.getChassisSpeeds());
 
         double thetaSpeed =
                 angularController.calculate(
                         drivetrain.getEstimatedPosition().getRotation().getRadians(), params.robotAngle().getRadians());
+
+        if(Math.abs(thetaSpeedDriver) >= 0.1)
+            thetaSpeed = thetaSpeedDriver;
+
         drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed, ySpeed, thetaSpeed, angleFieldRelative()));
     }
@@ -77,6 +81,10 @@ public class DriveAndHomeCommand extends Command {
     public double calculateThetaPID(){
         return angularController.calculate(
                 drivetrain.getEstimatedPosition().getRotation().getRadians(), targetAngleSupplier.get().getRadians());
+    }
+
+    public boolean atTargetAngle(){
+        return angularController.atGoal();
     }
 
     /**
