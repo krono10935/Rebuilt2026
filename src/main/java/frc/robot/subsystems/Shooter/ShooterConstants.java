@@ -2,6 +2,7 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.function.Function;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -41,10 +42,8 @@ public class ShooterConstants {
 
     public static final boolean SHOOT_WITH_MOVEMENT = true;
 
-    /* function for adding more to the setpoint for maintaining speed during shooting
-    TODO: set actual function
-     */
-    public static final Function<Double,Double> SHOOTING_SPEED_MODIFIER = (speed) -> 0.0;
+    public static final double SHOOTING_SPEED_TOLERANCE = 0.1;
+
 
     /**
      * 
@@ -71,25 +70,27 @@ public class ShooterConstants {
         // config.slot1Config.feedForwardConfig.frictionFeedForward = 0.043261;
 
         config.slot0Config.pidConfig.kP = 0.1 / FLYWHEEL_CICUMFRENCE;
-        config.slot0Config.pidConfig.kI = 0;
-        config.slot0Config.pidConfig.kD = 0;   
-        config.slot0Config.pidConfig.tolerance = 0.5;
+        config.slot0Config.pidConfig.kI = 0.05;  
+        config.slot0Config.pidConfig.tolerance = 0;
 
+        double maxIOutPut = 1.5;// VOLTS
+        config.slot0Config.pidConfig.iZone = 0.3;
+        config.slot0Config.pidConfig.iMaxAccum = maxIOutPut / config.slot0Config.pidConfig.kI;
 
         config.slot1Config.feedForwardConfig.velocityFeedforward = 0.10811 / FLYWHEEL_CICUMFRENCE;
         config.slot1Config.feedForwardConfig.frictionFeedForward = 0.043261 / FLYWHEEL_CICUMFRENCE;
 
-        config.slot1Config.pidConfig.kP = 0;
-        config.slot1Config.pidConfig.kI = 0;
+        config.slot1Config.pidConfig.kI = 0.05;
         config.slot1Config.pidConfig.kD = 16;   
-        config.slot1Config.pidConfig.tolerance = 0.1;
+        config.slot1Config.pidConfig.tolerance = 0;
+
+        config.slot1Config.pidConfig.iZone = 0.6;
+        config.slot1Config.pidConfig.iMaxAccum = maxIOutPut / config.slot1Config.pidConfig.kI;
 
         config.simulationConfig.kA = 0.0065362 / FLYWHEEL_CICUMFRENCE;
         config.simulationConfig.kV = 0.10811 / FLYWHEEL_CICUMFRENCE;
 
         config.constraintsConfig.minOutput = 0;
-
-        
 
         return config;
     }
@@ -114,14 +115,15 @@ public class ShooterConstants {
     public static BasicSparkConfig getHoodMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 27;
+        config.motorConfig.id = 20;
         config.motorConfig.motorType = DCMotor.getNEO(1);
-        config.motorConfig.gearRatio = 1;
+        config.motorConfig.gearRatio = 0.255;
         config.motorConfig.name = "Hood Motor";
 
-        config.slot0Config.pidConfig.kP = 1;
+        config.slot0Config.pidConfig.kP = 0.1;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;
+        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(1).getRotations();
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;

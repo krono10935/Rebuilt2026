@@ -50,13 +50,13 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void spinUp(double speedMPS){
         targetVelocity = speedMPS;
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY,0);
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY,0);
         Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
     public void keepVelocity(double speedMPS){
-        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
+        leadShootingMotor.setControl(targetVelocity , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
 
@@ -67,7 +67,9 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public boolean isShooterAtGoal(){
-        return leadShootingMotor.atGoal();
+        return Math.abs(leadShootingMotor.getController().getGoalAsDouble() -
+         leadShootingMotor.getVelocity())
+          <= ShooterConstants.SHOOTING_SPEED_TOLERANCE;
     }
 
     public void setFlyWheelVoltage(double voltage){
