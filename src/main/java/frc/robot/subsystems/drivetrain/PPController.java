@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 public class PPController implements PathFollowingController {
     private final PIDController xController;

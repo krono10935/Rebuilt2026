@@ -40,9 +40,9 @@ public class ShotCalculator {
         
     private ShootingParameters latestParameters = null;
 
-    private static double minDistance;
-    private static double maxDistance;
-    private static double phaseDelay;
+    private static final double minDistance;
+    private static final double maxDistance;
+    private static final double phaseDelay;
 
     private static final InterpolatingTreeMap<Double, Rotation2d> shotHoodAngleMap = 
         new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
@@ -116,8 +116,8 @@ public class ShotCalculator {
 
     /**
      * 
-     * @param estimatedPoseSupplier Estimated robot pose
-     * @param robotRelativeVelocitySupplier Robot-relative velocity
+     * @param estimatedPose Estimated robot pose
+     * @param robotRelativeVelocity Robot-relative velocity
      * @return ShootingParameters based on these parameters
      */
     public ShootingParameters getParameters(Pose2d estimatedPose, ChassisSpeeds robotRelativeVelocity){
@@ -147,7 +147,7 @@ public class ShotCalculator {
     /**
      * @param robotRelativeVelocity The robot relative velocity
      * @param shooterFieldRelativeSpeeds field relative X and Y speed of the robot (and therefore the shooter)
-     * @param shootWithMovmentParams The shoot with movement params
+     * @param lookaheadShooterToTargetDistance The shoot with movement params
      * @return the validity state of the calculation
      */
     @SuppressWarnings("unused")
@@ -206,7 +206,7 @@ public class ShotCalculator {
     /**
      * 
      * @param robotVelocityFieldRelative the robot velocity relative to the field
-     * @param estimatedRobotPose the current estimated robot pose
+     * @param estimatedShooterPose the current estimated robot pose
      * @return Translation2d object encompassing the field relative X and Y speeds
      */
     private Translation2d getShooterFieldRelativeSpeeds(ChassisSpeeds robotVelocityFieldRelative, Pose2d estimatedShooterPose){

@@ -32,7 +32,7 @@ public class Sequences {
         SequentialCommandGroup shooterCommand = new SequentialCommandGroup();
         shooterCommand.addCommands(indexer.turnOnIndexerCommand());
         shooterCommand.addCommands
-                (ShootCommand.shootCommandFactory(shooter,drivetrain, CommandXboxController).
+                (ShootCommand.shootCommandFactory(shooter,drivetrain, indexer, CommandXboxController).
                         alongWith(
                                 new DriveAndHomeCommand(drivetrain,
                                         CommandXboxController)));

@@ -6,15 +6,14 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.commands.Shooter.ShootCommand;
-import frc.robot.commands.Shooter.AutoShootAndAim;
 import frc.robot.commands.Shooter.SpinUp;
+import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Vision.Vision;
@@ -38,8 +37,8 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.util.Color;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-
 
 public class RobotContainer
 {   
@@ -51,6 +50,11 @@ public class RobotContainer
 
     private final Shooter shooter;
 
+    private final Indexer indexer;
+
+    private final Intake intake;
+
+    private final CommandXboxController xboxController;
     public final CommandXboxController xboxController;
 
     public final Drivetrain drivetrain;
@@ -74,6 +78,10 @@ public class RobotContainer
     private RobotContainer()
     {
         shooter = new Shooter();
+
+        indexer = new Indexer();
+
+        intake = new Intake();
 
         xboxController = new CommandXboxController(0);
 
@@ -125,10 +133,22 @@ public class RobotContainer
             PPController.setThetaOverride(DriveAndHomeCommand::calculateThetaPID);
         }, PPController::clearThetaOverride);
 
-        NamedCommands.registerCommand("shootAndAim", new ShootCommand().alongWith(aimRobot));
-        NamedCommands.registerCommand("spinUp", new SpinUp());
+
+        NamedCommands.registerCommand("shootAndAim",
+                new ShootCommand(shooter, drivetrain, indexer).alongWith(aimRobot));
+
+        NamedCommands.registerCommand("spinUp", new SpinUp(shooter));
+
         NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
                 new Intake().getBalls()== 0));
+
+        NamedCommands.registerCommand("openIntake",
+                new SequentialCommandGroup(Sequences.openIntakeStart(intake)));
+        NamedCommands.registerCommand("stopIntake",
+                new SequentialCommandGroup(new InstantCommand(intake::stopIntakeMotor)));
+        NamedCommands.registerCommand("closeIntake",
+                new SequentialCommandGroup(Sequences.closeIntakeStop(intake)));
+
         NamedCommands.registerCommand("openClimb", new Climb().openCommand());
         NamedCommands.registerCommand("closeClimb", new Climb().closeCommand());
     }
