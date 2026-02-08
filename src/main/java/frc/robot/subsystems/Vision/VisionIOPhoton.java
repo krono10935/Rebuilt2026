@@ -2,7 +2,6 @@ package frc.robot.subsystems.Vision;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-import java.net.ProtocolFamily;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -121,6 +120,8 @@ public class VisionIOPhoton implements VisionIO {
             return;
         }
 
+        inputs.pipelineIndex = camera.getPipelineIndex();
+
         // Retrieve all unread results from the camera
         var result = camera.getAllUnreadResults();
 
@@ -143,6 +144,14 @@ public class VisionIOPhoton implements VisionIO {
             .toArray();
 
         Logger.recordOutput("VisionIO/Last pose", lastPoseSupplier.get());
+    }
+
+    /**
+     * @param index the index of what pipeline to use
+     */
+    @Override
+    public void setPiplineIndex(int index) {
+        camera.setPipelineIndex(index);
     }
 
 }

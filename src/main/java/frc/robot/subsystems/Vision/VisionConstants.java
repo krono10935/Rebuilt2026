@@ -25,6 +25,9 @@ public class VisionConstants {
      */
     public static final double MAX_SINGLE_AMBIGUTY = 0.1;
 
+    public record StdDevsFactors(double xyStdFactor,double thetaStdFactor,double minXyStd,double minThetaStd) {
+    }
+
 
     // enum with all the camera constants
     enum CamerasConstants {
@@ -37,10 +40,8 @@ public class VisionConstants {
                 new Rotation3d(0, Units.degreesToRadians(-35),Units.degreesToRadians(180))
     
             ),
-            0.1, // XY standard deviation factor
-            0.1, // Theta standard deviation factor
-             0.05,// Minimum XY standard deviation
-              Math.toRadians(5)// Minimum Theta standard deviation
+            new StdDevsFactors(0.1,0.3,0.1,0.3),
+            new StdDevsFactors(0.15,0.35,0.1,0.3)
             
         );
         
@@ -65,36 +66,15 @@ public class VisionConstants {
                  */ 
                 public final Transform3d ROBOT_TO_CAMERA;
         
-                /**
-                 * The standard deviation factor for XY
-                 */
-                public final double XY_STD_DEV_FACTOR;
-        
-                /**
-                 * The standard deviation factor for Theta
-                 */
-                public final double THETA_STD_DEV_FACTOR;
-                /**
-                 * The minimum standard deviation for XY (in meters)
-                 */
-                public final double MIN_XY_STD_DEV; 
-                /**
-                 * The minimum standard deviation for Theta (in radians)
-                 */
-                public final double MIN_THETA_STD_DEV;
-                
-                public final double MAX_XY_STD_DEV = 200; // Maximum XY standard deviation (in meters)
-                public final double MAX_THETA_STD_DEV = Math.toRadians(180); // Maximum Theta standard deviation (in radians)
+                public final StdDevsFactors[] stdDevsFactors;
+            
         
                 // Constructor for the camera constants
                 CamerasConstants(
                 PhotonPoseEstimator.PoseStrategy alternateStrategy, 
                 String cameraName, 
                 Transform3d robotToCamera,
-                double xyStdFactor,
-                double thetaStdFactor,
-                double minXYStd,
-                double minThetaStd) {
+                StdDevsFactors... factors) {
                     
         
                     this.ALTERNATE_STRATEGY = alternateStrategy;
@@ -103,14 +83,11 @@ public class VisionConstants {
 
             this.ROBOT_TO_CAMERA = robotToCamera;
 
-            //TODO: determaine unit for standard deviation factor
-            this.XY_STD_DEV_FACTOR = xyStdFactor;
+            stdDevsFactors = factors;
 
-            this.THETA_STD_DEV_FACTOR = thetaStdFactor;
-
-            this.MIN_XY_STD_DEV = minXYStd;
-
-            this.MIN_THETA_STD_DEV = minThetaStd;
+            if(factors.length < 1){
+                throw new IllegalArgumentException("must provide at least 1 std Devs factor");
+            }
         }
 
 

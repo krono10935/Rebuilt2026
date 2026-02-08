@@ -6,7 +6,7 @@
 package frc.robot.subsystems.Vision;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -21,14 +21,15 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Vision.VisionInputsAutoLogged;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
+import frc.robot.subsystems.Vision.VisionConstants.StdDevsFactors;
+import frc.utils.VirtualSubSystem;
 
 /**
  * Vision subsystem for handling multiple cameras and robot pose estimation.
  * This subsystem validates poses, computes uncertainties, and notifies consumers.
  */
-public class Vision extends SubsystemBase {
+public class Vision extends VirtualSubSystem {
 
   /**
    * Functional interface for receiving new vision estimates.
@@ -54,12 +55,16 @@ public class Vision extends SubsystemBase {
     private final VisionInputsAutoLogged inputs = new VisionInputsAutoLogged();
 
     /** Calibration and configuration constants for this camera */
-    private CamerasConstants constants;
+    private final CamerasConstants constants;
+
+    private StdDevsFactors selectedStd;
 
     /** Constructor for a VisionCamera */
     public VisionCamera(VisionIO camera, String cameraName, CamerasConstants constants) {
       this.camera = camera;
       this.constants = constants;
+
+      selectedStd = constants.stdDevsFactors[0];
     }
 
     /**
@@ -86,7 +91,7 @@ public class Vision extends SubsystemBase {
   }
 
   /** List of all vision cameras in the system */
-  private final List<VisionCamera> cameras;
+  private final HashMap<CamerasConstants, VisionCamera> cameras;
 
   /** Consumer that receives valid vision pose estimates */
   private final VisionConsumer poseConsumer;
@@ -98,12 +103,16 @@ public class Vision extends SubsystemBase {
    * @param lastPoseSupplier Supplier for the last estimated robot pose
    */
   public Vision(VisionConsumer estimateListener, Supplier<Pose2d> lastPoseSupplier) {
-      if (RobotBase.isReal()){this.cameras = Arrays.stream(CamerasConstants.values())
-          .map(constants -> VisionCamera.fromPhoton(constants,lastPoseSupplier))
-          .toList();}
-           else {this.cameras = Arrays.stream(CamerasConstants.values())
-          .map(constants -> VisionCamera.fromPhotonSim(constants,lastPoseSupplier))
-          .toList();}
+      cameras = new HashMap<>();
+
+      for(CamerasConstants camera : CamerasConstants.values()){
+        var instance = RobotBase.isReal() ? 
+            VisionCamera.fromPhoton(camera, lastPoseSupplier) :
+            VisionCamera.fromPhotonSim(camera, lastPoseSupplier);
+      
+        cameras.put(camera, instance);
+      }
+      
       this.poseConsumer = estimateListener;
   }
 
@@ -158,24 +167,30 @@ public class Vision extends SubsystemBase {
    * @return A 3x1 matrix of [xStdDev, yStdDev, thetaStdDev]
    */
   private Matrix<N3,N1> getStdDevs(double avragedistance,int numTargets, VisionCamera camera) {
-    if(numTargets <= 0) {
-      // Return NaN if no targets detected to indicate unknown uncertainty
-      return VecBuilder.fill(camera.constants.MAX_XY_STD_DEV, camera.constants.MAX_XY_STD_DEV, camera.constants.MAX_THETA_STD_DEV);
-    }
 
     double stdDevFactor = Math.pow(avragedistance, 2)/numTargets;
 
     double stdDevLinear = Math.max(
-      stdDevFactor * camera.constants.XY_STD_DEV_FACTOR,
-      camera.constants.MIN_XY_STD_DEV
+      stdDevFactor * camera.selectedStd.xyStdFactor(),
+      camera.selectedStd.minXyStd()
     );
 
     double stdDevAngular = Math.max(
-      stdDevFactor * camera.constants.THETA_STD_DEV_FACTOR,
-      camera.constants.MIN_THETA_STD_DEV
+      stdDevFactor * camera.selectedStd.thetaStdFactor(),
+      camera.selectedStd.minThetaStd()
     );
 
     return VecBuilder.fill(stdDevLinear, stdDevLinear, stdDevAngular);
+  }
+
+  public void setSTDDevsSlot(CamerasConstants camerasConstants, int slot){
+    var camera = cameras.get(camerasConstants);
+
+    camera.selectedStd = camera.constants.stdDevsFactors[slot];
+  }
+
+  public void setPiplineIndex(CamerasConstants camerasConstants, int index){
+    cameras.get(camerasConstants).camera.setPiplineIndex(index);
   }
 
   /**
@@ -189,7 +204,7 @@ public class Vision extends SubsystemBase {
     List<Pose3d> invalidPoses = new ArrayList<>();
     List<Translation3d> targetLocations = new ArrayList<>();
 
-    for(VisionCamera camera : cameras) {
+    for(VisionCamera camera : cameras.values()) {
       // Update inputs from camera and log connection status
       camera.updateInputs();
       SmartDashboard.putBoolean(camera.constants.CAMERA_NAME + "/connected", camera.inputs.isConnected);
