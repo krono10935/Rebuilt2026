@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.9,
-  "robotLength": 0.9,
+  "robotWidth": 0.85,
+  "robotLength": 0.85,
   "holonomicMode": true,
   "pathFolders": [
     "Bump (L) - Trench (L) - Climb",
@@ -22,7 +22,7 @@
   "robotMass": 50.0,
   "robotMOI": 6.884,
   "robotTrackwidth": 0.546,
-  "driveWheelRadius": 0.0508,
+  "driveWheelRadius": 0.051,
   "driveGearing": 5.27,
   "maxDriveSpeed": 5.0,
   "driveMotorType": "krakenX60",

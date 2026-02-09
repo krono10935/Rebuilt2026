@@ -13,21 +13,17 @@ import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
-import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.leds.LedLocation;
 import frc.robot.leds.LedManager;
 import frc.robot.leds.LedPattern;
 import frc.robot.leds.LedState;
-import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 
 import frc.robot.subsystems.drivetrain.PPController;
-import frc.robot.subsystems.intake.Intake;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -36,9 +32,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.util.Color;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 public class RobotContainer
 {   
@@ -98,8 +91,8 @@ public class RobotContainer
     private void configureBindings() {
         drivetrain.setDefaultCommand(Sequences.shoot(shooter, indexer, drivetrain, xboxController));
 
-        /**
-         * intake controls 
+        /*
+         * intake controls
          * right bumper to open and start intake
          * left bumper to close and stop intake
          * only while right bumper is held is the intake running
@@ -135,8 +128,6 @@ public class RobotContainer
 
         NamedCommands.registerCommand("openIntake",
                 new SequentialCommandGroup(Sequences.openIntakeStart(intake)));
-        NamedCommands.registerCommand("stopIntake",
-                new SequentialCommandGroup(new InstantCommand(intake::stopIntakeMotor)));
         NamedCommands.registerCommand("closeIntake",
                 new SequentialCommandGroup(Sequences.closeIntakeStop(intake)));
 

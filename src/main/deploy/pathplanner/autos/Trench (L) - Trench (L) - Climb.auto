@@ -28,6 +28,12 @@
           "data": {
             "pathName": "Trench (L) - Trench (L) - Climb"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "closeClimb"
+          }
         }
       ]
     }

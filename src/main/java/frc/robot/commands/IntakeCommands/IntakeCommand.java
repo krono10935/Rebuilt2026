@@ -45,8 +45,9 @@ public class IntakeCommand extends Command {
   }
 
   @Override
-  public boolean isFinished(){
-    return intake.intakeMotorAtSetPoint();
+  public void end(boolean interrupted){
+    intake.stopIntakeMotor();
   }
+
 
 }
