@@ -2,10 +2,13 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.function.Function;
 
+import com.revrobotics.ColorSensorV3.RawColor;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig.AbsoluteEncoderConfig.AbsoluteEncoderRange;
@@ -48,13 +51,13 @@ public class ShooterConstants {
 
 
 
-    public static final double KICKER_PERCENT_OUTPUT = 0.4;
+    public static final double KICKER_PERCENT_OUTPUT = 0.5;
 
     public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
     
     public static final double ZERO_LINEAR_SPEED_TOLERANCE_MPS = 0.005;
 
-    public static final boolean SHOOT_WITH_MOVEMENT = true;
+    public static final boolean SHOOT_WITH_MOVEMENT = false;
 
 
     /**
@@ -82,21 +85,22 @@ public class ShooterConstants {
         // config.slot1Config.feedForwardConfig.frictionFeedForward = 0.043261;
 
         config.slot0Config.pidConfig.kP = 0.1 / FLYWHEEL_CICUMFRENCE;
-        config.slot0Config.pidConfig.kI = 0.05;  
+        //config.slot0Config.pidConfig.kI = 0.05;  
         config.slot0Config.pidConfig.tolerance = 0;
 
         double maxIOutPut = 1.5;// VOLTS
         config.slot0Config.pidConfig.iZone = 0.3;
-        config.slot0Config.pidConfig.iMaxAccum = maxIOutPut / config.slot0Config.pidConfig.kI;
+        //config.slot0Config.pidConfig.iMaxAccum = maxIOutPut / config.slot0Config.pidConfig.kI;
 
         config.slot1Config.feedForwardConfig.velocityFeedforward = 0.10811 / FLYWHEEL_CICUMFRENCE;
         config.slot1Config.feedForwardConfig.frictionFeedForward = 0.043261 / FLYWHEEL_CICUMFRENCE;
 
-        config.slot1Config.pidConfig.kI = 0.05;
+        config.slot1Config.pidConfig.kI = 0.001;
         config.slot1Config.pidConfig.kD = 16;   
         config.slot1Config.pidConfig.tolerance = 0;
 
         config.slot1Config.pidConfig.iZone = 0.6;
+        
         config.slot1Config.pidConfig.iMaxAccum = maxIOutPut / config.slot1Config.pidConfig.kI;
 
         config.simulationConfig.kA = 0.0065362 / FLYWHEEL_CICUMFRENCE;
@@ -143,6 +147,7 @@ public class ShooterConstants {
 
         config.absoluteEncoderConfig.useAbsoluteEncoder = true;
 
+        config.motorConfig.idleMode = IdleMode.BRAKE;
         config.absoluteEncoderConfig.inverted = true;
         config.absoluteEncoderConfig.sensorToMotorRatio = 9;
         config.absoluteEncoderConfig.mechanismToSensorRatio = 80/20;
@@ -155,6 +160,7 @@ public class ShooterConstants {
         config.constraintsConfig.maxOutput = 3;
         config.constraintsConfig.minOutput = 3;
 
+        
         return config;
     }
 

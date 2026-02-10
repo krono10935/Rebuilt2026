@@ -7,9 +7,12 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.leds.LedLocation;
 import frc.robot.leds.LedManager;
@@ -24,6 +27,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -43,7 +47,7 @@ public class RobotContainer
 
     private final LoggedDashboardChooser<Command> chooser;
 
-    private final LoggedNetworkNumber hoodAngle;
+    private final LoggedNetworkNumber speedMPS;
 
 
     public static RobotContainer getInstance(){
@@ -55,7 +59,7 @@ public class RobotContainer
 
     private RobotContainer()
     {
-        hoodAngle = new LoggedNetworkNumber("HoodAngle", 0);
+        speedMPS = new LoggedNetworkNumber("Shooter speed MPS", 0);
         shooter = new Shooter();
 
         xboxController = new CommandXboxController(0);
@@ -75,12 +79,15 @@ public class RobotContainer
 
     private void configureBindings() {
 
-        // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
-        xboxController.a().onTrue(new InstantCommand(() -> shooter.spinUp(17)));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        xboxController.a().onTrue(new InstantCommand(() -> shooter.spinUp(speedMPS.get())));
         xboxController.b().whileTrue(new InstantCommand(() -> shooter.keepVelocity(17)).repeatedly());
-        xboxController.x().onTrue(new InstantCommand(() -> shooter.stopFlyWheel()));
+        xboxController.x().onTrue(new InstantCommand(() -> {shooter.stopFlyWheel(); shooter.toggleKicker(false);}));
         // shooter.setDefaultCommand(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController));
-        xboxController.y().onTrue(new InstantCommand(() -> shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.getAsDouble()))));
+       
+        xboxController.y().onTrue(new FunctionalCommand(()-> {shooter.spinUp(speedMPS.getAsDouble() ); shooter.toggleKicker(true);}, ()-> {}, (b) -> shooter.keepVelocity(speedMPS.getAsDouble()),shooter::isShooterAtGoal, shooter));
+
+        vision.setDefaultCommand(new RunCommand(() -> ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds()),vision));
     }
     public Command getAutonomousCommand()
     {

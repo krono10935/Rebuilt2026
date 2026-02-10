@@ -34,7 +34,7 @@ public class ShooterIODevBot implements ShooterIO {
         leadShootingMotor = new BasicSparkFlex(leadConfig);
         followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
         
-        leadShootingMotor.getController().setSendableSlot(0);
+        leadShootingMotor.getController().setSendableSlot(1);
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
         hoodMotor = new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
@@ -45,11 +45,13 @@ public class ShooterIODevBot implements ShooterIO {
         //     ShooterConstants.HOOD_ABSOLUTE_ENCODER_RANGE
         // );
 
+        
+
         kickerMotor = new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
         
 
         isKickerActive = false;
-        SmartDashboard.putData(hoodMotor.getController());
+        SmartDashboard.putData(leadShootingMotor.getController());
 
     }
 
@@ -109,6 +111,8 @@ public class ShooterIODevBot implements ShooterIO {
         inputs.isKickerActive = this.isKickerActive;
 
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
+
+        
         
     }
 
