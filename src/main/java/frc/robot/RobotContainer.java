@@ -11,7 +11,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.StationaryHomeCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
@@ -116,18 +115,24 @@ public class RobotContainer
         return chooser.get();
     }
 
-    public void registerNamedCommand(DriveAndHomeCommand DriveAndHomeCommand){
+    public void registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
 
         Command aimRobot = new StartEndCommand(() -> {
-            PPController.setThetaOverride(DriveAndHomeCommand::calculateThetaPID);
+            PPController.setThetaOverride(driveAndHomeCommand::calculateThetaPID);
         }, PPController::clearThetaOverride);
+
+        Command aimRobotStationary = new RunCommand(
+                () -> drivetrain.drive(new ChassisSpeeds(
+                        0, 0, driveAndHomeCommand.calculateThetaPID())), drivetrain);
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                new ShootCommand(shooter, drivetrain, indexer).alongWith(aimRobot));
+                new ShootCommand(shooter, drivetrain, indexer).beforeStarting(new SpinUp(shooter))
+                        .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                new ShootCommand(shooter, drivetrain, indexer).alongWith(new StationaryHomeCommand(drivetrain)));
+                new ShootCommand(shooter, drivetrain, indexer).beforeStarting(new SpinUp(shooter))
+                        .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new SpinUp(shooter));
 

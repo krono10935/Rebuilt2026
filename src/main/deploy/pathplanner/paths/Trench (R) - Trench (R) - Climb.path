@@ -126,16 +126,28 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.5011965090090087,
+      "waypointRelativePos": 1.639937106918239,
       "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": -90.0
     },
     {
       "waypointRelativePos": 4.043918918918918,
-      "rotationDegrees": 0.0
+      "rotationDegrees": -90.0
     },
     {
       "waypointRelativePos": 5.595430391328827,
-      "rotationDegrees": 90.0
+      "rotationDegrees": 70.0
+    },
+    {
+      "waypointRelativePos": 6.9,
+      "rotationDegrees": 29.999999999999996
+    },
+    {
+      "waypointRelativePos": 6.95,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
@@ -159,6 +171,19 @@
       "constraints": {
         "maxVelocity": 1.75,
         "maxAcceleration": 1.75,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "ClimbSlowDown",
+      "minWaypointRelativePos": 6.9,
+      "maxWaypointRelativePos": 7.0,
+      "constraints": {
+        "maxVelocity": 0.3,
+        "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -195,22 +220,15 @@
       "waypointRelativePos": 6.2,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "parallel",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "openClimb"
-              }
-            }
-          ]
+          "name": "openClimb"
         }
       }
     },
     {
       "name": "CloseIntake",
-      "waypointRelativePos": 7.0,
+      "waypointRelativePos": 6.9,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
