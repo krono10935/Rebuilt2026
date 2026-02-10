@@ -168,8 +168,8 @@
     },
     {
       "name": "Shooting",
-      "waypointRelativePos": 5.7,
-      "endWaypointRelativePos": 5.59,
+      "waypointRelativePos": 5.75,
+      "endWaypointRelativePos": 6.2,
       "command": {
         "type": "named",
         "data": {
