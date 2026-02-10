@@ -144,11 +144,12 @@ public class ShooterConstants {
         config.absoluteEncoderConfig.useAbsoluteEncoder = true;
 
         config.absoluteEncoderConfig.inverted = true;
-        config.absoluteEncoderConfig.sensorToMotorRatio = 0.345;
-        config.absoluteEncoderConfig.zeroOffset = 0.418;
+        config.absoluteEncoderConfig.sensorToMotorRatio = 9;
+        config.absoluteEncoderConfig.mechanismToSensorRatio = 80/20;
+        config.absoluteEncoderConfig.zeroOffset = Rotation2d.fromDegrees(360 - 0.072 - 60).getRotations() ;
 
-        config.constraintsConfig.maxValue = 0.245;
-        config.constraintsConfig.minValue = 0.156;
+        config.constraintsConfig.maxValue = 0.3;
+        config.constraintsConfig.minValue = 0.0;
         config.constraintsConfig.constraintType = ConstraintType.LIMITED;
 
         config.constraintsConfig.maxOutput = 3;
