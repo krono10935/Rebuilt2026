@@ -10,6 +10,7 @@ public class IntakeConstants {
 
     public static final int LIMIT_SWITCH_CHANNEL = 1; //TODO: find out
 
+    public static final double POSITION_TOLERANCE = 0.05;
     public static final double CLOSE_POSITION = 0;
     public static final double OPEN_POSITION = 0.67;
 

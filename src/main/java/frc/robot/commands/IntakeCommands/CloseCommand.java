@@ -11,6 +11,8 @@ import frc.robot.subsystems.intake.IntakeConstants;
 public class CloseCommand extends Command {
 
   private Intake intake;
+  private int counter = 0;
+  private static boolean interruped = false;
   
   public CloseCommand(Intake intake) {
 
@@ -18,6 +20,16 @@ public class CloseCommand extends Command {
     addRequirements(intake);
 
   }
+    @Override
+    public void execute() {
+        //if after 50 execute cycles the intake is not at the open position, it is likely that the intake is stuck on something and the command should be interrupted to prevent damage to the motor
+        if(counter<50 || intake.getIntakePosition() >= IntakeConstants.OPEN_POSITION-IntakeConstants.POSITION_TOLERANCE){
+            counter++;
+        }
+        else{
+            interruped = true;
+        }
+    }
 
   @Override
   public void initialize() {
@@ -30,5 +42,7 @@ public class CloseCommand extends Command {
     return intake.positionAtSetPoint();
   }
 
-
+  public static boolean getInterruped(){
+      return interruped;
+  }
 }

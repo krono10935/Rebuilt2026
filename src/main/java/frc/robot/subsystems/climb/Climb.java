@@ -18,6 +18,7 @@ public class Climb extends SubsystemBase {
 
   private final ClimbInputsAutoLogged inputs;
 
+  private boolean hasClimbed = false;
   public Climb() {
     io = RobotBase.isReal() ? new ClimbIOReal() : new ClimbIOSim();
     inputs = new ClimbInputsAutoLogged();
@@ -52,16 +53,28 @@ public class Climb extends SubsystemBase {
    * 
    * @return if the climb is at setPoint
    */
-  private boolean isAtSetPoint(){
+  public boolean isAtSetPoint(){
     return io.isAtSetPoint();
   }
 
+
+    public boolean getHasClimbed() {
+        return hasClimbed;
+    }
+
+    public void setHasClimbed(boolean hasClimbed) {
+        this.hasClimbed = hasClimbed;
+    }
   /**
    * 
    * @return the close command
    */
   public Command closeCommand(){
-    return new FunctionalCommand(this::close, ()->{}, (interrupted)->{}, this::isAtSetPoint, this);
+    return new FunctionalCommand(this::close,
+            ()->{},
+            (interrupted)->{},
+            this::isAtSetPoint,
+            this);
   }
   
   /**
@@ -69,8 +82,14 @@ public class Climb extends SubsystemBase {
    * @return the open command
    */
   public Command openCommand(){
-    return new FunctionalCommand(this::open, ()->{}, (interrupted) -> {}, this::isAtSetPoint, this);
+    return new FunctionalCommand(this::open,
+            ()->{},
+            (interrupted) -> {},
+            this::isAtSetPoint,
+            this);
+
   }
+
 
 }
 

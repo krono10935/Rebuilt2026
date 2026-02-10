@@ -1,18 +1,14 @@
 package frc.robot;
 
-import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
-import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.climb.Climb;
@@ -21,92 +17,326 @@ import frc.robot.subsystems.intake.Intake;
 
 
 public class Sequences {
+
+
+
     /**
-     * turns on the indexer then aims the hood to the hub according to the robot's position
-     * and pew pew
-     * @param shooter
-     * @param indexer
-     * @param drivetrain
-     * @return
+     * Utility class containing climb and declimb command factories.
+     *
+     * <p>All commands coordinate multiple subsystems such as Intake,
+     * Indexer, Climb, Shooter, and Drivetrain in order to safely
+     * execute climb and declimb sequences either manually or
+     * autonomously.</p>
      */
-    public static Command shoot(Shooter shooter, Indexer indexer,
-                                Drivetrain drivetrain , CommandXboxController CommandXboxController) {
-        SequentialCommandGroup shooterCommand = new SequentialCommandGroup();
-        shooterCommand.addCommands(indexer.turnOnIndexerCommand());
-        shooterCommand.addCommands
-                (ShootCommand.shootCommandFactory(shooter,drivetrain, CommandXboxController).
-                        alongWith(
-                                new DriveAndHomeCommand(drivetrain,
-                                        CommandXboxController)));
-        return shooterCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
+    public class ClimbCommands {
+
+        /**
+         * Closes and stops all relevant subsystems in parallel,
+         * then performs an error check sequence.
+         *
+         * @param intake    the intake subsystem
+         * @param indexer   the indexer subsystem
+         * @param climb     the climb subsystem
+         * @param shooter   the shooter subsystem
+         * @return command that closes all subsystems and checks for errors
+         */
+        private static Command closeSubsystems(
+                Intake intake,
+                Indexer indexer,
+                Climb climb,
+                Shooter shooter
+        ) {
+            ParallelCommandGroup closeSubsystemsParallel = new ParallelCommandGroup(
+                    stopIntakeAndClose(intake),
+                    indexer.turnOffIndexerCommand(),
+                    new InstantCommand(shooter::stopFlyWheel),
+                    climb.closeCommand()
+            );
+
+            SequentialCommandGroup checkForErrors = new SequentialCommandGroup();
+            checkForErrors.addCommands(new WaitCommand(1));
+            checkForErrors.addCommands(
+                    new InstantCommand(
+                            () -> closeSubsystemsParallel
+                                    .getRequirements()
+                                    .forEach((requirement) -> {
+                                        if (requirement.getCurrentCommand() != null)
+                                            SmartDashboard.putString(
+                                                    requirement.getName(),
+                                                    " has Error when closing"
+                                            );
+                                    })
+                    )
+            );
+
+            SequentialCommandGroup closeSubystems = new SequentialCommandGroup(
+                    closeSubsystemsParallel,
+                    checkForErrors
+            );
+
+            return closeSubystems;
+        }
+
+        /**
+         * Manual climb sequence.
+         *
+         * <p>Closes all subsystems, waits until the drivetrain
+         * reaches a target distance, then opens the climb mechanism.</p>
+         *
+         * @param intake      the intake subsystem
+         * @param indexer     the indexer subsystem
+         * @param drivetrain  the drivetrain subsystem
+         * @param climb       the climb subsystem
+         * @param shooter     the shooter subsystem
+         * @return manual climb command
+         */
+        public static Command manualClimb(
+                Intake intake,
+                Indexer indexer,
+                Drivetrain drivetrain,
+                Climb climb,
+                Shooter shooter
+        ) {
+            SequentialCommandGroup climbCommand = new SequentialCommandGroup(
+                    closeSubsystems(intake, indexer, climb, shooter),
+                    new FunctionalCommand(
+                            () -> {},
+                            () -> {},
+                            (isFinished) -> {},
+                            () -> drivetrain
+                                    .getEstimatedPosition()
+                                    .getTranslation()
+                                    .getDistance(new Translation2d(1, 1)) < 3.5
+                    ),
+                    climb.openCommand()
+            );
+
+            return climbCommand;
+        }
+
+        /**
+         * Manual declimb sequence.
+         *
+         * <p>Closes the climb, performs validation checks,
+         * and retries open/close if an error is detected.</p>
+         *
+         * @param intake   the intake subsystem
+         * @param indexer  the indexer subsystem
+         * @param climb    the climb subsystem
+         * @param shooter  the shooter subsystem
+         * @return manual declimb command
+         */
+        public static Command manualDeclimb(
+                Intake intake,
+                Indexer indexer,
+                Climb climb,
+                Shooter shooter
+        ) {
+            SequentialCommandGroup declimbCommand = new SequentialCommandGroup();
+
+            declimbCommand.addCommands(climb.closeCommand());
+            declimbCommand.addCommands(new WaitCommand(1));
+
+            declimbCommand.addCommands(
+                    new InstantCommand(
+                            () -> declimbCommand
+                                    .getRequirements()
+                                    .forEach((requirement) -> {
+                                        if (requirement.getCurrentCommand() != null) {
+                                            declimbCommand.addCommands(climb.openCommand());
+                                            declimbCommand.addCommands(climb.closeCommand());
+                                        }
+                                    })
+                    )
+            );
+
+            declimbCommand.addCommands(new WaitCommand(1));
+
+            declimbCommand.addCommands(
+                    new InstantCommand(
+                            () -> declimbCommand
+                                    .getRequirements()
+                                    .forEach((requirement) -> {
+                                        if (requirement.getCurrentCommand() != null) {
+                                            SmartDashboard.putString(
+                                                    requirement.getName(),
+                                                    " has Error when declimbing"
+                                            );
+                                        }
+                                    })
+                    )
+            );
+
+            return declimbCommand;
+        }
+
+        /**
+         * Autonomous climb sequence.
+         *
+         * <p>Drives to a target pose while closing subsystems,
+         * opens the climb, then performs validation checks.
+         * Only runs during endgame.</p>
+         *
+         * @param intake      the intake subsystem
+         * @param indexer     the indexer subsystem
+         * @param drivetrain  the drivetrain subsystem
+         * @param climb       the climb subsystem
+         * @param shooter     the shooter subsystem
+         * @return autonomous climb command
+         */
+        public static Command autoClimb(
+                Intake intake,
+                Indexer indexer,
+                Drivetrain drivetrain,
+                Climb climb,
+                Shooter shooter
+        ) {
+
+            SequentialCommandGroup climbCommand = new SequentialCommandGroup();
+            ParallelCommandGroup ParallelClimbCommand = new ParallelCommandGroup();
+
+            SequentialCommandGroup sequentialClimbCommandGroup = new SequentialCommandGroup(
+                    closeSubsystems(intake, indexer, climb, shooter),
+                    new FunctionalCommand(
+                            () -> {},
+                            () -> {},
+                            (isFinished) -> {},
+                            () -> drivetrain
+                                    .getEstimatedPosition()
+                                    .getTranslation()
+                                    .getDistance(new Translation2d(1, 1)) < 3.5
+                    ),
+                    climb.openCommand()
+            );
+
+            sequentialClimbCommandGroup.addCommands(
+                    new InstantCommand(
+                            () -> sequentialClimbCommandGroup
+                                    .getRequirements()
+                                    .forEach((requirement) -> {
+                                        if (requirement.getCurrentCommand() != null) {
+                                            SmartDashboard.putString(
+                                                    requirement.getName(),
+                                                    " has Error when climbing"
+                                            );
+                                        }
+                                    })
+                    )
+            );
+
+            ParallelClimbCommand.addCommands(
+                    drivetrain.driveToPose(
+                            new Pose2d(1, 1, Rotation2d.fromDegrees(1))
+                    )
+            );
+
+            ParallelClimbCommand.addCommands(sequentialClimbCommandGroup);
+
+            climbCommand.addCommands(ParallelClimbCommand);
+            climbCommand.addCommands(climb.closeCommand());
+
+            climbCommand.addCommands(
+                    new InstantCommand(
+                            () -> climbCommand
+                                    .getRequirements()
+                                    .forEach((requirement) -> {
+                                        if (requirement.getCurrentCommand() != null) {
+                                            SmartDashboard.putString(
+                                                    requirement.getName(),
+                                                    " has Error when climbing"
+                                            );
+                                        }
+                                    })
+                    )
+            );
+
+            if (DriverStation.getMatchTime() > 140)
+                climb.setHasClimbed(true);
+
+            return climbCommand.onlyIf(() -> DriverStation.getMatchTime() > 140);
+        }
+
+        /**
+         * Autonomous declimb sequence.
+         *
+         * <p>Opens the climb, drives away from the bar,
+         * then closes the climb with validation checks.</p>
+         *
+         * @param intake      the intake subsystem
+         * @param indexer     the indexer subsystem
+         * @param drivetrain  the drivetrain subsystem
+         * @param climb       the climb subsystem
+         * @param shooter     the shooter subsystem
+         * @return autonomous declimb command
+         */
+        public static Command autoDeclimb(
+                Intake intake,
+                Indexer indexer,
+                Drivetrain drivetrain,
+                Climb climb,
+                Shooter shooter
+        ) {
+            SequentialCommandGroup declimbCommand = new SequentialCommandGroup();
+
+            declimbCommand.addCommands(climb.openCommand());
+
+            declimbCommand.addCommands(
+                    drivetrain.driveToPose(
+                            new Pose2d(1, 1, Rotation2d.fromDegrees(1))
+                    )
+            );
+
+            declimbCommand.addCommands(
+                    new FunctionalCommand(
+                            () -> {},
+                            () -> {},
+                            (isFinished) -> {},
+                            () -> drivetrain
+                                    .getEstimatedPosition()
+                                    .getTranslation()
+                                    .getDistance(new Translation2d(1, 1)) > 0.5
+                    )
+            );
+
+            declimbCommand.addCommands(climb.closeCommand());
+
+            declimbCommand.addCommands(
+                    new InstantCommand(
+                            () -> declimbCommand
+                                    .getRequirements()
+                                    .forEach((requirement) -> {
+                                        if (requirement.getCurrentCommand() != null) {
+                                            SmartDashboard.putString(
+                                                    requirement.getName(),
+                                                    " has Error when climbing"
+                                            );
+                                            declimbCommand.addCommands(climb.openCommand());
+                                            declimbCommand.addCommands(climb.closeCommand());
+                                        }
+                                    })
+                    )
+            );
+
+            declimbCommand.addCommands(
+                    new InstantCommand(
+                            () -> declimbCommand
+                                    .getRequirements()
+                                    .forEach((requirement) -> {
+                                        if (requirement.getCurrentCommand() != null) {
+                                            SmartDashboard.putString(
+                                                    requirement.getName(),
+                                                    " has Error when climbing"
+                                            );
+                                        }
+                                    })
+                    )
+            );
+
+            return declimbCommand.onlyIf(() -> climb.getHasClimbed());
+        }
     }
 
-    /**
-     * opens the intake sets the hood to the right angle turns on indexer and pew pew
-     * @param shooter
-     * @param indexer
-     * @param intake
-     * @param drivetrain
-     * @return
-     */
-    public static Command delivery(Shooter shooter, Indexer indexer, Intake intake, Drivetrain drivetrain) {
-        SequentialCommandGroup deliveryCommand = new SequentialCommandGroup();
-      //  deliveryCommand.addCommands(Sequences.openIntakeStart(intake));
-        deliveryCommand.addCommands(new InstantCommand(()-> shooter.setHoodAngle(Rotation2d.fromDegrees(45))));
-        deliveryCommand.addCommands(indexer.turnOnIndexerCommand());
-        // deliveryCommand.addCommands(new ShootCommand(shooter,drivetrain,XboxController)); //TODO make this make sense
-        return deliveryCommand.withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
-    }
-
-    /**
-     * Drives near the tower then opens the climbing mechanism moves into the towers
-     * rung and closes the climbing mechanism
-     * @param climb
-     * @param drivetrain
-     * @return
-     */
-    private static Command Climber(Climb climb,Drivetrain drivetrain){
-        SequentialCommandGroup climbCommand = new SequentialCommandGroup();
-
-        climbCommand.addCommands(drivetrain.driveToPose(new Pose2d(1,1, Rotation2d.fromDegrees(1))));
-        climbCommand.addCommands(climb.openCommand());
-        climbCommand.addCommands(drivetrain.driveToPose(new Pose2d(1,1.5, Rotation2d.fromDegrees(1))));
-        climbCommand.addCommands(climb.closeCommand());
-
-        return climbCommand;
-
-    }
-
-    /**
-     * Closes all the unnecessary subsystem for climbing
-     * then runs the Climber sequence
-     * (drives near the tower then opens the climbing mechanism moves into the towers
-     *  rung and closes the climbing mechanism)
-     * @param intake
-     * @param climb
-     * @param indexer
-     * @param shooter
-     * @param drivetrain
-     * @return
-     */
-    public static Command FullClimb(Intake intake, Climb climb, Indexer indexer,Shooter shooter, Drivetrain drivetrain) {
-        ParallelCommandGroup closeSubsystems = new ParallelCommandGroup(
-             //   Sequences.closeIntakeStop(intake),
-                indexer.turnOffIndexerCommand(),
-                new InstantCommand(shooter::stopFlyWheel)
-                
-        );
-
-
-        SequentialCommandGroup fullClimbCommand = new SequentialCommandGroup(
-                closeSubsystems,
-                Climber(climb,drivetrain)
-        );
-
-        return fullClimbCommand;
-    }
-
-    /**
+/**
  * Opens the intake and starts the intake motor.
  * <p>
  * Behavior:
@@ -264,10 +494,10 @@ public static Command stopIntakeAndClose(Intake intake) {
 private static void shutdownIntake(Intake intake, String title, String message) {
 
     // Stop all motors
-    new InstantCommand(intake::stopIntakeMotor).schedule();
+    new InstantCommand(intake::stopIntakeMotor);
     new InstantCommand(() ->
         intake.setPositionMotorPercentOutput(0)
-    ).schedule();
+    );
 
     // Report error clearly to drivers
     SmartDashboard.putString(
