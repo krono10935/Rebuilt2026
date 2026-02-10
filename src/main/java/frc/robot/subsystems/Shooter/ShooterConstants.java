@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig.AbsoluteEncoderConfig.AbsoluteEncoderRange;
 
@@ -47,7 +48,7 @@ public class ShooterConstants {
 
 
 
-    public static final double KICKER_PERCENT_OUTPUT = 0.7;
+    public static final double KICKER_PERCENT_OUTPUT = 0.4;
 
     public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
     
@@ -128,8 +129,9 @@ public class ShooterConstants {
         final BasicSparkConfig config = new BasicSparkConfig();
         config.motorConfig.id = 20;
         config.motorConfig.motorType = DCMotor.getNEO(1);
-        config.motorConfig.gearRatio = 0.255;
+        config.motorConfig.gearRatio = 9;
         config.motorConfig.name = "Hood Motor";
+        config.motorConfig.inverted = true;
 
         config.slot0Config.pidConfig.kP = 0.1;
         config.slot0Config.pidConfig.kI = 0;
@@ -138,6 +140,19 @@ public class ShooterConstants {
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
+
+        config.absoluteEncoderConfig.useAbsoluteEncoder = true;
+
+        config.absoluteEncoderConfig.inverted = true;
+        config.absoluteEncoderConfig.sensorToMotorRatio = 0.345;
+        config.absoluteEncoderConfig.zeroOffset = 0.418;
+
+        config.constraintsConfig.maxValue = 0.245;
+        config.constraintsConfig.minValue = 0.156;
+        config.constraintsConfig.constraintType = ConstraintType.LIMITED;
+
+        config.constraintsConfig.maxOutput = 3;
+        config.constraintsConfig.minOutput = 3;
 
         return config;
     }
@@ -149,12 +164,12 @@ public class ShooterConstants {
     public static BasicSparkConfig getKickerMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 27;
+        config.motorConfig.id = 47;
         config.motorConfig.motorType = DCMotor.getNEO(1);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Kicker Motor";
 
-        config.slot0Config.pidConfig.kP = 1;
+        config.slot0Config.pidConfig.kP = 0;
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;
 

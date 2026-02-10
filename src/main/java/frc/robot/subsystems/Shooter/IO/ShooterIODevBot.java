@@ -22,6 +22,8 @@ public class ShooterIODevBot implements ShooterIO {
 
     private final BasicMotor hoodMotor;
 
+    private final BasicMotor kickerMotor;
+
     private final BasicMotorConfig leadConfig;
 
     private boolean isKickerActive;
@@ -36,12 +38,14 @@ public class ShooterIODevBot implements ShooterIO {
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
         hoodMotor = new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
-        ((BasicSparkMAX)hoodMotor).useAbsoluteEncoder(
-            ShooterConstants.IS_HOOD_ABSOLUTE_ENCODER_INVERTED,
-            ShooterConstants.HOOD_ENCODER_ZERO_OFFSET, 
-            ShooterConstants.HOOD_MOTOR_TO_ENCODER_RATIO, 
-            ShooterConstants.HOOD_ABSOLUTE_ENCODER_RANGE
-        );
+        // ((BasicSparkMAX)hoodMotor).useAbsoluteEncoder(
+        //     ShooterConstants.IS_HOOD_ABSOLUTE_ENCODER_INVERTED,
+        //     ShooterConstants.HOOD_ENCODER_ZERO_OFFSET, 
+        //     ShooterConstants.HOOD_MOTOR_TO_ENCODER_RATIO, 
+        //     ShooterConstants.HOOD_ABSOLUTE_ENCODER_RANGE
+        // );
+
+        kickerMotor = new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
         
 
         isKickerActive = false;
@@ -79,7 +83,13 @@ public class ShooterIODevBot implements ShooterIO {
     }
 
     @Override
-    public void toggleKicker(boolean isActive){}
+    public void toggleKicker(boolean isActive){
+        if (isActive){
+            kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
+        } else {
+            kickerMotor.stop();
+        }
+    }
 
     @Override
     public void setHoodAngle(Rotation2d angle){
