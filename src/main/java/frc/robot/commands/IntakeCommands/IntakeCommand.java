@@ -36,12 +36,19 @@ public class IntakeCommand extends Command {
   @Override
   public void execute() {
     powerSum+=intake.getPower() - IntakeConstants.IDLE_POWER;
-    
-    if(intake.getPower() >= IntakeConstants.INTAKE_POWER_BALL_COUNTER_DEADBAND){
-      energy = powerSum*0.02;
-      energy -= intake.getBalls()*IntakeConstants.BALL_INTAKE_ENERGY;
-      intake.addBalls((int)(energy/IntakeConstants.BALL_INTAKE_ENERGY));
+    energy = powerSum * 0.02;
+
+    intake.addBalls(addBallsFromEnergy(energy));
+  }
+
+  public int addBallsFromEnergy(double energy){
+    if(energy < IntakeConstants.BALL_INTAKE_ENERGY){
+      return 0;
     }
+    else{
+      return addBallsFromEnergy(energy - IntakeConstants.BALL_INTAKE_ENERGY) + 1;
+    }
+
   }
 
   @Override

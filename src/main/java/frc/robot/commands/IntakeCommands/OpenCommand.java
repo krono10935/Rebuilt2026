@@ -12,6 +12,8 @@ import frc.robot.subsystems.intake.IntakeConstants;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class OpenCommand extends Command {
   private Intake intake;
+  private int counter = 0;
+  private static boolean interruped = false;
 
   public OpenCommand(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -27,8 +29,23 @@ public class OpenCommand extends Command {
   }
 
   @Override
+  public void execute() {
+    //if after 50 execute cycles the intake is not at the open position, it is likely that the intake is stuck on something and the command should be interrupted to prevent damage to the motor
+    if(counter<50 || intake.getIntakePosition() >= IntakeConstants.OPEN_POSITION-IntakeConstants.POSITION_TOLERANCE){
+      counter++;
+    }
+    else{
+      interruped = true;
+    }
+  }
+
+  @Override
   public boolean isFinished(){
-    return intake.positionAtSetPoint();
+    return intake.positionAtSetPoint() || interruped;
+  }
+
+  public static boolean getInterruped(){
+    return interruped;
   }
 
 
