@@ -26,6 +26,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.drivetrain.PPController;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -54,6 +55,7 @@ public class RobotContainer
     private final LoggedDashboardChooser<Command> chooser;
 
     private final Climb climb;
+    private final LoggedNetworkNumber hoodAngle;
 
 
     public static RobotContainer getInstance(){
@@ -65,6 +67,7 @@ public class RobotContainer
 
     private RobotContainer()
     {
+        hoodAngle = new LoggedNetworkNumber("HoodAngle", 0);
         shooter = new Shooter();
 
         indexer = new Indexer();

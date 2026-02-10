@@ -33,8 +33,8 @@ public class VisionConstants {
             PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
             "dolev",
             new Transform3d(
-                new Translation3d(0.3, 0.3, 0.08),
-                new Rotation3d(0, Units.degreesToRadians(-55),Units.degreesToRadians(-90))
+                new Translation3d(-0.145, -0.345, 0.445),
+                new Rotation3d(0, Units.degreesToRadians(-35),Units.degreesToRadians(180))
     
             ),
             0.1, // XY standard deviation factor

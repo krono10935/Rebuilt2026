@@ -3,6 +3,8 @@ package frc.robot.subsystems.Shooter.IO;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
+import com.revrobotics.AbsoluteEncoder;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -11,17 +13,20 @@ import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
+import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
 public class ShooterIODevBot implements ShooterIO {
 
     private final BasicMotor leadShootingMotor;
     private final BasicMotor followShootingMotor;
 
+    private final BasicMotor hoodMotor;
+
+    private final BasicMotor kickerMotor;
+
     private final BasicMotorConfig leadConfig;
 
     private boolean isKickerActive;
-
-    private LoggedNetworkNumber shiityP;
 
     public ShooterIODevBot(){
         leadConfig = ShooterConstants.getLeadShootingMotorConfig();
@@ -29,34 +34,34 @@ public class ShooterIODevBot implements ShooterIO {
         leadShootingMotor = new BasicSparkFlex(leadConfig);
         followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
         
-        leadShootingMotor.getController().setSendableSlot(1);
+        leadShootingMotor.getController().setSendableSlot(0);
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
+
+        hoodMotor = new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
+        // ((BasicSparkMAX)hoodMotor).useAbsoluteEncoder(
+        //     ShooterConstants.IS_HOOD_ABSOLUTE_ENCODER_INVERTED,
+        //     ShooterConstants.HOOD_ENCODER_ZERO_OFFSET, 
+        //     ShooterConstants.HOOD_MOTOR_TO_ENCODER_RATIO, 
+        //     ShooterConstants.HOOD_ABSOLUTE_ENCODER_RANGE
+        // );
+
+        kickerMotor = new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
         
 
         isKickerActive = false;
-        SmartDashboard.putData(leadShootingMotor.getController());
+        SmartDashboard.putData(hoodMotor.getController());
 
-        shiityP = new LoggedNetworkNumber("p");
-        shiityP.setDefault(0);
-        
     }
 
     @Override
     public void spinUp(double speedMPS){
-        // double targetVelocity = speedMPS / ShooterConstants.FLYWHEEL_CICUMFRENCE;
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, 0);
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 0);
         Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
     public void keepVelocity(double speedMPS){
-        // double targetVelocity = speedMPS / ShooterConstants.FLYWHEEL_CICUMFRENCE;
-
-        double shitP = leadShootingMotor.getController().getGoalAsDouble() - leadShootingMotor.getVelocity();
-
-        shitP *= shiityP.getAsDouble();
-
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY, Math.max(0, shitP), 1);
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
 
@@ -67,7 +72,9 @@ public class ShooterIODevBot implements ShooterIO {
 
     @Override
     public boolean isShooterAtGoal(){
-        return leadShootingMotor.atGoal();
+        return Math.abs(leadShootingMotor.getController().getGoalAsDouble() -
+         leadShootingMotor.getVelocity())
+          <= ShooterConstants.SHOOTING_SPEED_TOLERANCE;
     }
 
     public void setFlyWheelVoltage(double voltage){
@@ -76,14 +83,22 @@ public class ShooterIODevBot implements ShooterIO {
     }
 
     @Override
-    public void toggleKicker(boolean isActive){}
+    public void toggleKicker(boolean isActive){
+        if (isActive){
+            kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
+        } else {
+            kickerMotor.stop();
+        }
+    }
 
     @Override
-    public void setHoodAngle(Rotation2d angle){}
+    public void setHoodAngle(Rotation2d angle){
+        hoodMotor.setControl(angle.getRotations(), ControlMode.POSITION);
+    }
 
     @Override
     public boolean isHoodAtSetpoint(){
-        return false;
+        return hoodMotor.atSetpoint();
     }
 
     @Override

@@ -35,10 +35,10 @@ public class ShooterIOReal implements ShooterIO {
         hoodMotor =  new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
         
         hoodMotor.useAbsoluteEncoder(
-            ShooterConstants.IS_ABSOLUTE_ENCODER_INVERTED,
-            ShooterConstants.ENCODER_ZERO_OFFSET, 
-            ShooterConstants.MOTOR_TO_ENCODER_RATIO, 
-            ShooterConstants.ABSOLUTE_ENCODER_RANGE
+            ShooterConstants.IS_SHOOTER_ABSOLUTE_ENCODER_INVERTED,
+            ShooterConstants.SHOOTER_ENCODER_ZERO_OFFSET, 
+            ShooterConstants.SHOOTER_MOTOR_TO_ENCODER_RATIO, 
+            ShooterConstants.SHOOTER_ABSOLUTE_ENCODER_RANGE
         );
 
         kickerMotor =  new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
@@ -50,13 +50,13 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void spinUp(double speedMPS){
         targetVelocity = speedMPS;
-        leadShootingMotor.setControl(speedMPS , ControlMode.VELOCITY,0);
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY,0);
         Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
     public void keepVelocity(double speedMPS){
-        leadShootingMotor.setControl(targetVelocity , ControlMode.VELOCITY, 1);
+        leadShootingMotor.setControl(targetVelocity , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
 
@@ -67,7 +67,9 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public boolean isShooterAtGoal(){
-        return leadShootingMotor.atGoal();
+        return Math.abs(leadShootingMotor.getController().getGoalAsDouble() -
+         leadShootingMotor.getVelocity())
+          <= ShooterConstants.SHOOTING_SPEED_TOLERANCE;
     }
 
     public void setFlyWheelVoltage(double voltage){
