@@ -7,9 +7,11 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.StationaryHomeCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
@@ -121,8 +123,11 @@ public class RobotContainer
         }, PPController::clearThetaOverride);
 
 
-        NamedCommands.registerCommand("shootAndAim",
+        NamedCommands.registerCommand("shootAndAimMoving",
                 new ShootCommand(shooter, drivetrain, indexer).alongWith(aimRobot));
+
+        NamedCommands.registerCommand("shootAndAimStationary",
+                new ShootCommand(shooter, drivetrain, indexer).alongWith(new StationaryHomeCommand(drivetrain)));
 
         NamedCommands.registerCommand("spinUp", new SpinUp(shooter));
 

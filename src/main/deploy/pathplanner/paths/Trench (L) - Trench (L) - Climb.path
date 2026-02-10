@@ -142,7 +142,7 @@
     {
       "name": "Shooting",
       "minWaypointRelativePos": 5.75,
-      "maxWaypointRelativePos": 6.2,
+      "maxWaypointRelativePos": 6.9,
       "constraints": {
         "maxVelocity": 1.75,
         "maxAcceleration": 1.75,
@@ -169,17 +169,17 @@
     {
       "name": "Shooting",
       "waypointRelativePos": 5.75,
-      "endWaypointRelativePos": 6.2,
+      "endWaypointRelativePos": 6.9,
       "command": {
         "type": "named",
         "data": {
-          "name": "shootAndAim"
+          "name": "shootAndAimMoving"
         }
       }
     },
     {
-      "name": "CloseIntake & OpenClimb",
-      "waypointRelativePos": 6.2,
+      "name": "OpenClimb",
+      "waypointRelativePos": 6.220825852782765,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -188,16 +188,21 @@
             {
               "type": "named",
               "data": {
-                "name": "closeIntake"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
                 "name": "openClimb"
               }
             }
           ]
+        }
+      }
+    },
+    {
+      "name": "CloseIntake",
+      "waypointRelativePos": 7.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "closeIntake"
         }
       }
     }

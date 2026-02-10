@@ -25,6 +25,7 @@ public class ShooterConstants {
 
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
 
+    public static final double DELIVERY_VELOCITY = 2; // m/s
 
 
     public static final boolean IS_SHOOTER_ABSOLUTE_ENCODER_INVERTED = false;

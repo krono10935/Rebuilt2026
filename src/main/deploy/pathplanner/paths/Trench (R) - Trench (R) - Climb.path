@@ -142,7 +142,7 @@
     {
       "name": "Intake",
       "minWaypointRelativePos": 3.0807899461400243,
-      "maxWaypointRelativePos": 3.9964093357270984,
+      "maxWaypointRelativePos": 4.07,
       "constraints": {
         "maxVelocity": 1.75,
         "maxAcceleration": 1.75,
@@ -155,7 +155,7 @@
     {
       "name": "Shooting",
       "minWaypointRelativePos": 5.75,
-      "maxWaypointRelativePos": 6.2,
+      "maxWaypointRelativePos": 6.9,
       "constraints": {
         "maxVelocity": 1.75,
         "maxAcceleration": 1.75,
@@ -171,7 +171,7 @@
     {
       "name": "Intake",
       "waypointRelativePos": 3.08,
-      "endWaypointRelativePos": 4.0,
+      "endWaypointRelativePos": 4.07,
       "command": {
         "type": "named",
         "data": {
@@ -182,16 +182,16 @@
     {
       "name": "Shooting",
       "waypointRelativePos": 5.75,
-      "endWaypointRelativePos": 6.2,
+      "endWaypointRelativePos": 6.9,
       "command": {
         "type": "named",
         "data": {
-          "name": "shootAndAim"
+          "name": "shootAndAimMoving"
         }
       }
     },
     {
-      "name": "CloseIntake & OpenClimb",
+      "name": "OpenClimb",
       "waypointRelativePos": 6.2,
       "endWaypointRelativePos": null,
       "command": {
@@ -201,16 +201,21 @@
             {
               "type": "named",
               "data": {
-                "name": "closeIntake"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
                 "name": "openClimb"
               }
             }
           ]
+        }
+      }
+    },
+    {
+      "name": "CloseIntake",
+      "waypointRelativePos": 7.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "closeIntake"
         }
       }
     }
