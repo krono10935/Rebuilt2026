@@ -50,9 +50,9 @@ public class ShooterDevBotConstants {
         config.slot1Config.feedForwardConfig.velocityFeedforward = 0.3128409;
         config.slot1Config.feedForwardConfig.frictionFeedForward = 0.12518549;
 
-        config.slot0Config.pidConfig.kP = 0.1;
+        config.slot1Config.pidConfig.kP = 0;
         config.slot1Config.pidConfig.kI = 0.0005;
-        config.slot1Config.pidConfig.kD = 0;   
+        config.slot1Config.pidConfig.kD = 0.05;   
         config.slot1Config.pidConfig.tolerance = 0;
 
         config.slot1Config.pidConfig.iZone = 1;

@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -46,7 +47,7 @@ public class ShooterIODevBot implements ShooterIO {
 
         isKickerActive = false;
         
-        leadShootingMotor.getController().setSendableSlot(0);
+        leadShootingMotor.getController().setSendableSlot(1);
         SmartDashboard.putData(leadShootingMotor.getController());
 
 
@@ -70,17 +71,30 @@ public class ShooterIODevBot implements ShooterIO {
 
     @Override
     public void keepVelocity(double speedMPS){
+        double output = 0;
 
-        double dOutput = 0;
+        if(!isShooterAtGoal() && leadShootingMotor.getMeasurement().acceleration() < 0 && leadShootingMotor.getVelocity() < speedMPS)
+            output = 6;
 
-        if(!isShooterAtGoal() && leadShootingMotor.getVelocity() < speedMPS){
-            double acceleration = leadShootingMotor.getMeasurement().acceleration();
-
-            dOutput = acceleration < 0 ? -acceleration * 0.2 : 0;
-        }
-
-        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, dOutput, 1);
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, output, 1);
         Logger.recordOutput("Shooter/keeping", true);
+    }
+
+    @Deprecated
+    private double calculateFF(double target){
+        if(isShooterAtGoal()) return 0;
+
+        if(leadShootingMotor.getVelocity() > target) return 0;
+
+        if(leadShootingMotor.getMeasurement().acceleration() < 0){
+            return 12;
+        }
+        else{
+            double error = Math.abs(target - leadShootingMotor.getVelocity());
+
+            if(error >= 2) return 12;
+            else return MathUtil.inverseInterpolate(0, 2, error) * 12;
+        }
     }
 
     @Override
