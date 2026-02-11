@@ -1,9 +1,11 @@
 package frc.robot.subsystems.Shooter.IO;
 
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import java.util.function.DoubleSupplier;
 
-import com.revrobotics.AbsoluteEncoder;
+import org.littletonrobotics.junction.Logger;
+
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,31 +30,36 @@ public class ShooterIODevBot implements ShooterIO {
 
     private boolean isKickerActive;
 
+    private final DoubleSupplier dutyCycleSupplier;
+
     public ShooterIODevBot(){
-        leadConfig = ShooterConstants.getLeadShootingMotorConfig();
+        leadConfig = ShooterDevBotConstants.getLeadShootingMotorConfig();
 
         leadShootingMotor = new BasicSparkFlex(leadConfig);
-        followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
+        followShootingMotor = new BasicSparkFlex(ShooterDevBotConstants.getFollowShootingMotorConfig());
         
-        leadShootingMotor.getController().setSendableSlot(1);
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
-        hoodMotor = new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
-        // ((BasicSparkMAX)hoodMotor).useAbsoluteEncoder(
-        //     ShooterConstants.IS_HOOD_ABSOLUTE_ENCODER_INVERTED,
-        //     ShooterConstants.HOOD_ENCODER_ZERO_OFFSET, 
-        //     ShooterConstants.HOOD_MOTOR_TO_ENCODER_RATIO, 
-        //     ShooterConstants.HOOD_ABSOLUTE_ENCODER_RANGE
-        // );
+        hoodMotor = new BasicSparkMAX(ShooterDevBotConstants.getHoodMotorConfig());
 
-        
-
-        kickerMotor = new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
-        
+        kickerMotor = new BasicSparkMAX(ShooterDevBotConstants.getKickerMotorConfig());
 
         isKickerActive = false;
+        
+        leadShootingMotor.getController().setSendableSlot(0);
         SmartDashboard.putData(leadShootingMotor.getController());
 
+
+        var motor = ((BasicSparkFlex)leadShootingMotor);
+
+
+        var spark = motor.getMotor();
+
+        motor.getSparkConfig().signals.appliedOutputPeriodMs(10);
+
+        spark.configure(motor.getSparkConfig(), ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        
+        dutyCycleSupplier = spark::getAppliedOutput;
     }
 
     @Override
@@ -63,7 +70,16 @@ public class ShooterIODevBot implements ShooterIO {
 
     @Override
     public void keepVelocity(double speedMPS){
-        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 1);
+
+        double dOutput = 0;
+
+        if(!isShooterAtGoal() && leadShootingMotor.getVelocity() < speedMPS){
+            double acceleration = leadShootingMotor.getMeasurement().acceleration();
+
+            dOutput = acceleration < 0 ? -acceleration * 0.2 : 0;
+        }
+
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, dOutput, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
 
@@ -112,7 +128,7 @@ public class ShooterIODevBot implements ShooterIO {
 
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
 
-        
+        Logger.recordOutput("Shooter/motorDutyCycle", dutyCycleSupplier.getAsDouble());
         
     }
 

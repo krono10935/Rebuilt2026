@@ -33,9 +33,8 @@ public class Shooter extends SubsystemBase {
       io = new ShooterIODevBot();
     }
     else{
-      io = new ShooterIODevBot();
+      io = new ShooterIOReal();
     }
-    // io = new ShooterIONonBasicMotor();
 
     inputs = new ShooterInputsAutoLogged();
 

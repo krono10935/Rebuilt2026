@@ -25,23 +25,16 @@ public class ShooterIOReal implements ShooterIO {
     private double targetVelocity;
 
     public ShooterIOReal(){
-        leadConfig = ShooterConstants.getLeadShootingMotorConfig();
+        leadConfig = ShootRealConstants.getLeadShootingMotorConfig();
 
         leadShootingMotor = new BasicSparkFlex(leadConfig);
-        followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
+        followShootingMotor = new BasicSparkFlex(ShootRealConstants.getFollowShootingMotorConfig());
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
 
-        hoodMotor =  new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
-        
-        hoodMotor.useAbsoluteEncoder(
-            ShooterConstants.IS_SHOOTER_ABSOLUTE_ENCODER_INVERTED,
-            ShooterConstants.SHOOTER_ENCODER_ZERO_OFFSET, 
-            ShooterConstants.SHOOTER_MOTOR_TO_ENCODER_RATIO, 
-            ShooterConstants.SHOOTER_ABSOLUTE_ENCODER_RANGE
-        );
+        hoodMotor =  new BasicSparkMAX(ShootRealConstants.getHoodMotorConfig());
 
-        kickerMotor =  new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
+        kickerMotor =  new BasicSparkMAX(ShootRealConstants.getKickerMotorConfig());
 
         isKickerActive = false;
 

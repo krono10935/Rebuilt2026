@@ -80,14 +80,17 @@ public class RobotContainer
 
     private void configureBindings() {
 
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
-        xboxController.a().onTrue(new InstantCommand(() -> drivetrain.resetOnlyGyro()));
-        xboxController.b().whileTrue(new InstantCommand(() -> shooter.keepVelocity(17)).repeatedly());
+        // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        // xboxController.a().onTrue(new InstantCommand(() -> drivetrain.resetOnlyGyro()));
+        xboxController.b().whileTrue(new RunCommand(() -> shooter.keepVelocity(17), shooter));
+        xboxController.a().onTrue(new InstantCommand(() -> shooter.spinUp(17), shooter));
+        xboxController.x().onTrue(new InstantCommand(() -> shooter.stopFlyWheel(), shooter));
         // xboxController.x().onTrue(new InstantCommand(() -> {shooter.stopFlyWheel(); shooter.toggleKicker(false);}));
         // shooter.setDefaultCommand(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController));
-        xboxController.x().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
+        // xboxController.x().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
        
-        xboxController.y().onTrue(new FunctionalCommand(()-> {shooter.spinUp(speedMPS.getAsDouble() ); shooter.toggleKicker(true);}, ()-> {}, (b) -> shooter.keepVelocity(speedMPS.getAsDouble()),shooter::isShooterAtGoal, shooter));
+        // xboxController.y().onTrue(new FunctionalCommand(()-> {shooter.spinUp(speedMPS.getAsDouble() );
+        //     shooter.toggleKicker(true);}, ()-> {}, (b) -> shooter.keepVelocity(speedMPS.getAsDouble()),shooter::isShooterAtGoal, shooter));
 
         vision.setDefaultCommand(new RunCommand(() -> ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds()),vision));
     }

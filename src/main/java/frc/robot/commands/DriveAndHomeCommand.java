@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -34,20 +35,11 @@ public class DriveAndHomeCommand extends Command {
         this.controller = controller;
         addRequirements(drivetrain);
 
-        var gains = DriveToPoseConstants.ANGULAR_PID_GAINS;
-        angularController = new ProfiledPIDController(
-                gains.getP(),gains.getI(),gains.getD(),gains.getConstraints());
-        angularController.enableContinuousInput(-Math.PI,Math.PI);
-        angularController.setIntegratorRange(-5, 5);
+        angularController = Constants.THETA_CONTROLLER;
 
         MAX_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.maxLinearSpeed();
         MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed();
-
-        angularController.setP(4.0);
-        angularController.setI(3.5);
-
-
-
+        
         SmartDashboard.putData(angularController);
     }
 
