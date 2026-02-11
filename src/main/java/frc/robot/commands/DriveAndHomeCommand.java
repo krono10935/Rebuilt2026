@@ -8,6 +8,8 @@ import com.pathplanner.lib.path.DriveToPoseConstants;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Shooter.ShotCalculator;
@@ -36,14 +38,29 @@ public class DriveAndHomeCommand extends Command {
         angularController = new ProfiledPIDController(
                 gains.getP(),gains.getI(),gains.getD(),gains.getConstraints());
         angularController.enableContinuousInput(-Math.PI,Math.PI);
+        angularController.setIntegratorRange(-5, 5);
 
         MAX_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.maxLinearSpeed();
         MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed();
+
+        angularController.setP(4.0);
+        angularController.setI(3.5);
+
+
+
+        SmartDashboard.putData(angularController);
     }
 
     private Rotation2d angleFieldRelative(){
         return ChassisConstants.shouldFlipPath()?
-                drivetrain.getGyroAngle():drivetrain.getGyroAngle().rotateBy(Rotation2d.k180deg) ;
+                drivetrain.getGyroAngle():drivetrain.getGyroAngle().rotateBy(Rotation2d.k180deg);
+    }
+
+    @Override
+    public void initialize(){
+        angularController.reset(
+            new State(drivetrain.getEstimatedPosition().getRotation().getRadians(),
+            drivetrain.getChassisSpeeds().omegaRadiansPerSecond));
     }
 
 
@@ -52,9 +69,9 @@ public class DriveAndHomeCommand extends Command {
         double speed = lerp(1 - controller.getRightTriggerAxis());
 
 
-        double xSpeed = deadband(controller.getLeftX()) * speed;
-        double ySpeed = deadband(controller.getLeftY()) * speed;
-        double thetaSpeedDriver = deadband(controller.getRightY()) * speed;
+        double xSpeed = deadband(-controller.getLeftY()) * speed;
+        double ySpeed = deadband(-controller.getLeftX()) * speed;
+        double thetaSpeedDriver = deadband(-controller.getRightX()) * speed;
 
         ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
         drivetrain.getChassisSpeeds());

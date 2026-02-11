@@ -233,6 +233,15 @@ public class Drivetrain extends SubsystemBase {
     }
 
     /**
+     * Resets the gyros
+     */
+    public void resetOnlyGyro(){
+        Pose2d newPose = new Pose2d(getEstimatedPosition().getTranslation(), AllianceFlipUtil.apply(new Rotation2d()));
+
+        reset(newPose);
+    }
+
+    /**
      * Adds the vision measurement
      *
      * @param pose      the position where the vision think the robot is there
