@@ -1,16 +1,27 @@
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.DriveAndHomeCommand;
+import frc.robot.commands.SpinUpForDelivery;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
+import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
@@ -42,13 +53,12 @@ public class Sequences {
          */
         private static Command closeSubsystems(
                 Intake intake,
-                Indexer indexer,
                 Climb climb,
                 Shooter shooter
         ) {
             ParallelCommandGroup closeSubsystemsParallel = new ParallelCommandGroup(
                     stopIntakeAndClose(intake),
-                    indexer.turnOffIndexerCommand(),
+                    shooter.getIndexer().turnOffIndexerCommand(),
                     new InstantCommand(shooter::stopFlyWheel),
                     climb.closeCommand()
             );
@@ -92,13 +102,12 @@ public class Sequences {
          */
         public static Command manualClimb(
                 Intake intake,
-                Indexer indexer,
                 Drivetrain drivetrain,
                 Climb climb,
                 Shooter shooter
         ) {
             SequentialCommandGroup climbCommand = new SequentialCommandGroup(
-                    closeSubsystems(intake, indexer, climb, shooter),
+                    closeSubsystems(intake, climb, shooter),
                     new FunctionalCommand(
                             () -> {},
                             () -> {},
@@ -128,7 +137,6 @@ public class Sequences {
          */
         public static Command manualDeclimb(
                 Intake intake,
-                Indexer indexer,
                 Climb climb,
                 Shooter shooter
         ) {
@@ -186,7 +194,6 @@ public class Sequences {
          */
         public static Command autoClimb(
                 Intake intake,
-                Indexer indexer,
                 Drivetrain drivetrain,
                 Climb climb,
                 Shooter shooter
@@ -196,7 +203,7 @@ public class Sequences {
             ParallelCommandGroup ParallelClimbCommand = new ParallelCommandGroup();
 
             SequentialCommandGroup sequentialClimbCommandGroup = new SequentialCommandGroup(
-                    closeSubsystems(intake, indexer, climb, shooter),
+                    closeSubsystems(intake, climb, shooter),
                     new FunctionalCommand(
                             () -> {},
                             () -> {},
@@ -271,7 +278,6 @@ public class Sequences {
          */
         public static Command autoDeclimb(
                 Intake intake,
-                Indexer indexer,
                 Drivetrain drivetrain,
                 Climb climb,
                 Shooter shooter
@@ -359,40 +365,8 @@ public static Command intakeOpenStart(Intake intake) {
 
     // --- Step 1: Attempt to open the intake ---
     intakeCommand.addCommands(
-        new OpenCommand(intake)
+        OpenCommand.openWithErrorHandeling(intake)
     );
-
-    // --- If opening was interrupted, attempt recovery ---
-    if (OpenCommand.getInterruped()) {
-
-        // Try closing the intake to reset its state
-        intakeCommand.addCommands(
-            new CloseCommand(intake)
-        );
-
-        // --- If closing also fails, disable the intake completely ---
-        if (CloseCommand.getInterruped()) {
-            shutdownIntake(
-                intake,
-                "CRITICAL FAILURE🥀, ",
-                "Intake failed to open and close. Intake disabled for safety." +
-                "it is ok twin ❤️"
-            );
-            return intakeCommand;
-        }
-
-        // Report that the open command failed but recovery succeeded
-        SmartDashboard.putBoolean(
-            "Intake Open Interrupted",
-            true
-        );
-    }
-    else {
-        // --- Step 2: Intake opened successfully, start intake motor ---
-        intakeCommand.addCommands(
-            new IntakeCommand(intake)
-        );
-    }
 
     return intakeCommand;
 }
@@ -425,26 +399,10 @@ public static Command stopIntakeAndClose(Intake intake) {
 
     // --- Step 2: Try to close the intake ---
     intakeCommand.addCommands(
-        new CloseCommand(intake)
+        CloseCommand.closeWithErrorHandeling(intake)
     );
 
-    // --- If closing was interrupted, start recovery procedure ---
-    if (CloseCommand.getInterruped()) {
-
-        // Attempt to reopen the intake
-        intakeCommand.addCommands(
-            new OpenCommand(intake)
-        );
-
-        // --- If reopening also fails, disable intake completely ---
-        if (OpenCommand.getInterruped()) {
-            shutdownIntake(intake,
-                "CRITICAL FAILURE🥀, ",
-                "Intake failed to close and reopen. Intake has been disabled for safety." +
-                "it is ok twin ❤️"
-            );
-            return intakeCommand;
-        }
+   
 
         // --- Recovery attempt: reverse intake to clear obstruction ---
         intakeCommand.addCommands(
@@ -467,43 +425,30 @@ public static Command stopIntakeAndClose(Intake intake) {
 
         // Retry closing intake
         intakeCommand.addCommands(
-            new CloseCommand(intake)
+            CloseCommand.closeWithErrorHandeling(intake)
         );
 
-        // --- If closing still fails after recovery, shut everything down ---
-        if (CloseCommand.getInterruped()) {
-            shutdownIntake(intake,
-                "CRITICAL FAILURE🥀, ",
-                "Intake failed after recovery attempt. Intake has been disabled for safety." +
-                "it is ok twin ❤️"
-            );
-            return intakeCommand;
-        }
-    }
 
     return intakeCommand;
+
+
 }
 
-/**
- * Safely disables the intake subsystem and reports a critical error.
- *
- * @param intake the intake subsystem
- * @param title dashboard error title
- * @param message dashboard error message
- */
-private static void shutdownIntake(Intake intake, String title, String message) {
+public static Command delivery(Drivetrain drivetrain, Shooter shooter){
+    SequentialCommandGroup deliveryGroup = new SequentialCommandGroup();
+    deliveryGroup.addCommands(new SpinUpForDelivery(drivetrain, shooter, 20));
 
-    // Stop all motors
-    new InstantCommand(intake::stopIntakeMotor);
-    new InstantCommand(() ->
-        intake.setPositionMotorPercentOutput(0)
-    );
+    Supplier<Translation2d> closestTrenchSupplier =() -> (
+        drivetrain.getEstimatedPosition().getY() >= FieldConstants.fieldWidth / 2.0)? 
+        FieldConstants.midRightTranch : FieldConstants.midLeftTrench; 
 
-    // Report error clearly to drivers
-    SmartDashboard.putString(
-        "INTAKE STATUS",
-        title + message
-    );
+    Supplier<Rotation2d> deliveryAngleSupplier = () -> 
+    closestTrenchSupplier.get().minus(drivetrain.getEstimatedPosition().getTranslation()).getAngle();
+
+    
+ 
+    return deliveryGroup;
+
 }
 
 }

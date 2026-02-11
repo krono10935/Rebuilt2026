@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Indexer;
 
+import java.util.ResourceBundle.Control;
+
+import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
 public class IndexerIOReal implements IndexerIO {
@@ -17,7 +20,7 @@ public class IndexerIOReal implements IndexerIO {
 
     @Override
     public void turnOn() {
-        motorLeft.setPercentOutput(IndexerConstants.SPINNING_PRECENT_OUTPUT);
+        motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.VELOCITY);;
         isSpinning = true;
     }
 

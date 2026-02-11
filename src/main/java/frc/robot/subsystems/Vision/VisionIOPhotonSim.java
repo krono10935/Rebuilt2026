@@ -2,7 +2,6 @@ package frc.robot.subsystems.Vision;
 
 import java.util.function.Supplier;
 
-import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;

@@ -5,14 +5,14 @@
 package frc.robot.commands.IntakeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 
 public class CloseCommand extends Command {
 
   private Intake intake;
-  private int counter = 0;
-  private static boolean interruped = false;
   
   public CloseCommand(Intake intake) {
 
@@ -20,16 +20,23 @@ public class CloseCommand extends Command {
     addRequirements(intake);
 
   }
-    @Override
-    public void execute() {
-        //if after 50 execute cycles the intake is not at the open position, it is likely that the intake is stuck on something and the command should be interrupted to prevent damage to the motor
-        if(counter<50 || intake.getIntakePosition() >= IntakeConstants.OPEN_POSITION-IntakeConstants.POSITION_TOLERANCE){
-            counter++;
-        }
-        else{
-            interruped = true;
-        }
+   public static Command closeWithErrorHandeling(Intake intake){
+    return new ParallelRaceGroup(new CloseCommand(intake),new WaitCommand(4));
+  }
+
+  public static class IntakeTimeOut extends WaitCommand{
+    public IntakeTimeOut(double time){
+      super(time);
     }
+
+    @Override
+    public void end(boolean interrupted){
+      super.end(interrupted);
+      if(!interrupted){
+        //TODO:error
+      }
+    }
+  }
 
   @Override
   public void initialize() {
@@ -41,8 +48,6 @@ public class CloseCommand extends Command {
   public boolean isFinished(){
     return intake.positionAtSetPoint();
   }
-
-  public static boolean getInterruped(){
-      return interruped;
-  }
 }
+
+

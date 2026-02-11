@@ -67,11 +67,13 @@ public class ShootCommand extends Command {
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
     if (shouldShoot){
       shooter.toggleKicker(true);
+      shooter.getIndexer().turnOn();
     }
 
     // otherwise open the kicker and start letting the shooter shoot
     else{
       shooter.toggleKicker(false);
+      shooter.getIndexer().turnOn();
     }
     
   }

@@ -50,6 +50,8 @@ public record VisionFrame(
     public static class VisionInputs {
         /** True if the camera is currently connected */
         public boolean isConnected = false;
+
+        public int pipelineIndex = 0;
         /** Array of recent vision frames captured by this camera */
         public VisionFrame[] visionFrames = new VisionFrame[0];
         /** Array of all detected fiducial target IDs in the frames */
@@ -62,5 +64,7 @@ public record VisionFrame(
      * @param inputs The VisionInputs instance to populate
      */
     public void updateInputs(VisionInputs inputs);
+
+    public void setPiplineIndex(int index);
 
 }

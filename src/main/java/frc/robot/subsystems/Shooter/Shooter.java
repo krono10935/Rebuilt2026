@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.IO.ShooterIODevBot;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
@@ -19,12 +20,16 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIO io;
 
+  private final Indexer indexer;
+
   private final ShooterInputsAutoLogged inputs;
 
   /**
    * Create a shooter IO based on the robot's state (sim, dev, comp)
    */
   public Shooter() {
+
+    indexer = new Indexer();
 
     if (!RobotBase.isReal()){
       io = new ShooterIOSim();
@@ -120,5 +125,9 @@ public class Shooter extends SubsystemBase {
  
   public boolean readyToShoot(){
     return isHoodAtSetpoint() && isShooterAtGoal();
+  }
+
+  public Indexer getIndexer(){
+    return indexer;
   }
 }
