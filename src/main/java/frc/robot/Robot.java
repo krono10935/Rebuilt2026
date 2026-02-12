@@ -19,6 +19,7 @@ import frc.robot.leds.LedLocation;
 import frc.robot.leds.LedPattern;
 import frc.robot.leds.LedState;
 import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.utils.ErrorMessage;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
 import io.github.captainsoccer.basicmotor.motorManager.MotorManager;
@@ -73,6 +74,8 @@ public class Robot extends LoggedRobot
             RobotContainer.getInstance().ledManager.setColors(new LedState(LedPattern.BLUE_PULSE, Color.kDarkBlue, Color.kCyan, 0.15, 0.7, LedLocation.ALL));
             SmartDashboard.putBoolean("test", false);
         }
+
+        ErrorMessage.updateErrors();
     }
     
     

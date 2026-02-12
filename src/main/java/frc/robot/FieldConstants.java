@@ -65,5 +65,9 @@ public class FieldConstants {
     public static final Pose2d leftFace =
         AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getTagPose(21).get().toPose2d();
   }
+    public static Translation2d trenchRight = new Translation2d(); //TODO: find actual translations
+    public static Translation2d trenchLeft = new Translation2d();
+
+    public static Translation2d tower = new  Translation2d();
 
 }
