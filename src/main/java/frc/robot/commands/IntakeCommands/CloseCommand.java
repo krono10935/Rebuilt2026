@@ -46,7 +46,7 @@ public class CloseCommand extends Command {
     }
 
     public static Command closeWithErrorHandeling(Intake intake){
-        return new ParallelRaceGroup(new CloseCommand(intake),new WaitCommand(TIME_FOR_INTAKE_TO_CLOSE));
+        return new ParallelRaceGroup(new CloseCommand(intake),new WaitCommand(IntakeConstants.TIME_FOR_INTAKE_TO_CLOSE));
     }
 }
 
