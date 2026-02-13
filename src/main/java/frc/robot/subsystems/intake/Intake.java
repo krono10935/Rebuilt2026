@@ -5,16 +5,18 @@
 package frc.robot.subsystems.intake;
 
 
+import frc.utils.ErrorMessage;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 
-public class Intake extends SubsystemBase {
+public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
   private final IntakeIO io;
   private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
   private int ballsCounter;
+  private boolean failedToClose;
   /** Creates a new Intake. */
   public Intake() {
 
@@ -27,68 +29,78 @@ public class Intake extends SubsystemBase {
 
     ballsCounter = 0;
 
-  }
+    failedToClose = false;
 
-  public boolean getLimitSwitch(){
-    return io.getLimitSwitch();
-  }
+    ErrorMessage.create(this,
+          "error closing" + this.getName(),
+          () -> failedToClose);//TODO make each subsystem have its own error msg
+    }
 
-  public void setIntakeMotorVelocity(Rotation2d velocity){
-    io.setIntakeMotorVelocity(velocity);
-  }
+    public boolean getLimitSwitch(){
+        return io.getLimitSwitch();
+    }
 
-  public double getIntakePosition(){
-    return io.getIntakePosition();
-  }
+    public void setIntakeMotorVelocity(Rotation2d velocity){
+        io.setIntakeMotorVelocity(velocity);
+    }
 
-  public void setPosition(double pos){
-    io.setPositionMotor(pos);
-  }
+    public double getIntakePosition(){
+        return io.getIntakePosition();
+    }
 
-  public void stopIntakeMotor(){
-    io.stopIntakeMotor();
-  }
+    public void setPosition(double pos){
+        io.setPositionMotor(pos);
+    }
 
-  public void setPositionMotorPercentOutput(double percent){
-    io.setPositionMotorPercentOutput(percent);
-  }
+    public void stopIntakeMotor(){
+        io.stopIntakeMotor();
+    }
 
-  public double getPower(){
-    return inputs.power;
-  }
+    public void setPositionMotorPercentOutput(double percent){
+        io.setPositionMotorPercentOutput(percent);
+    }
 
-  public boolean intakeMotorAtSetPoint(){
-    return io.intakeMotorAtSetPoint();
-  }
+    public double getPower(){
+        return inputs.power;
+    }
 
-  public boolean positionAtSetPoint(){
-    return io.positionMotorAtSetPoint();
-  }
+    public boolean intakeMotorAtSetPoint(){
+        return io.intakeMotorAtSetPoint();
+    }
 
-  public void resetPositionMotorEncoder(){
-    io.resetPositionMotorEncoder();
-  }
-  
-  public int getBalls(){
-    return ballsCounter;
-  }
+    public boolean positionAtSetPoint(){
+        return io.positionMotorAtSetPoint();
+    }
 
-  public void removeBalls(int decrease){
-    ballsCounter -= decrease;
-  }
+    public void resetPositionMotorEncoder(){
+        io.resetPositionMotorEncoder();
+    }
 
-  public void addBalls(int add){
-    ballsCounter += add;
-  } 
+    public int getBalls(){
+        return ballsCounter;
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    io.updateInputs(inputs);
-    Logger.processInputs(getName(), inputs);
+    public void removeBalls(int decrease){
+        ballsCounter -= decrease;
+    }
 
-    String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
-    Logger.recordOutput("Intake/Current Command ", currCommand);
+    public void addBalls(int add){
+        ballsCounter += add;
+    }
 
-  }
+    @Override
+    public void send(boolean shouldDisplayError){
+      failedToClose = shouldDisplayError;
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        io.updateInputs(inputs);
+        Logger.processInputs(getName(), inputs);
+
+        String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
+        Logger.recordOutput("Intake/Current Command ", currCommand);
+
+    }
 }

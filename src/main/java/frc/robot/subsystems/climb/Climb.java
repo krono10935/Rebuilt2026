@@ -4,24 +4,31 @@
 
 package frc.robot.subsystems.climb;
 
+import edu.wpi.first.wpilibj2.command.*;
+import frc.utils.ErrorMessage;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.w3c.dom.UserDataHandler;
 
-public class Climb extends SubsystemBase {
+public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
   /** Creates a new Climb. */
   private final ClimbIO io;
 
   private final ClimbInputsAutoLogged inputs;
 
   private boolean hasClimbed = false;
+
+  private boolean failedToClose = false;
   public Climb() {
     io = RobotBase.isReal() ? new ClimbIOReal() : new ClimbIOSim();
     inputs = new ClimbInputsAutoLogged();
+
+    failedToClose = false;
+
+    ErrorMessage.create(this,
+      "error closing" + this.getName(),
+              () -> failedToClose);//TODO make each subsystem have its own error msg
   }
 
   @Override
@@ -65,6 +72,7 @@ public class Climb extends SubsystemBase {
     public void setHasClimbed(boolean hasClimbed) {
         this.hasClimbed = hasClimbed;
     }
+
   /**
    * 
    * @return the close command
@@ -88,6 +96,11 @@ public class Climb extends SubsystemBase {
             this::isAtSetPoint,
             this);
 
+  }
+
+  @Override
+  public void send(boolean shouldDisplayError){
+      failedToClose = shouldDisplayError;
   }
 
 

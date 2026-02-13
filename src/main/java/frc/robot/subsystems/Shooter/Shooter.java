@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.Shooter;
 
+import frc.utils.ErrorMessage;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,22 +13,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.IO.ShooterIODevBot;
-import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
 
-public class Shooter extends SubsystemBase {
 
-  private final ShooterIO io;
+public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
 
-  private final Indexer indexer;
+    private final ShooterIO io;
 
-  private final ShooterInputsAutoLogged inputs;
+    private final Indexer indexer;
 
-  /**
-   * Create a shooter IO based on the robot's state (sim, dev, comp)
-   */
-  public Shooter() {
+    private final ShooterInputsAutoLogged inputs;
+
+    private boolean failedToClose;
+
+    /**
+    * Create a shooter IO based on the robot's state (sim, dev, comp)
+    */
+    public Shooter() {
 
     indexer = new Indexer();
 
@@ -40,15 +43,21 @@ public class Shooter extends SubsystemBase {
     else{
       io = new ShooterIODevBot();
     }
-    // io = new ShooterIONonBasicMotor();
+    // io = new ShooterIONonBasicMotor();s
 
     inputs = new ShooterInputsAutoLogged();
 
-  }
-  
+    failedToClose = false;
 
-  @Override
-  public void periodic(){
+    ErrorMessage.create(this,
+            "error closing" + this.getName(),
+            () -> failedToClose);//TODO make each subsystem have its own error msg
+
+    }
+
+
+    @Override
+    public void periodic(){
 
     io.update(inputs);
 
@@ -58,76 +67,90 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/is hood at setpoint", isHoodAtSetpoint());
     Logger.recordOutput("Shooter/is shooter at setpoint", isShooterAtGoal());
 
-  }
+    }
 
-  public void logSysID(){
+
+    public void hasFailedToClose(boolean failedToClose){
+    this.failedToClose = failedToClose;
+    }
+
+    public void logSysID(){
     io.logSysID();
-  }
+    }
 
-  /**
-   * 
-   * @param speedMPS speed to spinUp to
-   */
-  public void spinUp(double speedMPS){
+    public void setCloseMode(boolean isClosing){
+      this.failedToClose = isClosing;
+    }
+
+    /**
+    *
+    * @param speedMPS speed to spinUp to
+    */
+    public void spinUp(double speedMPS){
     io.spinUp(speedMPS);
-  }
+    }
 
-  public void keepVelocity(double speedMPS){
+    public void keepVelocity(double speedMPS){
     io.keepVelocity(speedMPS);
-  }
+    }
 
-  /**
-   * stop the flywheel
-   */
-  public void stopFlyWheel(){
+    /**
+    * stop the flywheel
+    */
+    public void stopFlyWheel(){
     io.stopFlyWheel();
-  }
+    }
 
-  /**
-   * 
-   * @return is shooter at setpoint
-   */
-  public boolean isShooterAtGoal(){
+    /**
+    *
+    * @return is shooter at setpoint
+    */
+    public boolean isShooterAtGoal(){
     return io.isShooterAtGoal();
-  }
+    }
 
-  /**
-   * 
-   * @param voltage apply the voltage to the flywheel motor(s)
-   */
-  public void setVoltage(double voltage){
+    /**
+    *
+    * @param voltage apply the voltage to the flywheel motor(s)
+    */
+    public void setVoltage(double voltage){
     io.setFlyWheelVoltage(voltage);
-  }
+    }
 
-  /**
-   * 
-   * @param isActive toggle on or off the kicker
-   */
-  public void toggleKicker(boolean isActive){
+    /**
+    *
+    * @param isActive toggle on or off the kicker
+    */
+    public void toggleKicker(boolean isActive){
     io.toggleKicker(isActive);
-  }
+    }
 
-  /**
-   * 
-   * @return is hood at setpoint
-   */
-  public boolean isHoodAtSetpoint(){
+    /**
+    *
+    * @return is hood at setpoint
+    */
+    public boolean isHoodAtSetpoint(){
     return io.isHoodAtSetpoint();
-  }
+    }
 
-  /**
-   * 
-   * @param angle angle to set the hood to
-   */
-  public void setHoodAngle(Rotation2d angle){
+    /**
+    *
+    * @param angle angle to set the hood to
+    */
+    public void setHoodAngle(Rotation2d angle){
     io.setHoodAngle(angle);
-  }
- 
-  public boolean readyToShoot(){
-    return isHoodAtSetpoint() && isShooterAtGoal();
-  }
+    }
 
-  public Indexer getIndexer(){
+    public boolean readyToShoot(){
+    return isHoodAtSetpoint() && isShooterAtGoal();
+    }
+
+    public Indexer getIndexer(){
     return indexer;
-  }
+    }
+
+    @Override
+    public void send(boolean shouldDisplayError) {
+        failedToClose = shouldDisplayError;
+    }
 }

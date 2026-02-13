@@ -1,8 +1,5 @@
 package frc.robot;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
@@ -12,6 +9,10 @@ public class Constants {
     public static final ChassisType CHASSIS_TYPE = ChassisType.COMPBOT;
 
     public static final double LOOP_PERIOD_SECONDS = 0.02;
+
+    public static final double ALL_SUBSYSTEMS_MAX_CLOSING_TIME = 1.0;
+
+    public static FieldConstants.TowerSide chosenTowerSideToClimb = FieldConstants.TowerSide.left; //TODO change based on which side
 
     public enum Phase{
             AUTO(0 ,0),

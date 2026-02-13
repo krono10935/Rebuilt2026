@@ -14,16 +14,16 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 public class SpinUpForDelivery extends Command {
   private final Drivetrain drivetrain;
   private final Shooter shooter;
-  private final double maxShootingSpeedRps;
+  private final double maxShootingSpeedMPS;
 
   private final double MAX_DELIVERY_DISTANCE = 2; //m
 
   /** Creates a new SpinUpForDelivery. */
-  public SpinUpForDelivery(Drivetrain drivetrain, Shooter shooter,double maxShootingSpeedRps){
+  public SpinUpForDelivery(Drivetrain drivetrain, Shooter shooter, double MaxSpinUpSpeedMPS){
                            // Use addRequirements() here to declare subsystem dependencies.
     this.drivetrain = drivetrain;
     this.shooter = shooter;
-    this.maxShootingSpeedRps = maxShootingSpeedRps;
+    this.maxShootingSpeedMPS = MaxSpinUpSpeedMPS;
     addRequirements(shooter,drivetrain);
   }
 
@@ -34,7 +34,7 @@ public class SpinUpForDelivery extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.spinUp(scale()*maxShootingSpeedRps);
+    shooter.spinUp(scale()* maxShootingSpeedMPS);
   }
 
   // Called once the command ends or is interrupted.

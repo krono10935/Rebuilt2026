@@ -25,6 +25,7 @@ public class IntakeConstants {
 
     public static final double INTAKE_POWER_BALL_COUNTER_DEADBAND = 11;
 
+    public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final BasicMotorConfig intakeMotorConfig = new BasicSparkConfig();
     static{
         intakeMotorConfig.motorConfig.name = "Intake motor";

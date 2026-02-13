@@ -6,7 +6,13 @@ import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 
 public class ClimbConstants {
-    
+
+    public static final double MIN_DISTANCE_FROM_TOWER_TO_CLOSE_CLIMB = 0.2; //Meters
+
+    public static final double TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB = 1.0; // we think it its the same time
+
+    public static final double MIN_DISTANCE_FROM_TOWER_TO_OPEN_CLIMB = 3.5; //Meters
+
     public enum ClimbState{
         CLOSED,
         OPEN,

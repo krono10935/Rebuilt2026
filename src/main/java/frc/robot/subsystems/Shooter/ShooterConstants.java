@@ -46,6 +46,7 @@ public class ShooterConstants {
     public static final AbsoluteEncoderRange HOOD_ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.ZERO_TO_ONE;
 
 
+    public static final double DELIVERY_SPEED_MPS = 20;
 
 
     public static final double KICKER_PERCENT_OUTPUT = 0.4;

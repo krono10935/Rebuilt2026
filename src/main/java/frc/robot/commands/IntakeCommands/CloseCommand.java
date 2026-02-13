@@ -12,42 +12,44 @@ import frc.robot.subsystems.intake.IntakeConstants;
 
 public class CloseCommand extends Command {
 
-  private Intake intake;
-  
-  public CloseCommand(Intake intake) {
+    public static class IntakeTimeOut extends WaitCommand{
+        public IntakeTimeOut(double time){
+            super(time);
+        }
+
+        @Override
+        public void end(boolean interrupted){
+            super.end(interrupted);
+            if(!interrupted){
+                //TODO:error
+            }
+        }
+    }
+
+    private Intake intake;
+
+    public CloseCommand(Intake intake) {
 
     this.intake = intake;
-    addRequirements(intake);
-
-  }
-   public static Command closeWithErrorHandeling(Intake intake){
-    return new ParallelRaceGroup(new CloseCommand(intake),new WaitCommand(4));
-  }
-
-  public static class IntakeTimeOut extends WaitCommand{
-    public IntakeTimeOut(double time){
-      super(time);
+        addRequirements(intake);
     }
 
     @Override
-    public void end(boolean interrupted){
-      super.end(interrupted);
-      if(!interrupted){
-        //TODO:error
-      }
+    public void initialize() {
+        intake.stopIntakeMotor();
+        intake.setPosition(IntakeConstants.CLOSE_POSITION);
     }
-  }
 
-  @Override
-  public void initialize() {
-    intake.stopIntakeMotor();
-    intake.setPosition(IntakeConstants.CLOSE_POSITION);
-  }
-
-  @Override
-  public boolean isFinished(){
+    @Override
+    public boolean isFinished(){
     return intake.positionAtSetPoint();
-  }
+    }
+
+    public static Command closeWithErrorHandeling(Intake intake){
+        return new ParallelRaceGroup(new CloseCommand(intake),new WaitCommand(TIME_FOR_INTAKE_TO_CLOSE));
+    }
 }
+
+
 
 
