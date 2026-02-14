@@ -25,7 +25,7 @@ public class ShooterIODevBot implements ShooterIO {
 
     private final BasicMotor hoodMotor;
 
-    private final BasicMotor kickerMotor;
+    // private final BasicMotor kickerMotor;
 
     private final BasicMotorConfig leadConfig;
 
@@ -43,7 +43,7 @@ public class ShooterIODevBot implements ShooterIO {
 
         hoodMotor = new BasicSparkMAX(ShooterDevBotConstants.getHoodMotorConfig());
 
-        kickerMotor = new BasicSparkMAX(ShooterDevBotConstants.getKickerMotorConfig());
+        // kickerMotor = new BasicSparkMAX(ShooterDevBotConstants.getKickerMotorConfig());
 
         isKickerActive = false;
         
@@ -116,11 +116,12 @@ public class ShooterIODevBot implements ShooterIO {
 
     @Override
     public void toggleKicker(boolean isActive){
-        if (isActive){
-            kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
-        } else {
-            kickerMotor.stop();
-        }
+        // if (isActive){
+        //     kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
+        // } else {
+        //     // kickerMotor.stop();
+        // }
+        return;
     }
 
     @Override
