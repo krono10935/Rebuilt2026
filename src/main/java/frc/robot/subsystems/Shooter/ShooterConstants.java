@@ -57,6 +57,8 @@ public class ShooterConstants {
 
     public static final boolean SHOOT_WITH_MOVEMENT = true;
 
+    public static final Rotation2d DELIVERY_HOOD_ANGLE = Rotation2d.fromDegrees(30);
+
 
     /**
      * 

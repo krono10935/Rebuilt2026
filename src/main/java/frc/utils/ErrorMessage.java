@@ -83,8 +83,7 @@ public class ErrorMessage{
         errors.forEach((error) -> error.Run());
     }
 
-    @FunctionalInterface
     public interface ErrorSender {
-        void send(boolean shouldDisplayError);
+        void send(boolean shouldDisplayError, int code);
     }
 }

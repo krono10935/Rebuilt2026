@@ -73,4 +73,10 @@ public class IntakeIOSim implements IntakeIO {
             * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
         inputs.velocity = intakeMotor.getVelocity(); 
     }
+
+
+    @Override
+    public void stopIntakeOpeningMotor() {
+        positionMotor.stop();
+    }
 }

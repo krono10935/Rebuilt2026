@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeToSupplierCommand;
 import frc.robot.commands.SpinUpForDelivery;
 import frc.robot.commands.IntakeCommands.CloseCommand;
+import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -40,7 +41,7 @@ public class Sequences {
         return new InstantCommand(() ->
                 requirements.forEach((requirement) -> {
                     ((ErrorMessage.ErrorSender) requirement).send(
-                            requirement.getCurrentCommand() != null
+                            requirement.getCurrentCommand() != null,0
                     );
                 })
         );
@@ -93,7 +94,7 @@ public class Sequences {
                                 "had problems with closing, retrying now"
                         );
                         SmartDashboard.putBoolean("ClimbErrorFatal", false);
-                        climb.send(true);
+                        climb.send(true,0);
                     }
                 }),
 
@@ -107,15 +108,7 @@ public class Sequences {
                         new WaitCommand(
                                 ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB
                         ).withDeadline(
-                                new FunctionalCommand(
-                                        () -> {
-                                        },
-                                        () -> {
-                                        },
-                                        (interrupted) -> {
-                                        },
-                                        climb::isAtSetPoint
-                                )
+                                new WaitUntilCommand(climb::isAtSetPoint)
                         )
                 ),
 
@@ -125,8 +118,8 @@ public class Sequences {
                                 "Climb",
                                 "had problems with closing, shutting down"
                         );
-                        SmartDashboard.putBoolean("ClimbErrorFatal", false);
-                        climb.send(true);
+                        SmartDashboard.putBoolean("ClimbErrorFatal", true);
+                        climb.send(true,0);
                     }
                 })
         );
@@ -139,15 +132,7 @@ public class Sequences {
                                 new WaitCommand(
                                         ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB
                                 ).withDeadline(
-                                        new FunctionalCommand(
-                                                () -> {
-                                                },
-                                                () -> {
-                                                },
-                                                (interrupted) -> {
-                                                },
-                                                climb::isAtSetPoint
-                                        )
+                                        new WaitUntilCommand(climb::isAtSetPoint)
                                 )
                         ),
 
@@ -407,7 +392,8 @@ public class Sequences {
      */
     public static Command intakeOpenStart(Intake intake) {
 
-        return OpenCommand.openWithErrorHandeling(intake);
+        return OpenCommand.openWithErrorHandeling(intake).
+        alongWith(new IntakeCommand(intake));
     }
 
 
@@ -459,8 +445,10 @@ public class Sequences {
                         drivetrain,
                         shooter,
                         ShooterConstants.DELIVERY_SPEED_MPS
-                )
+                ).alongWith(new InstantCommand(()->shooter.setHoodAngle(ShooterConstants.DELIVERY_HOOD_ANGLE)))
         );
+
+        
 
 
         Supplier<Translation2d> closestTrenchSupplier =

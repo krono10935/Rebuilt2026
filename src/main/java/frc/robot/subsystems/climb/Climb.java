@@ -9,7 +9,7 @@ import frc.utils.ErrorMessage;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import org.w3c.dom.UserDataHandler;
+
 
 public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
   /** Creates a new Climb. */
@@ -17,18 +17,27 @@ public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
 
   private final ClimbInputsAutoLogged inputs;
 
-  private boolean hasClimbed = false;
+  private boolean hasClimbed;
 
-  private boolean failedToClose = false;
+  private boolean failedToClose;
+  private boolean failedToOpen;
   public Climb() {
     io = RobotBase.isReal() ? new ClimbIOReal() : new ClimbIOSim();
     inputs = new ClimbInputsAutoLogged();
 
+    hasClimbed = false;
+
     failedToClose = false;
+    failedToOpen = false;
 
     ErrorMessage.create(this,
       "error closing" + this.getName(),
-              () -> failedToClose);//TODO make each subsystem have its own error msg
+              () -> failedToClose);
+    
+
+    ErrorMessage.create(this,
+      "error opening" + this.getName(),
+              () -> failedToOpen);
   }
 
   @Override
@@ -99,7 +108,7 @@ public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
   }
 
   @Override
-  public void send(boolean shouldDisplayError){
+  public void send(boolean shouldDisplayError, int code){
       failedToClose = shouldDisplayError;
   }
 

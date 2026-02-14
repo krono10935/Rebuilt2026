@@ -6,26 +6,10 @@ package frc.robot.commands.IntakeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 
 public class CloseCommand extends Command {
-
-    public static class IntakeTimeOut extends WaitCommand{
-        public IntakeTimeOut(double time){
-            super(time);
-        }
-
-        @Override
-        public void end(boolean interrupted){
-            super.end(interrupted);
-            if(!interrupted){
-                //TODO:error
-            }
-        }
-    }
-
     private Intake intake;
 
     public CloseCommand(Intake intake) {
@@ -46,7 +30,8 @@ public class CloseCommand extends Command {
     }
 
     public static Command closeWithErrorHandeling(Intake intake){
-        return new ParallelRaceGroup(new CloseCommand(intake),new WaitCommand(IntakeConstants.TIME_FOR_INTAKE_TO_CLOSE));
+        return new ParallelRaceGroup(new CloseCommand(intake),
+         new IntakeTimeOut(intake, IntakeConstants.TIME_FOR_INTAKE_TO_CLOSE, false));
     }
 }
 

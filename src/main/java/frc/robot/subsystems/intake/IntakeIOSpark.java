@@ -38,6 +38,11 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
+    public void stopIntakeOpeningMotor() {
+        positionMotor.stop();
+    }
+
+    @Override
     public void setPositionMotorPercentOutput(double percent){
         positionMotor.setPercentOutput(percent);
     }

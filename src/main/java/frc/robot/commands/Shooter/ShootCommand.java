@@ -32,7 +32,7 @@ public class ShootCommand extends Command {
    * @param robotPoseSupplier robot pose supplier
    * @param shouldShootFunction function to translate from pose2d to whether or not to shoot 
    */
-  private ShootCommand(Shooter shooter, Drivetrain drivetrain, BooleanSupplier thetaAtSetpoint) {
+  public ShootCommand(Shooter shooter, Drivetrain drivetrain, BooleanSupplier thetaAtSetpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;

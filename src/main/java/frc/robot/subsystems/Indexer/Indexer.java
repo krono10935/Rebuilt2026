@@ -21,7 +21,7 @@ public class Indexer extends SubsystemBase implements ErrorMessage.ErrorSender {
 
         ErrorMessage.create(this,
                 "error closing" + this.getName(),
-                () -> failedToStop);//TODO make each subsystem have its own error msg
+                () -> failedToStop);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class Indexer extends SubsystemBase implements ErrorMessage.ErrorSender {
     }
 
     @Override
-    public void send(boolean shouldDisplayError){
+    public void send(boolean shouldDisplayError, int code){
         failedToStop = shouldDisplayError;
     }
 }

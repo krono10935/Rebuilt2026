@@ -125,6 +125,11 @@ public class Robot extends LoggedRobot
         {
             autonomousCommand.cancel();
             Constants.HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
+            RobotContainer m_container = RobotContainer.getInstance();
+            CommandScheduler.getInstance().schedule(
+                Sequences.autoDeclimb(m_container.intake, m_container.drivetrain, m_container.climb, m_container.shooter)
+            );
+            ;
         }
 
     }

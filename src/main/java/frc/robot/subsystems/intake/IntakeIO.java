@@ -30,6 +30,11 @@ public interface IntakeIO {
     void stopIntakeMotor();
 
     /**
+     * stops the opening intake motor
+     */
+    void stopIntakeOpeningMotor();
+
+    /**
      * sets the power of the motor in percent
      */
     void setPositionMotorPercentOutput(double percent);
