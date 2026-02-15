@@ -126,22 +126,30 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-        drivetrain.setDefaultCommand(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController));
+        xboxController.y().onTrue(Sequences.intakeOpenStart(intake)); 
+        xboxController.y().onFalse(new InstantCommand(intake::stopIntakeMotor));
 
-        /*
-         * intake controls
-         * right bumper to open and start intake
-         * left bumper to close and stop intake
-         * only while right bumper is held is the intake running
-         */
-        xboxController.rightBumper().onTrue(Sequences.intakeOpenStart(intake));
-        xboxController.rightBumper().onFalse(new InstantCommand(intake::stopIntakeMotor));
-        xboxController.leftBumper().onTrue(Sequences.stopIntakeAndClose(intake));
+        drivetrain.setDefaultCommand(
+            new ConditionalCommand(
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController),
+                 new DriveCommand(drivetrain, xboxController), () -> Constants.HubTiming.isActive(DriverStation.getMatchTime())));
 
-        // xboxController.y().toggleOnTrue(Sequences.FullClimb(intake, climb, shooter, drivetrain));
-        xboxController.x().toggleOnTrue(Sequences.delivery(drivetrain, shooter, xboxController));
-        xboxController.b().toggleOnTrue(new DriveCommand(drivetrain, xboxController));
+        xboxController.leftBumper().onTrue(Sequences.autoClimb(intake, drivetrain, climb, shooter));
+        xboxController.leftBumper().debounce(0.3).onTrue(Sequences.climbOpen(intake, drivetrain, climb, shooter));
 
+        xboxController.rightBumper().onTrue(Sequences.climbClose(intake, climb, shooter, drivetrain));
+
+        xboxController.x().onTrue(
+            Sequences.delivery(drivetrain, shooter, xboxController));
+
+        xboxController.a().onTrue(new DriveCommand(drivetrain, xboxController)); 
+
+        xboxController.b().onTrue(
+            new InstantCommand(() -> drivetrain.getCurrentCommand().cancel())
+            .onlyIf(()->drivetrain.getCurrentCommand() != null));
+
+        xboxController.povUp().onTrue(drivetrain.resetGyro());
+        
     }
     public Command getAutonomousCommand()
     {
