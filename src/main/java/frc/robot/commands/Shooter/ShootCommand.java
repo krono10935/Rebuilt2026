@@ -24,7 +24,7 @@ public class ShootCommand extends Command {
 
   private final Drivetrain drivetrain;
 
-  private final Indexer indexer;
+  private final BooleanSupplier thetaAtSetpoint;
   
 
   /**
@@ -37,15 +37,14 @@ public class ShootCommand extends Command {
 
     this.shooter = shooter;
     this.drivetrain = drivetrain;
-    this.indexer = indexer;
+    this.thetaAtSetpoint = thetaAtSetpoint;
 
-      addRequirements(shooter, indexer);
+      addRequirements(shooter);
   }
 
-  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain,
-                                            Indexer indexer, CommandXboxController controller){
+  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller){
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
-    ShootCommand shootCommand = new ShootCommand(shooter, drivetrain, indexer);
+    ShootCommand shootCommand = new ShootCommand(shooter, drivetrain, driveCommand::atTargetAngle);
 
     return driveCommand.alongWith(shootCommand);
   }

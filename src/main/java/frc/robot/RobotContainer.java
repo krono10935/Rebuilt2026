@@ -61,7 +61,6 @@ public class RobotContainer
 
     private final LoggedDashboardChooser<Command> chooser;
 
-    private final Climb climb;
     private final LoggedNetworkNumber hoodAngle;
 
 
@@ -84,8 +83,6 @@ public class RobotContainer
         xboxController = new CommandXboxController(0);
 
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
-
-        climb = new Climb();
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
@@ -129,7 +126,7 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-        drivetrain.setDefaultCommand(Sequences.shoot(shooter, indexer, drivetrain, xboxController));
+        drivetrain.setDefaultCommand(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController));
 
         /*
          * intake controls
@@ -137,12 +134,12 @@ public class RobotContainer
          * left bumper to close and stop intake
          * only while right bumper is held is the intake running
          */
-        xboxController.rightBumper().onTrue(Sequences.openIntakeStart(intake));
+        xboxController.rightBumper().onTrue(Sequences.intakeOpenStart(intake));
         xboxController.rightBumper().onFalse(new InstantCommand(intake::stopIntakeMotor));
-        xboxController.leftBumper().onTrue(Sequences.closeIntakeStop(intake));
+        xboxController.leftBumper().onTrue(Sequences.stopIntakeAndClose(intake));
 
-        xboxController.y().toggleOnTrue(Sequences.FullClimb(intake, climb, indexer, shooter, drivetrain));
-        xboxController.x().toggleOnTrue(Sequences.delivery(shooter, indexer, intake, drivetrain, xboxController));
+        // xboxController.y().toggleOnTrue(Sequences.FullClimb(intake, climb, shooter, drivetrain));
+        xboxController.x().toggleOnTrue(Sequences.delivery(drivetrain, shooter, xboxController));
         xboxController.b().toggleOnTrue(new DriveCommand(drivetrain, xboxController));
 
     }
@@ -163,11 +160,11 @@ public class RobotContainer
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                new ShootCommand(shooter, drivetrain, indexer).beforeStarting(new SpinUp(shooter))
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController).beforeStarting(new SpinUp(shooter))
                         .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                new ShootCommand(shooter, drivetrain, indexer).beforeStarting(new SpinUp(shooter))
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController).beforeStarting(new SpinUp(shooter))
                         .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new SpinUp(shooter));
@@ -176,9 +173,9 @@ public class RobotContainer
                 new Intake().getBalls()== 0));
 
         NamedCommands.registerCommand("openIntake",
-                new SequentialCommandGroup(Sequences.openIntakeStart(intake)));
+                new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
         NamedCommands.registerCommand("closeIntake",
-                new SequentialCommandGroup(Sequences.closeIntakeStop(intake)));
+                new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
 
         NamedCommands.registerCommand("openClimb", new Climb().openCommand());
         NamedCommands.registerCommand("closeClimb", new Climb().closeCommand());
