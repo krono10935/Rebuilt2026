@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.SafeDriveAndHomeCommand;
+import frc.robot.commands.SafeDriveCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
@@ -81,7 +83,9 @@ public class RobotContainer
     
     private void configureBindings() {
 
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        drivetrain.setDefaultCommand(new SafeDriveCommand(drivetrain, xboxController));
+
+        xboxController.povUp().whileTrue(new DriveCommand(drivetrain, xboxController));
 
         // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
         
@@ -93,7 +97,8 @@ public class RobotContainer
         // xboxController.x().onTrue(new InstantCommand(() -> shooter.stopFlyWheel(), shooter));
         // xboxController.x().onTrue(new InstantCommand(() -> {shooter.stopFlyWheel(); shooter.toggleKicker(false);}));
         // shooter.setDefaultCommand(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController));
-        xboxController.x().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
+        xboxController.x().toggleOnTrue(new SafeDriveAndHomeCommand(drivetrain, xboxController));
+        xboxController.povDown().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
        
         // xboxController.y().onTrue(new FunctionalCommand(()-> {shooter.spinUp(speedMPS.getAsDouble() );
         //     shooter.toggleKicker(true);}, ()-> {}, (b) -> shooter.keepVelocity(speedMPS.getAsDouble()),shooter::isShooterAtGoal, shooter));
