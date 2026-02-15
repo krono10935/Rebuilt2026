@@ -11,10 +11,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
-import frc.robot.subsystems.Indexer.Indexer;
+import frc.robot.commands.IntakeCommands.CloseCommand;
+import frc.robot.commands.IntakeCommands.IntakeCommand;
+import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.leds.LedLocation;
@@ -32,7 +35,10 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class RobotContainer
@@ -43,11 +49,11 @@ public class RobotContainer
 
     private final Vision vision;
 
-    private final Shooter shooter;
+    public final Shooter shooter;
 
-    private final Indexer indexer;
+    public final Intake intake;
 
-    private final Intake intake;
+    public final Climb climb;
 
     private final CommandXboxController xboxController;
 
@@ -71,9 +77,9 @@ public class RobotContainer
         hoodAngle = new LoggedNetworkNumber("HoodAngle", 0);
         shooter = new Shooter();
 
-        indexer = new Indexer();
-
         intake = new Intake();
+
+        climb = new Climb();
 
         xboxController = new CommandXboxController(0);
 
@@ -90,6 +96,36 @@ public class RobotContainer
         configureBindings();
         ledManager = new LedManager();
         ledManager.setColors(new LedState(LedPattern.BRWON, Color.kDarkBlue, Color.kCyan, 0.25, 0.7, LedLocation.BASE));
+    }
+
+    private void configurePitBindings() {
+        xboxController.a().onTrue(new SpinUp(shooter)
+        .until(shooter::isShooterAtGoal)
+        .andThen(new RunCommand(() -> shooter.keepVelocity(ShooterConstants.SHOOTING_SPEED), shooter)));
+
+        // Disable all subsystems commands
+        xboxController.b().onTrue(new InstantCommand(() -> {
+            drivetrain.getCurrentCommand().cancel();
+            CommandScheduler.getInstance().schedule(drivetrain.idle());
+            shooter.getCurrentCommand().cancel();
+            CommandScheduler.getInstance().schedule(shooter.idle());
+            intake.getCurrentCommand().cancel();
+            CommandScheduler.getInstance().schedule(intake.idle());
+            climb.getCurrentCommand().cancel();
+            CommandScheduler.getInstance().schedule(climb.idle());
+        }));
+
+        xboxController.y().debounce(0.3).whileTrue(new OpenCommand(intake));
+
+        xboxController.y().onFalse(new CloseCommand(intake));
+
+        xboxController.x().onTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
+
+        xboxController.povDown().onTrue(climb.closeCommand());
+
+        xboxController.povUp().onTrue(climb.openCommand());
+
+        xboxController.povCenter().onTrue(drivetrain.resetGyro());
     }
 
     private void configureBindings() {

@@ -6,15 +6,24 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.utils.ErrorMessage;
 
-public class Indexer extends SubsystemBase {
+public class Indexer extends SubsystemBase implements ErrorMessage.ErrorSender {
 
     private final IndexerIO io;
 
     private IndexerInputsAutoLogged inputs = new IndexerInputsAutoLogged();
 
+    private boolean failedToStop;
+
     public Indexer(){
         this.io = RobotBase.isReal()? new IndexerIOReal(): new IndexerIOSim();
+
+        failedToStop = false;
+
+        ErrorMessage.create(this,
+                "error closing" + this.getName(),
+                () -> failedToStop);
     }
 
     @Override
@@ -52,4 +61,8 @@ public class Indexer extends SubsystemBase {
         return new InstantCommand(() -> turnOff(), this);
     }
 
+    @Override
+    public void send(boolean shouldDisplayError, int code){
+        failedToStop = shouldDisplayError;
+    }
 }

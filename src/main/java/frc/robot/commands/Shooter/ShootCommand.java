@@ -32,7 +32,7 @@ public class ShootCommand extends Command {
    * @param shooter subsystem to activate the shoot command on
    * @param drivetrain drivetrain
    */
-  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Indexer indexer) {
+  public ShootCommand(Shooter shooter, Drivetrain drivetrain, BooleanSupplier thetaAtSetpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
@@ -68,8 +68,16 @@ public class ShootCommand extends Command {
       shooter.readyToShoot();
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
+    if (shouldShoot){
+      shooter.toggleKicker(true);
+      shooter.getIndexer().turnOn();
+    }
+
     // otherwise open the kicker and start letting the shooter shoot
-      shooter.toggleKicker(shouldShoot);
+    else{
+      shooter.toggleKicker(false);
+      shooter.getIndexer().turnOn();
+    }
     
   }
 }

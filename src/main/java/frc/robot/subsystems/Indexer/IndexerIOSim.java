@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Indexer;
 
+import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
 public class IndexerIOSim implements IndexerIO {
@@ -15,7 +16,7 @@ public class IndexerIOSim implements IndexerIO {
 
     @Override
     public void turnOn() {
-        motorLeft.setPercentOutput(IndexerConstants.SPINNING_PRECENT_OUTPUT);
+        motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.VELOCITY);
         isSpinning = true;
     }
 

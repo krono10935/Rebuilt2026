@@ -2,6 +2,7 @@ package frc.robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
@@ -65,5 +66,35 @@ public class FieldConstants {
     public static final Pose2d leftFace =
         AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getTagPose(21).get().toPose2d();
   }
+    public static Translation2d trenchRight = new Translation2d(); //TODO: find actual translations
+    public static Translation2d trenchLeft = new Translation2d();
 
+    public static Translation2d tower = new Translation2d();
+
+    public static Translation2d towerLeft = new Translation2d();
+    public static Translation2d towerLeftBack = new Translation2d();
+
+    public static Translation2d towerRight = new Translation2d();
+    public static Translation2d towerRightBack = new Translation2d();
+
+    public  static enum TowerSide {
+        left,
+        right,
+    }
+
+    public static Pose2d getTowerSideTargetPose(TowerSide tower, boolean driveBack) {
+        if(driveBack) {
+            return switch (tower) {
+                case left->new Pose2d(towerLeftBack.getX(),towerLeftBack.getY(), Rotation2d.fromDegrees(0));
+                case right->new Pose2d(towerRightBack.getX(),towerRightBack.getY(), Rotation2d.fromDegrees(180));
+            };
+        }else  {
+            return switch (tower) {
+                case left->new Pose2d(towerLeft.getX(),towerLeft.getY(), Rotation2d.fromDegrees(0));
+                case right->new Pose2d(towerRight.getX(),towerRight.getY(), Rotation2d.fromDegrees(180));
+            };
+        }
+
+    }
 }
+

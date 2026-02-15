@@ -10,6 +10,10 @@ public class Constants {
 
     public static final double LOOP_PERIOD_SECONDS = 0.02;
 
+    public static final double ALL_SUBSYSTEMS_MAX_CLOSING_TIME = 1.0;
+
+    public static FieldConstants.TowerSide chosenTowerSideToClimb = FieldConstants.TowerSide.left; //TODO change based on which side
+
     public enum Phase{
             AUTO(0 ,0),
             TranistionShift(140,130),
@@ -84,6 +88,5 @@ public class Constants {
             }
             
         }
-
     }
 }

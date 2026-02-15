@@ -323,6 +323,11 @@ public class Drivetrain extends SubsystemBase {
                 0, DriveToPoseConstants.DISTANCE_TO_STOP_PP);
     }
 
+    public Command resetGyro(){
+        return new InstantCommand(()->
+         reset(new Pose2d(getEstimatedPosition().getTranslation(), Rotation2d.kZero)));
+    }
+
 
     @Override
     public void periodic() {

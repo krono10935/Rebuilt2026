@@ -47,6 +47,7 @@ public class ShooterConstants {
     public static final AbsoluteEncoderRange HOOD_ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.ZERO_TO_ONE;
 
 
+    public static final double DELIVERY_SPEED_MPS = 20;
 
 
     public static final double KICKER_PERCENT_OUTPUT = 0.4;
@@ -56,6 +57,8 @@ public class ShooterConstants {
     public static final double ZERO_LINEAR_SPEED_TOLERANCE_MPS = 0.005;
 
     public static final boolean SHOOT_WITH_MOVEMENT = true;
+
+    public static final Rotation2d DELIVERY_HOOD_ANGLE = Rotation2d.fromDegrees(30);
 
 
     /**

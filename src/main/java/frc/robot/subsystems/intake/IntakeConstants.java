@@ -10,8 +10,10 @@ public class IntakeConstants {
 
     public static final int LIMIT_SWITCH_CHANNEL = 1; //TODO: find out
 
+    public static final double POSITION_TOLERANCE = 0.05;
     public static final double CLOSE_POSITION = 0;
     public static final double OPEN_POSITION = 0.67;
+
 
     public static final double IDLE_POWER = 10;
     public static final double BALL_INTAKE_ENERGY = 10;
@@ -24,12 +26,15 @@ public class IntakeConstants {
 
     public static final double INTAKE_POWER_BALL_COUNTER_DEADBAND = 11;
 
+    public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
+    public static final double TIME_FOR_INTAKE_TO_OPEN = 4;
+
     public static final BasicMotorConfig intakeMotorConfig = new BasicSparkConfig();
     static{
         intakeMotorConfig.motorConfig.name = "Intake motor";
         intakeMotorConfig.motorConfig.id = 1;
         intakeMotorConfig.motorConfig.inverted = false;
-        intakeMotorConfig.motorConfig.idleMode = IdleMode.BRAKE;
+        intakeMotorConfig.motorConfig.idleMode = IdleMode.BRAKE; 
         intakeMotorConfig.motorConfig.gearRatio = 1;
         intakeMotorConfig.motorConfig.motorType = DCMotor.getNEO(1);
 
