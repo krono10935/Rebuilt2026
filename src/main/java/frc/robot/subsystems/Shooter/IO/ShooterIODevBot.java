@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -53,12 +54,15 @@ public class ShooterIODevBot implements ShooterIO {
 
         var motor = ((BasicSparkFlex)leadShootingMotor);
 
-
         var spark = motor.getMotor();
+
+        var config = motor.getSparkConfig();
+
+        // config.closedLoop.dFilter(15 / ShooterConstants.FLYWHEEL_CICUMFRENCE, ClosedLoopSlot.kSlot1);
 
         motor.getSparkConfig().signals.appliedOutputPeriodMs(10);
 
-        spark.configure(motor.getSparkConfig(), ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        spark.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         
         dutyCycleSupplier = spark::getAppliedOutput;
     }
@@ -71,12 +75,7 @@ public class ShooterIODevBot implements ShooterIO {
 
     @Override
     public void keepVelocity(double speedMPS){
-        double output = 0;
-
-        if(!isShooterAtGoal() && leadShootingMotor.getMeasurement().acceleration() < 0 && leadShootingMotor.getVelocity() < speedMPS)
-            output = 6;
-
-        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, output, 1);
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
 
