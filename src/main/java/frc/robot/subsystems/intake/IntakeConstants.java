@@ -30,6 +30,8 @@ public class IntakeConstants {
     public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final double TIME_FOR_INTAKE_TO_OPEN = 4;
 
+    public static final double TIME_FOR_BALL_TO_BE_INTAKED = 1.5;
+
     public static final BasicMotorConfig intakeMotorConfig = new BasicSparkConfig();
     static{
         intakeMotorConfig.motorConfig.name = "Intake motor";

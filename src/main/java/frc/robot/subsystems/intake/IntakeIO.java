@@ -45,11 +45,8 @@ public interface IntakeIO {
      */
     boolean positionMotorAtSetPoint();
 
-    /**
-     * resets the position motor's encoder to 0
-     */
-    void resetPositionMotorEncoder();
- 
+    void setPositionMotorVelocity(Rotation2d velocity);
+
     /**
      * 
      * @return position of the motor in meters

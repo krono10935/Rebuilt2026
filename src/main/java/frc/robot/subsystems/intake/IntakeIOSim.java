@@ -44,9 +44,11 @@ public class IntakeIOSim implements IntakeIO {
         return positionMotor.atSetpoint();
     }
 
+
+
     @Override
-    public void resetPositionMotorEncoder() {
-        positionMotor.resetEncoder(0);
+    public void setPositionMotorVelocity(Rotation2d velocity){
+        positionMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY);
     }
 
     @Override

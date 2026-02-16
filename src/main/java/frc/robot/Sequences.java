@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -407,23 +408,20 @@ public class Sequences {
     public static Command delivery(
             Drivetrain drivetrain,
             Shooter shooter,
-            CommandXboxController controller
+            CommandXboxController controller,
+            Intake intake
     ) {
 
-        SequentialCommandGroup deliveryGroup =
+        SequentialCommandGroup spinUpAndAimHood =
                 new SequentialCommandGroup();
 
-
-        deliveryGroup.addCommands(
+        spinUpAndAimHood.addCommands(
                 new SpinUpForDelivery(
                         drivetrain,
                         shooter,
                         ShooterConstants.DELIVERY_SPEED_MPS
                 ).alongWith(new InstantCommand(()->shooter.setHoodAngle(ShooterConstants.DELIVERY_HOOD_ANGLE)))
         );
-
-        
-
 
         Supplier<Translation2d> closestTrenchSupplier =
                 () -> (drivetrain.getEstimatedPosition().getY()
@@ -441,24 +439,24 @@ public class Sequences {
                         .getAngle();
 
 
-        deliveryGroup.addCommands(
 
+        ParallelCommandGroup deliver = new ParallelCommandGroup(
                 new RunCommand(() ->
                         shooter.keepVelocity(
                                 ShooterConstants.DELIVERY_SPEED_MPS
                         )
-                ).alongWith(
+                ).onlyIf(() -> intake.hasBalls() && drivetrain.getChassisSpeeds().equals(new ChassisSpeeds())),
 
-                        new DriveAndHomeToSupplierCommand(
-                                drivetrain,
-                                controller,
-                                deliveryAngleSupplier
-                        )
+
+                new DriveAndHomeToSupplierCommand(
+                        drivetrain,
+                        controller,
+                        deliveryAngleSupplier
                 )
+
         );
 
-
-        return deliveryGroup;
+        return spinUpAndAimHood.andThen(deliver);
     }
 
 }

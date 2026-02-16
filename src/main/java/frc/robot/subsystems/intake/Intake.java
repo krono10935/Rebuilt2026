@@ -71,6 +71,10 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
         return io.positionMotorAtSetPoint();
     }
 
+    public void setPositionMotorVelocity(Rotation2d velocity){
+      io.setPositionMotorVelocity(velocity);
+    }
+
     public void setHasBalls(boolean hasBalls){
       this.hasBalls = hasBalls;
     }
@@ -104,6 +108,5 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
 
         String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
         Logger.recordOutput("Intake/Current Command ", currCommand);
-
     }
 }

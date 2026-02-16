@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.DriveRobotRelative;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
@@ -121,8 +122,6 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-        xboxController.y().whileTrue(Sequences.intakeOpenStart(intake)); 
-
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
 
         BooleanSupplier isHubActive = () -> {
@@ -133,16 +132,17 @@ public class RobotContainer
                     Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
         };
        new Trigger(isHubActive).
-               and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())).
-               and(intake::hasBalls)
-        .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController));
+               and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+        .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController,intake));
 
-        xboxController.leftBumper().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, shooter));
+        xboxController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, xboxController)));
 
-        xboxController.rightBumper().whileTrue(climb.closeCommand());
+        xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, shooter));
+
+        xboxController.b().whileTrue(climb.closeCommand());
 
         xboxController.x().onTrue(
-            Sequences.delivery(drivetrain, shooter, xboxController));
+            Sequences.delivery(drivetrain, shooter, xboxController,intake));
 
         xboxController.a().onTrue(drivetrain.resetGyro());
         
@@ -164,17 +164,17 @@ public class RobotContainer
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController).beforeStarting(new SpinUp(shooter))
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake).beforeStarting(new SpinUp(shooter))
                         .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController).beforeStarting(new SpinUp(shooter))
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake).beforeStarting(new SpinUp(shooter))
                         .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new SpinUp(shooter));
 
         NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
-                new Intake().getBalls()== 0));
+                !new Intake().hasBalls()));
 
         NamedCommands.registerCommand("openIntake",
                 new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));

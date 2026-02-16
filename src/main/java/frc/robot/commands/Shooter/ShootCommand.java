@@ -6,15 +6,18 @@ package frc.robot.commands.Shooter;
 
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveAndHomeCommand;
+import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.Shooter.ShotCalculator.ValidityState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.intake.Intake;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
@@ -24,27 +27,28 @@ public class ShootCommand extends Command {
 
   private final Drivetrain drivetrain;
 
-  private final BooleanSupplier thetaAtSetpoint;
-  
+  private final Intake intake;
+
+  private final Rotation2d INTAKE_CLOSING_VELOCITY = Rotation2d.fromDegrees(10);
 
   /**
    * 
    * @param shooter subsystem to activate the shoot command on
    * @param drivetrain drivetrain
    */
-  public ShootCommand(Shooter shooter, Drivetrain drivetrain, BooleanSupplier thetaAtSetpoint) {
+  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
     this.drivetrain = drivetrain;
-    this.thetaAtSetpoint = thetaAtSetpoint;
+    this.intake = intake;
 
       addRequirements(shooter);
   }
 
-  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller){
+  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake){
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
-    ShootCommand shootCommand = new ShootCommand(shooter, drivetrain, driveCommand::atTargetAngle);
+    ShootCommand shootCommand = new ShootCommand(shooter, drivetrain, intake);
 
     return driveCommand.alongWith(shootCommand);
   }
@@ -57,26 +61,30 @@ public class ShootCommand extends Command {
     shooter.keepVelocity(params.flywheelSpeed());
     shooter.setHoodAngle(params.hoodAngle());
 
-    BooleanSupplier thetaAtSetpoint = () -> Math.abs(drivetrain.getEstimatedPosition().getRotation().getRadians() -
+    boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().getRadians() -
             params.robotAngle().getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
 
-        // is the robot is in the shooting zone 
+        // is the robot is in the shooting zone
     boolean shouldShoot =
       params.validityState() == ValidityState.VALID &&
-      thetaAtSetpoint.getAsBoolean() &&
+      thetaAtSetpoint &&
       shooter.readyToShoot();
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
     if (shouldShoot){
       shooter.toggleKicker(true);
       shooter.getIndexer().turnOn();
+      intake.setPositionMotorVelocity(INTAKE_CLOSING_VELOCITY);
     }
 
     // otherwise open the kicker and start letting the shooter shoot
     else{
       shooter.toggleKicker(false);
       shooter.getIndexer().turnOn();
+      intake.setPositionMotorVelocity(Rotation2d.kZero);
+
     }
+
     
   }
 }

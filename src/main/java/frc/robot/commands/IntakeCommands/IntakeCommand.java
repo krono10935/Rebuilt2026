@@ -4,6 +4,7 @@
 
 package frc.robot.commands.IntakeCommands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
@@ -13,21 +14,21 @@ import frc.robot.subsystems.intake.IntakeConstants;
  */
 public class IntakeCommand extends Command {
   /** Creates a new IntakeCommand. */
-  private Intake intake;
-  private double powerSum;
-  private double energy;
+  private final Intake intake;
+  private final Timer hasBallTimer = new Timer();
+
 
   public IntakeCommand(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.intake = intake;
     addRequirements(intake);
-    energy = 0;
-    powerSum = 0;
   }
 
   @Override
   public void initialize(){
     intake.setIntakeMotorVelocity(IntakeConstants.INTAKE_VELOCITY);
+    hasBallTimer.reset();
+    hasBallTimer.start();
   }
 
   /**
@@ -35,10 +36,7 @@ public class IntakeCommand extends Command {
    */
   @Override
   public void execute() {
-    powerSum+=intake.getPower() - IntakeConstants.IDLE_POWER;
-    energy = powerSum * 0.02;
-
-    intake.addBalls(addBallsFromEnergy(energy));
+      if(hasBallTimer.get() >= IntakeConstants.TIME_FOR_BALL_TO_BE_INTAKED ) intake.setHasBalls(true);
   }
 
   public int addBallsFromEnergy(double energy){
@@ -53,7 +51,8 @@ public class IntakeCommand extends Command {
 
   @Override
   public void end(boolean interrupted){
-    intake.stopIntakeMotor();
+      intake.stopIntakeMotor();
+      hasBallTimer.stop();
   }
 
 
