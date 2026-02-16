@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.utils.AllianceFlipUtil;
 
 public class FieldConstants {
     public static final double fieldLength = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getFieldLength();
@@ -95,6 +96,13 @@ public class FieldConstants {
             };
         }
 
+    }
+
+    public static boolean isInAllianceZone(Pose2d pose){
+        var poseAlliance  = AllianceFlipUtil.apply(pose);
+        var hubAlliance = AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint);
+
+        return poseAlliance.getX() <= hubAlliance.getX();
     }
 }
 

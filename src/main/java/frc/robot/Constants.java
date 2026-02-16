@@ -12,6 +12,10 @@ public class Constants {
 
     public static final double ALL_SUBSYSTEMS_MAX_CLOSING_TIME = 1.0;
 
+    public static final double HUB_ACTIVITY_DEABAND_AFTER_ACTIVE = 1;
+
+    public static final double HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE = 1;
+
     public static FieldConstants.TowerSide chosenTowerSideToClimb = FieldConstants.TowerSide.left; //TODO change based on which side
 
     public enum Phase{

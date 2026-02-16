@@ -5,7 +5,9 @@
 package frc.robot.subsystems.intake;
 
 
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.utils.ErrorMessage;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,21 +17,16 @@ import frc.robot.Robot;
 public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
   private final IntakeIO io;
   private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
-  private int ballsCounter;
 
   private boolean failedToClose;
   private boolean failedToOpen;
+
+  @AutoLogOutput
+  private boolean hasBalls = false;
   /** Creates a new Intake. */
   public Intake() {
 
-    if(Robot.isReal()){
-      io = new IntakeIOSpark();
-    }
-    else{
-      io = new IntakeIOSim();
-    }
-
-    ballsCounter = 0;
+    io = RobotBase.isReal()? new IntakeIOSpark() : new IntakeIOSim();
 
     failedToClose = false;
 
@@ -65,36 +62,21 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
         io.stopIntakeMotor();
     }
 
-    public void setPositionMotorPercentOutput(double percent){
-        io.setPositionMotorPercentOutput(percent);
-    }
 
     public double getPower(){
         return inputs.power;
-    }
-
-    public boolean intakeMotorAtSetPoint(){
-        return io.intakeMotorAtSetPoint();
     }
 
     public boolean positionAtSetPoint(){
         return io.positionMotorAtSetPoint();
     }
 
-    public void resetPositionMotorEncoder(){
-        io.resetPositionMotorEncoder();
+    public void setHasBalls(boolean hasBalls){
+      this.hasBalls = hasBalls;
     }
 
-    public int getBalls(){
-        return ballsCounter;
-    }
-
-    public void removeBalls(int decrease){
-        ballsCounter -= decrease;
-    }
-
-    public void addBalls(int add){
-        ballsCounter += add;
+    public boolean hasBalls(){
+      return hasBalls;
     }
 
     @Override

@@ -49,12 +49,6 @@ public class IntakeCommand extends Command {
       return addBallsFromEnergy(energy - IntakeConstants.BALL_INTAKE_ENERGY) + 1;
     }
 
-    //  if(intake.getPower() >= IntakeConstants.INTAKE_POWER_BALL_COUNTER_DEADBAND){
-    //   energy = powerSum*0.02;
-    //   energy -= intake.getBalls()*IntakeConstants.BALL_INTAKE_ENERGY;
-    //   intake.addBalls((int)(energy/IntakeConstants.BALL_INTAKE_ENERGY));
-    // }
-
   }
 
   @Override
