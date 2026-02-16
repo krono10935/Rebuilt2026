@@ -45,10 +45,6 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
           () -> failedToOpen);
     }
 
-    public boolean getLimitSwitch(){
-        return io.getLimitSwitch();
-    }
-
     public void setIntakeMotorVelocity(Rotation2d velocity){
         io.setIntakeMotorVelocity(velocity);
     }

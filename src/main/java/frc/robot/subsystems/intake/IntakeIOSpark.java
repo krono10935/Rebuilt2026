@@ -10,15 +10,13 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 public class IntakeIOSpark implements IntakeIO {
     private final BasicMotor intakeMotor;
     private final BasicMotor positionMotor;
-    private final DigitalInput limitSwitch;
 
     public IntakeIOSpark() {
 
         intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
 
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
-        
-        limitSwitch = new DigitalInput(IntakeConstants.LIMIT_SWITCH_CHANNEL);
+    
         
     }
 
@@ -67,10 +65,6 @@ public class IntakeIOSpark implements IntakeIO {
         positionMotor.setControl(pos, ControlMode.POSITION);
     }
 
-    @Override
-    public boolean getLimitSwitch() {
-        return limitSwitch.get();
-    }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {

@@ -8,13 +8,14 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class IntakeConstants {
 
-    public static final int LIMIT_SWITCH_CHANNEL = 1; //TODO: find out
-
+    //the toletrance of the position of the intake
     public static final double POSITION_TOLERANCE = 0.05;
+
+    //the positions of the intake (closed and opend)
     public static final double CLOSE_POSITION = 0;
     public static final double OPEN_POSITION = 0.67;
 
-
+    
     public static final double IDLE_POWER = 10;
     public static final double BALL_INTAKE_ENERGY = 10;
 

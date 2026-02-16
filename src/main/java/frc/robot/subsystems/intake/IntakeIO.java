@@ -62,13 +62,6 @@ public interface IntakeIO {
      */
     void setPositionMotor(double positionMeters);
 
-    /**
-     * 
-     * @return if limit switch is pressed
-     */
-    boolean getLimitSwitch();
-
-
     void updateInputs(IntakeInputs inputs);
 
 }

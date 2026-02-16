@@ -59,10 +59,6 @@ public class IntakeIOSim implements IntakeIO {
         positionMotor.setControl(positionMeters, ControlMode.POSITION);
     }
 
-    @Override
-    public boolean getLimitSwitch() {
-        return false; 
-    }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {

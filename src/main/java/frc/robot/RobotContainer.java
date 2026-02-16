@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakeCommands.CloseCommand;
@@ -16,8 +17,12 @@ import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
+import frc.robot.subsystems.Shooter.ShootCalculatorWithMovement;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.ShootCalculatorWithMovement.ShootCalculatorWithMovementParams;
+import frc.robot.subsystems.Shooter.ShotCalculator.ValidityState;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.leds.LedLocation;
@@ -59,9 +64,9 @@ public class RobotContainer
 
     public final Drivetrain drivetrain;
 
-    private final LoggedDashboardChooser<Command> chooser;
+    private final LoggedDashboardChooser<Command> chooser; 
 
-    private final LoggedNetworkNumber hoodAngle;
+    private final LoggedDashboardChooser<Boolean> isClimbAuto;
 
 
     public static RobotContainer getInstance(){
@@ -73,7 +78,10 @@ public class RobotContainer
 
     private RobotContainer()
     {
-        hoodAngle = new LoggedNetworkNumber("HoodAngle", 0);
+        isClimbAuto = new LoggedDashboardChooser<>("is climb automatic");
+        isClimbAuto.addDefaultOption("yes", true);
+        isClimbAuto.addOption("no", false);
+
         shooter = new Shooter();
 
         intake = new Intake();
@@ -88,11 +96,8 @@ public class RobotContainer
 
         chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
 
-        chooser.addOption("shit", drivetrain.driveToPose(new Pose2d(3, 5, Rotation2d.kZero)));
-
         configureBindings();
         ledManager = new LedManager();
-        ledManager.setColors(new LedState(LedPattern.BRWON, Color.kDarkBlue, Color.kCyan, 0.25, 0.7, LedLocation.BASE));
     }
 
     private void configurePitBindings() {
@@ -126,29 +131,34 @@ public class RobotContainer
     }
 
     private void configureBindings() {
-        xboxController.y().onTrue(Sequences.intakeOpenStart(intake)); 
-        xboxController.y().onFalse(new InstantCommand(intake::stopIntakeMotor));
+        xboxController.y().whileTrue(Sequences.intakeOpenStart(intake)); 
 
-        drivetrain.setDefaultCommand(
-            new ConditionalCommand(
-                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController),
-                 new DriveCommand(drivetrain, xboxController), () -> Constants.HubTiming.isActive(DriverStation.getMatchTime())));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
 
-        xboxController.leftBumper().onTrue(Sequences.autoClimb(intake, drivetrain, climb, shooter));
-        xboxController.leftBumper().debounce(0.3).onTrue(Sequences.climbOpen(intake, drivetrain, climb, shooter));
+       new Trigger(
+        () -> Constants.HubTiming.isActive(DriverStation.getMatchTime())
+
+                        && ShotCalculator.getInstance().getParameters(
+                                        drivetrain.getEstimatedPosition(),
+                                        drivetrain.getChassisSpeeds()
+                                ).validityState() == ValidityState.VALID
+        )
+        .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController));
+
+        xboxController.leftBumper().toggleOnTrue(
+        new ConditionalCommand(
+                Sequences.autoClimb(intake, drivetrain, climb, shooter),
+                Sequences.climbOpen(intake, drivetrain, climb, shooter),
+                () -> isClimbAuto.get()
+            )
+        );
 
         xboxController.rightBumper().onTrue(Sequences.climbClose(intake, climb, shooter, drivetrain));
 
         xboxController.x().onTrue(
             Sequences.delivery(drivetrain, shooter, xboxController));
 
-        xboxController.a().onTrue(new DriveCommand(drivetrain, xboxController)); 
-
-        xboxController.b().onTrue(
-            new InstantCommand(() -> drivetrain.getCurrentCommand().cancel())
-            .onlyIf(()->drivetrain.getCurrentCommand() != null));
-
-        xboxController.povUp().onTrue(drivetrain.resetGyro());
+        xboxController.a().onTrue(drivetrain.resetGyro());
         
     }
     public Command getAutonomousCommand()
