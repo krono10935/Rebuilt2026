@@ -16,6 +16,8 @@ import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.Shooter.ShotCalculator.ValidityState;
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 
@@ -24,6 +26,8 @@ public class ShootCommand extends Command {
   /** Creates a new ShootCommand. */
 
   private final Shooter shooter;
+
+  private final Vision vision;
 
   private final Drivetrain drivetrain;
 
@@ -36,21 +40,27 @@ public class ShootCommand extends Command {
    * @param shooter subsystem to activate the shoot command on
    * @param drivetrain drivetrain
    */
-  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Intake intake) {
+  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Intake intake, Vision vision ) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
     this.drivetrain = drivetrain;
     this.intake = intake;
+    this.vision = vision;
 
       addRequirements(shooter);
   }
 
-  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake){
+  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
-    ShootCommand shootCommand = new ShootCommand(shooter, drivetrain, intake);
+    ShootCommand shootCommand = new ShootCommand(shooter, drivetrain, intake, vision);
 
     return driveCommand.alongWith(shootCommand);
+  }
+
+  @Override
+  public void initialize(){
+    vision.setCamAsPriority(CamerasConstants.FRONT_CAMERA);
   }
 
   @Override

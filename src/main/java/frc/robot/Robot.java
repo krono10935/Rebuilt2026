@@ -5,28 +5,18 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import com.revrobotics.util.StatusLogger;
-
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.leds.LedLocation;
-import frc.robot.leds.LedPattern;
-import frc.robot.leds.LedState;
-import frc.robot.subsystems.Shooter.ShotCalculator;
-import frc.utils.ErrorMessage;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
+import frc.utils.VirtualSubSystem;
 import io.github.captainsoccer.basicmotor.motorManager.MotorManager;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.photonvision.simulation.PhotonCameraSim;
 
 
 public class Robot extends LoggedRobot
@@ -47,11 +37,6 @@ public class Robot extends LoggedRobot
             Logger.addDataReceiver(new NT4Publisher());
         }
 
-        SignalLogger.enableAutoLogging(false);
-        SignalLogger.stop();
-        StatusLogger.disableAutoLogging();
-        StatusLogger.stop();
-
         
         Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
 
@@ -59,23 +44,15 @@ public class Robot extends LoggedRobot
 
         
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
-
-        SmartDashboard.putBoolean("test", false);
     }
 
 
     @Override
     public void robotPeriodic() {
+        VirtualSubSystem.virtualperidic();
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
-        ShotCalculator.getInstance().clearShootingParameters();
 
-        if(SmartDashboard.getBoolean("test", false)){
-            RobotContainer.getInstance().ledManager.setColors(new LedState(LedPattern.BLUE_PULSE, Color.kDarkBlue, Color.kCyan, 0.15, 0.7, LedLocation.ALL));
-            SmartDashboard.putBoolean("test", false);
-        }
-
-        ErrorMessage.updateErrors();
     }
     
     
@@ -105,7 +82,7 @@ public class Robot extends LoggedRobot
         
         if (autonomousCommand != null)
         {
-            CommandScheduler.getInstance().schedule(autonomousCommand.andThen(RobotContainer.getInstance().drivetrain.idle()));
+            CommandScheduler.getInstance().schedule(autonomousCommand);
         }
     }
     
@@ -123,19 +100,17 @@ public class Robot extends LoggedRobot
     {
         if (autonomousCommand != null)
         {
+
             autonomousCommand.cancel();
-            Constants.HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
-            RobotContainer m_container = RobotContainer.getInstance();
-            CommandScheduler.getInstance().schedule(
-                Sequences.autoDeclimb(m_container.intake, m_container.drivetrain, m_container.climb, m_container.shooter)
-            );
         }
 
     }
     
     
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+//        RobotContainer.getInstance().drivetrain.drive(new ChassisSpeeds(2,0,2));
+    }
     
     
     @Override

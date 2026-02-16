@@ -43,7 +43,7 @@ public class RobotContainer
 
     public final LedManager ledManager;
 
-    private final Vision vision;
+    public final Vision vision;
 
     public final Shooter shooter;
 
@@ -133,7 +133,7 @@ public class RobotContainer
         };
        new Trigger(isHubActive).
                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-        .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController,intake));
+        .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController,intake, vision));
 
         xboxController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, xboxController)));
 
@@ -164,11 +164,11 @@ public class RobotContainer
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake).beforeStarting(new SpinUp(shooter))
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake, vision).beforeStarting(new SpinUp(shooter))
                         .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake).beforeStarting(new SpinUp(shooter))
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake, vision).beforeStarting(new SpinUp(shooter))
                         .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new SpinUp(shooter));
