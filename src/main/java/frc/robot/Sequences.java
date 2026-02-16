@@ -274,50 +274,24 @@ public class Sequences {
             Shooter shooter
     ) {
 
-        SequentialCommandGroup mainClimbCommand =
-                new SequentialCommandGroup();
-
         ParallelCommandGroup parallelClimbCommand =
-                new ParallelCommandGroup();
-
-
-        SequentialCommandGroup sequentialClimbCommandGroup =
-                new SequentialCommandGroup(
-
+                new ParallelCommandGroup(
                         closeSubsystems(intake, climb, shooter),
 
-                        new WaitUntilCommand(() ->
-                                closeEnoughToOpenClimb(
-                                        drivetrain.getEstimatedPosition()
-                                )
-                        ),
+                        Commands.sequence(
+                                new WaitUntilCommand(() ->
+                                        closeEnoughToOpenClimb(
+                                                drivetrain.getEstimatedPosition()
+                                        )
+                                ),
+                                climb.openCommand(
 
-                        climb.openCommand()
-                );
+                                )),
 
+                        drivetrain.driveToPose(getTowerSideTargetPose(Constants.chosenTowerSideToClimb, false)
+                ) );
 
-        parallelClimbCommand.addCommands(
-                drivetrain.driveToPose(
-                        getTowerSideTargetPose(
-                                Constants.chosenTowerSideToClimb,
-                                false
-                        )
-                )
-        );
-
-        parallelClimbCommand.addCommands(
-                sequentialClimbCommandGroup
-        );
-
-
-        mainClimbCommand.addCommands(parallelClimbCommand);
-
-        mainClimbCommand.addCommands(
-                closeAndRetryClosingIfFailed(climb)
-        );
-
-
-        return mainClimbCommand.onlyIf(() ->
+        return parallelClimbCommand.onlyIf(() ->
                 DriverStation.getMatchTime() > 140
                         || DriverStation.isAutonomous()
         );

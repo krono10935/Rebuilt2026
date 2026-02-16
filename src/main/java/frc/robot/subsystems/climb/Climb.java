@@ -89,7 +89,7 @@ public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
   public Command closeCommand(){
     return new FunctionalCommand(this::close,
             ()->{},
-            (interrupted)->{},
+            (interrupted)->io.stop(),
             this::isAtSetPoint,
             this);
   }

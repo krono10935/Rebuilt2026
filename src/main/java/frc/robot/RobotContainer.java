@@ -6,7 +6,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -17,34 +16,25 @@ import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
-import frc.robot.subsystems.Shooter.ShootCalculatorWithMovement;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.subsystems.Shooter.ShotCalculator;
-import frc.robot.subsystems.Shooter.ShootCalculatorWithMovement.ShootCalculatorWithMovementParams;
-import frc.robot.subsystems.Shooter.ShotCalculator.ValidityState;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climb.Climb;
-import frc.robot.leds.LedLocation;
 import frc.robot.leds.LedManager;
-import frc.robot.leds.LedPattern;
-import frc.robot.leds.LedState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 
 import frc.robot.subsystems.drivetrain.PPController;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.util.Color;
+
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class RobotContainer
 {   
@@ -135,25 +125,21 @@ public class RobotContainer
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
 
-       new Trigger(
-        () -> Constants.HubTiming.isActive(DriverStation.getMatchTime())
+        BooleanSupplier isHubActive = () -> {
+            double time = DriverStation.getMatchTime();
 
-                        && ShotCalculator.getInstance().getParameters(
-                                        drivetrain.getEstimatedPosition(),
-                                        drivetrain.getChassisSpeeds()
-                                ).validityState() == ValidityState.VALID
-        )
+            return Constants.HubTiming.isActive(time) ||
+                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
+                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
+        };
+       new Trigger(isHubActive).
+               and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())).
+               and(intake::hasBalls)
         .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController));
 
-        xboxController.leftBumper().toggleOnTrue(
-        new ConditionalCommand(
-                Sequences.autoClimb(intake, drivetrain, climb, shooter),
-                Sequences.climbOpen(intake, drivetrain, climb, shooter),
-                () -> isClimbAuto.get()
-            )
-        );
+        xboxController.leftBumper().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, shooter));
 
-        xboxController.rightBumper().onTrue(Sequences.climbClose(intake, climb, shooter, drivetrain));
+        xboxController.rightBumper().whileTrue(climb.closeCommand());
 
         xboxController.x().onTrue(
             Sequences.delivery(drivetrain, shooter, xboxController));

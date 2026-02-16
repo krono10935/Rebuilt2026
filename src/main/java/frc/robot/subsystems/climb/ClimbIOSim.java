@@ -33,6 +33,11 @@ public class ClimbIOSim implements ClimbIO{
     }
 
     @Override
+    public void stop(){
+        motor.stop();
+    }
+
+    @Override
     public void update(ClimbInputs inputs) {
 
         switch(state){

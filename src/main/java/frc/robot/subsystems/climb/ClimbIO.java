@@ -32,6 +32,7 @@ public interface ClimbIO {
      */
     boolean isAtSetPoint();
 
+    void stop();
     
 
     void update(ClimbInputs inputs);

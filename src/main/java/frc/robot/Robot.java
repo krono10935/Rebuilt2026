@@ -129,7 +129,6 @@ public class Robot extends LoggedRobot
             CommandScheduler.getInstance().schedule(
                 Sequences.autoDeclimb(m_container.intake, m_container.drivetrain, m_container.climb, m_container.shooter)
             );
-            ;
         }
 
     }
