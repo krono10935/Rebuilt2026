@@ -60,7 +60,7 @@ public class ShootCommand extends Command {
 
   @Override
   public void initialize(){
-    vision.setCamAsPriority(CamerasConstants.FRONT_CAMERA);
+    vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
   }
 
   @Override

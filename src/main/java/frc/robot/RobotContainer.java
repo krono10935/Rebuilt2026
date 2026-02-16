@@ -137,7 +137,7 @@ public class RobotContainer
 
         xboxController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, xboxController)));
 
-        xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, shooter));
+        xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, shooter,vision));
 
         xboxController.b().whileTrue(climb.closeCommand());
 

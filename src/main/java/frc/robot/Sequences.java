@@ -19,6 +19,8 @@ import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -272,12 +274,17 @@ public class Sequences {
             Intake intake,
             Drivetrain drivetrain,
             Climb climb,
-            Shooter shooter
+            Shooter shooter,
+            Vision vision
     ) {
 
         ParallelCommandGroup parallelClimbCommand =
                 new ParallelCommandGroup(
                         closeSubsystems(intake, climb, shooter),
+
+                        new StartEndCommand(() -> 
+                                vision.setCamAsPriority(CamerasConstants.SIDE_CAMERA),
+                                () -> vision.clearPriority()),
 
                         Commands.sequence(
                                 new WaitUntilCommand(() ->
