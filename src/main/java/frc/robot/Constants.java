@@ -16,8 +16,6 @@ public class Constants {
 
     public static final double HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE = 1;
 
-    public static FieldConstants.TowerSide chosenTowerSideToClimb = FieldConstants.TowerSide.left; //TODO change based on which side
-
     public enum Phase{
             AUTO(0 ,0),
             TranistionShift(140,130),

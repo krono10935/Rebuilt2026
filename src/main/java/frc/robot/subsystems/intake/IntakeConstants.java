@@ -52,8 +52,6 @@ public class IntakeConstants {
         var specifConfig = (BasicSparkConfig)intakeMotorConfig;
 
         specifConfig.currentLimitConfig.freeSpeedCurrentLimit = 20;
-        specifConfig.currentLimitConfig.stallCurrentLimit = 40;
-
     }
 
     public static final BasicMotorConfig positionMotorConfig = new BasicSparkConfig();
@@ -79,6 +77,6 @@ public class IntakeConstants {
 
           var specifConfig = (BasicSparkConfig)positionMotorConfig;
 
-        specifConfig.currentLimitConfig.stallCurrentLimit = 40;
+        specifConfig.currentLimitConfig.freeSpeedCurrentLimit = 20;
     }
 }

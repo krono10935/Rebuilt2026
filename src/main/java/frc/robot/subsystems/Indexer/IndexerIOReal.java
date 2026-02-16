@@ -2,6 +2,7 @@ package frc.robot.subsystems.Indexer;
 
 import java.util.ResourceBundle.Control;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
@@ -14,7 +15,9 @@ public class IndexerIOReal implements IndexerIO {
         this.motorLeft = new BasicSparkMAX(IndexerConstants.getLeftMotorConfig());
         this.motorRight = new BasicSparkMAX(IndexerConstants.getRightMotorConfig());
 
-        motorRight.followMotor(motorLeft, true);
+        SmartDashboard.putData(motorLeft.getController());
+        SmartDashboard.putData(motorRight.getController());
+
         isSpinning = false;
     }
 

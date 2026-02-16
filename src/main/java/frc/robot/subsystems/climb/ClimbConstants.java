@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
+import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
+import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
 public class ClimbConstants {
 
@@ -33,6 +35,9 @@ public class ClimbConstants {
         config.slot0Config.pidConfig.kI = 0;
         config.slot0Config.pidConfig.kD = 0;
         // config.slot0Config.pidConfig.tolerance = 0.1;
+
+        var sparkConfig = ((BasicSparkConfig)config);
+        sparkConfig.currentLimitConfig.freeSpeedCurrentLimit = 20;
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;

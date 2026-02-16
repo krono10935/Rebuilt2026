@@ -17,6 +17,8 @@ public class IndexerConstants {
         configLeftMotor.motorConfig.motorType = DCMotor.getNEO(1);
         configLeftMotor.motorConfig.gearRatio = 1.0;
 
+        configLeftMotor.currentLimitConfig.freeSpeedCurrentLimit = 20;
+
 
         configLeftMotor.simulationConfig.kA = 0.2;
         configLeftMotor.simulationConfig.kV = 0.2;
@@ -33,6 +35,16 @@ public class IndexerConstants {
         configRightMotor.motorConfig.id = 31;
         configRightMotor.motorConfig.name = "Right indexer motor";
         configRightMotor.motorConfig.motorType = DCMotor.getNEO(1);
+        configRightMotor.motorConfig.gearRatio = 1.0;
+        configRightMotor.motorConfig.inverted = true;
+
+        configRightMotor.currentLimitConfig.freeSpeedCurrentLimit = 20;
+
+        configRightMotor.simulationConfig.kA = 0.2;
+        configRightMotor.simulationConfig.kV = 0.2;
+
+
+        configRightMotor.slot0Config.pidConfig.kP = 1;
 
         return configRightMotor;
     }

@@ -73,6 +73,8 @@ public class ShooterConstants {
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Shooting Motor";
         config.motorConfig.unitConversion = FLYWHEEL_CICUMFRENCE;
+
+        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
         
         config.slot0Config.feedForwardConfig.velocityFeedforward = 0.10811 / FLYWHEEL_CICUMFRENCE;
         config.slot0Config.feedForwardConfig.frictionFeedForward = 0.043261/ FLYWHEEL_CICUMFRENCE;
@@ -121,6 +123,8 @@ public class ShooterConstants {
         config.motorConfig.id = 25;
         config.motorConfig.name = "Shooting Motor follower";
 
+        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
+
         return config;
     }
 
@@ -136,6 +140,8 @@ public class ShooterConstants {
         config.motorConfig.gearRatio = 9;
         config.motorConfig.name = "Hood Motor";
         config.motorConfig.inverted = true;
+
+        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
 
         config.slot0Config.pidConfig.kP = 0.1;
         config.slot0Config.pidConfig.kI = 0;
@@ -172,6 +178,8 @@ public class ShooterConstants {
         config.motorConfig.motorType = DCMotor.getNEO(1);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Kicker Motor";
+
+        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
 
         config.slot0Config.pidConfig.kP = 0;
         config.slot0Config.pidConfig.kI = 0;

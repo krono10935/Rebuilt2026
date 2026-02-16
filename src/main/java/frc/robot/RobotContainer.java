@@ -6,9 +6,12 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveRobotRelative;
@@ -28,6 +31,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.drivetrain.PPController;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -55,9 +59,13 @@ public class RobotContainer
 
     public final Drivetrain drivetrain;
 
-    private final LoggedDashboardChooser<Command> chooser; 
+    private final LoggedDashboardChooser<Command> autoChooser;
 
-    private final LoggedDashboardChooser<Boolean> isClimbAuto;
+    private final LoggedDashboardChooser<FieldConstants.TowerSide> climbChooser; 
+
+    private final LoggedNetworkNumber shooterSpeedMPS;
+
+    private final LoggedNetworkNumber hoodAngleDegrees;
 
 
     public static RobotContainer getInstance(){
@@ -69,9 +77,6 @@ public class RobotContainer
 
     private RobotContainer()
     {
-        isClimbAuto = new LoggedDashboardChooser<>("is climb automatic");
-        isClimbAuto.addDefaultOption("yes", true);
-        isClimbAuto.addOption("no", false);
 
         shooter = new Shooter();
 
@@ -85,10 +90,48 @@ public class RobotContainer
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
-        chooser = new LoggedDashboardChooser<>("chooser", AutoBuilder.buildAutoChooser());
+        autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
 
-        configureBindings();
+        climbChooser = new LoggedDashboardChooser<>("Climb side");
+        climbChooser.addOption("Left",TowerSide.left);
+        climbChooser.addOption("Right", TowerSide.right);
+
+        shooterSpeedMPS = new LoggedNetworkNumber("shooterSpeedMPS", 17);
+
+        hoodAngleDegrees = new LoggedNetworkNumber("hoodAngleDegrees", 0);
+
         ledManager = new LedManager();
+        configureBindings();
+    }
+
+    private void configureTestBindings(){
+        xboxController.a().onTrue(new InstantCommand(() -> {
+                shooter.spinUp(shooterSpeedMPS.get());
+                shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngleDegrees.get()));
+                shooter.toggleKicker(true);
+                shooter.getIndexer().turnOn();
+            }, shooter ,shooter.getIndexer())
+        .withDeadline(new WaitUntilCommand(
+            () -> shooter.isHoodAtSetpoint() 
+            && shooter.isShooterAtGoal()))
+        .andThen(new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.get()),shooter)));
+
+        xboxController.b().onTrue(new InstantCommand(() -> {
+            shooter.stopFlyWheel();
+            shooter.setHoodAngle(Rotation2d.kZero);
+            shooter.toggleKicker(false);
+            shooter.getIndexer().turnOff();
+        }, shooter, shooter.getIndexer()));
+
+        xboxController.x().onTrue(new InstantCommand(() -> shooter.spinUp(shooterSpeedMPS.get())));
+        xboxController.x().onFalse(new InstantCommand(() -> shooter.stopFlyWheel()));
+        xboxController.y().onTrue(new InstantCommand(() -> shooter.keepVelocity(shooterSpeedMPS.get())));
+        xboxController.y().onFalse(new InstantCommand(() -> shooter.stopFlyWheel()));
+
+        xboxController.povDown().onTrue(new InstantCommand(() -> shooter.toggleKicker(true)));
+        xboxController.povDown().onFalse(new InstantCommand(() -> shooter.toggleKicker(false)));
+
+
     }
 
     private void configurePitBindings() {
@@ -118,6 +161,8 @@ public class RobotContainer
 
         xboxController.povUp().onTrue(climb.openCommand());
 
+        xboxController.povLeft().whileTrue(shooter.idle());
+
         xboxController.povCenter().onTrue(drivetrain.resetGyro());
     }
 
@@ -137,7 +182,7 @@ public class RobotContainer
 
         xboxController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, xboxController)));
 
-        xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, shooter,vision));
+        xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter,vision));
 
         xboxController.b().whileTrue(climb.closeCommand());
 
@@ -145,11 +190,10 @@ public class RobotContainer
             Sequences.delivery(drivetrain, shooter, xboxController,intake));
 
         xboxController.a().onTrue(drivetrain.resetGyro());
-        
     }
     public Command getAutonomousCommand()
     {
-        return chooser.get();
+        return autoChooser.get();
     }
 
     public void registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){

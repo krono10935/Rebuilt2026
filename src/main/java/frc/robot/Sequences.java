@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.DriveAndHomeToSupplierCommand;
 import frc.robot.commands.SpinUpForDelivery;
 import frc.robot.commands.IntakeCommands.CloseCommand;
@@ -274,6 +274,7 @@ public class Sequences {
             Intake intake,
             Drivetrain drivetrain,
             Climb climb,
+            Supplier<TowerSide> climbSideSupplier,
             Shooter shooter,
             Vision vision
     ) {
@@ -296,7 +297,7 @@ public class Sequences {
 
                                 )),
 
-                        drivetrain.driveToPose(getTowerSideTargetPose(Constants.chosenTowerSideToClimb, false)
+                        drivetrain.driveToPose(getTowerSideTargetPose(climbSideSupplier.get(), false)
                 ) );
 
         return parallelClimbCommand.onlyIf(() ->
@@ -324,6 +325,7 @@ public class Sequences {
             Intake intake,
             Drivetrain drivetrain,
             Climb climb,
+            Supplier<TowerSide> climbSideSupplier,
             Shooter shooter
     ) {
 
@@ -337,7 +339,7 @@ public class Sequences {
         mainDeclimbCommand.addCommands(
                 drivetrain.driveToPose(
                         getTowerSideTargetPose(
-                                Constants.chosenTowerSideToClimb,
+                                climbSideSupplier.get(),
                                 true
                         )
                 )

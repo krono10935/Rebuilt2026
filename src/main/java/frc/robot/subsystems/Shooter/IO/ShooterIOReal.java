@@ -3,6 +3,7 @@ package frc.robot.subsystems.Shooter.IO;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
@@ -44,6 +45,10 @@ public class ShooterIOReal implements ShooterIO {
         kickerMotor =  new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
 
         isKickerActive = false;
+
+        SmartDashboard.putData(leadShootingMotor.getController());
+        SmartDashboard.putData(hoodMotor.getController());
+        SmartDashboard.putData(kickerMotor.getController());
 
     }
 
