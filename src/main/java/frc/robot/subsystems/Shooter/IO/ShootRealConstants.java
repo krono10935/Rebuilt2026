@@ -20,25 +20,31 @@ public class ShootRealConstants {
     public static BasicSparkConfig getLeadShootingMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 27;
+        config.motorConfig.id = 50;
         config.motorConfig.motorType = DCMotor.getNeoVortex(2);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Shooting Motor";
         config.motorConfig.unitConversion = ShooterConstants.FLYWHEEL_CICUMFRENCE;
+        config.motorConfig.inverted = true;
         config.enableVoltageCompensation = false;
 
 
         //SPIN UP CONSANTS
+        config.currentLimitConfig.freeSpeedCurrentLimit = 30;
+        config.currentLimitConfig.stallCurrentLimit = 80;
+        config.currentLimitConfig.freeSpeedRPM = 4000;
 
-        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.3128409;
-        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.12518549;
+        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.31596;
+        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.073231;
 
         config.slot0Config.pidConfig.kP = 0.5;
         config.slot0Config.pidConfig.kI = 0.05;  
         config.slot0Config.pidConfig.tolerance = 0;
 
-        config.slot0Config.pidConfig.iZone = 1;
-        config.slot0Config.pidConfig.iMaxAccum = 1;
+        config.enableVoltageCompensation = false;
+
+        config.slot0Config.pidConfig.iZone = 0.3;
+        config.slot0Config.pidConfig.iMaxAccum = 2;
 
         config.slot0Config.profileConfig.maximumMeasurementAcceleration = 5;
         config.slot0Config.profileConfig.maximumMeasurementVelocity = 5;
@@ -46,18 +52,18 @@ public class ShootRealConstants {
 
         //KEEP VELOCITY CONSTANTS
 
-        config.slot1Config.feedForwardConfig.velocityFeedforward = 0.3128409;
-        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.12518549;
+        config.slot1Config.feedForwardConfig.velocityFeedforward = 0.31596;
+        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.073231;
 
-        config.slot1Config.pidConfig.kI = 0.001;
+        config.slot1Config.pidConfig.kI = 0.05;
         config.slot1Config.pidConfig.kD = 16;   
         config.slot1Config.pidConfig.tolerance = 0;
 
-        config.slot1Config.pidConfig.iZone = 1;
-        config.slot1Config.pidConfig.iMaxAccum = 1;
+        config.slot1Config.pidConfig.iZone = 0.6;
+        config.slot1Config.pidConfig.iMaxAccum = 2;
 
-        config.simulationConfig.kA = 0.0188913;
-        config.simulationConfig.kV = 0.3128409;
+        config.simulationConfig.kA = 0.02855;
+        config.simulationConfig.kV = 0.31596;
 
         config.constraintsConfig.minOutput = 0;
 
@@ -71,8 +77,11 @@ public class ShootRealConstants {
     public static BasicSparkConfig getFollowShootingMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 25;
+        config.motorConfig.id = 51;
         config.motorConfig.name = "Shooting Motor follower";
+
+        config.currentLimitConfig.freeSpeedCurrentLimit = 70;
+        config.currentLimitConfig.freeSpeedRPM = 4000;
 
         return config;
     }
@@ -84,11 +93,14 @@ public class ShootRealConstants {
     public static BasicSparkConfig getHoodMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 20;
+        config.motorConfig.id = 19;
         config.motorConfig.motorType = DCMotor.getNEO(1);
-        config.motorConfig.gearRatio = 9;
+        config.motorConfig.gearRatio = 5;
         config.motorConfig.name = "Hood Motor";
         config.motorConfig.inverted = true;
+
+        config.currentLimitConfig.freeSpeedCurrentLimit = 25;
+        config.currentLimitConfig.freeSpeedRPM = 3000;
 
         config.slot0Config.pidConfig.kP = 0.1;
         config.slot0Config.pidConfig.kI = 0;
@@ -101,13 +113,10 @@ public class ShootRealConstants {
         config.absoluteEncoderConfig.useAbsoluteEncoder = true;
 
         config.motorConfig.idleMode = IdleMode.BRAKE;
-        config.absoluteEncoderConfig.inverted = true;
-        config.absoluteEncoderConfig.sensorToMotorRatio = 9;
-        config.absoluteEncoderConfig.mechanismToSensorRatio = 80/20;
-        config.absoluteEncoderConfig.zeroOffset = Rotation2d.fromDegrees(360 - 0.072 - 60).getRotations() ;
+        // config.absoluteEncoderConfig.inverted = true;
+        config.absoluteEncoderConfig.sensorToMotorRatio = 1;
+        config.absoluteEncoderConfig.zeroOffset = 0.168;
 
-        config.constraintsConfig.maxValue = 0.3;
-        config.constraintsConfig.minValue = 0.0;
         config.constraintsConfig.constraintType = ConstraintType.LIMITED;
 
         config.constraintsConfig.maxOutput = 3;
@@ -124,10 +133,13 @@ public class ShootRealConstants {
     public static BasicSparkConfig getKickerMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 47;
+        config.motorConfig.id = 30;
         config.motorConfig.motorType = DCMotor.getNEO(1);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Kicker Motor";
+
+        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
+        config.currentLimitConfig.freeSpeedRPM = 3000;
 
         config.slot0Config.pidConfig.kP = 0;
         config.slot0Config.pidConfig.kI = 0;
