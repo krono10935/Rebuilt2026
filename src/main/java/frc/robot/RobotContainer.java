@@ -51,7 +51,7 @@ public class RobotContainer
 
     // public final LedManager ledManager;
 
-    // public final Vision vision;
+    public final Vision vision;
 
     public final Shooter shooter;
 
@@ -95,7 +95,7 @@ public class RobotContainer
 
         xboxController = new CommandXboxController(0);
 
-        // vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
+        vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
         // autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
 
@@ -105,7 +105,7 @@ public class RobotContainer
 
         shooterSpeedMPS = new LoggedNetworkNumber("shooterSpeedMPS", 10);
 
-        hoodAngle = new LoggedNetworkNumber("hoodAngle", 0.08);
+        hoodAngle = new LoggedNetworkNumber("hoodAngle", 0.5);
 
         // ledManager = new LedManager();
         // configureBindings();
@@ -114,22 +114,28 @@ public class RobotContainer
 
     private void configureTestBindings(){
         xboxController.a().onTrue(new InstantCommand(() -> {
-                shooter.spinUp(shooterSpeedMPS.get());
+                // shooter.spinUp(shooterSpeedMPS.get());
                 shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
-                shooter.toggleKicker(true);
-                shooter.getIndexer().turnOn();
             }, shooter ,shooter.getIndexer())
         .withDeadline(new WaitUntilCommand(
             () -> shooter.isHoodAtSetpoint() 
-            && shooter.isShooterAtGoal()))
-        .andThen(new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.get()),shooter)));
+          //  && shooter.isShooterAtGoal()
+          )));
+        // .andThen(new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.get()),shooter)));
 
         xboxController.b().onTrue(new InstantCommand(() -> {
-            shooter.stopFlyWheel();
+            // shooter.stopFlyWheel();
             shooter.setHoodAngle(Rotation2d.kZero);
-            shooter.toggleKicker(false);
+        }, shooter));
+
+        xboxController.x().whileTrue(new StartEndCommand(() -> {
+            shooter.getIndexer().turnOn();
+            shooter.toggleKicker(true);
+        },
+        () -> {
             shooter.getIndexer().turnOff();
-        }, shooter, shooter.getIndexer()));
+            shooter.toggleKicker(false);
+        }));
 
         // xboxController.x().onTrue(new InstantCommand(() -> shooter.spinUp(shooterSpeedMPS.get())));
         // xboxController.x().onFalse(new InstantCommand(() -> shooter.stopFlyWheel()));

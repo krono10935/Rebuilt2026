@@ -32,6 +32,9 @@ public class IndexerConstants {
         configLeftMotor.simulationConfig.kA = 0.2;
         configLeftMotor.simulationConfig.kV = 0.37;
 
+        configLeftMotor.slot0Config.profileConfig.maximumMeasurementAcceleration = 200;
+        configLeftMotor.slot0Config.profileConfig.maximumMeasurementVelocity = 200;
+
         return configLeftMotor;
     }
 
@@ -58,6 +61,9 @@ public class IndexerConstants {
 
         configRightMotor.simulationConfig.kA = 0.2;
         configRightMotor.simulationConfig.kV = 0.37;
+
+        configRightMotor.slot0Config.profileConfig.maximumMeasurementAcceleration = 200;
+        configRightMotor.slot0Config.profileConfig.maximumMeasurementVelocity = 200;
 
         return configRightMotor;
     }

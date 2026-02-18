@@ -23,8 +23,8 @@ public class IndexerIOReal implements IndexerIO {
 
     @Override
     public void turnOn() {
-        motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.VELOCITY);
-        motorRight.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.VELOCITY);
+        motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
+        motorRight.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
         isSpinning = true;
     }
 

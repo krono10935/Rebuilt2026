@@ -15,7 +15,7 @@ public class ShootRealConstants {
     public static int DUTY_CYCLE_ENCODER_PORT = 1;
     public static double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.15836;
 
-    public static double KICKER_SPEED_RPS = 20;
+    public static double KICKER_SPEED_MPS = 4;
     /**
      * 
      * @return the motor config for shooting motor
@@ -58,8 +58,9 @@ public class ShootRealConstants {
         config.slot1Config.feedForwardConfig.velocityFeedforward = 0.31596;
         config.slot1Config.feedForwardConfig.frictionFeedForward = 0.073231;
 
-        config.slot1Config.pidConfig.kI = 0.05;
-        config.slot1Config.pidConfig.kD = 16;   
+        config.slot1Config.pidConfig.kP = 0.6;
+        config.slot1Config.pidConfig.kI = 0.001;
+        config.slot1Config.pidConfig.kD = 6;   
         config.slot1Config.pidConfig.tolerance = 0;
 
         config.slot1Config.pidConfig.iZone = 0.6;
@@ -107,7 +108,7 @@ public class ShootRealConstants {
         config.slot0Config.pidConfig.kP = 40;
         config.slot0Config.pidConfig.kI = 5;
         config.slot0Config.pidConfig.kD = 0;
-        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(1.5
+        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(0.5
         ).getRotations();
 
         config.simulationConfig.kA = 0.1;
@@ -126,7 +127,7 @@ public class ShootRealConstants {
         config.constraintsConfig.minOutput = 3;
 
         config.constraintsConfig.maxValue = 0.08333;
-        config.constraintsConfig.minValue = 0;
+        config.constraintsConfig.minValue = Rotation2d.fromDegrees(0.5).getRotations();
 
         
         return config;

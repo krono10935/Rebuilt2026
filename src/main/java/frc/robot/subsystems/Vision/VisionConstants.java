@@ -43,7 +43,7 @@ public class VisionConstants {
             "dolev",
             new Transform3d(
                 new Translation3d(0.36, 0.285, 0.345),
-                new Rotation3d(0, Units.degreesToRadians(-35),Units.degreesToRadians(0))
+                new Rotation3d(0, Units.degreesToRadians(-25),Units.degreesToRadians(5))
     
             ),
             new StdDevsFactors(0.1,0.3,0.1,0.3),

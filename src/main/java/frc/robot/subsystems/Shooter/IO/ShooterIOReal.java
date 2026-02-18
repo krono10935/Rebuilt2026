@@ -93,7 +93,7 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void toggleKicker(boolean isActive){
         if(isActive){
-            kickerMotor.setControl(ShootRealConstants.KICKER_SPEED_RPS, ControlMode.VELOCITY);
+            kickerMotor.setControl(ShootRealConstants.KICKER_SPEED_MPS, ControlMode.VELOCITY);
         }
         else{
             kickerMotor.stop();
