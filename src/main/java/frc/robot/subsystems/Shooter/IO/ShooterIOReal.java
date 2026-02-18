@@ -2,8 +2,14 @@ package frc.robot.subsystems.Shooter.IO;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.revrobotics.AbsoluteEncoder;
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
@@ -22,6 +28,8 @@ public class ShooterIOReal implements ShooterIO {
 
     private final BasicMotorConfig leadConfig;
 
+    private final DutyCycleEncoder dutyCycleEncoder;
+
     private boolean isKickerActive;
     private double targetVelocity;
 
@@ -32,7 +40,8 @@ public class ShooterIOReal implements ShooterIO {
         followShootingMotor = new BasicSparkFlex(ShootRealConstants.getFollowShootingMotorConfig());
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
-
+        dutyCycleEncoder = new DutyCycleEncoder(ShootRealConstants.DUTY_CYCLE_ENCODER_PORT);
+        
         hoodMotor =  new BasicSparkMAX(ShootRealConstants.getHoodMotorConfig());
 
         kickerMotor =  new BasicSparkMAX(ShootRealConstants.getKickerMotorConfig());
@@ -43,6 +52,11 @@ public class ShooterIOReal implements ShooterIO {
         SmartDashboard.putData(hoodMotor.getController());
         SmartDashboard.putData(kickerMotor.getController());
 
+        // hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
+
+        CommandScheduler.getInstance().schedule(new InstantCommand(
+            () -> hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
+            .beforeStarting(new WaitUntilCommand(() -> dutyCycleEncoder.get() != 0)).ignoringDisable(true));
     }
 
     @Override
@@ -104,6 +118,10 @@ public class ShooterIOReal implements ShooterIO {
         inputs.isKickerActive = this.isKickerActive;
 
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
+
+        Logger.recordOutput("duty cycle", dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET);
+        // hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
+
         
     }
 

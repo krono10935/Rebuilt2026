@@ -39,6 +39,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import java.util.function.BooleanSupplier;

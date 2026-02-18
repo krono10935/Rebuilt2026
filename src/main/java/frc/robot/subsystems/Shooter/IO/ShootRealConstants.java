@@ -7,12 +7,13 @@ package frc.robot.subsystems.Shooter.IO;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 /** Add your docs here. */
 public class ShootRealConstants {
+    public static int DUTY_CYCLE_ENCODER_PORT = 1;
+    public static double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.15836;
     /**
      * 
      * @return the motor config for shooting motor
@@ -95,35 +96,35 @@ public class ShootRealConstants {
         final BasicSparkConfig config = new BasicSparkConfig();
         config.motorConfig.id = 19;
         config.motorConfig.motorType = DCMotor.getNEO(1);
-        config.motorConfig.gearRatio = 5;
+        config.motorConfig.gearRatio = 40;
         config.motorConfig.name = "Hood Motor";
         // config.motorConfig.inverted = true;
 
-        config.currentLimitConfig.freeSpeedCurrentLimit = 25;
-        config.currentLimitConfig.freeSpeedRPM = 3000;
+        config.currentLimitConfig.freeSpeedCurrentLimit = 15;
 
-        config.slot0Config.pidConfig.kP = 0.1;
-        config.slot0Config.pidConfig.kI = 0;
+        config.slot0Config.pidConfig.kP = 40;
+        config.slot0Config.pidConfig.kI = 5;
         config.slot0Config.pidConfig.kD = 0;
-        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(0.5).getRotations();
+        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(1.5
+        ).getRotations();
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
 
-        config.absoluteEncoderConfig.useAbsoluteEncoder = true;
+        // config.absoluteEncoderConfig.useAbsoluteEncoder = false;
 
-        config.motorConfig.idleMode = IdleMode.BRAKE;
-        config.absoluteEncoderConfig.sensorToMotorRatio = 5;
-        config.absoluteEncoderConfig.mechanismToSensorRatio = 8;
-        config.absoluteEncoderConfig.zeroOffset = 0.16;
+        // config.motorConfig.idleMode = IdleMode.BRAKE;
+        // config.absoluteEncoderConfig.sensorToMotorRatio = 5;
+        // config.absoluteEncoderConfig.mechanismToSensorRatio = 8;
+        // config.absoluteEncoderConfig.zeroOffset = 0.16;
 
         config.constraintsConfig.constraintType = ConstraintType.LIMITED;
 
         config.constraintsConfig.maxOutput = 3;
         config.constraintsConfig.minOutput = 3;
 
-        config.constraintsConfig.maxValue = 0.083773;
-        config.constraintsConfig.minValue = 0.001214;
+        config.constraintsConfig.maxValue = 0.08333;
+        config.constraintsConfig.minValue = 0;
 
         
         return config;
