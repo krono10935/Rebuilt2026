@@ -37,15 +37,7 @@ public class ShooterConstants {
     public static final AbsoluteEncoderRange SHOOTER_ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.HALF_REVOLUTION;
 
 
-
-    public static final boolean IS_HOOD_ABSOLUTE_ENCODER_INVERTED = false;
-
-    public static final double HOOD_ENCODER_ZERO_OFFSET = 0.011;
-
-    public static final double HOOD_MOTOR_TO_ENCODER_RATIO = 1.0/8;
-
-    public static final AbsoluteEncoderRange HOOD_ABSOLUTE_ENCODER_RANGE = AbsoluteEncoderRange.ZERO_TO_ONE;
-
+    
 
     public static final double DELIVERY_SPEED_MPS = 20;
 
