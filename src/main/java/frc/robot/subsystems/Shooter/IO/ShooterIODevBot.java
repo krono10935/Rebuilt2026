@@ -1,10 +1,14 @@
 package frc.robot.subsystems.Shooter.IO;
 
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -22,35 +26,45 @@ public class ShooterIODevBot implements ShooterIO {
 
     private final BasicMotor hoodMotor;
 
-    private final BasicMotor kickerMotor;
+    // private final BasicMotor kickerMotor;
 
     private final BasicMotorConfig leadConfig;
 
     private boolean isKickerActive;
 
+    private final DoubleSupplier dutyCycleSupplier;
+
     public ShooterIODevBot(){
-        leadConfig = ShooterConstants.getLeadShootingMotorConfig();
+        leadConfig = ShooterDevBotConstants.getLeadShootingMotorConfig();
 
         leadShootingMotor = new BasicSparkFlex(leadConfig);
-        followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
+        followShootingMotor = new BasicSparkFlex(ShooterDevBotConstants.getFollowShootingMotorConfig());
         
-        leadShootingMotor.getController().setSendableSlot(0);
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
-        hoodMotor = new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
-        // ((BasicSparkMAX)hoodMotor).useAbsoluteEncoder(
-        //     ShooterConstants.IS_HOOD_ABSOLUTE_ENCODER_INVERTED,
-        //     ShooterConstants.HOOD_ENCODER_ZERO_OFFSET, 
-        //     ShooterConstants.HOOD_MOTOR_TO_ENCODER_RATIO, 
-        //     ShooterConstants.HOOD_ABSOLUTE_ENCODER_RANGE
-        // );
+        hoodMotor = new BasicSparkMAX(ShooterDevBotConstants.getHoodMotorConfig());
 
-        kickerMotor = new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
-        
+        // kickerMotor = new BasicSparkMAX(ShooterDevBotConstants.getKickerMotorConfig());
 
         isKickerActive = false;
-        SmartDashboard.putData(hoodMotor.getController());
+        
+        leadShootingMotor.getController().setSendableSlot(1);
+        SmartDashboard.putData(leadShootingMotor.getController());
 
+
+        var motor = ((BasicSparkFlex)leadShootingMotor);
+
+        var spark = motor.getMotor();
+
+        var config = motor.getSparkConfig();
+
+        // config.closedLoop.dFilter(15 / ShooterConstants.FLYWHEEL_CICUMFRENCE, ClosedLoopSlot.kSlot1);
+
+        motor.getSparkConfig().signals.appliedOutputPeriodMs(10);
+
+        spark.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        
+        dutyCycleSupplier = spark::getAppliedOutput;
     }
 
     @Override
@@ -63,6 +77,23 @@ public class ShooterIODevBot implements ShooterIO {
     public void keepVelocity(double speedMPS){
         leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
+    }
+
+    @Deprecated
+    private double calculateFF(double target){
+        if(isShooterAtGoal()) return 0;
+
+        if(leadShootingMotor.getVelocity() > target) return 0;
+
+        if(leadShootingMotor.getMeasurement().acceleration() < 0){
+            return 12;
+        }
+        else{
+            double error = Math.abs(target - leadShootingMotor.getVelocity());
+
+            if(error >= 2) return 12;
+            else return MathUtil.inverseInterpolate(0, 2, error) * 12;
+        }
     }
 
     @Override
@@ -84,11 +115,12 @@ public class ShooterIODevBot implements ShooterIO {
 
     @Override
     public void toggleKicker(boolean isActive){
-        if (isActive){
-            kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
-        } else {
-            kickerMotor.stop();
-        }
+        // if (isActive){
+        //     kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
+        // } else {
+        //     // kickerMotor.stop();
+        // }
+        return;
     }
 
     @Override
@@ -109,6 +141,8 @@ public class ShooterIODevBot implements ShooterIO {
         inputs.isKickerActive = this.isKickerActive;
 
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
+
+        Logger.recordOutput("Shooter/motorDutyCycle", dutyCycleSupplier.getAsDouble());
         
     }
 

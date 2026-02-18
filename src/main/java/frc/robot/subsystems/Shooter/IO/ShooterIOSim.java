@@ -24,12 +24,12 @@ public class ShooterIOSim implements ShooterIO {
     private boolean isKickerActive;
 
     public ShooterIOSim(){
-        shooterConfig = ShooterConstants.getLeadShootingMotorConfig();
+        shooterConfig = ShootRealConstants.getLeadShootingMotorConfig();
         leadShootingMotor = new BasicFlywheelSim(shooterConfig);
 
-        hoodMotor =  new BasicMotorSim(ShooterConstants.getHoodMotorConfig());
+        hoodMotor =  new BasicMotorSim(ShootRealConstants.getHoodMotorConfig());
 
-        kickerMotor =  new BasicMotorSim(ShooterConstants.getKickerMotorConfig());
+        kickerMotor =  new BasicMotorSim(ShootRealConstants.getKickerMotorConfig());
 
         isKickerActive = false;
 

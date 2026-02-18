@@ -33,6 +33,8 @@ import frc.robot.subsystems.drivetrain.gyro.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.gyro.GyroIOSim;
 import frc.robot.subsystems.drivetrain.module.SwerveModuleBasic;
 import frc.robot.subsystems.drivetrain.module.SwerveModuleIO;
+import frc.utils.AllianceFlipUtil;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
@@ -231,6 +233,15 @@ public class Drivetrain extends SubsystemBase {
     }
 
     /**
+     * Resets the gyros
+     */
+    public void resetOnlyGyro(){
+        Pose2d newPose = new Pose2d(getEstimatedPosition().getTranslation(), AllianceFlipUtil.apply(new Rotation2d()));
+
+        reset(newPose);
+    }
+
+    /**
      * Adds the vision measurement
      *
      * @param pose      the position where the vision think the robot is there
@@ -354,6 +365,9 @@ public class Drivetrain extends SubsystemBase {
         String currentCommand = getCurrentCommand() == null ? "None" : getCurrentCommand().getName();
 
         Logger.recordOutput("drivetrain/current command", currentCommand);
+        
+        Logger.recordOutput("Distance to hub", 
+        getEstimatedPosition().getTranslation().getDistance(AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint).toTranslation2d()));
     }
 }
 

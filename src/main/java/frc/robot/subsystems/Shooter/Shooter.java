@@ -44,7 +44,6 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
     else{
       io = new ShooterIOReal();
     }
-    // io = new ShooterIONonBasicMotor();s
 
     inputs = new ShooterInputsAutoLogged();
 
