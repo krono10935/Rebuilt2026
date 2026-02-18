@@ -69,11 +69,9 @@ public class RobotContainer
 
     private final LoggedNetworkNumber shooterSpeedMPS;
 
-    // private final LoggedNetworkNumber hoodAngleDegrees;
+    private final LoggedNetworkNumber hoodAngle;
 
     // private final Indexer indexer;
-
-    private final ShooterSysID sysID;
 
 
     public static RobotContainer getInstance(){
@@ -90,8 +88,6 @@ public class RobotContainer
 
         shooter = new Shooter();
 
-        sysID = new ShooterSysID(shooter);
-        // indexer = new Indexer();
 
         // intake = new Intake();
 
@@ -107,9 +103,9 @@ public class RobotContainer
         // climbChooser.addOption("Left",TowerSide.left);
         // climbChooser.addOption("Right", TowerSide.right);
 
-        shooterSpeedMPS = new LoggedNetworkNumber("shooterSpeedMPS", 0.2);
+        shooterSpeedMPS = new LoggedNetworkNumber("shooterSpeedMPS", 10);
 
-        // hoodAngleDegrees = new LoggedNetworkNumber("hoodAngleDegrees", 0);
+        hoodAngle = new LoggedNetworkNumber("hoodAngle", 0.08);
 
         // ledManager = new LedManager();
         // configureBindings();
@@ -117,23 +113,23 @@ public class RobotContainer
     }
 
     private void configureTestBindings(){
-        // xboxController.a().onTrue(new InstantCommand(() -> {
-        //         shooter.spinUp(shooterSpeedMPS.get());
-        //         shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngleDegrees.get()));
-        //         shooter.toggleKicker(true);
-        //         shooter.getIndexer().turnOn();
-        //     }, shooter ,shooter.getIndexer())
-        // .withDeadline(new WaitUntilCommand(
-        //     () -> shooter.isHoodAtSetpoint() 
-        //     && shooter.isShooterAtGoal()))
-        // .andThen(new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.get()),shooter)));
+        xboxController.a().onTrue(new InstantCommand(() -> {
+                shooter.spinUp(shooterSpeedMPS.get());
+                shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
+                shooter.toggleKicker(true);
+                shooter.getIndexer().turnOn();
+            }, shooter ,shooter.getIndexer())
+        .withDeadline(new WaitUntilCommand(
+            () -> shooter.isHoodAtSetpoint() 
+            && shooter.isShooterAtGoal()))
+        .andThen(new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.get()),shooter)));
 
-        // xboxController.b().onTrue(new InstantCommand(() -> {
-        //     shooter.stopFlyWheel();
-        //     shooter.setHoodAngle(Rotation2d.kZero);
-        //     shooter.toggleKicker(false);
-        //     shooter.getIndexer().turnOff();
-        // }, shooter, shooter.getIndexer()));
+        xboxController.b().onTrue(new InstantCommand(() -> {
+            shooter.stopFlyWheel();
+            shooter.setHoodAngle(Rotation2d.kZero);
+            shooter.toggleKicker(false);
+            shooter.getIndexer().turnOff();
+        }, shooter, shooter.getIndexer()));
 
         // xboxController.x().onTrue(new InstantCommand(() -> shooter.spinUp(shooterSpeedMPS.get())));
         // xboxController.x().onFalse(new InstantCommand(() -> shooter.stopFlyWheel()));
