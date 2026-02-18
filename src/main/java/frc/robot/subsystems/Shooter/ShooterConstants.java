@@ -50,7 +50,7 @@ public class ShooterConstants {
     public static final double DELIVERY_SPEED_MPS = 20;
 
 
-    public static final double KICKER_PERCENT_OUTPUT = 0.4;
+    public static final double KICKER_PERCENT_OUTPUT = 0.3;
 
     public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
     
@@ -68,16 +68,19 @@ public class ShooterConstants {
     public static BasicSparkConfig getLeadShootingMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 27;
+        config.motorConfig.id = 50;
         config.motorConfig.motorType = DCMotor.getNeoVortex(2);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Shooting Motor";
         config.motorConfig.unitConversion = FLYWHEEL_CICUMFRENCE;
+        config.motorConfig.inverted = true;
 
-        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
+        config.currentLimitConfig.freeSpeedCurrentLimit = 30;
+        config.currentLimitConfig.stallCurrentLimit = 80;
+        config.currentLimitConfig.freeSpeedRPM = 4000;
         
-        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.10811 / FLYWHEEL_CICUMFRENCE;
-        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.043261/ FLYWHEEL_CICUMFRENCE;
+        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.31596;
+        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.073231;
 
         config.slot0Config.profileConfig.maximumMeasurementAcceleration = 5; // TODO Decide the optimal number here 
         config.slot0Config.profileConfig.maximumMeasurementVelocity = 5; // TODO Decide the optimal number here
@@ -93,20 +96,20 @@ public class ShooterConstants {
 
         double maxIOutPut = 1.5;// VOLTS
         config.slot0Config.pidConfig.iZone = 0.3;
-        config.slot0Config.pidConfig.iMaxAccum = maxIOutPut / config.slot0Config.pidConfig.kI;
+        config.slot0Config.pidConfig.iMaxAccum = maxIOutPut;
 
-        config.slot1Config.feedForwardConfig.velocityFeedforward = 0.10811 / FLYWHEEL_CICUMFRENCE;
-        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.043261 / FLYWHEEL_CICUMFRENCE;
+        config.slot1Config.feedForwardConfig.velocityFeedforward = 0.31596;
+        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.073231;
 
         config.slot1Config.pidConfig.kI = 0.05;
         config.slot1Config.pidConfig.kD = 16;   
         config.slot1Config.pidConfig.tolerance = 0;
 
         config.slot1Config.pidConfig.iZone = 0.6;
-        config.slot1Config.pidConfig.iMaxAccum = maxIOutPut / config.slot1Config.pidConfig.kI;
+        config.slot1Config.pidConfig.iMaxAccum = maxIOutPut;
 
-        config.simulationConfig.kA = 0.0065362 / FLYWHEEL_CICUMFRENCE;
-        config.simulationConfig.kV = 0.10811 / FLYWHEEL_CICUMFRENCE;
+        config.simulationConfig.kA = 0.02855;
+        config.simulationConfig.kV = 0.31596;
 
         config.constraintsConfig.minOutput = 0;
 
@@ -120,10 +123,10 @@ public class ShooterConstants {
     public static BasicSparkConfig getFollowShootingMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 25;
+        config.motorConfig.id = 51;
         config.motorConfig.name = "Shooting Motor follower";
 
-        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
+        config.currentLimitConfig.freeSpeedCurrentLimit = 70;
 
         return config;
     }
@@ -135,13 +138,13 @@ public class ShooterConstants {
     public static BasicSparkConfig getHoodMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 20;
+        config.motorConfig.id = 19;
         config.motorConfig.motorType = DCMotor.getNEO(1);
-        config.motorConfig.gearRatio = 9;
+        config.motorConfig.gearRatio = 5;
         config.motorConfig.name = "Hood Motor";
         config.motorConfig.inverted = true;
 
-        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
+        config.currentLimitConfig.freeSpeedCurrentLimit = 25;
 
         config.slot0Config.pidConfig.kP = 0.1;
         config.slot0Config.pidConfig.kI = 0;
@@ -153,9 +156,9 @@ public class ShooterConstants {
 
         config.absoluteEncoderConfig.useAbsoluteEncoder = true;
 
-        config.absoluteEncoderConfig.inverted = true;
-        config.absoluteEncoderConfig.sensorToMotorRatio = 0.345;
-        config.absoluteEncoderConfig.zeroOffset = 0.418;
+        // config.absoluteEncoderConfig.inverted = true;
+        config.absoluteEncoderConfig.sensorToMotorRatio = 1;
+        config.absoluteEncoderConfig.zeroOffset = 0.168;
 
         config.constraintsConfig.maxValue = 0.245;
         config.constraintsConfig.minValue = 0.156;
@@ -174,7 +177,7 @@ public class ShooterConstants {
     public static BasicSparkConfig getKickerMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
-        config.motorConfig.id = 47;
+        config.motorConfig.id = 30;
         config.motorConfig.motorType = DCMotor.getNEO(1);
         config.motorConfig.gearRatio = 1;
         config.motorConfig.name = "Kicker Motor";

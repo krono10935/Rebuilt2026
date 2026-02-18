@@ -116,7 +116,6 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void logSysID() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'logSysID'");
+        System.out.println("Kalush is mad");
     }   
 }

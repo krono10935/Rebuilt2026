@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.IO.ShooterIODevBot;
+import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
 
@@ -41,7 +42,7 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
       io = new ShooterIODevBot();
     }
     else{
-      io = new ShooterIODevBot();
+      io = new ShooterIOReal();
     }
     // io = new ShooterIONonBasicMotor();s
 
@@ -147,6 +148,10 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
 
     public Indexer getIndexer(){
     return indexer;
+    }
+
+    public void dutyCycle(double dutyCycle){
+      io.setFlyWheelVoltage(dutyCycle * 12);
     }
 
     @Override
