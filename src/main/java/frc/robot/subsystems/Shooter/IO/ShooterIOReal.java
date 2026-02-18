@@ -48,6 +48,8 @@ public class ShooterIOReal implements ShooterIO {
 
         isKickerActive = false;
 
+        leadShootingMotor.getController().setSendableSlot(1);
+
         SmartDashboard.putData(leadShootingMotor.getController());
         SmartDashboard.putData(hoodMotor.getController());
         SmartDashboard.putData(kickerMotor.getController());
@@ -91,7 +93,7 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void toggleKicker(boolean isActive){
         if(isActive){
-            kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
+            kickerMotor.setControl(ShootRealConstants.KICKER_SPEED_RPS, ControlMode.VELOCITY);
         }
         else{
             kickerMotor.stop();

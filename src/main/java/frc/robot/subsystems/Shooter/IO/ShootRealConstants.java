@@ -14,6 +14,8 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 public class ShootRealConstants {
     public static int DUTY_CYCLE_ENCODER_PORT = 1;
     public static double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.15836;
+
+    public static double KICKER_SPEED_RPS = 20;
     /**
      * 
      * @return the motor config for shooting motor
@@ -38,8 +40,8 @@ public class ShootRealConstants {
         config.slot0Config.feedForwardConfig.velocityFeedforward = 0.31596;
         config.slot0Config.feedForwardConfig.frictionFeedForward = 0.073231;
 
-        config.slot0Config.pidConfig.kP = 0.5;
-        config.slot0Config.pidConfig.kI = 0.05;  
+        config.slot0Config.pidConfig.kP = 0.1;
+        config.slot0Config.pidConfig.kI = 0.001;  
         config.slot0Config.pidConfig.tolerance = 0;
 
         config.enableVoltageCompensation = false;
@@ -47,8 +49,8 @@ public class ShootRealConstants {
         config.slot0Config.pidConfig.iZone = 0.3;
         config.slot0Config.pidConfig.iMaxAccum = 2;
 
-        config.slot0Config.profileConfig.maximumMeasurementAcceleration = 5;
-        config.slot0Config.profileConfig.maximumMeasurementVelocity = 5;
+        config.slot0Config.profileConfig.maximumMeasurementAcceleration = 10;
+        config.slot0Config.profileConfig.maximumMeasurementVelocity = 20;
 
 
         //KEEP VELOCITY CONSTANTS
@@ -137,17 +139,23 @@ public class ShootRealConstants {
     public static BasicSparkConfig getKickerMotorConfig(){
 
         final BasicSparkConfig config = new BasicSparkConfig();
+
         config.motorConfig.id = 30;
         config.motorConfig.motorType = DCMotor.getNEO(1);
-        config.motorConfig.gearRatio = 1;
+        config.motorConfig.gearRatio = 3;
         config.motorConfig.name = "Kicker Motor";
+        config.motorConfig.unitConversion = ShooterConstants.FLYWHEEL_CICUMFRENCE / 2;
 
         config.currentLimitConfig.freeSpeedCurrentLimit = 20;
         config.currentLimitConfig.freeSpeedRPM = 3000;
 
-        config.slot0Config.pidConfig.kP = 0;
-        config.slot0Config.pidConfig.kI = 0;
+        config.slot0Config.pidConfig.kP = 0.1;
+        config.slot0Config.pidConfig.kI = 0.05;
         config.slot0Config.pidConfig.kD = 0;
+        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.382 / (ShooterConstants.FLYWHEEL_CICUMFRENCE / 2);
+        config.slot0Config.pidConfig.tolerance = 0.5;
+        config.slot0Config.pidConfig.iZone = 2;
+        config.slot0Config.pidConfig.iMaxAccum = 3;
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;

@@ -61,7 +61,7 @@ public class RobotContainer
 
     private final CommandXboxController xboxController;
 
-    // public final Drivetrain drivetrain;
+    public final Drivetrain drivetrain;
 
     // private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -86,6 +86,8 @@ public class RobotContainer
     private RobotContainer()
     {
 
+        drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
+
         shooter = new Shooter();
 
         sysID = new ShooterSysID(shooter);
@@ -96,8 +98,6 @@ public class RobotContainer
         // climb = new Climb();
 
         xboxController = new CommandXboxController(0);
-
-        // drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         // vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
@@ -147,10 +147,10 @@ public class RobotContainer
         // xboxController.a().onTrue(shooter.getIndexer().turnOnIndexerCommand());
         // xboxController.a().onFalse(shooter.getIndexer().turnOffIndexerCommand());
 
-        xboxController.a().onTrue(sysID.sysIdDynamicFlywheel(Direction.kForward));
-        xboxController.b().onTrue(sysID.sysIdDynamicFlywheel(Direction.kReverse));
-        xboxController.y().onTrue(sysID.sysIdQuasistaticFlywheel(Direction.kForward));
-        xboxController.x().onTrue(sysID.sysIdQuasistaticFlywheel(Direction.kReverse));
+        // xboxController.a().onTrue(sysID.sysIdDynamicFlywheel(Direction.kForward));
+        // xboxController.b().onTrue(sysID.sysIdDynamicFlywheel(Direction.kReverse));
+        // xboxController.y().onTrue(sysID.sysIdQuasistaticFlywheel(Direction.kForward));
+        // xboxController.x().onTrue(sysID.sysIdQuasistaticFlywheel(Direction.kReverse));
 
 
 

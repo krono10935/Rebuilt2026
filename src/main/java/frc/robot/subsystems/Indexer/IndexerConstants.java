@@ -19,12 +19,18 @@ public class IndexerConstants {
 
         configLeftMotor.currentLimitConfig.freeSpeedCurrentLimit = 25;
 
+        configLeftMotor.slot0Config.pidConfig.kP = 0.05;
+        configLeftMotor.slot0Config.pidConfig.kI = 0.001;
+
+        configLeftMotor.slot0Config.pidConfig.iMaxAccum = 2;
+        configLeftMotor.slot0Config.pidConfig.iZone = 3;
+
+        configLeftMotor.slot0Config.feedForwardConfig.velocityFeedforward = 0.37;
+
+        configLeftMotor.slot0Config.pidConfig.tolerance = 0.2;
 
         configLeftMotor.simulationConfig.kA = 0.2;
-        configLeftMotor.simulationConfig.kV = 0.2;
-
-
-        configLeftMotor.slot0Config.pidConfig.kP = 0.5;
+        configLeftMotor.simulationConfig.kV = 0.37;
 
         return configLeftMotor;
     }
@@ -40,11 +46,18 @@ public class IndexerConstants {
 
         configRightMotor.currentLimitConfig.freeSpeedCurrentLimit = 25;
 
+        configRightMotor.slot0Config.pidConfig.kP = 0.05;
+        configRightMotor.slot0Config.pidConfig.kI = 0.001;
+
+        configRightMotor.slot0Config.pidConfig.iMaxAccum = 2;
+        configRightMotor.slot0Config.pidConfig.iZone = 3;
+
+        configRightMotor.slot0Config.feedForwardConfig.velocityFeedforward = 0.37;
+
+        configRightMotor.slot0Config.pidConfig.tolerance = 0.2;
+
         configRightMotor.simulationConfig.kA = 0.2;
-        configRightMotor.simulationConfig.kV = 0.2;
-
-
-        configRightMotor.slot0Config.pidConfig.kP = 0.5;
+        configRightMotor.simulationConfig.kV = 0.37;
 
         return configRightMotor;
     }
