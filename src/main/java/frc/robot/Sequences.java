@@ -78,6 +78,10 @@ public class Sequences {
                 >= ClimbConstants.MIN_DISTANCE_FROM_TOWER_TO_CLOSE_CLIMB;
     }
 
+    private static boolean isComingFromTop(Pose2d robotPose){
+        return robotPose.getX() > 4.0;
+    }
+
 
     /**
      * Attempts to close the climb and retries if the first attempt fails.
@@ -283,8 +287,16 @@ public class Sequences {
                 new ParallelCommandGroup(
                         closeSubsystems(intake, climb, shooter),
 
-                        new StartEndCommand(() -> 
-                                vision.setCamAsPriority(CamerasConstants.SIDE_CAMERA),
+                        new StartEndCommand(() -> {
+                                if(isComingFromTop(drivetrain.getEstimatedPosition())){
+                                        vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
+                                }
+                                else{
+                                        vision.setCamAsPriority(CamerasConstants.SIDE_CAMERA);
+                                }
+                                
+                                },
+
                                 () -> vision.clearPriority()),
 
                         Commands.sequence(
@@ -326,7 +338,8 @@ public class Sequences {
             Drivetrain drivetrain,
             Climb climb,
             Supplier<TowerSide> climbSideSupplier,
-            Shooter shooter
+            Shooter shooter,
+            Vision vision
     ) {
 
         SequentialCommandGroup mainDeclimbCommand =
@@ -334,6 +347,10 @@ public class Sequences {
 
         mainDeclimbCommand.addCommands(
                 climb.openCommand()
+        );
+
+        mainDeclimbCommand.addCommands(
+                new InstantCommand(() -> vision.clearPriority())
         );
 
         mainDeclimbCommand.addCommands(
@@ -377,7 +394,7 @@ public class Sequences {
     public static Command intakeOpenStart(Intake intake) {
 
         return OpenCommand.openWithErrorHandeling(intake).
-        alongWith(new IntakeCommand(intake));
+        alongWith(new IntakeCommand(intake)).alongWith(new InstantCommand());
     }
 
 

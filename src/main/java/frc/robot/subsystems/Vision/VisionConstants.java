@@ -28,6 +28,12 @@ public class VisionConstants {
     public record StdDevsFactors(double xyStdFactor,double thetaStdFactor,double minXyStd,double minThetaStd) {
     }
 
+    public enum PipelineModes {
+        DISABLE,
+        HIGH,
+        LOW
+    }
+
 
     // enum with all the camera constants
     public enum CamerasConstants {
@@ -36,7 +42,7 @@ public class VisionConstants {
             PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
             "dolev",
             new Transform3d(
-                new Translation3d(0.145, 0.345, 0.445),
+                new Translation3d(0.36, 0.285, 0.345),
                 new Rotation3d(0, Units.degreesToRadians(-35),Units.degreesToRadians(0))
     
             ),
