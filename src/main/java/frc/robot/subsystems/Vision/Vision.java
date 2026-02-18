@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.Vision.VisionConstants.StdDevsFactors;
+import frc.robot.subsystems.Vision.VisionConstants.PipelineModes;
 import frc.utils.VirtualSubSystem;
 
 /**
@@ -197,8 +198,8 @@ public class Vision extends VirtualSubSystem {
    * @param camerasConstants the constants of the camera
    * @param index the index of the pipeline
    */
-  public void setPiplineIndex(CamerasConstants camerasConstants, int index){
-    cameras.get(camerasConstants).camera.setPiplineIndex(index);
+  public void setPiplineIndex(CamerasConstants camerasConstants, PipelineModes mode){
+    cameras.get(camerasConstants).camera.setPiplineIndex(mode.ordinal());
   }
 
   /*
@@ -207,12 +208,12 @@ public class Vision extends VirtualSubSystem {
    */
   public void setCamAsPriority(CamerasConstants camera){
     if(priorityCamera != null){
-      setPiplineIndex(priorityCamera, 0);
+      clearPriority();
     }
 
     this.priorityCamera = camera;
 
-    setPiplineIndex(camera, 1);
+    setPiplineIndex(camera,PipelineModes.HIGH);
 
     Logger.recordOutput("Vision/priority camera", camera.CAMERA_NAME);
   }
@@ -221,11 +222,21 @@ public class Vision extends VirtualSubSystem {
    * the function resets what camera is the priority
   */
   public void clearPriority(){
-    setPiplineIndex(priorityCamera, 0);
+    setPiplineIndex(priorityCamera, PipelineModes.LOW);
 
     priorityCamera = null;
 
     Logger.recordOutput("Vision/priority camera", "none");
+  }
+
+  public void disableCameras(){
+    if(priorityCamera != null){
+      clearPriority();
+    }
+
+    for(CamerasConstants camera : CamerasConstants.values()){
+      setPiplineIndex(camera, PipelineModes.DISABLE);
+    }
   }
 
   /**
