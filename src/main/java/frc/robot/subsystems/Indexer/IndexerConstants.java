@@ -32,7 +32,7 @@ public class IndexerConstants {
     public static BasicSparkConfig getRightMotorConfig(){
         BasicSparkConfig configRightMotor = new BasicSparkConfig();
 
-        configRightMotor.motorConfig.id = 61;
+        configRightMotor.motorConfig.id = 62;
         configRightMotor.motorConfig.name = "Right indexer motor";
         configRightMotor.motorConfig.motorType = DCMotor.getNEO(1);
         configRightMotor.motorConfig.gearRatio = 42.0/15;

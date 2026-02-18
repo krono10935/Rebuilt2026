@@ -97,7 +97,7 @@ public class ShootRealConstants {
         config.motorConfig.motorType = DCMotor.getNEO(1);
         config.motorConfig.gearRatio = 5;
         config.motorConfig.name = "Hood Motor";
-        config.motorConfig.inverted = true;
+        // config.motorConfig.inverted = true;
 
         config.currentLimitConfig.freeSpeedCurrentLimit = 25;
         config.currentLimitConfig.freeSpeedRPM = 3000;
@@ -113,14 +113,17 @@ public class ShootRealConstants {
         config.absoluteEncoderConfig.useAbsoluteEncoder = true;
 
         config.motorConfig.idleMode = IdleMode.BRAKE;
-        // config.absoluteEncoderConfig.inverted = true;
-        config.absoluteEncoderConfig.sensorToMotorRatio = 1;
-        config.absoluteEncoderConfig.zeroOffset = 0.168;
+        config.absoluteEncoderConfig.sensorToMotorRatio = 5;
+        config.absoluteEncoderConfig.mechanismToSensorRatio = 8;
+        config.absoluteEncoderConfig.zeroOffset = 0.16;
 
         config.constraintsConfig.constraintType = ConstraintType.LIMITED;
 
         config.constraintsConfig.maxOutput = 3;
         config.constraintsConfig.minOutput = 3;
+
+        config.constraintsConfig.maxValue = 0.083773;
+        config.constraintsConfig.minValue = 0.001214;
 
         
         return config;

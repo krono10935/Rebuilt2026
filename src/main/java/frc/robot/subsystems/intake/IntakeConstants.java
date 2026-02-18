@@ -57,7 +57,7 @@ public class IntakeConstants {
     public static final BasicMotorConfig positionMotorConfig = new BasicSparkConfig();
     static{
         positionMotorConfig.motorConfig.name = "position motor";
-        positionMotorConfig.motorConfig.id = 2;
+        positionMotorConfig.motorConfig.id = 42;
         positionMotorConfig.motorConfig.inverted = false;
         positionMotorConfig.motorConfig.idleMode = IdleMode.BRAKE;
         positionMotorConfig.motorConfig.gearRatio = 1;

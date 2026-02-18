@@ -146,10 +146,10 @@ public class RobotContainer
         // xboxController.a().onTrue(shooter.getIndexer().turnOnIndexerCommand());
         // xboxController.a().onFalse(shooter.getIndexer().turnOffIndexerCommand());
 
-        // xboxController.a().onTrue(sysID.sysIdDynamicFlywheel(Direction.kForward));
-        // xboxController.b().onTrue(sysID.sysIdDynamicFlywheel(Direction.kReverse));
-        // xboxController.y().onTrue(sysID.sysIdQuasistaticFlywheel(Direction.kForward));
-        // xboxController.x().onTrue(sysID.sysIdQuasistaticFlywheel(Direction.kReverse));
+        xboxController.a().onTrue(sysID.sysIdDynamicFlywheel(Direction.kForward));
+        xboxController.b().onTrue(sysID.sysIdDynamicFlywheel(Direction.kReverse));
+        xboxController.y().onTrue(sysID.sysIdQuasistaticFlywheel(Direction.kForward));
+        xboxController.x().onTrue(sysID.sysIdQuasistaticFlywheel(Direction.kReverse));
 
 
 
