@@ -72,7 +72,7 @@ public class ShotCalculator {
         maxDistance = 5.60; // TODO: find the real value
         phaseDelay = 0.03; // TODO: find the real value
 
-        shotHoodAngleMap.put(3.4, Rotation2d.fromDegrees(30.0));
+        shotHoodAngleMap.put(3.5, Rotation2d.fromDegrees(23.0));
         shotHoodAngleMap.put(3.0, Rotation2d.fromDegrees(20.0));
         shotHoodAngleMap.put(2.0, Rotation2d.fromDegrees(12.0));
         // shotHoodAngleMap.put(2.81, Rotation2d.fromDegrees(27.0));
@@ -84,9 +84,9 @@ public class ShotCalculator {
         // shotHoodAngleMap.put(5.60, Rotation2d.fromDegrees(35.0));
 
 
-        shotFlywheelSpeedMap.put(3.4, 17.0);
-        shotFlywheelSpeedMap.put(3.0, 2.0);
-        shotFlywheelSpeedMap.put(2.0, 17.5);
+        shotFlywheelSpeedMap.put(3.5, 19.0);
+        shotFlywheelSpeedMap.put(3.0, 17.5);
+        shotFlywheelSpeedMap.put(2.0, 17.0);
         // shotFlywheelSpeedMap.put(2.81, 230.0/60);
         // shotFlywheelSpeedMap.put(3.82, 250.0/60);
         // shotFlywheelSpeedMap.put(4.09, 255.0/60);

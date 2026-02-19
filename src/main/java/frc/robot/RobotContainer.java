@@ -26,6 +26,8 @@ import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterSysID;
 import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
+import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.leds.LedManager;
@@ -128,20 +130,22 @@ public class RobotContainer
         //     shooter.getIndexer().turnOff();
         // }, shooter, drivetrain, shooter.getIndexer()).alongWith(new CloseCommand(intake)));
 
-        // xboxController.b().onTrue(new RunCommand(() -> ShotCalculator.getInstance()
-        //     .getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())));
+        xboxController.b().onTrue(new RunCommand(() -> ShotCalculator.getInstance()
+            .getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())));
 
         xboxController.a().onTrue(new InstantCommand(() ->  {
             shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 10));
-            shooter.toggleKicker(true);
             shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1)));
         }, shooter, shooter.getIndexer()).withDeadline(new WaitUntilCommand(() -> shooter.isShooterAtGoal()))
         .andThen(shooter.getIndexer().turnOnIndexerCommand()
-        .alongWith(new RunCommand(() -> shooter.keepVelocity(SmartDashboard.getNumber("shooterSpeedMPS", 10)), shooter))));
+        .alongWith(new RunCommand(() -> {
+            shooter.keepVelocity(SmartDashboard.getNumber("shooterSpeedMPS", 10));
+            shooter.toggleKicker(true);
+        }, shooter))));
         
         xboxController.a().onFalse(new InstantCommand(() -> {
             shooter.stopFlyWheel();
-            shooter.setHoodAngle(Rotation2d.fromDegrees(0.5));
+            shooter.setHoodAngle(Rotation2d.fromDegrees(ShootRealConstants.getHoodMotorConfig().constraintsConfig.minValue));
             shooter.toggleKicker(false);
             shooter.getIndexer().turnOff();
         }, shooter, shooter.getIndexer()).alongWith(new CloseCommand(intake)));
