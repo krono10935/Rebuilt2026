@@ -11,6 +11,7 @@ import com.revrobotics.util.StatusLogger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
 import frc.utils.VirtualSubSystem;
@@ -69,6 +70,7 @@ public class Robot extends LoggedRobot
         VirtualSubSystem.virtualperidic();
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
+        ShotCalculator.getInstance().clearShootingParameters();
 
     }
     

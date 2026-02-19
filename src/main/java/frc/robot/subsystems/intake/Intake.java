@@ -26,7 +26,7 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
   /** Creates a new Intake. */
   public Intake() {
 
-    io = RobotBase.isReal()? new IntakeIOSpark() : new IntakeIOSim();
+    io = new IntakeIOSim();//RobotBase.isReal()? new IntakeIOSpark() : new IntakeIOSim();
 
     failedToClose = false;
 

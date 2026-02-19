@@ -15,8 +15,6 @@ public class ClimbIOReal implements ClimbIO{
     public ClimbIOReal(){
         motor = new BasicSparkMAX(ClimbConstants.getClimbConfig());
 
-        SmartDashboard.putData(motor.getController());
-
         state = ClimbState.CLOSED;
     }
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems.Shooter.IO;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.controls.MusicTone;
 import com.revrobotics.AbsoluteEncoder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -49,10 +50,6 @@ public class ShooterIOReal implements ShooterIO {
         isKickerActive = false;
 
         leadShootingMotor.getController().setSendableSlot(1);
-
-        SmartDashboard.putData(leadShootingMotor.getController());
-        SmartDashboard.putData(hoodMotor.getController());
-        SmartDashboard.putData(kickerMotor.getController());
 
         // hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
 

@@ -53,6 +53,7 @@ public class ShootRealConstants {
         config.slot0Config.profileConfig.maximumMeasurementVelocity = 20;
 
 
+
         //KEEP VELOCITY CONSTANTS
 
         config.slot1Config.feedForwardConfig.velocityFeedforward = 0.31596;
@@ -128,6 +129,7 @@ public class ShootRealConstants {
 
         config.constraintsConfig.maxValue = 0.08333;
         config.constraintsConfig.minValue = Rotation2d.fromDegrees(0.5).getRotations();
+        config.constraintsConfig.constraintType = ConstraintType.LIMITED;
 
         
         return config;

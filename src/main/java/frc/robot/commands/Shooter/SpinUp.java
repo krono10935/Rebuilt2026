@@ -7,13 +7,17 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SpinUp extends Command {
   /** Creates a new SpinUpAndKeepVelocity. */
-  private Shooter shooter;
-  public SpinUp(Shooter shooter) {
+  private final Shooter shooter;
+  private final Drivetrain drivetrain;
+  public SpinUp(Shooter shooter, Drivetrain drivetrain) {
     this.shooter = shooter;
+    this.drivetrain = drivetrain;
     addRequirements(shooter);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -21,7 +25,9 @@ public class SpinUp extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.spinUp(ShooterConstants.SHOOTING_SPEED);
+    shooter.spinUp(
+      ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())
+      .flywheelSpeed());
   }
 
   @Override

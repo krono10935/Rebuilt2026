@@ -49,8 +49,6 @@ public class ShooterIODevBot implements ShooterIO {
         isKickerActive = false;
         
         leadShootingMotor.getController().setSendableSlot(1);
-        SmartDashboard.putData(leadShootingMotor.getController());
-
 
         var motor = ((BasicSparkFlex)leadShootingMotor);
 

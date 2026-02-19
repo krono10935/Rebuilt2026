@@ -18,8 +18,6 @@ public class IntakeIOSpark implements IntakeIO {
 
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
 
-        SmartDashboard.putData(intakeMotor.getController());
-        SmartDashboard.putData(positionMotor.getController());
     }
 
     @Override

@@ -15,9 +15,6 @@ public class IndexerIOReal implements IndexerIO {
         this.motorLeft = new BasicSparkMAX(IndexerConstants.getLeftMotorConfig());
         this.motorRight = new BasicSparkMAX(IndexerConstants.getRightMotorConfig());
 
-        SmartDashboard.putData(motorLeft.getController());
-        SmartDashboard.putData(motorRight.getController());
-
         isSpinning = false;
     }
 
