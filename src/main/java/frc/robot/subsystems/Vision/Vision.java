@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
-import com.pathplanner.lib.util.PPLibTelemetry;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -236,6 +235,15 @@ public class Vision extends VirtualSubSystem {
 
     for(CamerasConstants camera : CamerasConstants.values()){
       setPiplineIndex(camera, PipelineModes.DISABLE);
+      cameras.get(camera).inputs.isEnabled = false;
+    }
+  }
+
+  public void enableCameras(){
+
+    for(CamerasConstants camera : CamerasConstants.values()){
+      setPiplineIndex(camera, PipelineModes.LOW);
+      cameras.get(camera).inputs.isEnabled = true;
     }
   }
 
@@ -254,7 +262,7 @@ public class Vision extends VirtualSubSystem {
       // Update inputs from camera and log connection status
       camera.updateInputs();
       SmartDashboard.putBoolean(camera.constants.CAMERA_NAME + "/connected", camera.inputs.isConnected);
-      if(!camera.inputs.isConnected) continue; // Skip disconnected cameras
+      if(!camera.inputs.isConnected || !camera.inputs.isEnabled) continue; // Skip disconnected cameras
 
       // Collect positions of all detected fiducials
       for(int id: camera.inputs.targetIDs) {
