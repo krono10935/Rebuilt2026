@@ -75,6 +75,7 @@ public class ObjectDetection extends VirtualSubSystem {
         
         if(results.isEmpty()){
             hasBalls = false;
+            return;
         }
 
         var result = results.get(results.size() -1);
