@@ -58,6 +58,12 @@ public abstract class SwerveModuleIO {
     public abstract void setSteerVoltage(double voltage);
 
     /**
+     * uses the PID and FF for when you have balls in the bot
+     * @param tagretState the state to set to the module
+     */
+    public abstract void setTargetStateWithBalls(SwerveModuleState tagretState);
+
+    /**
      *
      * @return the current state of the module
      */

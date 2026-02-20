@@ -1,5 +1,7 @@
 package frc.robot.subsystems.drivetrain.module.constants;
 
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.subsystems.drivetrain.configsStructure.moduleConfig.CommonModuleConstants;
@@ -23,7 +25,11 @@ public enum SwerveModulesMK5 {
             new PIDGains(35, 0, 0, 0, 0, 0),
             new FeedForwardsGains(2.6642, 0.31235),
             2.6642,0.28044,
-            new Translation2d(0.3, 0.3)),
+            new Translation2d(0.3, 0.3),
+            new PIDGains(),
+            new FeedForwardsGains(),
+            new PIDGains(),
+            new FeedForwardsGains()),
 
 
     FRONT_RIGHT(
@@ -36,7 +42,11 @@ public enum SwerveModulesMK5 {
             new PIDGains(35, 0, 0, 0, 0, 0),
             new FeedForwardsGains(2.727, 0.37299),
             2.727,0.47972,
-            new Translation2d(0.3, -0.3)),
+            new Translation2d(0.3, -0.3),
+            new PIDGains(),
+            new FeedForwardsGains(),
+            new PIDGains(),
+            new FeedForwardsGains()),
 
     BACK_LEFT(
             7,  0.263, 11
@@ -48,7 +58,11 @@ public enum SwerveModulesMK5 {
             new PIDGains(35, 0, 0, 0, 0, 0),
             new FeedForwardsGains(2.6894, 0.41461),
             2.6894,0.56055,
-            new Translation2d(-0.3, 0.3)),
+            new Translation2d(-0.3, 0.3),
+            new PIDGains(),
+            new FeedForwardsGains(),
+            new PIDGains(),
+            new FeedForwardsGains()),
 
 
     BACK_RIGHT(
@@ -61,7 +75,12 @@ public enum SwerveModulesMK5 {
             new PIDGains(35, 0, 0, 0, 0, 0),
             new FeedForwardsGains(2.6566, 0.37504),
             2.6566,0.47171,
-            new Translation2d(-0.3, 0.3)),;
+            new Translation2d(-0.3, 0.3),
+            new PIDGains(),
+            new FeedForwardsGains(),
+            new PIDGains(),
+            new FeedForwardsGains()),
+;
 
 
     SwerveModulesMK5(int canCoderID,
@@ -75,7 +94,12 @@ public enum SwerveModulesMK5 {
                      FeedForwardsGains steerFeedForwards,
                      double steerKV,
                      double steerKA,
-                     Translation2d location) {
+                     Translation2d location,
+                     PIDGains drivePIDGainsWithBalls,
+                     FeedForwardsGains driveFeedForwardsWithBalls,
+                     PIDGains steerPIDGainsWithBalls,
+                     FeedForwardsGains steerFeedForwardsWithBalls) {
+
         BasicTalonFXConfig driveConfig = getGenericConf().DRIVE_CONFIG().copy();
         BasicTalonFXConfig steerConfig = getGenericConf().STEER_CONFIG().copy();
 
@@ -88,6 +112,12 @@ public enum SwerveModulesMK5 {
         driveConfig.slot0Config.feedForwardConfig = BasicMotorConfig.FeedForwardConfig.fromFeedForwards(driveFeedForwards);
         steerConfig.slot0Config.feedForwardConfig = BasicMotorConfig.FeedForwardConfig.fromFeedForwards(steerFeedForwards);
 
+        driveConfig.slot1Config.feedForwardConfig = BasicMotorConfig.FeedForwardConfig.fromFeedForwards(driveFeedForwardsWithBalls);
+        steerConfig.slot1Config.feedForwardConfig = BasicMotorConfig.FeedForwardConfig.fromFeedForwards(steerFeedForwardsWithBalls);
+
+        driveConfig.slot1Config.pidConfig = BasicMotorConfig.PIDConfig.fromGains(drivePIDGainsWithBalls);
+        driveConfig.slot1Config.pidConfig = BasicMotorConfig.PIDConfig.fromGains(steerPIDGainsWithBalls);
+        
         driveConfig.simulationConfig.kA = driveKA;
 
         steerConfig.simulationConfig.kV = steerKV;

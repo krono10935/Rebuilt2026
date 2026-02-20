@@ -75,6 +75,12 @@ public class SwerveModuleBasic extends SwerveModuleIO {
     }
 
     @Override
+    public void setTargetStateWithBalls(SwerveModuleState targetState){
+        drivingMotor.setControl(targetState.speedMetersPerSecond, ControlMode.VELOCITY, 1);
+        steeringMotor.setControl(targetState.speedMetersPerSecond, ControlMode.POSITION, 1);
+    }
+
+    @Override
     public void setSteerVoltage(double voltage){
         steeringMotor.setVoltage(voltage);
     }
@@ -117,4 +123,6 @@ public class SwerveModuleBasic extends SwerveModuleIO {
         encoder.getConfigurator().apply(config);
         return encoder;
     }
+
+
 }
