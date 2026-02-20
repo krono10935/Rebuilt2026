@@ -186,6 +186,24 @@ public class Drivetrain extends SubsystemBase {
     }
 
     /**
+     * Drives the robot at relative speed
+     * Needs
+     * @param speeds the target speeed of the robot
+     */
+    public void driveWithBalls(ChassisSpeeds speeds){
+        previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, null,
+                ChassisConstants.LOOP_TIME_SECONDS, batteryVoltageSupplier.get());
+
+        for (int i = 0; i < 4; i++){
+            var targetSpeed = previousSetpoint.moduleStates()[i];
+            io[i].setTargetStateWithBalls(targetSpeed);
+        }
+        Logger.recordOutput("drivetrain/requested speeds", speeds);
+        Logger.recordOutput("drivetrain/target speeds", previousSetpoint.robotRelativeSpeeds());
+        Logger.recordOutput("drivetrain/target states", previousSetpoint.moduleStates());
+    }
+
+    /**
      * set the speeds which regular kinematics
      * @param speeds the target speed of the robot
      */
