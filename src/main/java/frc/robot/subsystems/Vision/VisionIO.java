@@ -56,6 +56,8 @@ public record VisionFrame(
         public VisionFrame[] visionFrames = new VisionFrame[0];
         /** Array of all detected fiducial target IDs in the frames */
         public int[] targetIDs = new int[0];
+
+        public boolean isEnabled = true;
     }
 
     /**

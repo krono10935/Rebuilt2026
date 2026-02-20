@@ -1,0 +1,82 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems.Vision.ObjectDetection;
+
+import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonCamera;
+
+import frc.utils.VirtualSubSystem;
+
+/** Add your docs here. */
+public class ObjectDetection extends VirtualSubSystem{
+
+    public boolean isConnected;
+    public boolean hasBalls;
+    public boolean isEnabled;
+
+
+    private final PhotonCamera camera;
+    
+    public ObjectDetection(){
+        camera = new PhotonCamera(ObjectDetectionContstants.CAMERA_NAME);
+        enableCamera();
+    }
+
+    /**
+     * enables the object detection camera
+     */
+    public void enableCamera(){
+        isEnabled = true;
+        camera.setPipelineIndex(0);
+    }
+
+    /**
+     * disables the object detection camera, to save on prossesing power
+     */
+    public void disableCamera(){
+        isEnabled = false;
+        camera.setPipelineIndex(1);
+    }
+
+    /**
+     * if the camera sees any balls
+     * if the camera is disconnected, it will return true
+     * @return if the robot has balls
+     */
+    public boolean hasBalls(){
+        return hasBalls;
+    }
+
+
+    @Override
+    public void periodic() {
+
+
+        isConnected = camera.isConnected();
+        if(!isConnected){
+            hasBalls = true;
+            return;
+        }
+
+        var results = camera.getAllUnreadResults();
+        if(!isEnabled){
+            return;
+        }
+        
+        if(results.isEmpty()){
+            hasBalls = false;
+        }
+
+        var result = results.get(results.size() -1);
+        hasBalls = result.targets.size() > 0;
+
+        Logger.recordOutput("ObjectDetection/is connected", isConnected);
+        Logger.recordOutput("ObjectDetection/has balls", hasBalls);
+        Logger.recordOutput("ObjectDetection/is Enabled", isEnabled);
+
+
+
+    }
+}

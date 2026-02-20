@@ -29,6 +29,7 @@ import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.leds.LedManager;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -60,6 +61,8 @@ public class RobotContainer
     public final Shooter shooter;
 
     public final Intake intake;
+
+    public final ObjectDetection objectDetector;
 
     // public final Climb climb;
 
@@ -100,6 +103,8 @@ public class RobotContainer
         xboxController = new CommandXboxController(0);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
+
+        objectDetector = new ObjectDetection();
 
         // autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
 
