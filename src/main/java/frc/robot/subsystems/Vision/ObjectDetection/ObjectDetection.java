@@ -10,16 +10,24 @@ import org.photonvision.PhotonCamera;
 import frc.utils.VirtualSubSystem;
 
 /** Add your docs here. */
-public class ObjectDetection extends VirtualSubSystem{
+public class ObjectDetection extends VirtualSubSystem {
+    private static ObjectDetection instance = null;
 
-    public boolean isConnected;
-    public boolean hasBalls;
-    public boolean isEnabled;
+    private boolean isConnected;
+    private boolean hasBalls;
+    private boolean isEnabled;
 
 
     private final PhotonCamera camera;
+
+    public static ObjectDetection getInstance(){
+        if (instance == null){
+            instance = new ObjectDetection();
+        }
+        return instance;
+    }
     
-    public ObjectDetection(){
+    private ObjectDetection(){
         camera = new PhotonCamera(ObjectDetectionContstants.CAMERA_NAME);
         enableCamera();
     }

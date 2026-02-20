@@ -104,7 +104,7 @@ public class RobotContainer
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
-        objectDetector = new ObjectDetection();
+        objectDetector = ObjectDetection.getInstance();
 
         // autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
 

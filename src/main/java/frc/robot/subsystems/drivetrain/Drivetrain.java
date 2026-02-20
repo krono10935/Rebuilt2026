@@ -34,7 +34,9 @@ import frc.robot.subsystems.drivetrain.gyro.GyroIOSim;
 import frc.robot.subsystems.drivetrain.module.SwerveModuleBasic;
 import frc.robot.subsystems.drivetrain.module.SwerveModuleIO;
 import frc.utils.AllianceFlipUtil;
+import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
@@ -172,31 +174,18 @@ public class Drivetrain extends SubsystemBase {
      *Needs to be called continuously
      * @param speeds the target speed of the robot
      */
+    @SuppressWarnings("unused")
     public void drive(ChassisSpeeds speeds) {
+
+        boolean hasBalls = Constants.USE_OBJECT_DETECTION && ObjectDetection.getInstance().hasBalls();
+
         previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, null,
                 ChassisConstants.LOOP_TIME_SECONDS, batteryVoltageSupplier.get());
 
         for (int i = 0; i < 4; i++){
             var targetSpeed = previousSetpoint.moduleStates()[i];
-            io[i].setTargetState(targetSpeed);
-        }
-        Logger.recordOutput("drivetrain/requested speeds", speeds);
-        Logger.recordOutput("drivetrain/target speeds", previousSetpoint.robotRelativeSpeeds());
-        Logger.recordOutput("drivetrain/target states", previousSetpoint.moduleStates());
-    }
-
-    /**
-     * Drives the robot at relative speed
-     * Needs
-     * @param speeds the target speeed of the robot
-     */
-    public void driveWithBalls(ChassisSpeeds speeds){
-        previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, null,
-                ChassisConstants.LOOP_TIME_SECONDS, batteryVoltageSupplier.get());
-
-        for (int i = 0; i < 4; i++){
-            var targetSpeed = previousSetpoint.moduleStates()[i];
-            io[i].setTargetStateWithBalls(targetSpeed);
+            if (hasBalls) io[i].setTargetStateWithBalls(targetSpeed); 
+            else io[i].setTargetState(targetSpeed);
         }
         Logger.recordOutput("drivetrain/requested speeds", speeds);
         Logger.recordOutput("drivetrain/target speeds", previousSetpoint.robotRelativeSpeeds());

@@ -11,6 +11,8 @@ public class Constants {
 
     public static final ChassisType CHASSIS_TYPE = ChassisType.COMPBOT;
 
+    public static final boolean USE_OBJECT_DETECTION = false;
+
     public static final double LOOP_PERIOD_SECONDS = 0.02;
 
     public static final double ALL_SUBSYSTEMS_MAX_CLOSING_TIME = 1.0;
