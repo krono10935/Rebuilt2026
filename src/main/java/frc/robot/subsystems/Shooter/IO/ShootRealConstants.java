@@ -13,7 +13,7 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 /** Add your docs here. */
 public class ShootRealConstants {
     public static int DUTY_CYCLE_ENCODER_PORT = 1;
-    public static double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.15836;
+    public static double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.129;
 
     public static double KICKER_SPEED_MPS = 4;
     /**
@@ -37,8 +37,8 @@ public class ShootRealConstants {
         config.currentLimitConfig.stallCurrentLimit = 80;
         config.currentLimitConfig.freeSpeedRPM = 4000;
 
-        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.31596;
-        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.073231;
+        config.slot0Config.feedForwardConfig.velocityFeedforward = 0.31938;
+        config.slot0Config.feedForwardConfig.frictionFeedForward = 0.074823;
 
         config.slot0Config.pidConfig.kP = 0.1;
         config.slot0Config.pidConfig.kI = 0.001;  
@@ -56,8 +56,8 @@ public class ShootRealConstants {
 
         //KEEP VELOCITY CONSTANTS
 
-        config.slot1Config.feedForwardConfig.velocityFeedforward = 0.31596;
-        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.073231;
+        config.slot1Config.feedForwardConfig.velocityFeedforward = 0.31938;
+        config.slot1Config.feedForwardConfig.frictionFeedForward = 0.074823;
 
         config.slot1Config.pidConfig.kP = 0.6;
         config.slot1Config.pidConfig.kI = 0.001;
@@ -67,8 +67,8 @@ public class ShootRealConstants {
         config.slot1Config.pidConfig.iZone = 0.6;
         config.slot1Config.pidConfig.iMaxAccum = 2;
 
-        config.simulationConfig.kA = 0.02855;
-        config.simulationConfig.kV = 0.31596;
+        config.simulationConfig.kA = 0.023275;
+        config.simulationConfig.kV = 0.31938;
 
         config.constraintsConfig.minOutput = 0;
 
