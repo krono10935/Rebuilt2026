@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems.Vision.ObjectDetection;
 
-import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
 import frc.utils.VirtualSubSystem;
@@ -12,34 +12,32 @@ import frc.utils.VirtualSubSystem;
 /** Add your docs here. */
 public class ObjectDetection extends VirtualSubSystem{
 
-     @AutoLog
-    public static class ObjectDetectionInputs{
-        public boolean isConnected;
-        public boolean hasBalls;
-        public boolean isEnabled;
-    }
+    public boolean isConnected;
+    public boolean hasBalls;
+    public boolean isEnabled;
+
 
     private final PhotonCamera camera;
-    private final ObjectDetectionInputsAutoLogged inputs = new ObjectDetectionInputsAutoLogged();
     
     public ObjectDetection(){
-        camera = new PhotonCamera(ObjectDetectionContstans.CAMERA_NAME);
+        camera = new PhotonCamera(ObjectDetectionContstants.CAMERA_NAME);
+        enableCamera();
     }
 
     /**
      * enables the object detection camera
      */
     public void enableCamera(){
-        inputs.isEnabled = true;
-        camera.setPipelineIndex(1);
+        isEnabled = true;
+        camera.setPipelineIndex(0);
     }
 
     /**
      * disables the object detection camera, to save on prossesing power
      */
     public void disableCamera(){
-        inputs.isEnabled = false;
-        camera.setPipelineIndex(0);
+        isEnabled = false;
+        camera.setPipelineIndex(1);
     }
 
     /**
@@ -48,29 +46,37 @@ public class ObjectDetection extends VirtualSubSystem{
      * @return if the robot has balls
      */
     public boolean hasBalls(){
-        return inputs.hasBalls;
+        return hasBalls;
     }
+
 
     @Override
     public void periodic() {
-        inputs.isConnected = camera.isConnected();
-        if(!inputs.isConnected){
-            inputs.hasBalls = true;
+
+
+        isConnected = camera.isConnected();
+        if(!isConnected){
+            hasBalls = true;
             return;
         }
 
         var results = camera.getAllUnreadResults();
-        if(!inputs.isEnabled){
+        if(!isEnabled){
             return;
         }
         
-
         if(results.isEmpty()){
-            inputs.hasBalls = false;
-            return;
+            hasBalls = false;
         }
 
         var result = results.get(results.size() -1);
-        inputs.hasBalls = result.targets.size() > 0;
+        hasBalls = result.targets.size() > 0;
+
+        Logger.recordOutput("ObjectDetection/is connected", isConnected);
+        Logger.recordOutput("ObjectDetection/has balls", hasBalls);
+        Logger.recordOutput("ObjectDetection/is Enabled", isEnabled);
+
+
+
     }
 }
