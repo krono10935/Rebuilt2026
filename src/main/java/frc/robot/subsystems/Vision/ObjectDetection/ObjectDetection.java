@@ -7,6 +7,7 @@ package frc.robot.subsystems.Vision.ObjectDetection;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.VirtualSubSystem;
 
 /** Add your docs here. */
@@ -84,8 +85,5 @@ public class ObjectDetection extends VirtualSubSystem {
         Logger.recordOutput("ObjectDetection/is connected", isConnected);
         Logger.recordOutput("ObjectDetection/has balls", hasBalls);
         Logger.recordOutput("ObjectDetection/is Enabled", isEnabled);
-
-
-
     }
 }

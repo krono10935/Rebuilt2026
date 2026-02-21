@@ -77,4 +77,16 @@ public class IntakeIOSim implements IntakeIO {
     public void stopIntakeOpeningMotor() {
         positionMotor.stop();
     }
+
+
+    @Override
+    public Rotation2d getSpeedPositionMotor() {
+        return Rotation2d.fromRotations(positionMotor.getPosition());
+    }
+
+    @Override
+    public boolean isInPositionControl() {
+        return positionMotor.getController().getControlMode() == ControlMode.POSITION || 
+        positionMotor.getController().getControlMode() == ControlMode.PROFILED_POSITION;
+    }
 }

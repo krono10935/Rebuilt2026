@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Indexer.Indexer;
@@ -66,6 +67,8 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
     Logger.recordOutput("Shooter/current command", getCurrentCommand() == null? "None" : getCurrentCommand().getName());
     Logger.recordOutput("Shooter/is hood at setpoint", isHoodAtSetpoint());
     Logger.recordOutput("Shooter/is shooter at setpoint", isShooterAtGoal());
+    SmartDashboard.putBoolean("ShooterAtSetpoint", isShooterAtGoal());
+
 
     }
 

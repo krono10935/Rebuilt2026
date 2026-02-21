@@ -65,6 +65,11 @@ public class IntakeIOSpark implements IntakeIO {
         positionMotor.setControl(pos, ControlMode.POSITION);
     }
 
+    @Override
+    public Rotation2d getSpeedPositionMotor() {
+        return Rotation2d.fromRotations(positionMotor.getVelocity());
+    }
+
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
@@ -73,6 +78,12 @@ public class IntakeIOSpark implements IntakeIO {
             * intakeMotor.getSensorData().currentOutput()
             * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
         inputs.velocity = intakeMotor.getVelocity(); 
+    }
+
+    @Override
+    public boolean isInPositionControl() {
+        return positionMotor.getController().getControlMode() == ControlMode.POSITION || 
+        positionMotor.getController().getControlMode() == ControlMode.PROFILED_POSITION;
     }
 
 }

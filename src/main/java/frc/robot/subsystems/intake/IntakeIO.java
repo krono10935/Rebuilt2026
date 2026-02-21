@@ -59,6 +59,16 @@ public interface IntakeIO {
      */
     void setPositionMotor(double positionMeters);
 
+    /**
+     * @return the speed which the open/close motor is spinning
+     */
+    Rotation2d getSpeedPositionMotor();
+
+    /**
+     * @return if position motor is in position control
+     */
+    boolean isInPositionControl();
+
     void updateInputs(IntakeInputs inputs);
 
 }

@@ -6,6 +6,7 @@ package frc.robot.subsystems.intake;
 
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.ErrorMessage;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -26,7 +27,7 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
   /** Creates a new Intake. */
   public Intake() {
 
-    io = new IntakeIOSim();//RobotBase.isReal()? new IntakeIOSpark() : new IntakeIOSim();
+    io = RobotBase.isReal()? new IntakeIOSpark() : new IntakeIOSim();
 
     failedToClose = false;
 
@@ -100,11 +101,25 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
         io.stopIntakeOpeningMotor();
     }
 
+    private boolean isMoving(){
+        boolean isPositionControl = io.isInPositionControl();
+        boolean stoppedInPositionControl = isPositionControl && io.positionMotorAtSetPoint();
+        double intakeMotorSpeedMPS = io.getSpeedPositionMotor().getRotations() * IntakeConstants.positionMotorConfig.motorConfig.unitConversion;
+        boolean isAtZeroSpeed = Math.abs(intakeMotorSpeedMPS) <  IntakeConstants.positionMotorConfig.slot0Config.pidConfig.tolerance;
+        boolean stoppedInVelocityControl = !isPositionControl && isAtZeroSpeed;
+        boolean isStopped = stoppedInPositionControl || stoppedInVelocityControl;
+
+        return !isStopped;
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
         io.updateInputs(inputs);
         Logger.processInputs(getName(), inputs);
+        SmartDashboard.putBoolean("Is intake open", isOpen());
+        SmartDashboard.putBoolean("Is intake moving", isMoving());
+        SmartDashboard.putBoolean("Has balls", hasBalls);
 
         String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
         Logger.recordOutput("Intake/Current Command ", currCommand);

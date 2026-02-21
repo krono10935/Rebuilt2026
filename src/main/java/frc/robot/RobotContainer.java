@@ -81,13 +81,11 @@ public class RobotContainer
 
      private final LoggedDashboardChooser<Command> autoChooser;
 
-    // private final LoggedDashboardChooser<FieldConstants.TowerSide> climbChooser; 
+    private final LoggedDashboardChooser<FieldConstants.TowerSide> climbChooser; 
 
     private final LoggedNetworkNumber shooterSpeedMPS;
 
     private final LoggedNetworkNumber hoodAngle;
-
-    // private final Indexer indexer;
 
 
     public static RobotContainer getInstance(){
@@ -120,9 +118,9 @@ public class RobotContainer
         autoChooser.onChange(this::displayChosenAuto);
 
 
-        // climbChooser = new LoggedDashboardChooser<>("Climb side");
-        // climbChooser.addOption("Left",TowerSide.left);
-        // climbChooser.addOption("Right", TowerSide.right);
+        climbChooser = new LoggedDashboardChooser<>("Climb side");
+        climbChooser.addOption("Left",TowerSide.left);
+        climbChooser.addOption("Right", TowerSide.right);
 
         shooterSpeedMPS = new LoggedNetworkNumber("shooterSpeedMPS", 10);
 
@@ -169,65 +167,65 @@ public class RobotContainer
     }
 
     private void configurePitBindings() {
-        // xboxController.a().onTrue(new SpinUp(shooter)
-        // .until(shooter::isShooterAtGoal)
-        // .andThen(new RunCommand(() -> shooter.keepVelocity(ShooterConstants.SHOOTING_SPEED), shooter)));
+        xboxController.a().onTrue(new SpinUp(shooter, drivetrain)
+        .until(shooter::isShooterAtGoal)
+        .andThen(new RunCommand(() -> shooter.keepVelocity(ShooterConstants.SHOOTING_SPEED), shooter)));
 
         // Disable all subsystems commands
-        // xboxController.b().onTrue(new InstantCommand(() -> {
-        //     drivetrain.getCurrentCommand().cancel();
-        //     CommandScheduler.getInstance().schedule(drivetrain.idle());
-        //     shooter.getCurrentCommand().cancel();
-        //     CommandScheduler.getInstance().schedule(shooter.idle());
-        //     intake.getCurrentCommand().cancel();
-        //     CommandScheduler.getInstance().schedule(intake.idle());
-        //     climb.getCurrentCommand().cancel();
-        //     CommandScheduler.getInstance().schedule(climb.idle());
-        // }));
+        xboxController.b().onTrue(new InstantCommand(() -> {
+            drivetrain.getCurrentCommand().cancel();
+            CommandScheduler.getInstance().schedule(drivetrain.idle());
+            shooter.getCurrentCommand().cancel();
+            CommandScheduler.getInstance().schedule(shooter.idle());
+            intake.getCurrentCommand().cancel();
+            CommandScheduler.getInstance().schedule(intake.idle());
+            // climb.getCurrentCommand().cancel();
+            // CommandScheduler.getInstance().schedule(climb.idle());
+        }));
 
-        // xboxController.y().debounce(0.3).whileTrue(new OpenCommand(intake));
+        xboxController.y().debounce(0.3).whileTrue(new OpenCommand(intake));
 
-        // xboxController.y().onFalse(new CloseCommand(intake));
+        xboxController.y().onFalse(new CloseCommand(intake));
 
-        // xboxController.x().onTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
+        xboxController.x().onTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
 
         // xboxController.povDown().onTrue(climb.closeCommand());
 
         // xboxController.povUp().onTrue(climb.openCommand());
 
-        // xboxController.povLeft().whileTrue(shooter.idle());
+        xboxController.povLeft().whileTrue(shooter.idle());
 
-        // xboxController.povCenter().onTrue(drivetrain.resetGyro());
+        xboxController.povCenter().onTrue(drivetrain.resetGyro());
     }
 
     private void configureBindings() {
-        // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
 
-        // BooleanSupplier isHubActive = () -> {
-        //     double time = DriverStation.getMatchTime();
+        BooleanSupplier isHubActive = () -> {
+            double time = DriverStation.getMatchTime();
 
-        //     return Constants.HubTiming.isActive(time) ||
-        //             Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
-        //             Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
-        // };
-    //    new Trigger(isHubActive).
-    //            and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-    //     .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController,intake, vision));
+            return Constants.HubTiming.isActive(time) ||
+                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
+                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
+        };
+       new Trigger(isHubActive).
+               and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+        .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController,intake, vision));
 
-        // xboxController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, xboxController)));
+        xboxController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, xboxController)));
 
         // xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter,vision));
 
         // xboxController.b().whileTrue(climb.closeCommand());
 
-        // xboxController.x().onTrue(
-        //     Sequences.delivery(drivetrain, shooter, xboxController,intake));
+        xboxController.x().onTrue(
+            Sequences.delivery(drivetrain, shooter, xboxController,intake));
 
-        // xboxController.a().onTrue(drivetrain.resetGyro());
+        xboxController.a().onTrue(drivetrain.resetGyro());
     }
     public Command getAutonomousCommand()
     {
-        return null;//autoChooser.get();
+        return autoChooser.get();
     }
 
     private void displayChosenAuto(Command command){
@@ -256,35 +254,35 @@ public class RobotContainer
 
     public void registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
 
-        // Command aimRobot = new StartEndCommand(() -> {
-        //     PPController.setThetaOverride(driveAndHomeCommand::calculateThetaPID);
-        // }, PPController::clearThetaOverride);
+        Command aimRobot = new StartEndCommand(() -> {
+            PPController.setThetaOverride(driveAndHomeCommand::calculateThetaPID);
+        }, PPController::clearThetaOverride);
 
-        // Command aimRobotStationary = new RunCommand(
-        //         () -> drivetrain.drive(new ChassisSpeeds(
-        //                 0, 0, driveAndHomeCommand.calculateThetaPID())), drivetrain);
+        Command aimRobotStationary = new RunCommand(
+                () -> drivetrain.drive(new ChassisSpeeds(
+                        0, 0, driveAndHomeCommand.calculateThetaPID())), drivetrain);
 
 
-    //     NamedCommands.registerCommand("shootAndAimMoving",
-    //             ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake, vision).beforeStarting(new SpinUp(shooter))
-    //                     .alongWith(aimRobot));
+        NamedCommands.registerCommand("shootAndAimMoving",
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake, vision).beforeStarting(new SpinUp(shooter, drivetrain))
+                        .alongWith(aimRobot));
 
-    //     NamedCommands.registerCommand("shootAndAimStationary",
-    //             ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake, vision).beforeStarting(new SpinUp(shooter))
-    //                     .alongWith(aimRobotStationary));
+        NamedCommands.registerCommand("shootAndAimStationary",
+                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake, vision).beforeStarting(new SpinUp(shooter, drivetrain))
+                        .alongWith(aimRobotStationary));
 
-    //     NamedCommands.registerCommand("spinUp", new SpinUp(shooter));
+        NamedCommands.registerCommand("spinUp", new SpinUp(shooter, drivetrain));
 
-    //     NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
-    //             !new Intake().hasBalls()));
+        NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
+                !new Intake().hasBalls()));
 
-    //     NamedCommands.registerCommand("openIntake",
-    //             new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
-    //     NamedCommands.registerCommand("closeIntake",
-    //             new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
+        NamedCommands.registerCommand("openIntake",
+                new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
+        NamedCommands.registerCommand("closeIntake",
+                new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
 
-    //     NamedCommands.registerCommand("openClimb", new Climb().openCommand());
-    //     NamedCommands.registerCommand("closeClimb", new Climb().closeCommand());
+        NamedCommands.registerCommand("openClimb", new Climb().openCommand());
+        NamedCommands.registerCommand("closeClimb", new Climb().closeCommand());
     }
 
 
