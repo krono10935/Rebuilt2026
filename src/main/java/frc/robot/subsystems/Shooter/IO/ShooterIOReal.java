@@ -2,7 +2,15 @@ package frc.robot.subsystems.Shooter.IO;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.controls.MusicTone;
+import com.revrobotics.AbsoluteEncoder;
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
@@ -21,30 +29,33 @@ public class ShooterIOReal implements ShooterIO {
 
     private final BasicMotorConfig leadConfig;
 
+    private final DutyCycleEncoder dutyCycleEncoder;
+
     private boolean isKickerActive;
     private double targetVelocity;
 
     public ShooterIOReal(){
-        leadConfig = ShooterConstants.getLeadShootingMotorConfig();
+        leadConfig = ShootRealConstants.getLeadShootingMotorConfig();
 
         leadShootingMotor = new BasicSparkFlex(leadConfig);
-        followShootingMotor = new BasicSparkFlex(ShooterConstants.getFollowShootingMotorConfig());
+        followShootingMotor = new BasicSparkFlex(ShootRealConstants.getFollowShootingMotorConfig());
         followShootingMotor.followMotor(leadShootingMotor, ShooterConstants.FLYWHEEL_MOTORS_OPPOSITE);
 
-
-        hoodMotor =  new BasicSparkMAX(ShooterConstants.getHoodMotorConfig());
+        dutyCycleEncoder = new DutyCycleEncoder(ShootRealConstants.DUTY_CYCLE_ENCODER_PORT);
         
-        hoodMotor.useAbsoluteEncoder(
-            ShooterConstants.IS_SHOOTER_ABSOLUTE_ENCODER_INVERTED,
-            ShooterConstants.SHOOTER_ENCODER_ZERO_OFFSET, 
-            ShooterConstants.SHOOTER_MOTOR_TO_ENCODER_RATIO, 
-            ShooterConstants.SHOOTER_ABSOLUTE_ENCODER_RANGE
-        );
+        hoodMotor =  new BasicSparkMAX(ShootRealConstants.getHoodMotorConfig());
 
-        kickerMotor =  new BasicSparkMAX(ShooterConstants.getKickerMotorConfig());
+        kickerMotor =  new BasicSparkMAX(ShootRealConstants.getKickerMotorConfig());
 
         isKickerActive = false;
 
+        leadShootingMotor.getController().setSendableSlot(1);
+
+        // hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
+
+        CommandScheduler.getInstance().schedule(new InstantCommand(
+            () -> hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
+            .beforeStarting(new WaitUntilCommand(() -> dutyCycleEncoder.get() != 0)).ignoringDisable(true));
     }
 
     @Override
@@ -79,7 +90,7 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void toggleKicker(boolean isActive){
         if(isActive){
-            kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
+            kickerMotor.setControl(ShootRealConstants.KICKER_SPEED_MPS, ControlMode.VELOCITY);
         }
         else{
             kickerMotor.stop();
@@ -106,12 +117,15 @@ public class ShooterIOReal implements ShooterIO {
         inputs.isKickerActive = this.isKickerActive;
 
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
+
+        Logger.recordOutput("duty cycle", dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET);
+        // hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
+
         
     }
 
     @Override
     public void logSysID() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'logSysID'");
+        System.out.println("Kalush is mad");
     }   
 }

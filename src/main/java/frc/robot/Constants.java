@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
@@ -7,6 +10,8 @@ import frc.robot.subsystems.drivetrain.constants.ChassisType;
 public class Constants {
 
     public static final ChassisType CHASSIS_TYPE = ChassisType.COMPBOT;
+
+    public static final boolean USE_OBJECT_DETECTION = false;
 
     public static final double LOOP_PERIOD_SECONDS = 0.02;
 
@@ -16,7 +21,16 @@ public class Constants {
 
     public static final double HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE = 1;
 
-    public static FieldConstants.TowerSide chosenTowerSideToClimb = FieldConstants.TowerSide.left; //TODO change based on which side
+    public static final ProfiledPIDController THETA_CONTROLLER = 
+        new ProfiledPIDController(4, 4, 0,
+        new Constraints(10, 5));
+
+    static{
+        THETA_CONTROLLER.enableContinuousInput(-Math.PI, Math.PI);
+        THETA_CONTROLLER.setIntegratorRange(-10, 10);
+        THETA_CONTROLLER.setIZone(Rotation2d.fromDegrees(20).getRadians());
+        THETA_CONTROLLER.setTolerance(Rotation2d.fromDegrees(2).getRadians());
+    }
 
     public enum Phase{
             AUTO(0 ,0),

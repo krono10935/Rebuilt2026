@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
 
 public class VisionConstants {
       /**
@@ -28,13 +27,32 @@ public class VisionConstants {
     public record StdDevsFactors(double xyStdFactor,double thetaStdFactor,double minXyStd,double minThetaStd) {
     }
 
+    public enum PipelineModes {
+        DISABLE,
+        HIGH,
+        LOW
+    }
+
 
     // enum with all the camera constants
     public enum CamerasConstants {
         // Define the camera constants for the front camera
-        FRONT_CAMERA(
+        SHOOTER_CAMERA(
             PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
             "dolev",
+            new Transform3d(
+                new Translation3d(0.36, 0.285, 0.345),
+                new Rotation3d(0, Units.degreesToRadians(-25),Units.degreesToRadians(5))
+    
+            ),
+            new StdDevsFactors(0.1,0.3,0.1,0.3),
+            new StdDevsFactors(0.15,0.35,0.1,0.3)
+            
+        ),
+        
+        SIDE_CAMERA(
+            PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
+            "horder",
             new Transform3d(
                 new Translation3d(-0.145, -0.345, 0.445),
                 new Rotation3d(0, Units.degreesToRadians(-35),Units.degreesToRadians(180))

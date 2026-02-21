@@ -2,7 +2,6 @@ package frc.robot.subsystems.Vision;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-import java.net.ProtocolFamily;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -125,8 +124,8 @@ public class VisionIOPhoton implements VisionIO {
 
         // Retrieve all unread results from the camera
         var result = camera.getAllUnreadResults();
-
-        if (result.isEmpty()) {
+        
+        if (result.isEmpty() || !inputs.isEnabled) {
             // No new results → populate with empty frame
             inputs.visionFrames = new VisionFrame[]{VisionFrame.EMPTY};
             inputs.targetIDs = new int[0];
@@ -143,6 +142,7 @@ public class VisionIOPhoton implements VisionIO {
             .flatMap(r -> r.getTargets().stream())
             .mapToInt(target -> target.getFiducialId())
             .toArray();
+
 
         Logger.recordOutput("VisionIO/Last pose", lastPoseSupplier.get());
     }

@@ -18,10 +18,8 @@ import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 
-import java.util.function.Supplier;
 
-
-public class DriveAndHomeCommand extends Command {
+public class SafeDriveAndHomeCommand extends Command {
     private final Drivetrain drivetrain;
     private final CommandXboxController controller;
 
@@ -29,23 +27,20 @@ public class DriveAndHomeCommand extends Command {
     private static double MIN_LINEAR_SPEED ;
 
     private final ProfiledPIDController angularController;
-    public static final Rotation2d robotAngleTolerance = Rotation2d.fromDegrees(2);
-    private final Supplier<Rotation2d> targetAngleSupplier;
 
     private static final double DEADBAND = 0.1;
 
-    public DriveAndHomeCommand(Drivetrain drivetrain, CommandXboxController controller) {
+    public SafeDriveAndHomeCommand(Drivetrain drivetrain, CommandXboxController controller) {
         this.drivetrain = drivetrain;
         this.controller = controller;
         addRequirements(drivetrain);
 
         angularController = Constants.THETA_CONTROLLER;
 
-        MAX_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.maxLinearSpeed();
-        MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed();
-
-        targetAngleSupplier = () -> ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
-                drivetrain.getChassisSpeeds()).robotAngle();
+        MAX_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.maxLinearSpeed() / 2;
+        MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed() / 2;
+        
+        SmartDashboard.putData(angularController);
     }
 
     private Rotation2d angleFieldRelative(){
@@ -82,11 +77,6 @@ public class DriveAndHomeCommand extends Command {
 
         drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed, ySpeed, thetaSpeed, angleFieldRelative()));
-    }
-
-    public double calculateThetaPID(){
-        return angularController.calculate(
-                drivetrain.getEstimatedPosition().getRotation().getRadians(), targetAngleSupplier.get().getRadians());
     }
 
     public boolean atTargetAngle(){

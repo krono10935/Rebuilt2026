@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
@@ -16,8 +17,7 @@ public class IntakeIOSpark implements IntakeIO {
         intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
 
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
-    
-        
+
     }
 
     @Override

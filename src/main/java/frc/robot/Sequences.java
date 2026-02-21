@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.DriveAndHomeToSupplierCommand;
 import frc.robot.commands.SpinUpForDelivery;
 import frc.robot.commands.IntakeCommands.CloseCommand;
@@ -19,6 +19,8 @@ import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -74,6 +76,10 @@ public class Sequences {
 
         return robotPose.getTranslation().getDistance(FieldConstants.tower)
                 >= ClimbConstants.MIN_DISTANCE_FROM_TOWER_TO_CLOSE_CLIMB;
+    }
+
+    private static boolean isComingFromTop(Pose2d robotPose){
+        return robotPose.getX() > 4.0;
     }
 
 
@@ -272,12 +278,26 @@ public class Sequences {
             Intake intake,
             Drivetrain drivetrain,
             Climb climb,
-            Shooter shooter
+            Supplier<TowerSide> climbSideSupplier,
+            Shooter shooter,
+            Vision vision
     ) {
 
         ParallelCommandGroup parallelClimbCommand =
                 new ParallelCommandGroup(
                         closeSubsystems(intake, climb, shooter),
+
+                        new StartEndCommand(() -> {
+                                if(isComingFromTop(drivetrain.getEstimatedPosition())){
+                                        vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
+                                }
+                                else{
+                                        vision.setCamAsPriority(CamerasConstants.SIDE_CAMERA);
+                                }
+                                
+                                },
+
+                                () -> vision.clearPriority()),
 
                         Commands.sequence(
                                 new WaitUntilCommand(() ->
@@ -289,7 +309,7 @@ public class Sequences {
 
                                 )),
 
-                        drivetrain.driveToPose(getTowerSideTargetPose(Constants.chosenTowerSideToClimb, false)
+                        drivetrain.driveToPose(getTowerSideTargetPose(climbSideSupplier.get(), false)
                 ) );
 
         return parallelClimbCommand.onlyIf(() ->
@@ -317,7 +337,9 @@ public class Sequences {
             Intake intake,
             Drivetrain drivetrain,
             Climb climb,
-            Shooter shooter
+            Supplier<TowerSide> climbSideSupplier,
+            Shooter shooter,
+            Vision vision
     ) {
 
         SequentialCommandGroup mainDeclimbCommand =
@@ -328,9 +350,13 @@ public class Sequences {
         );
 
         mainDeclimbCommand.addCommands(
+                new InstantCommand(() -> vision.clearPriority())
+        );
+
+        mainDeclimbCommand.addCommands(
                 drivetrain.driveToPose(
                         getTowerSideTargetPose(
-                                Constants.chosenTowerSideToClimb,
+                                climbSideSupplier.get(),
                                 true
                         )
                 )
@@ -368,7 +394,7 @@ public class Sequences {
     public static Command intakeOpenStart(Intake intake) {
 
         return OpenCommand.openWithErrorHandeling(intake).
-        alongWith(new IntakeCommand(intake));
+        alongWith(new IntakeCommand(intake)).alongWith(new InstantCommand());
     }
 
 

@@ -13,6 +13,8 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Shooter.ShootCalculatorWithMovement.ShootCalculatorWithMovementParams;
 import frc.utils.AllianceFlipUtil;
@@ -70,28 +72,28 @@ public class ShotCalculator {
         maxDistance = 5.60; // TODO: find the real value
         phaseDelay = 0.03; // TODO: find the real value
 
-        shotHoodAngleMap.put(1.34, Rotation2d.fromDegrees(19.0));
-        shotHoodAngleMap.put(1.78, Rotation2d.fromDegrees(19.0));
-        shotHoodAngleMap.put(2.17, Rotation2d.fromDegrees(24.0));
-        shotHoodAngleMap.put(2.81, Rotation2d.fromDegrees(27.0));
-        shotHoodAngleMap.put(3.82, Rotation2d.fromDegrees(29.0));
-        shotHoodAngleMap.put(4.09, Rotation2d.fromDegrees(30.0));
-        shotHoodAngleMap.put(4.40, Rotation2d.fromDegrees(31.0));
-        shotHoodAngleMap.put(4.77, Rotation2d.fromDegrees(32.0));
-        shotHoodAngleMap.put(5.57, Rotation2d.fromDegrees(32.0));
-        shotHoodAngleMap.put(5.60, Rotation2d.fromDegrees(35.0));
+        shotHoodAngleMap.put(3.5, Rotation2d.fromDegrees(23.0));
+        shotHoodAngleMap.put(3.0, Rotation2d.fromDegrees(20.0));
+        shotHoodAngleMap.put(2.0, Rotation2d.fromDegrees(12.0));
+        // shotHoodAngleMap.put(2.81, Rotation2d.fromDegrees(27.0));
+        // shotHoodAngleMap.put(3.82, Rotation2d.fromDegrees(29.0));
+        // shotHoodAngleMap.put(4.09, Rotation2d.fromDegrees(30.0));
+        // shotHoodAngleMap.put(4.40, Rotation2d.fromDegrees(31.0));
+        // shotHoodAngleMap.put(4.77, Rotation2d.fromDegrees(32.0));
+        // shotHoodAngleMap.put(5.57, Rotation2d.fromDegrees(32.0));
+        // shotHoodAngleMap.put(5.60, Rotation2d.fromDegrees(35.0));
 
 
-        shotFlywheelSpeedMap.put(1.34, 210.0/60);
-        shotFlywheelSpeedMap.put(1.78, 220.0/60);
-        shotFlywheelSpeedMap.put(2.17, 220.0/60);
-        shotFlywheelSpeedMap.put(2.81, 230.0/60);
-        shotFlywheelSpeedMap.put(3.82, 250.0/60);
-        shotFlywheelSpeedMap.put(4.09, 255.0/60);
-        shotFlywheelSpeedMap.put(4.40, 260.0/60);
-        shotFlywheelSpeedMap.put(4.77, 265.0/60);
-        shotFlywheelSpeedMap.put(5.57, 275.0/60);
-        shotFlywheelSpeedMap.put(5.60, 290.0/60);
+        shotFlywheelSpeedMap.put(3.5, 19.0);
+        shotFlywheelSpeedMap.put(3.0, 17.5);
+        shotFlywheelSpeedMap.put(2.0, 17.0);
+        // shotFlywheelSpeedMap.put(2.81, 230.0/60);
+        // shotFlywheelSpeedMap.put(3.82, 250.0/60);
+        // shotFlywheelSpeedMap.put(4.09, 255.0/60);
+        // shotFlywheelSpeedMap.put(4.40, 260.0/60);
+        // shotFlywheelSpeedMap.put(4.77, 265.0/60);
+        // shotFlywheelSpeedMap.put(5.57, 275.0/60);
+        // shotFlywheelSpeedMap.put(5.60, 290.0/60);
 
         timeOfFlightMap.put(5.68, 1.16);
         timeOfFlightMap.put(4.55, 1.12);
@@ -106,26 +108,45 @@ public class ShotCalculator {
         // timeOfFlightMap.put(5.68, 1.16); // Find real measurement
     }
 
-    public void warmUpShotCalculator(){
-        Pose2d warmUpPose = new Pose2d();
-        ChassisSpeeds robotRelativeChassisSpeeds = new ChassisSpeeds();
-
-        getParameters(warmUpPose, robotRelativeChassisSpeeds);
-        clearShootingParameters();
-
-        warmUpPose = new Pose2d(1,1,Rotation2d.fromDegrees(90));
-        robotRelativeChassisSpeeds = new ChassisSpeeds(1,0,90);
-
-        getParameters(warmUpPose, robotRelativeChassisSpeeds);
-        clearShootingParameters();
-
-        warmUpPose = new Pose2d(-10,32,Rotation2d.fromDegrees(67));
-        robotRelativeChassisSpeeds = new ChassisSpeeds(10,9,35);
-
-        getParameters(warmUpPose, robotRelativeChassisSpeeds);
-        clearShootingParameters();
+    /**
+     * 
+     * @param warmUpPose pose to use as the estimatedPose in th warmup
+     * @param warmUpSpeeds
+     */
+    public Command warmUpShotCalculator(){
+        return new InstantCommand(this::warmUpGeneratePoses);
     }
 
+    /**
+     * Generate the chassis speeds and then use it and the pose to calculate the shooting params
+     * @param warmUpPose the pose to use to calculate the shooting params
+     */
+    private void warmUpWithPose(Pose2d warmUpPose){
+        for (int speedOmegaRadians = 0; speedOmegaRadians < 360; speedOmegaRadians += 120){
+            for (int speedsXYSpeed = 1; speedsXYSpeed < 4; speedsXYSpeed += 1){
+                clearShootingParameters();
+                getParameters(warmUpPose, new ChassisSpeeds(speedsXYSpeed, speedsXYSpeed, speedOmegaRadians));
+            }
+        }
+    }
+
+
+    /**
+     * Generate the poses from the warm up and for each pose, calculate the shooting params
+     */
+    private void warmUpGeneratePoses(){
+        for (int poseVectorAngleDegrees = 0; poseVectorAngleDegrees < 360; poseVectorAngleDegrees += 120){
+            for (int poseVectorSize = 1; poseVectorSize < 4; poseVectorSize += 1){
+                for (int poseFieldRelativeAngleDegrees = 0; poseFieldRelativeAngleDegrees < 360; poseFieldRelativeAngleDegrees += 120){
+                    warmUpWithPose(
+                        new Pose2d(
+                            new Translation2d(poseVectorSize, Rotation2d.fromDegrees(poseVectorAngleDegrees))
+                        , Rotation2d.fromDegrees(poseFieldRelativeAngleDegrees))
+                    );
+                }
+            }
+        }
+    }
     /**
      * 
      * @param estimatedPose Estimated robot pose
