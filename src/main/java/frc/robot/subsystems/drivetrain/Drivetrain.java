@@ -38,6 +38,7 @@ import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 public class Drivetrain extends SubsystemBase {
@@ -313,6 +314,13 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    public void clearFiledPath(){
+        field.getObject("path").setPoses();
+    }
+
+    public void addPathToField(ArrayList<Pose2d> path){
+        field.getObject("path").setPoses(path);
+    }
     /**
      *
      * @param goalPose goal position to drive to

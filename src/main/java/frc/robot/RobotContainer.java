@@ -6,7 +6,11 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveAndHomeCommand;
@@ -26,7 +30,9 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 
 import frc.robot.subsystems.drivetrain.PPController;
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -34,6 +40,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj.DriverStation;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -150,6 +159,30 @@ public class RobotContainer
     public Command getAutonomousCommand()
     {
         return chooser.get();
+    }
+
+    private void displayChosenAuto(Command command){
+        if(RobotState.isEnabled()){
+            drivetrain.clearFiledPath();
+            return;
+        }
+
+        List<PathPlannerPath> auto;
+        try{
+            auto = PathPlannerAuto.getPathGroupFromAutoFile(command.getName());
+        }
+        catch(IOException | ParseException e){
+            Logger.recordOutput("autoDisplay", e.getMessage());
+            drivetrain.clearFiledPath();
+            return;
+        }
+
+        ArrayList<Pose2d> poses = new ArrayList<>();
+        for(PathPlannerPath path : auto){
+            poses.addAll(path.getPathPoses());
+        }
+        
+        drivetrain.addPathToField(poses);
     }
 
     public void registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
