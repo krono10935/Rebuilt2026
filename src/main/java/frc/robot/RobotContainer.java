@@ -79,7 +79,7 @@ public class RobotContainer
 
     public final Drivetrain drivetrain;
 
-    // private final LoggedDashboardChooser<Command> autoChooser;
+     private final LoggedDashboardChooser<Command> autoChooser;
 
     // private final LoggedDashboardChooser<FieldConstants.TowerSide> climbChooser; 
 
@@ -115,7 +115,10 @@ public class RobotContainer
 
         objectDetector = ObjectDetection.getInstance();
 
-        // autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
+        autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
+
+        autoChooser.onChange(this::displayChosenAuto);
+
 
         // climbChooser = new LoggedDashboardChooser<>("Climb side");
         // climbChooser.addOption("Left",TowerSide.left);
