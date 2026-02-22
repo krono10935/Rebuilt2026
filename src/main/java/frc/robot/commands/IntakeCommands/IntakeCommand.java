@@ -4,7 +4,11 @@
 
 package frc.robot.commands.IntakeCommands;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
@@ -29,6 +33,7 @@ public class IntakeCommand extends Command {
     intake.setIntakeMotorVelocity(IntakeConstants.INTAKE_VELOCITY);
     hasBallTimer.reset();
     hasBallTimer.start();
+    Shuffleboard.selectTab("Intake Camera");
   }
 
   /**
