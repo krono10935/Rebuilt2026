@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
+import frc.utils.Elastic;
 
 /**
  * the intake command
@@ -33,7 +34,7 @@ public class IntakeCommand extends Command {
     intake.setIntakeMotorVelocity(IntakeConstants.INTAKE_VELOCITY);
     hasBallTimer.reset();
     hasBallTimer.start();
-    Shuffleboard.selectTab("Intake Camera");
+    Elastic.selectTab("Intake Camera");
   }
 
   /**
