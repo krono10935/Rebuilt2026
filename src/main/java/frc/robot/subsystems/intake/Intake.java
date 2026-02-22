@@ -13,7 +13,6 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 
 public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
   private final IntakeIO io;
@@ -43,7 +42,7 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
           () -> failedToOpen);
     }
 
-    public void setIntakeMotorVelocity(Rotation2d velocity){
+    public void setIntakeMotorVelocity(double velocity){
         io.setIntakeMotorVelocity(velocity);
     }
 
@@ -61,11 +60,6 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
 
     public void stopIntakeMotor(){
         io.stopIntakeMotor();
-    }
-
-
-    public double getPower(){
-        return inputs.power;
     }
 
     public boolean positionAtSetPoint(){
@@ -110,6 +104,10 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
         boolean isStopped = stoppedInPositionControl || stoppedInVelocityControl;
 
         return !isStopped;
+    }
+
+    public void resetEncoder(){
+        io.resetPositionMotor(0); // arab
     }
 
     @Override

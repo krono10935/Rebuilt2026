@@ -1,7 +1,5 @@
 package frc.robot.subsystems.drivetrain.module.constants;
 
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.subsystems.drivetrain.configsStructure.moduleConfig.CommonModuleConstants;

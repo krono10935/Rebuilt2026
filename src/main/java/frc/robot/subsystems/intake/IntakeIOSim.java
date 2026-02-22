@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
@@ -25,8 +24,8 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
-    public void setIntakeMotorVelocity(Rotation2d velocity) {
-        intakeMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY);
+    public void setIntakeMotorVelocity(double velocity) {
+        intakeMotor.setControl(velocity, ControlMode.VELOCITY);
     }
 
     @Override
@@ -66,9 +65,6 @@ public class IntakeIOSim implements IntakeIO {
     public void updateInputs(IntakeInputs inputs) {
         inputs.position = positionMotor.getPosition();
 
-        inputs.power = IntakeConstants.INTAKE_KT 
-            * intakeMotor.getSensorData().currentOutput()
-            * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
         inputs.velocity = intakeMotor.getVelocity(); 
     }
 
@@ -88,5 +84,11 @@ public class IntakeIOSim implements IntakeIO {
     public boolean isInPositionControl() {
         return positionMotor.getController().getControlMode() == ControlMode.POSITION || 
         positionMotor.getController().getControlMode() == ControlMode.PROFILED_POSITION;
+    }
+
+
+    @Override
+    public void resetPositionMotor(double posMeters) {
+        positionMotor.resetEncoder(posMeters);
     }
 }

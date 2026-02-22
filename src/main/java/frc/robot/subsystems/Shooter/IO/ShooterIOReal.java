@@ -1,9 +1,8 @@
 package frc.robot.subsystems.Shooter.IO;
 
-import org.littletonrobotics.junction.Logger;
+import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix6.controls.MusicTone;
-import com.revrobotics.AbsoluteEncoder;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -34,6 +33,8 @@ public class ShooterIOReal implements ShooterIO {
     private boolean isKickerActive;
     private double targetVelocity;
 
+    private final DoubleSupplier leadShooterMotorDutyCycle;
+
     public ShooterIOReal(){
         leadConfig = ShootRealConstants.getLeadShootingMotorConfig();
 
@@ -56,6 +57,13 @@ public class ShooterIOReal implements ShooterIO {
         CommandScheduler.getInstance().schedule(new InstantCommand(
             () -> hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
             .beforeStarting(new WaitUntilCommand(() -> dutyCycleEncoder.get() != 0)).ignoringDisable(true));
+
+        SmartDashboard.putData(leadShootingMotor.getController());
+
+
+        var spark = leadShootingMotor.getMotor();
+
+        leadShooterMotorDutyCycle = spark::getAppliedOutput;
     }
 
     @Override
@@ -118,7 +126,7 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
 
-        Logger.recordOutput("duty cycle", dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET);
+        Logger.recordOutput("duty cycle", leadShooterMotorDutyCycle.getAsDouble());
         // hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
 
         

@@ -1,8 +1,5 @@
 package frc.robot.subsystems.Indexer;
 
-import java.util.ResourceBundle.Control;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 

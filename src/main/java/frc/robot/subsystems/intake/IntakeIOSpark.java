@@ -1,8 +1,6 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
@@ -18,6 +16,7 @@ public class IntakeIOSpark implements IntakeIO {
 
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
 
+        SmartDashboard.putData(positionMotor.getController());
     }
 
     @Override
@@ -26,8 +25,9 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
-    public void setIntakeMotorVelocity(Rotation2d velocity) {
-        intakeMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY);
+    public void setIntakeMotorVelocity(double velocity) {
+        intakeMotor.setPercentOutput(0.5);
+        // intakeMotor.setControl(velocity, ControlMode.VELOCITY);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void setPositionMotorVelocity(Rotation2d velocity){
-        positionMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY);
+        positionMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY, 1);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void setPositionMotor(double pos) {
-        positionMotor.setControl(pos, ControlMode.POSITION);
+        positionMotor.setControl(pos, ControlMode.PROFILED_POSITION, 0);
     }
 
     @Override
@@ -74,16 +74,17 @@ public class IntakeIOSpark implements IntakeIO {
     @Override
     public void updateInputs(IntakeInputs inputs) {
         inputs.position = positionMotor.getPosition();
-        inputs.power = IntakeConstants.INTAKE_KT 
-            * intakeMotor.getSensorData().currentOutput()
-            * Units.rotationsPerMinuteToRadiansPerSecond(intakeMotor.getVelocity());
         inputs.velocity = intakeMotor.getVelocity(); 
     }
 
     @Override
     public boolean isInPositionControl() {
-        return positionMotor.getController().getControlMode() == ControlMode.POSITION || 
-        positionMotor.getController().getControlMode() == ControlMode.PROFILED_POSITION;
+        return positionMotor.getController().getControlMode().isPositionControl();
+    }
+
+    @Override
+    public void resetPositionMotor(double posMeters) {
+        positionMotor.resetEncoder(posMeters);
     }
 
 }

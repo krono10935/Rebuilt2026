@@ -8,7 +8,6 @@ public interface IntakeIO {
     @AutoLog
     class IntakeInputs {
         double position;
-        double power;
         double velocity;
     }
 
@@ -22,7 +21,7 @@ public interface IntakeIO {
      * 
      * @param velocity velocity per second
      */
-    void setIntakeMotorVelocity(Rotation2d velocity);
+    void setIntakeMotorVelocity(double velocity);
 
     /**
      * stops the intake motor
@@ -68,6 +67,11 @@ public interface IntakeIO {
      * @return if position motor is in position control
      */
     boolean isInPositionControl();
+
+    /**
+     * resets the position to a certain position in units of meters
+     */
+    void resetPositionMotor(double posMeters);
 
     void updateInputs(IntakeInputs inputs);
 

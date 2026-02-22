@@ -4,11 +4,7 @@
 
 package frc.robot.commands.IntakeCommands;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
@@ -43,16 +39,6 @@ public class IntakeCommand extends Command {
   @Override
   public void execute() {
       if(hasBallTimer.get() >= IntakeConstants.TIME_FOR_BALL_TO_BE_INTAKED ) intake.setHasBalls(true);
-  }
-
-  public int addBallsFromEnergy(double energy){
-    if(energy < IntakeConstants.BALL_INTAKE_ENERGY){
-      return 0;
-    }
-    else{
-      return addBallsFromEnergy(energy - IntakeConstants.BALL_INTAKE_ENERGY) + 1;
-    }
-
   }
 
   @Override

@@ -155,19 +155,23 @@ public class RobotContainer
         // xboxController.a().onTrue(new InstantCommand(() ->  {
         //     shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 10));
         //     shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1)));
-        // }, shooter, shooter.getIndexer()).withDeadline(new WaitUntilCommand(() -> shooter.isShooterAtGoal()))
-        // .andThen(shooter.getIndexer().turnOnIndexerCommand()
-        // .alongWith(new RunCommand(() -> {
+        // }, shooter).withDeadline(new WaitUntilCommand(() -> shooter.isShooterAtGoal()))
+        // .andThen(
+        //     // shooter.getIndexer().turnOnIndexerCommand().alongWith(
+        //     new RunCommand(() -> {
         //     shooter.keepVelocity(SmartDashboard.getNumber("shooterSpeedMPS", 10));
         //     shooter.toggleKicker(true);
-        // }, shooter))));
+        // }, shooter)));
         
         // xboxController.a().onFalse(new InstantCommand(() -> {
         //     shooter.stopFlyWheel();
         //     shooter.setHoodAngle(Rotation2d.fromDegrees(ShootRealConstants.getHoodMotorConfig().constraintsConfig.minValue));
         //     shooter.toggleKicker(false);
-        //     shooter.getIndexer().turnOff();
-        // }, shooter, shooter.getIndexer()).alongWith(new CloseCommand(intake)));
+        //     // shooter.getIndexer().turnOff();
+        // }, shooter).alongWith(new CloseCommand(intake)));
+
+        xboxController.a().whileTrue(new IntakeCommand(intake));
+
     }
 
     private void configurePitBindings() {

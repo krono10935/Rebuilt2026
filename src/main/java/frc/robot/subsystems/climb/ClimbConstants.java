@@ -5,7 +5,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
-import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
 public class ClimbConstants {
 
