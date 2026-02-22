@@ -16,6 +16,11 @@ public class ShootRealConstants {
     public static double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.129;
 
     public static double KICKER_SPEED_MPS = 4;
+    public static double KICKER_MAX_ERROR_FOR_FLYWHEEL_FEEDFORWARD = 0.2;
+    public static double KICKER_MIN_ERROR_FOR_FLYWHEEL_FEEDFORWARD = 0.05;
+    public static double KICKER_ERROR_FEEDFORWARD_SCALAR = 2;
+
+
     /**
      * 
      * @return the motor config for shooting motor
