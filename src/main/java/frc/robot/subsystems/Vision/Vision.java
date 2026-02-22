@@ -113,6 +113,9 @@ public class Vision extends VirtualSubSystem {
             VisionCamera.fromPhotonSim(camera, lastPoseSupplier);
       
         cameras.put(camera, instance);
+
+        instance.selectedStd = camera.stdDevsFactors[PipelineModes.LOW.ordinal() - 1];
+        instance.camera.setPiplineIndex(PipelineModes.LOW.ordinal());
       }
       
       this.poseConsumer = estimateListener;
@@ -191,6 +194,10 @@ public class Vision extends VirtualSubSystem {
     camera.selectedStd = camera.constants.stdDevsFactors[slot];
   }
 
+  public void setPiplineIndex(VisionCamera camera, PipelineModes mode){
+    camera.camera.setPiplineIndex(mode.ordinal());
+  }
+
   /**
    * the function changes the pipeline of the camera from high to low 
    * and vise versa
@@ -198,7 +205,7 @@ public class Vision extends VirtualSubSystem {
    * @param index the index of the pipeline
    */
   public void setPiplineIndex(CamerasConstants camerasConstants, PipelineModes mode){
-    cameras.get(camerasConstants).camera.setPiplineIndex(mode.ordinal());
+    setPiplineIndex(cameras.get(camerasConstants), mode);
   }
 
   /*
@@ -212,7 +219,11 @@ public class Vision extends VirtualSubSystem {
 
     this.priorityCamera = camera;
 
-    setPiplineIndex(camera,PipelineModes.HIGH);
+    var io = cameras.get(camera);
+
+    setPiplineIndex(io, PipelineModes.HIGH);
+    io.selectedStd = camera.stdDevsFactors[PipelineModes.HIGH.ordinal() - 1];
+    
 
     Logger.recordOutput("Vision/priority camera", camera.CAMERA_NAME);
   }
@@ -221,9 +232,15 @@ public class Vision extends VirtualSubSystem {
    * the function resets what camera is the priority
   */
   public void clearPriority(){
-    setPiplineIndex(priorityCamera, PipelineModes.LOW);
+    if(priorityCamera == null) 
+      return;
+    
+    var io = cameras.get(priorityCamera);
+    setPiplineIndex(io, PipelineModes.LOW);
+    io.selectedStd = priorityCamera.stdDevsFactors[PipelineModes.LOW.ordinal() - 1];
 
     priorityCamera = null;
+    
 
     Logger.recordOutput("Vision/priority camera", "none");
   }

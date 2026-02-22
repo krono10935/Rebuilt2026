@@ -292,7 +292,7 @@ public class Sequences {
                                         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
                                 }
                                 else{
-                                        vision.setCamAsPriority(CamerasConstants.SIDE_CAMERA);
+                                        // vision.setCamAsPriority(CamerasConstants.SIDE_CAMERA);
                                 }
                                 
                                 },

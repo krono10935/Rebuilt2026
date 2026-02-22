@@ -62,28 +62,33 @@ public class ObjectDetection extends VirtualSubSystem {
     @Override
     public void periodic() {
 
+        try{
+            isConnected = camera.isConnected();
 
-        isConnected = camera.isConnected();
-        if(!isConnected){
-            hasBalls = true;
-            return;
+            if(!isConnected){
+                hasBalls = true;
+                return;
+            }
+
+            var results = camera.getAllUnreadResults();
+            if(!isEnabled){
+                return;
+            }
+            
+            if(results.isEmpty()){
+                hasBalls = false;
+                return;
+            }
+
+            var result = results.get(results.size() -1);
+            hasBalls = result.targets.size() > 0;
         }
 
-        var results = camera.getAllUnreadResults();
-        if(!isEnabled){
-            return;
-        }
-        
-        if(results.isEmpty()){
-            hasBalls = false;
-            return;
+        finally{
+            Logger.recordOutput("ObjectDetection/is connected", isConnected);
+            Logger.recordOutput("ObjectDetection/has balls", hasBalls);
+            Logger.recordOutput("ObjectDetection/is Enabled", isEnabled);
         }
 
-        var result = results.get(results.size() -1);
-        hasBalls = result.targets.size() > 0;
-
-        Logger.recordOutput("ObjectDetection/is connected", isConnected);
-        Logger.recordOutput("ObjectDetection/has balls", hasBalls);
-        Logger.recordOutput("ObjectDetection/is Enabled", isEnabled);
     }
 }

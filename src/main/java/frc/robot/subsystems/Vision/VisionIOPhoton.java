@@ -61,7 +61,7 @@ public class VisionIOPhoton implements VisionIO {
         // Estimate robot pose based on detected targets
         Optional<EstimatedRobotPose> estimatedPose = poseEstimator.estimateCoprocMultiTagPose(result);
         if(estimatedPose.isEmpty()){
-            estimatedPose = poseEstimator.estimateLowestAmbiguityPose(result);
+            estimatedPose = poseEstimator.estimateAverageBestTargetsPose(result);
         }
     
         if(estimatedPose.isEmpty()){

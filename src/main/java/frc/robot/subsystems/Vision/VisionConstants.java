@@ -39,29 +39,29 @@ public class VisionConstants {
         // Define the camera constants for the front camera
         SHOOTER_CAMERA(
             PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
-            "dolev",
+            "front_camera",
             new Transform3d(
-                new Translation3d(0.36, 0.285, 0.345),
-                new Rotation3d(0, Units.degreesToRadians(-25),Units.degreesToRadians(5))
-    
-            ),
-            new StdDevsFactors(0.1,0.3,0.1,0.3),
-            new StdDevsFactors(0.15,0.35,0.1,0.3)
-            
-        ),
-        
-        SIDE_CAMERA(
-            PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
-            "horder",
-            new Transform3d(
-                new Translation3d(-0.145, -0.345, 0.445),
-                new Rotation3d(0, Units.degreesToRadians(-35),Units.degreesToRadians(180))
+                new Translation3d(0.315, 0, 0.423),
+                new Rotation3d(0, Units.degreesToRadians(-25), 0)
     
             ),
             new StdDevsFactors(0.1,0.3,0.1,0.3),
             new StdDevsFactors(0.15,0.35,0.1,0.3)
             
         );
+        
+        // SIDE_CAMERA(
+        //     PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
+        //     "horder",
+        //     new Transform3d(
+        //         new Translation3d(-0.145, -0.345, 0.445),
+        //         new Rotation3d(0, Units.degreesToRadians(-35),Units.degreesToRadians(180))
+    
+        //     ),
+        //     new StdDevsFactors(0.1,0.3,0.1,0.3),
+        //     new StdDevsFactors(0.15,0.35,0.1,0.3)
+            
+        // );
         
        
         /**
