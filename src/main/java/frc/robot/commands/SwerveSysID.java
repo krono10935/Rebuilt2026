@@ -47,7 +47,7 @@ public class SwerveSysID {
     /**
      * How many volts/second to add per second of the SYSID routine
      */
-   public static final double VOLT_RAMP_RATE = 4;
+   public static final double VOLT_RAMP_RATE = 1;
 
     /**
      * How many seconds to perform the test for the sysID routine

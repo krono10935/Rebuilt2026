@@ -10,6 +10,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotState;
@@ -19,6 +21,7 @@ import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveRobotRelative;
+import frc.robot.commands.SwerveSysID;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
@@ -127,7 +130,7 @@ public class RobotContainer
 
         // ledManager = new LedManager();
         // configureBindings();
-        configureTestBindings();
+        configureBindingsSysid();
     }
 
     private void configureTestBindings(){
@@ -196,6 +199,16 @@ public class RobotContainer
         xboxController.povLeft().whileTrue(shooter.idle());
 
         xboxController.povCenter().onTrue(drivetrain.resetGyro());
+    }
+
+    private void configureBindingsSysid(){
+        SwerveSysID sysID = new SwerveSysID(drivetrain, xboxController);
+        xboxController.a().whileTrue(sysID.sysIdDynamicDrive(Direction.kForward));
+        xboxController.b().whileTrue(sysID.sysIdDynamicDrive(Direction.kReverse));
+        xboxController.y().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kForward));
+        xboxController.x().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kReverse));
+        xboxController.leftBumper().onTrue(drivetrain.resetGyro());
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
     }
 
     private void configureBindings() {

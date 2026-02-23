@@ -42,6 +42,7 @@ public class SwerveModuleBasic extends SwerveModuleIO {
             canCoder.optimizeBusUtilization();
 
             SmartDashboard.putData(drivingMotor.getController());
+            SmartDashboard.putData(steeringMotor.getController());
 
 
         }
