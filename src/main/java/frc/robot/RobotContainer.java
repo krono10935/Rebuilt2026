@@ -15,7 +15,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
@@ -25,21 +24,16 @@ import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
-import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.subsystems.Shooter.ShooterSysID;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
-import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.climb.Climb;
-import frc.robot.leds.LedManager;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.drivetrain.PPController;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
@@ -50,7 +44,6 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -58,9 +51,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+
 
 public class RobotContainer
 {   
@@ -158,20 +149,18 @@ public class RobotContainer
         xboxController.a().onTrue(new InstantCommand(() ->  {
             shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 10));
             shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1)));
-        }, shooter).withDeadline(new WaitUntilCommand(() -> shooter.isShooterAtGoal()))
-        .andThen(
-            // shooter.getIndexer().turnOnIndexerCommand().alongWith(
-            new RunCommand(() -> {
-            shooter.keepVelocity(SmartDashboard.getNumber("shooterSpeedMPS", 10));
-            shooter.toggleKicker(true);
-        }, shooter)));
+        }, shooter)
+            .andThen(new WaitUntilCommand(() -> shooter.isHoodAtSetpoint() && shooter.isShooterAtGoal()), 
+            shooter.getIndexer().turnOnIndexerCommand(),
+            new InstantCommand(() -> shooter.toggleKicker(true),shooter),
+            new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.getAsDouble()), shooter)));
         
         xboxController.a().onFalse(new InstantCommand(() -> {
             shooter.stopFlyWheel();
             shooter.setHoodAngle(Rotation2d.fromDegrees(ShootRealConstants.getHoodMotorConfig().constraintsConfig.minValue));
             shooter.toggleKicker(false);
-            // shooter.getIndexer().turnOff();
-        }, shooter).alongWith(new CloseCommand(intake)));
+            shooter.getIndexer().turnOff();
+        }, shooter));
 
         // xboxController.a().whileTrue(new IntakeCommand(intake));
 
