@@ -3,6 +3,7 @@ package frc.robot.subsystems.Shooter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class ShooterConstants {
 
@@ -14,6 +15,16 @@ public class ShooterConstants {
     public static final double DELIVERY_SPEED_MPS = 20;
 
     public static final Rotation2d DELIVERY_HOOD_ANGLE = Rotation2d.kZero;
+
+
+
+    public static final ChassisSpeeds DELIVERY_CHASSIS_SPEEDS = new ChassisSpeeds();
+
+    public static final double XY_DELIVERY_SPEED_TOLERANCE = 0.05;
+
+    public static final double OMEGA_DELIVERY_SPEED_TOLERANCE_RADIANS = Rotation2d.fromDegrees(3).getRadians();
+
+
 
     public static final boolean SHOOT_WITH_MOVEMENT = false;
     

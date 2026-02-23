@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public abstract class VirtualSubSystem {
     private static ArrayList<VirtualSubSystem> subSystems = new ArrayList<>();
 
-    public static void virtualperidic(){
+    public static void virtualperiodic(){
         subSystems.forEach(VirtualSubSystem::periodic);
     }
 

@@ -299,15 +299,13 @@ public class Sequences {
 
                                 () -> vision.clearPriority()),
 
-                        Commands.sequence(
+                        new SequentialCommandGroup(
                                 new WaitUntilCommand(() ->
                                         closeEnoughToOpenClimb(
                                                 drivetrain.getEstimatedPosition()
                                         )
                                 ),
-                                climb.openCommand(
-
-                                )),
+                                climb.openCommand()),
 
                         drivetrain.driveToPose(getTowerSideTargetPose(climbSideSupplier.get(), false)
                 ) );
@@ -394,7 +392,7 @@ public class Sequences {
     public static Command intakeOpenStart(Intake intake) {
 
         return OpenCommand.openWithErrorHandeling(intake).
-        alongWith(new IntakeCommand(intake)).alongWith(new InstantCommand());
+        alongWith(new IntakeCommand(intake));
     }
 
 
@@ -411,14 +409,16 @@ public class Sequences {
      */
     public static Command stopIntakeAndClose(Intake intake) {
 
-        return new SequentialCommandGroup(
+        return CloseCommand.closeWithErrorHandeling(intake);
+    }
 
-                new InstantCommand(
-                        intake::stopIntakeMotor
-                ),
-
-                CloseCommand.closeWithErrorHandeling(intake)
-        );
+    private static boolean matchesDeliveryChassisSpeeds(ChassisSpeeds currentSpeeds){
+        return  Math.abs(ShooterConstants.DELIVERY_CHASSIS_SPEEDS.vxMetersPerSecond - currentSpeeds.vxMetersPerSecond) 
+                       < ShooterConstants.XY_DELIVERY_SPEED_TOLERANCE && 
+                Math.abs(ShooterConstants.DELIVERY_CHASSIS_SPEEDS.vyMetersPerSecond - currentSpeeds.vyMetersPerSecond) 
+                       < ShooterConstants.XY_DELIVERY_SPEED_TOLERANCE &&
+                Math.abs(ShooterConstants.DELIVERY_CHASSIS_SPEEDS.omegaRadiansPerSecond - currentSpeeds.omegaRadiansPerSecond) 
+                       < ShooterConstants.OMEGA_DELIVERY_SPEED_TOLERANCE_RADIANS;
     }
 
 
@@ -471,7 +471,7 @@ public class Sequences {
                         shooter.keepVelocity(
                                 ShooterConstants.DELIVERY_SPEED_MPS
                         )
-                ).onlyIf(() -> intake.hasBalls() && drivetrain.getChassisSpeeds().equals(new ChassisSpeeds())),
+                ).onlyIf(() -> intake.hasBalls() && matchesDeliveryChassisSpeeds(drivetrain.getChassisSpeeds())),
 
 
                 new DriveAndHomeToSupplierCommand(

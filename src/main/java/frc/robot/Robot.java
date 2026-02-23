@@ -9,7 +9,6 @@ import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.revrobotics.util.StatusLogger;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -70,12 +69,11 @@ public class Robot extends LoggedRobot
 
     @Override
     public void robotPeriodic() {
-        VirtualSubSystem.virtualperidic();
+        VirtualSubSystem.virtualperiodic();
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();
         SmartDashboard.putNumber("Battery voltage", RobotController.getBatteryVoltage());
-        // RobotController
 
     }
     
@@ -132,9 +130,7 @@ public class Robot extends LoggedRobot
     
     
     @Override
-    public void teleopPeriodic() {
-//        RobotContainer.getInstance().drivetrain.drive(new ChassisSpeeds(2,0,2));
-    }
+    public void teleopPeriodic() {}
     
     
     @Override
@@ -154,8 +150,4 @@ public class Robot extends LoggedRobot
     
     @Override
     public void testExit() {}
-
-
-
-
 }

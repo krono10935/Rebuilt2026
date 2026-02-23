@@ -58,6 +58,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class RobotContainer
@@ -147,30 +149,31 @@ public class RobotContainer
         //     shooter.getIndexer().turnOff();
         // }, shooter, drivetrain, shooter.getIndexer()).alongWith(new CloseCommand(intake)));
 
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
 
-        // xboxController.b().onTrue(new RunCommand(() -> ShotCalculator.getInstance()
-        //     .getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())));
+        xboxController.b().onTrue(new RunCommand(() -> ShotCalculator.getInstance()
+            .getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())));
 
-        // xboxController.a().onTrue(new InstantCommand(() ->  {
-        //     shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 10));
-        //     shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1)));
-        // }, shooter).withDeadline(new WaitUntilCommand(() -> shooter.isShooterAtGoal()))
-        // .andThen(
-        //     // shooter.getIndexer().turnOnIndexerCommand().alongWith(
-        //     new RunCommand(() -> {
-        //     shooter.keepVelocity(SmartDashboard.getNumber("shooterSpeedMPS", 10));
-        //     shooter.toggleKicker(true);
-        // }, shooter)));
+
+        xboxController.a().onTrue(new InstantCommand(() ->  {
+            shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 10));
+            shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1)));
+        }, shooter).withDeadline(new WaitUntilCommand(() -> shooter.isShooterAtGoal()))
+        .andThen(
+            // shooter.getIndexer().turnOnIndexerCommand().alongWith(
+            new RunCommand(() -> {
+            shooter.keepVelocity(SmartDashboard.getNumber("shooterSpeedMPS", 10));
+            shooter.toggleKicker(true);
+        }, shooter)));
         
-        // xboxController.a().onFalse(new InstantCommand(() -> {
-        //     shooter.stopFlyWheel();
-        //     shooter.setHoodAngle(Rotation2d.fromDegrees(ShootRealConstants.getHoodMotorConfig().constraintsConfig.minValue));
-        //     shooter.toggleKicker(false);
-        //     // shooter.getIndexer().turnOff();
-        // }, shooter).alongWith(new CloseCommand(intake)));
+        xboxController.a().onFalse(new InstantCommand(() -> {
+            shooter.stopFlyWheel();
+            shooter.setHoodAngle(Rotation2d.fromDegrees(ShootRealConstants.getHoodMotorConfig().constraintsConfig.minValue));
+            shooter.toggleKicker(false);
+            // shooter.getIndexer().turnOff();
+        }, shooter).alongWith(new CloseCommand(intake)));
 
-        xboxController.a().whileTrue(new IntakeCommand(intake));
+        // xboxController.a().whileTrue(new IntakeCommand(intake));
 
     }
 

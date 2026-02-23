@@ -43,7 +43,16 @@ public class ShooterIOSim implements ShooterIO {
 
     @Override
     public void keepVelocity(double speedMPS){
-        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 1);
+
+        double arbFF = 0;
+        double kicker_error = kickerMotor.getController().getSetpointAsDouble() - kickerMotor.getVelocity();
+
+        if (ShootRealConstants.KICKER_MAX_ERROR_FOR_FLYWHEEL_FEEDFORWARD < kicker_error 
+            && kicker_error > ShootRealConstants.KICKER_MIN_ERROR_FOR_FLYWHEEL_FEEDFORWARD){
+            arbFF = kicker_error * ShootRealConstants.KICKER_ERROR_FEEDFORWARD_SCALAR;
+        }
+
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, arbFF, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
 
