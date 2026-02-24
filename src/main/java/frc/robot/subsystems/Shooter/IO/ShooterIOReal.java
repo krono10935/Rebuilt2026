@@ -63,27 +63,27 @@ public class ShooterIOReal implements ShooterIO {
                 () -> defaultEncoder.setPosition((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
                         .beforeStarting(new WaitUntilCommand(() -> dutyCycleEncoder.get() != 0)).ignoringDisable(true));
 
-        hoodMotor.setMeasurements(new Measurements() {
-            @Override
-            protected double getUpdatedPosition() {
-                return (dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8;
-            }
-
-            @Override
-            protected double getUpdatedVelocity() {
-                return defaultEncoder.getVelocity();
-            }
-
-            @Override
-            protected double getUpdatedAcceleration() {
-                return defaultEncoder.getAcceleration();
-            }
-
-            @Override
-            public void setPosition(double v) {
-
-            }
-        });
+//        hoodMotor.setMeasurements(new Measurements() {
+//            @Override
+//            protected double getUpdatedPosition() {
+//                return (dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8;
+//            }
+//
+//            @Override
+//            protected double getUpdatedVelocity() {
+//                return defaultEncoder.getVelocity();
+//            }
+//
+//            @Override
+//            protected double getUpdatedAcceleration() {
+//                return defaultEncoder.getAcceleration();
+//            }
+//
+//            @Override
+//            public void setPosition(double v) {
+//
+//            }
+//        });
 
 
         SmartDashboard.putData(hoodMotor.getController());

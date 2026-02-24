@@ -68,12 +68,12 @@
         "y": 5.2
       },
       "prevControl": {
-        "x": 7.477458043221837,
-        "y": 6.876437274893082
+        "x": 7.464121275247058,
+        "y": 6.876204878162692
       },
       "nextControl": {
-        "x": 7.528548177083334,
-        "y": 3.0768822660900286
+        "x": 7.536746688741722,
+        "y": 3.4832450331125817
       },
       "isLocked": false,
       "linkedName": null
@@ -127,7 +127,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.6179245283018868,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 2.9,
@@ -237,7 +237,7 @@
   "folder": "Trench (L) - Trench (L) - Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
