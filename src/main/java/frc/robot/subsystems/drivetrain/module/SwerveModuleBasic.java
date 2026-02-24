@@ -40,11 +40,6 @@ public class SwerveModuleBasic extends SwerveModuleIO {
 
             canCoder.getMagnetHealth().setUpdateFrequency(4);
             canCoder.optimizeBusUtilization();
-
-            SmartDashboard.putData(drivingMotor.getController());
-            SmartDashboard.putData(steeringMotor.getController());
-
-
         }
         else{
             drivingMotor = new BasicMotorSim(constants.DRIVING_CONFIG());

@@ -16,9 +16,9 @@ public enum SwerveModulesMK5 {
     FRONT_LEFT(
             6,  -0.435, 12
             ,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0, 0),
-            0,
+            new PIDGains(7, 0.7, 0, 0, 0, 0),
+            new FeedForwardsGains(2.0383, 0),
+            0.22233,
             4,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.5776, 0),
@@ -33,9 +33,9 @@ public enum SwerveModulesMK5 {
     FRONT_RIGHT(
             9,  -0.445, 13
             ,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0, 0),
-            0,
+            new PIDGains(7, 0.7, 0, 0, 0, 0),
+            new FeedForwardsGains(2.0715, 0),
+            0.67666,
             5,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.4944, 0),
@@ -49,9 +49,9 @@ public enum SwerveModulesMK5 {
     BACK_LEFT(
             7,  0.263, 11
             ,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0, 0),
-            0,
+            new PIDGains(7, 0.7, 0, 0, 0, 0),
+            new FeedForwardsGains(2.0949, 0),
+            0.42583,
             3,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.4895, 0),
@@ -66,9 +66,9 @@ public enum SwerveModulesMK5 {
     BACK_RIGHT(
             8,  0.24, 10
             ,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0, 0),
-            0,
+            new PIDGains(7, 0.7, 0, 0, 0, 0),
+            new FeedForwardsGains(2.0841, 0),
+            0.6732,
             2,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.5978, 0),
@@ -146,7 +146,7 @@ public enum SwerveModulesMK5 {
         driveConfig.motorConfig.idleMode = BasicMotor.IdleMode.COAST;
         driveConfig.motorConfig.motorType = DCMotor.getKrakenX60(1);
 
-        driveConfig.currentLimitConfig.statorCurrentLimit = 90;
+        driveConfig.currentLimitConfig.statorCurrentLimit = 120;
         driveConfig.currentLimitConfig.supplyCurrentLimit = 0;
 
         driveConfig.enableFOC = true;

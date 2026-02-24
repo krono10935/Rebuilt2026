@@ -16,9 +16,9 @@ public enum ChassisType {
             new PathConstraints(0,0,0,0))),
     COMPBOT( new ChassisConstants(
         SwerveModulesMK5.getConstants(),
-            new ChassisSpeedConfig(1,3), SwerveModulesMK5.getGenericConf(),
+            new ChassisSpeedConfig(0.3,4.5), SwerveModulesMK5.getGenericConf(),
             new PPChassisConfig(new PIDConstants(0),new PIDConstants(0)),14,
-            new PathConstraints(4,8,10,10)));
+            new PathConstraints(4.5,16,10,10)));
     
     
 
