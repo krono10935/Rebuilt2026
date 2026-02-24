@@ -70,7 +70,9 @@ public class Robot extends LoggedRobot
     @Override
     public void robotPeriodic() {
         VirtualSubSystem.virtualperiodic();
-        CommandScheduler.getInstance().run();
+        ShotCalculator.getInstance().getParameters(
+                RobotContainer.getInstance().drivetrain.getEstimatedPosition(),
+                RobotContainer.getInstance().drivetrain.getChassisSpeeds());       CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();
         SmartDashboard.putNumber("Battery voltage", RobotController.getBatteryVoltage());

@@ -54,22 +54,22 @@ public class IntakeConstants {
         positionMotorConfig.motorConfig.id = 42;
         positionMotorConfig.motorConfig.inverted = false;
         positionMotorConfig.motorConfig.idleMode = IdleMode.BRAKE;
-        positionMotorConfig.motorConfig.gearRatio = 2;
+        positionMotorConfig.motorConfig.gearRatio = 6;
         positionMotorConfig.motorConfig.motorType = DCMotor.getNEO(1);
         positionMotorConfig.motorConfig.unitConversion = Math.PI * PINION_DIAMETER;
 
         SlotConfig posConfig = positionMotorConfig.slot0Config;
-        posConfig.pidConfig.kP = 5;
-        posConfig.pidConfig.kI = 0.5;
+        posConfig.pidConfig.kP = 20;
+        posConfig.pidConfig.kI = 0.2;
         posConfig.pidConfig.kD = 0;
         posConfig.pidConfig.iMaxAccum = 4;
         posConfig.pidConfig.iZone = 0.1;
-        posConfig.pidConfig.tolerance = 0.005;
+        posConfig.pidConfig.tolerance = 0.00;
 
-        posConfig.feedForwardConfig.gravityFeedforward = KG.ELEVATOR(-1.8);
+//        posConfig.feedForwardConfig.gravityFeedforward = KG.ELEVATOR(-1.8);
 
-        posConfig.profileConfig.maximumMeasurementVelocity = 5;
-        posConfig.profileConfig.maximumMeasurementAcceleration = 10;
+//        posConfig.profileConfig.maximumMeasurementVelocity = 5;
+//        posConfig.profileConfig.maximumMeasurementAcceleration = 10;
 
         positionMotorConfig.constraintsConfig.constraintType = ConstraintType.LIMITED;
         positionMotorConfig.constraintsConfig.maxValue = 0.3;

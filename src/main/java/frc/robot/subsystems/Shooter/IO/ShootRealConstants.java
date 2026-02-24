@@ -20,6 +20,7 @@ public class ShootRealConstants {
     public static double KICKER_MIN_ERROR_FOR_FLYWHEEL_FEEDFORWARD = 0.05;
     public static double KICKER_ERROR_FEEDFORWARD_SCALAR = 2;
 
+    public static final Rotation2d HOOD_TOLERANCE = Rotation2d.fromDegrees(2.5);
 
     /**
      * 
@@ -109,13 +110,17 @@ public class ShootRealConstants {
         config.motorConfig.name = "Hood Motor";
         // config.motorConfig.inverted = true;
 
-        config.currentLimitConfig.freeSpeedCurrentLimit = 15;
+        config.currentLimitConfig.freeSpeedCurrentLimit = 60;
 
-        config.slot0Config.pidConfig.kP = 40;
-        config.slot0Config.pidConfig.kI = 5;
+        config.slot0Config.pidConfig.kP = 200;
+        config.slot0Config.pidConfig.kI = 50;
         config.slot0Config.pidConfig.kD = 0;
-        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(0.5
+        config.slot0Config.pidConfig.iZone = Rotation2d.fromDegrees(15).getRotations();
+        config.slot0Config.pidConfig.iMaxAccum = 5;
+        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(0
         ).getRotations();
+
+        config.constraintsConfig.voltageDeadband = 0.05;
 
         config.simulationConfig.kA = 0.1;
         config.simulationConfig.kV = 0.1;
@@ -129,8 +134,8 @@ public class ShootRealConstants {
 
         config.constraintsConfig.constraintType = ConstraintType.LIMITED;
 
-        config.constraintsConfig.maxOutput = 3;
-        config.constraintsConfig.minOutput = 3;
+        config.constraintsConfig.maxOutput = 9;
+        config.constraintsConfig.minOutput = 9;
 
         config.constraintsConfig.maxValue = 0.08333;
         config.constraintsConfig.minValue = Rotation2d.fromDegrees(0.5).getRotations();

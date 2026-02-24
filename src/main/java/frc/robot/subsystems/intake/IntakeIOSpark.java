@@ -62,7 +62,7 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void setPositionMotor(double pos) {
-        positionMotor.setControl(pos, ControlMode.PROFILED_POSITION, 0);
+        positionMotor.setControl(pos, ControlMode.POSITION, 0);
     }
 
     @Override

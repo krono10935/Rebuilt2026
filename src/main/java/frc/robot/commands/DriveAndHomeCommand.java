@@ -29,7 +29,7 @@ public class DriveAndHomeCommand extends Command {
     private static double MIN_LINEAR_SPEED ;
 
     private final ProfiledPIDController angularController;
-    public static final Rotation2d robotAngleTolerance = Rotation2d.fromDegrees(2);
+    public static final Rotation2d robotAngleTolerance = Rotation2d.fromDegrees(180);
     private final Supplier<Rotation2d> targetAngleSupplier;
 
     private static final double DEADBAND = 0.1;

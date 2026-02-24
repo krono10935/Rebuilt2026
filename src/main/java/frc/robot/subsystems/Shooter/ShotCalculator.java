@@ -67,52 +67,53 @@ public class ShotCalculator {
     private static final InterpolatingDoubleTreeMap timeOfFlightMap = 
         new InterpolatingDoubleTreeMap();
 
+    /**
+     *
+     * @param distance
+     * @param angleDegrees
+     * @param shotSpeed
+     * @param timeOfFlight
+     */
+    private static void putToMaps(double distance, double angleDegrees, double shotSpeed, double timeOfFlight){
+        shotHoodAngleMap.put(distance, Rotation2d.fromDegrees(angleDegrees));
+        shotFlywheelSpeedMap.put(distance,shotSpeed);
+        timeOfFlightMap.put(distance,timeOfFlight);
+    }
     static {
-        minDistance = 1.34; // TODO: find the real value
+        minDistance = 1; // TODO: find the real value
         maxDistance = 5.60; // TODO: find the real value
-        phaseDelay = 0.03; // TODO: find the real value
+        phaseDelay = 0.06; // TODO: find the real value
 
-        shotHoodAngleMap.put(3.5, Rotation2d.fromDegrees(23.0));
-        shotHoodAngleMap.put(3.0, Rotation2d.fromDegrees(20.0));
-        shotHoodAngleMap.put(2.0, Rotation2d.fromDegrees(12.0));
-        // shotHoodAngleMap.put(2.81, Rotation2d.fromDegrees(27.0));
-        // shotHoodAngleMap.put(3.82, Rotation2d.fromDegrees(29.0));
-        // shotHoodAngleMap.put(4.09, Rotation2d.fromDegrees(30.0));
-        // shotHoodAngleMap.put(4.40, Rotation2d.fromDegrees(31.0));
-        // shotHoodAngleMap.put(4.77, Rotation2d.fromDegrees(32.0));
-        // shotHoodAngleMap.put(5.57, Rotation2d.fromDegrees(32.0));
-        // shotHoodAngleMap.put(5.60, Rotation2d.fromDegrees(35.0));
-
-
-        shotFlywheelSpeedMap.put(3.5, 19.0);
-        shotFlywheelSpeedMap.put(3.0, 17.5);
-        shotFlywheelSpeedMap.put(2.0, 17.0);
-        // shotFlywheelSpeedMap.put(2.81, 230.0/60);
-        // shotFlywheelSpeedMap.put(3.82, 250.0/60);
-        // shotFlywheelSpeedMap.put(4.09, 255.0/60);
-        // shotFlywheelSpeedMap.put(4.40, 260.0/60);
-        // shotFlywheelSpeedMap.put(4.77, 265.0/60);
-        // shotFlywheelSpeedMap.put(5.57, 275.0/60);
-        // shotFlywheelSpeedMap.put(5.60, 290.0/60);
-
-        timeOfFlightMap.put(5.68, 1.16);
-        timeOfFlightMap.put(4.55, 1.12);
-        timeOfFlightMap.put(3.15, 1.11);
-        timeOfFlightMap.put(1.88, 1.09);
-        timeOfFlightMap.put(1.38, 0.90);
-
-        // shotHoodAngleMap.put(1.34, Rotation2d.fromDegrees(19.0)); // Find real measurements
-
-        // shotFlywheelSpeedMap.put(1.34,210.0); // Find real measurement
-
-        // timeOfFlightMap.put(5.68, 1.16); // Find real measurement
+        putToMaps(1.065, 3, 15.0, 0.9);
+        putToMaps(1.196, 4, 15.5, 1.0 );
+        putToMaps(1.307, 5,15.65, 1.12 );
+        putToMaps(1.401, 5,15.5, 1.06 );
+        putToMaps(1.510, 6,15.5, 1.09 );
+        putToMaps(1.610, 7, 15.5 ,1 );
+        putToMaps(1.707, 8, 15.5, 1.03 );
+        putToMaps(1.813,9, 15.5, 1);
+        putToMaps(1.910, 10 , 16.2 , 1.08);
+        putToMaps(2.011, 11, 16.3 , 1.06);
+        putToMaps(2.101, 12, 16.4,0.94);
+        putToMaps(2.194, 13, 16.4,0.95 );
+        putToMaps(2.310 , 14, 16.4, 0.92);
+        putToMaps(2.4, 15, 16.4, 0.95);
+        putToMaps(2.5, 16, 16.4, 0.94);
+        putToMaps(2.6, 17, 17.1,1 );
+        putToMaps(2.7, 18, 17.2, 0.9);
+        putToMaps(2.8, 19, 17.5, 1.02 );
+        putToMaps(2.91, 18, 18, 0.95);
+        putToMaps(3,19, 18, 1.02 );
+        putToMaps(3.1, 21, 18, 1.01);
+        putToMaps(3.2, 22, 18.1, 1.07);
+        putToMaps(3.3, 23, 18.1, 1);
+        putToMaps(3.4, 25, 18.1, 0.9);
+        putToMaps(3.5, 26, 18.1,0.97 );
+        putToMaps(3.6, 27,18.1, 1.04);
+        putToMaps(3.7 , 28, 18.1, 1.07);
     }
 
-    /**
-     * 
-     * @param warmUpPose pose to use as the estimatedPose in th warmup
-     * @param warmUpSpeeds
-     */
+
     public Command warmUpShotCalculator(){
         return new InstantCommand(this::warmUpGeneratePoses);
     }
@@ -159,6 +160,8 @@ public class ShotCalculator {
         }
         
         Pose2d shooterPosition = shooterPoseAtShooting(estimatedPose, robotRelativeVelocity);
+
+        Logger.recordOutput("ShotCalculator/Shooter position", shooterPosition);
         
         Translation2d hub = 
             AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
@@ -351,5 +354,7 @@ public class ShotCalculator {
     public void clearShootingParameters(){
         latestParameters = null;
     }
+
+
 
 }

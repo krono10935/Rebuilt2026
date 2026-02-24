@@ -130,7 +130,7 @@ public class RobotContainer
 
         // ledManager = new LedManager();
         // configureBindings();
-        configureBindingsSysid();
+        testShooter();
     }
 
     private void configureTestBindings(){
@@ -150,7 +150,7 @@ public class RobotContainer
 
 
         xboxController.a().onTrue(new InstantCommand(() ->  {
-            shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 10));
+            shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 17));
             shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1)));
         }, shooter)
             .andThen(new WaitUntilCommand(() -> shooter.isHoodAtSetpoint() && shooter.isShooterAtGoal()), 
@@ -165,8 +165,15 @@ public class RobotContainer
             shooter.getIndexer().turnOff();
         }, shooter));
 
+        xboxController.rightBumper().toggleOnTrue(new DriveCommand(drivetrain,xboxController));
+        xboxController.leftBumper().onTrue(drivetrain.resetGyro());
         // xboxController.a().whileTrue(new IntakeCommand(intake));
 
+    }
+
+    private void testShooter(){
+        xboxController.a().whileTrue(new ShootCommand(shooter,drivetrain,intake,vision).beforeStarting(new SpinUp(shooter, drivetrain)));
+        xboxController.b().toggleOnTrue(new DriveCommand(drivetrain, xboxController));
     }
 
     private void configurePitBindings() {
@@ -296,6 +303,12 @@ public class RobotContainer
 
         NamedCommands.registerCommand("openClimb", new Climb().openCommand());
         NamedCommands.registerCommand("closeClimb", new Climb().closeCommand());
+    }
+
+    private void testIntake(){
+        xboxController.a().onTrue(new InstantCommand(() -> intake.setPosition(0.3)));
+        xboxController.b().onTrue(new InstantCommand(() -> intake.setPosition(0)));
+        xboxController.x().onTrue(new InstantCommand(intake::resetEncoder).ignoringDisable(true));
     }
 
 
