@@ -47,6 +47,8 @@ public class SwerveModuleBasic extends SwerveModuleIO {
 
             canCoder = null;
         }
+
+        SmartDashboard.putData(drivingMotor.getController());
     }
 
     @Override

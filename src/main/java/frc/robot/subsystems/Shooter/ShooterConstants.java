@@ -8,7 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class ShooterConstants {
 
     public static final Transform3d ROBOT_TO_SHOOTER = 
-        new Transform3d(0.3, 0.0, 0.0, Rotation3d.kZero); // Find real translation
+        new Transform3d(0.2, 0.0, 0.4, Rotation3d.kZero); // Find real translation
     
     public static final double FLYWHEEL_CICUMFRENCE = 0.11 * Math.PI; //m
 

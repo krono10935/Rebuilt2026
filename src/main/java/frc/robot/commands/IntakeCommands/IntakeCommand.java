@@ -33,14 +33,6 @@ public class IntakeCommand extends Command {
     Elastic.selectTab("Intake Camera");
   }
 
-  /**
-   * by knowing the energy it takes for a single ball to be intaked, the motor's energy is known by the sum of the intake motor's power over time and then subtracting the balls already in the intake (previous energy invested) from the total energy. then the amount of balls added to the ballsCounter is the total energy devided by the energy per ball required.
-   */
-  @Override
-  public void execute() {
-      if(hasBallTimer.get() >= IntakeConstants.TIME_FOR_BALL_TO_BE_INTAKED ) intake.setHasBalls(true);
-  }
-
   @Override
   public void end(boolean interrupted){
       intake.stopIntakeMotor();

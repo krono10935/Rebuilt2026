@@ -57,10 +57,10 @@ public class ShooterIOReal implements ShooterIO {
 
         leadShooterMotorDutyCycle = spark::getAppliedOutput;
 
-        var defaultEncoder = hoodMotor.getMeasurements();
+    
 
         CommandScheduler.getInstance().schedule(new InstantCommand(
-                () -> defaultEncoder.setPosition((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
+                () -> hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
                         .beforeStarting(new WaitUntilCommand(() -> dutyCycleEncoder.get() != 0)).ignoringDisable(true));
 
 //        hoodMotor.setMeasurements(new Measurements() {
@@ -150,6 +150,7 @@ public class ShooterIOReal implements ShooterIO {
         inputs.shooterSpeed = leadShootingMotor.getVelocity();
 
         Logger.recordOutput("duty cycle", leadShooterMotorDutyCycle.getAsDouble());
+        Logger.recordOutput("duty cycle/ encoder", (dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
         // hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
 
         

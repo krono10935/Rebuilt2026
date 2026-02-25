@@ -11,9 +11,12 @@ import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
 
 public class PPController implements PathFollowingController {
     private final PIDController xController;
@@ -33,6 +36,10 @@ public class PPController implements PathFollowingController {
         this.rotationController = new PIDController(rotationConstants.kP, rotationConstants.kI, rotationConstants.kD, period);
         this.rotationController.setIZone(rotationConstants.iZone);
         this.rotationController.enableContinuousInput(-Math.PI, Math.PI);
+
+        SmartDashboard.putData("xController", xController);
+        SmartDashboard.putData("yController", yController);
+        SmartDashboard.putData("rotationController", rotationController);
     }
 
     public PPController(PIDConstants translationConstants, PIDConstants rotationConstants) {
@@ -46,6 +53,7 @@ public class PPController implements PathFollowingController {
         this.rotationController.reset();
     }
 
+    @Override
     public ChassisSpeeds calculateRobotRelativeSpeeds(Pose2d currentPose, PathPlannerTrajectoryState targetState) {
         double xFF = targetState.fieldSpeeds.vxMetersPerSecond;
         double yFF = targetState.fieldSpeeds.vyMetersPerSecond;
@@ -59,6 +67,15 @@ public class PPController implements PathFollowingController {
         double rotationFeedback = this.rotationController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
 
         double rotationOutput = rotationFeedback + rotationFF;
+
+        Logger.recordOutput("PP/xOutput", xFeedback);
+        Logger.recordOutput("PP/yOutput", yFeedback);
+        Logger.recordOutput("PP/rotationOutput", rotationFeedback);
+
+        Logger.recordOutput("PP/xError", xController.getError());
+        Logger.recordOutput("PP/yError", yController.getError());
+        Logger.recordOutput("PP/rotationError", rotationController.getError());
+
 
         if(thetaOutputOverride.isPresent()){
             rotationOutput = thetaOutputOverride.get().getAsDouble();

@@ -20,6 +20,7 @@ import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
@@ -435,7 +436,8 @@ public class Sequences {
             Drivetrain drivetrain,
             Shooter shooter,
             CommandXboxController controller,
-            Intake intake
+            Intake intake,
+            ObjectDetection objectDetection
     ) {
 
         SequentialCommandGroup spinUpAndAimHood =
@@ -471,7 +473,7 @@ public class Sequences {
                         shooter.keepVelocity(
                                 ShooterConstants.DELIVERY_SPEED_MPS
                         )
-                ).onlyIf(() -> intake.hasBalls() && matchesDeliveryChassisSpeeds(drivetrain.getChassisSpeeds())),
+                ).onlyIf(() -> objectDetection.hasBalls() && matchesDeliveryChassisSpeeds(drivetrain.getChassisSpeeds())),
 
 
                 new DriveAndHomeToSupplierCommand(

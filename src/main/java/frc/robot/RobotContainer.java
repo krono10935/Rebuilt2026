@@ -25,6 +25,7 @@ import frc.robot.commands.SwerveSysID;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
+import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.VisionConstants;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.climb.Climb;
@@ -106,7 +108,7 @@ public class RobotContainer
 
         xboxController = new CommandXboxController(0);
 
-        vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
+        vision = new Vision(Vision.VisionConsumer.NO_OP, drivetrain::getEstimatedPosition);
         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
 
         objectDetector = ObjectDetection.getInstance();
@@ -130,7 +132,7 @@ public class RobotContainer
 
         // ledManager = new LedManager();
         // configureBindings();
-        testShooter();
+        configureBindingsSysid();
     }
 
     private void configureTestBindings(){
@@ -202,7 +204,6 @@ public class RobotContainer
         // xboxController.povDown().onTrue(climb.closeCommand());
 
         // xboxController.povUp().onTrue(climb.openCommand());
-
         xboxController.povLeft().whileTrue(shooter.idle());
 
         xboxController.povCenter().onTrue(drivetrain.resetGyro());
@@ -210,10 +211,16 @@ public class RobotContainer
 
     private void configureBindingsSysid(){
         SwerveSysID sysID = new SwerveSysID(drivetrain, xboxController);
-        xboxController.a().whileTrue(sysID.sysIdDynamicDrive(Direction.kForward));
-        xboxController.b().whileTrue(sysID.sysIdDynamicDrive(Direction.kReverse));
-        xboxController.y().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kForward));
-        xboxController.x().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kReverse));
+        // xboxController.a().whileTrue(sysID.sysIdDynamicDrive(Direction.kForward));
+        // xboxController.b().whileTrue(sysID.sysIdDynamicDrive(Direction.kReverse));
+        // xboxController.y().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kForward));
+        // xboxController.x().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kReverse));
+        // Rotation2d[] arr = {Rotation2d.kZero, Rotation2d.kZero, Rotation2d.kZero, Rotation2d.kZero};
+        //xboxController.rightBumper().onTrue(new InstantCommand(() -> drivetrain.setDriveVoltageAndSteerAngle(0, arr)));
+        xboxController.a().whileTrue(sysID.sysIdDynamicSpin(Direction.kForward));
+        xboxController.b().whileTrue(sysID.sysIdDynamicSpin(Direction.kReverse));
+        xboxController.x().whileTrue(sysID.sysIdQuasistaticSpin(Direction.kForward));
+        xboxController.y().whileTrue(sysID.sysIdQuasistaticSpin(Direction.kReverse));
         xboxController.leftBumper().onTrue(drivetrain.resetGyro());
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
     }
@@ -239,7 +246,7 @@ public class RobotContainer
         // xboxController.b().whileTrue(climb.closeCommand());
 
         xboxController.x().onTrue(
-            Sequences.delivery(drivetrain, shooter, xboxController,intake));
+            Sequences.delivery(drivetrain, shooter, xboxController,intake, objectDetector));
 
         xboxController.a().onTrue(drivetrain.resetGyro());
     }
@@ -294,7 +301,7 @@ public class RobotContainer
         NamedCommands.registerCommand("spinUp", new SpinUp(shooter, drivetrain));
 
         NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
-                !new Intake().hasBalls()));
+                !objectDetector.hasBalls()));
 
         NamedCommands.registerCommand("openIntake",
                 new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));

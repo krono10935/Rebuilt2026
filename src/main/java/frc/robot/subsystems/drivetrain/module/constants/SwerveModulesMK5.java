@@ -17,8 +17,8 @@ public enum SwerveModulesMK5 {
             6,  -0.435, 12
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
-            new FeedForwardsGains(2.0383, 0),
-            0.22233,
+            new FeedForwardsGains(2.4805, 0),
+            0.32661,
             4,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.5776, 0),
@@ -34,8 +34,8 @@ public enum SwerveModulesMK5 {
             9,  -0.445, 13
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
-            new FeedForwardsGains(2.0715, 0),
-            0.67666,
+            new FeedForwardsGains(2.3745, 0),
+            0.40069,
             5,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.4944, 0),
@@ -50,8 +50,8 @@ public enum SwerveModulesMK5 {
             7,  0.263, 11
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
-            new FeedForwardsGains(2.0949, 0),
-            0.42583,
+            new FeedForwardsGains(2.4752, 0),
+            0.91735,
             3,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.4895, 0),
@@ -67,8 +67,8 @@ public enum SwerveModulesMK5 {
             8,  0.24, 10
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
-            new FeedForwardsGains(2.0841, 0),
-            0.6732,
+            new FeedForwardsGains(2.3786, 0),
+            0.71613,
             2,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.5978, 0),
@@ -141,7 +141,7 @@ public enum SwerveModulesMK5 {
 
         var driveConfig = new BasicTalonFXConfig();
 
-        driveConfig.motorConfig.gearRatio = 5.27;
+        driveConfig.motorConfig.gearRatio = 6.03;
         driveConfig.motorConfig.unitConversion = 2 * Math.PI * 0.0508;
         driveConfig.motorConfig.idleMode = BasicMotor.IdleMode.COAST;
         driveConfig.motorConfig.motorType = DCMotor.getKrakenX60(1);

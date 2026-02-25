@@ -12,7 +12,7 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 /** Add your docs here. */
 public class ShootRealConstants {
-    public static int DUTY_CYCLE_ENCODER_PORT = 1;
+    public static int DUTY_CYCLE_ENCODER_PORT = 0;
     public static double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.129;
 
     public static double KICKER_SPEED_MPS = 4;
@@ -112,12 +112,12 @@ public class ShootRealConstants {
 
         config.currentLimitConfig.freeSpeedCurrentLimit = 60;
 
-        config.slot0Config.pidConfig.kP = 200;
-        config.slot0Config.pidConfig.kI = 50;
+        config.slot0Config.pidConfig.kP = 25;
+        config.slot0Config.pidConfig.kI = 1;
         config.slot0Config.pidConfig.kD = 0;
         config.slot0Config.pidConfig.iZone = Rotation2d.fromDegrees(15).getRotations();
         config.slot0Config.pidConfig.iMaxAccum = 5;
-        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(0
+        config.slot0Config.pidConfig.tolerance = Rotation2d.fromDegrees(0.5
         ).getRotations();
 
         config.constraintsConfig.voltageDeadband = 0.05;

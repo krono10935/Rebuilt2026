@@ -75,6 +75,13 @@ public class ShotCalculator {
      * @param timeOfFlight
      */
     private static void putToMaps(double distance, double angleDegrees, double shotSpeed, double timeOfFlight){
+        distance = distance - ShooterConstants.ROBOT_TO_SHOOTER.getX();
+        shotHoodAngleMap.put(distance, Rotation2d.fromDegrees(angleDegrees));
+        shotFlywheelSpeedMap.put(distance,shotSpeed);
+        timeOfFlightMap.put(distance,timeOfFlight);
+    }
+
+    private static void staticPutToMapsNoTransform(double distance, double angleDegrees, double shotSpeed, double timeOfFlight){
         shotHoodAngleMap.put(distance, Rotation2d.fromDegrees(angleDegrees));
         shotFlywheelSpeedMap.put(distance,shotSpeed);
         timeOfFlightMap.put(distance,timeOfFlight);

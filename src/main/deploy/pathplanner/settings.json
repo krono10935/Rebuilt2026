@@ -14,13 +14,13 @@
   "autoFolders": [
     "Testing"
   ],
-  "defaultMaxVel": 5.0,
+  "defaultMaxVel": 3.2,
   "defaultMaxAccel": 16.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 50.0,
-  "robotMOI": 6.884,
+  "robotMass": 61.23,
+  "robotMOI": 13.979120339,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.051,
   "driveGearing": 5.27,

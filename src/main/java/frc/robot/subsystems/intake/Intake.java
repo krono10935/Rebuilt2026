@@ -21,8 +21,6 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
   private boolean failedToClose;
   private boolean failedToOpen;
 
-  @AutoLogOutput
-  private boolean hasBalls = false;
   /** Creates a new Intake. */
   public Intake() {
 
@@ -70,14 +68,6 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
       io.setPositionMotorVelocity(velocity);
     }
 
-    public void setHasBalls(boolean hasBalls){
-      this.hasBalls = hasBalls;
-    }
-
-    public boolean hasBalls(){
-      return hasBalls;
-    }
-
     @Override
     public void send(boolean shouldDisplayError, int code){
         switch (code) {
@@ -117,7 +107,6 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
         Logger.processInputs(getName(), inputs);
         SmartDashboard.putBoolean("Is intake open", isOpen());
         SmartDashboard.putBoolean("Is intake moving", isMoving());
-        SmartDashboard.putBoolean("Has balls", hasBalls);
 
         String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
         Logger.recordOutput("Intake/Current Command ", currCommand);

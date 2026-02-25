@@ -6,7 +6,7 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 public class IndexerConstants {
 
 
-    public static final double SPINNING_TARGET_VELOCITY = 5;//RPS
+    public static final double SPINNING_TARGET_VELOCITY = 11;//RPS (tuff btw)
 
 
     public static BasicSparkConfig getLeftMotorConfig() {

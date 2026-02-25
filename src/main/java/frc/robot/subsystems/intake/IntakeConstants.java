@@ -64,9 +64,10 @@ public class IntakeConstants {
         posConfig.pidConfig.kD = 0;
         posConfig.pidConfig.iMaxAccum = 4;
         posConfig.pidConfig.iZone = 0.1;
-        posConfig.pidConfig.tolerance = 0.00;
+        posConfig.pidConfig.tolerance = 0.01;
 
-//        posConfig.feedForwardConfig.gravityFeedforward = KG.ELEVATOR(-1.8);
+        posConfig.profileConfig.maximumMeasurementVelocity = 0.6; 
+        posConfig.profileConfig.maximumMeasurementAcceleration = 1;
 
 //        posConfig.profileConfig.maximumMeasurementVelocity = 5;
 //        posConfig.profileConfig.maximumMeasurementAcceleration = 10;

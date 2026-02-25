@@ -93,10 +93,9 @@ public class ChassisConstants {
      * @return true when the robot is on Red alliance; false otherwise
      */
     public static boolean shouldFlipPath(){
-        var currentAlliance = DriverStation.getAlliance();
-
         //         If no alliance is set, do not flip the path.
-        return currentAlliance.filter(alliance -> alliance == DriverStation.Alliance.Red).isPresent();
+        return DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
 
     }
 
