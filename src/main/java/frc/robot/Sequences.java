@@ -436,8 +436,7 @@ public class Sequences {
             Drivetrain drivetrain,
             Shooter shooter,
             CommandXboxController controller,
-            Intake intake,
-            ObjectDetection objectDetection
+            Intake intake
     ) {
 
         SequentialCommandGroup spinUpAndAimHood =
@@ -473,7 +472,7 @@ public class Sequences {
                         shooter.keepVelocity(
                                 ShooterConstants.DELIVERY_SPEED_MPS
                         )
-                ).onlyIf(() -> objectDetection.hasBalls() && matchesDeliveryChassisSpeeds(drivetrain.getChassisSpeeds())),
+                ).onlyIf(() -> ObjectDetection.getInstance().hasBalls() && matchesDeliveryChassisSpeeds(drivetrain.getChassisSpeeds())),
 
 
                 new DriveAndHomeToSupplierCommand(

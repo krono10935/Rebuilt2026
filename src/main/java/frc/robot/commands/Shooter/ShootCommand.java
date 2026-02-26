@@ -25,6 +25,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
+import org.opencv.core.Mat;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
@@ -53,14 +54,14 @@ public class ShootCommand extends Command {
     this.intake = intake;
     this.vision = vision;
 
-      addRequirements(shooter);
+      addRequirements(shooter, shooter.getIndexer());
   }
 
   public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
-    ShootCommand shootCommand = new ShootCommand(shooter, drivetrain, intake, vision);
+    Command shootCommand = new ShootCommand(shooter, drivetrain, intake, vision).beforeStarting(new SpinUp(shooter, drivetrain));
 
-    return driveCommand.alongWith(shootCommand);
+    return driveCommand.alongWith(shootCommand).withName("Full Shoot");
   }
 
   @Override
@@ -84,8 +85,8 @@ public class ShootCommand extends Command {
     shooter.keepVelocity(params.flywheelSpeed());
     shooter.setHoodAngle(params.hoodAngle());
 
-    boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().getRadians() -
-            params.robotAngle().getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
+    boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
+
 
     if(!hasReachedTargetVelocity && shooter.isShooterAtGoal()){
       hasReachedTargetVelocity = true;

@@ -56,6 +56,10 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
         io.setPositionMotor(pos);
     }
 
+    public void setPercent(double dutyCycle){
+        io.setIntakeMotorPercent(dutyCycle);
+    }
+
     public void stopIntakeMotor(){
         io.stopIntakeMotor();
     }

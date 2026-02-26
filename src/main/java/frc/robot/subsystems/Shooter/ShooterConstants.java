@@ -26,15 +26,13 @@ public class ShooterConstants {
 
 
 
-    public static final boolean SHOOT_WITH_MOVEMENT = false;
+    public static final boolean SHOOT_WITH_MOVEMENT = true;
+
     
-    public static final double SHOOTING_SPEED = 17.5; // m/s
 
     public static final double SHOOTING_SPEED_TOLERANCE = 0.2;
 
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
-
-    public static final double DELIVERY_VELOCITY = 2; // m/s
 
     public static final double KICKER_PERCENT_OUTPUT = 0.5;
 
@@ -42,4 +40,8 @@ public class ShooterConstants {
     public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
     
     public static final double ZERO_LINEAR_SPEED_TOLERANCE_MPS = 0.3;
+
+
+    public static final double SECONDS_TO_LOOK_FORWARD_FOR_SPINUP = 3;
+
 }

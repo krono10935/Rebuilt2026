@@ -180,12 +180,7 @@
       "name": "Intake",
       "waypointRelativePos": 3.0,
       "endWaypointRelativePos": 4.0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "openIntake"
-        }
-      }
+      "command": null
     },
     {
       "name": "Shooting",
@@ -202,23 +197,13 @@
       "name": "OpenClimb",
       "waypointRelativePos": 6.220825852782765,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "openClimb"
-        }
-      }
+      "command": null
     },
     {
       "name": "CloseIntake",
       "waypointRelativePos": 6.9,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "closeIntake"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {

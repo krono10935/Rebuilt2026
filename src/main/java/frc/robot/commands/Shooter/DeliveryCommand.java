@@ -21,13 +21,13 @@ public class DeliveryCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.spinUp(ShooterConstants.DELIVERY_VELOCITY);
+    shooter.spinUp(ShooterConstants.DELIVERY_SPEED_MPS);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-      shooter.keepVelocity(ShooterConstants.DELIVERY_VELOCITY);
+      shooter.keepVelocity(ShooterConstants.DELIVERY_SPEED_MPS);
   }
 
   // Returns true when the command should end.

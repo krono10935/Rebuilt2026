@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import org.opencv.core.Mat;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 
@@ -23,6 +24,9 @@ public class ShakeItOffCommand extends Command {
 
   private final LoggedNetworkNumber closePos; 
 
+  private final Timer timer;
+
+  private final LoggedNetworkNumber timeTochange;
   @AutoLogOutput(key =  "Shake/shouldOpen")
   private boolean shouldOpen = false;
 
@@ -35,9 +39,11 @@ public class ShakeItOffCommand extends Command {
 
 
     tolerance = new LoggedNetworkNumber("Shake/tolerance", 0.0025);
-    openPos = new LoggedNetworkNumber("Shake/openPos", 0.15);
-    closePos = new LoggedNetworkNumber("Shake/closePos", 0.05);
-
+    openPos = new LoggedNetworkNumber("Shake/openPos", 0.25);
+    closePos = new LoggedNetworkNumber("Shake/closePos", 0.00);
+    timeTochange = new LoggedNetworkNumber("Shake/time", 1);
+    timer = new Timer();
+  
 
 
   }
@@ -46,20 +52,17 @@ public class ShakeItOffCommand extends Command {
   @Override
   public void initialize() {
     intake.setPosition(openPos.getAsDouble());
+    timer.start();
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(hasOpened && intake.positionAtSetPoint()) {
-      shouldOpen = !shouldOpen;
-
+    if(timer.get()>= timeTochange.getAsDouble()){
+      shouldOpen = ! shouldOpen;
       intake.setPosition(shouldOpen? openPos.getAsDouble() :closePos.getAsDouble());
-      
-
-    }
-    else if(!hasOpened && intake.positionAtSetPoint()){
-      hasOpened = true;
+      timer.reset();
     }
   }
 }

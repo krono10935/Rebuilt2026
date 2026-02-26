@@ -89,7 +89,7 @@ public class ShotCalculator {
     static {
         minDistance = 1; // TODO: find the real value
         maxDistance = 5.60; // TODO: find the real value
-        phaseDelay = 0.06; // TODO: find the real value
+        phaseDelay = 0.03; // TODO: find the real value
 
         putToMaps(1.065, 3, 15.0, 0.9);
         putToMaps(1.196, 4, 15.5, 1.0 );
@@ -118,6 +118,12 @@ public class ShotCalculator {
         putToMaps(3.5, 26, 18.1,0.97 );
         putToMaps(3.6, 27,18.1, 1.04);
         putToMaps(3.7 , 28, 18.1, 1.07);
+        putToMaps(4.0 , 28, 18.2, 1.2);
+        putToMaps(4.22 , 28, 18.55, 1.2);
+        putToMaps(4.4 , 29, 23, 1.27);
+        putToMaps(4.6 , 29, 25, 1.45);
+        putToMaps(4.8 , 29, 27, 1.5);
+
     }
 
 

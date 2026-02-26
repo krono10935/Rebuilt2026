@@ -39,6 +39,11 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
+    public void setIntakeMotorPercent(double dutyCycle){
+        intakeMotor.setPercentOutput(dutyCycle);
+    }
+
+    @Override
     public boolean positionMotorAtSetPoint() {
         return positionMotor.atSetpoint();
     }

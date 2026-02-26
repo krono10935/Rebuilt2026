@@ -70,6 +70,11 @@ public class IntakeIOSpark implements IntakeIO {
         return Rotation2d.fromRotations(positionMotor.getVelocity());
     }
 
+    @Override
+    public void setIntakeMotorPercent(double dutyCycle){
+        intakeMotor.setPercentOutput(dutyCycle);
+    }
+
 
     @Override
     public void updateInputs(IntakeInputs inputs) {

@@ -20,6 +20,8 @@ import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 
 public class DriveAndHomeCommand extends Command {
     private final Drivetrain drivetrain;
@@ -34,6 +36,8 @@ public class DriveAndHomeCommand extends Command {
 
     private static final double DEADBAND = 0.1;
 
+    private static final double ANGULAR_DEADBAND = Rotation2d.fromDegrees(30).getRadians(); 
+
     public DriveAndHomeCommand(Drivetrain drivetrain, CommandXboxController controller) {
         this.drivetrain = drivetrain;
         this.controller = controller;
@@ -41,7 +45,8 @@ public class DriveAndHomeCommand extends Command {
 
         angularController = Constants.THETA_CONTROLLER;
 
-        MAX_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.maxLinearSpeed();
+        SmartDashboard.putData("DriveAndHome/thetaController", angularController);
+        MAX_LINEAR_SPEED = 2;
         MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed();
 
         targetAngleSupplier = () -> ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
@@ -77,11 +82,18 @@ public class DriveAndHomeCommand extends Command {
                 angularController.calculate(
                         drivetrain.getEstimatedPosition().getRotation().getRadians(), params.robotAngle().getRadians());
 
+        if(thetaSpeed < ANGULAR_DEADBAND) thetaSpeed = 0;
+
         if(Math.abs(thetaSpeedDriver) >= 0.1)
             thetaSpeed = thetaSpeedDriver;
 
         drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed, ySpeed, thetaSpeed, angleFieldRelative()));
+
+        Logger.recordOutput("ShootCommand/thetaError", angularController.getPositionError());
+
+        Logger.recordOutput("ShootCommand/thetaSetpoint", angularController.getGoal());
+        Logger.recordOutput("ShootCommand/thetaMeasurement", drivetrain.getEstimatedPosition().getRotation());
     }
 
     public double calculateThetaPID(){
@@ -99,7 +111,7 @@ public class DriveAndHomeCommand extends Command {
      * @return the linear lerp of a {@code value}
      */
     private static double lerp(double value){
-        return MIN_LINEAR_SPEED + (MAX_LINEAR_SPEED - MIN_LINEAR_SPEED) * value;
+        return MIN_LINEAR_SPEED + Math.sqrt(MAX_LINEAR_SPEED - MIN_LINEAR_SPEED) * value;
     }
 
     /**

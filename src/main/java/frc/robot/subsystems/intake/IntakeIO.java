@@ -23,6 +23,7 @@ public interface IntakeIO {
      */
     void setIntakeMotorVelocity(double velocity);
 
+    void setIntakeMotorPercent(double dutyCycle);
     /**
      * stops the intake motor
      */

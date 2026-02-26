@@ -8,16 +8,17 @@ import frc.utils.ErrorMessage;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Phase;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.IO.ShooterIODevBot;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
-
 
 public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
 
@@ -159,5 +160,13 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
     @Override
     public void send(boolean shouldDisplayError, int code) {
         failedToClose = shouldDisplayError;
+    }
+
+    public boolean shouldSpinUpForShootCommand(){
+      boolean shouldSpinUp = false;
+      Phase closePhase =
+       Phase.getActivePhase(DriverStation.getMatchTime() - ShooterConstants.SECONDS_TO_LOOK_FORWARD_FOR_SPINUP);
+
+      return shouldSpinUp;
     }
 }

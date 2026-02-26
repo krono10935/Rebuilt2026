@@ -61,7 +61,6 @@ public class ObjectDetection extends VirtualSubSystem {
 
     @Override
     public void periodic() {
-
         try{
             isConnected = camera.isConnected();
 
@@ -76,7 +75,6 @@ public class ObjectDetection extends VirtualSubSystem {
             }
             
             if(results.isEmpty()){
-                hasBalls = false;
                 return;
             }
 

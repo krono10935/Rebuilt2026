@@ -15,7 +15,7 @@ public class IntakeConstants {
 
     //the positions of the intake (closed and opend)
     public static final double CLOSE_POSITION = 0;
-    public static final double OPEN_POSITION = 0.3;
+    public static final double OPEN_POSITION = 0.23;
 
     public static final double INTAKE_VELOCITY = 4;
 
@@ -45,7 +45,7 @@ public class IntakeConstants {
 
         var specifConfig = (BasicSparkConfig)intakeMotorConfig;
 
-        specifConfig.currentLimitConfig.freeSpeedCurrentLimit = 35;
+        specifConfig.currentLimitConfig.freeSpeedCurrentLimit = 60;
     }
 
     public static final BasicMotorConfig positionMotorConfig = new BasicSparkConfig();
@@ -59,15 +59,15 @@ public class IntakeConstants {
         positionMotorConfig.motorConfig.unitConversion = Math.PI * PINION_DIAMETER;
 
         SlotConfig posConfig = positionMotorConfig.slot0Config;
-        posConfig.pidConfig.kP = 20;
-        posConfig.pidConfig.kI = 0.2;
+        posConfig.pidConfig.kP = 30;
+        posConfig.pidConfig.kI = 0.5;
         posConfig.pidConfig.kD = 0;
         posConfig.pidConfig.iMaxAccum = 4;
         posConfig.pidConfig.iZone = 0.1;
         posConfig.pidConfig.tolerance = 0.01;
 
-        posConfig.profileConfig.maximumMeasurementVelocity = 0.6; 
-        posConfig.profileConfig.maximumMeasurementAcceleration = 1;
+        posConfig.profileConfig.maximumMeasurementVelocity = 10; 
+        posConfig.profileConfig.maximumMeasurementAcceleration = 10;
 
 //        posConfig.profileConfig.maximumMeasurementVelocity = 5;
 //        posConfig.profileConfig.maximumMeasurementAcceleration = 10;

@@ -5,18 +5,38 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BooleanSupplier;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.json.simple.parser.ParseException;
+import org.littletonrobotics.conduit.ConduitApi;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.DriveAndHomeCommand;
 import frc.robot.commands.DriveCommand;
@@ -29,33 +49,13 @@ import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.subsystems.Vision.VisionConstants;
-import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
-import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.drivetrain.PPController;
-import org.json.simple.parser.ParseException;
-import org.littletonrobotics.conduit.ConduitApi;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BooleanSupplier;
+import frc.robot.subsystems.intake.Intake;
 
 
 public class RobotContainer
@@ -69,8 +69,6 @@ public class RobotContainer
     public final Shooter shooter;
 
     public final Intake intake;
-
-    public final ObjectDetection objectDetector;
 
     // public final Climb climb;
 
@@ -108,10 +106,10 @@ public class RobotContainer
 
         xboxController = new CommandXboxController(0);
 
-        vision = new Vision(Vision.VisionConsumer.NO_OP, drivetrain::getEstimatedPosition);
+        vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
 
-        objectDetector = ObjectDetection.getInstance();
+        registerNamedCommand(new DriveAndHomeCommand(drivetrain, xboxController));
 
         autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
 
@@ -130,9 +128,11 @@ public class RobotContainer
 
         SmartDashboard.putNumber("hoodAngle", 1);
 
+        ObjectDetection.getInstance();
+
         // ledManager = new LedManager();
         // configureBindings();
-        configureBindingsSysid();
+        testShooter();
     }
 
     private void configureTestBindings(){
@@ -147,13 +147,13 @@ public class RobotContainer
 
         // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
 
-        xboxController.b().onTrue(new RunCommand(() -> ShotCalculator.getInstance()
-            .getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())));
+        // xboxController.b().onTrue(new RunCommand(() -> ShotCalculator.getInstance()
+        //     .getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())));
 
 
         xboxController.a().onTrue(new InstantCommand(() ->  {
-            shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 17));
-            shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1)));
+            shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 0));
+            shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 30)));
         }, shooter)
             .andThen(new WaitUntilCommand(() -> shooter.isHoodAtSetpoint() && shooter.isShooterAtGoal()), 
             shooter.getIndexer().turnOnIndexerCommand(),
@@ -166,22 +166,67 @@ public class RobotContainer
             shooter.toggleKicker(false);
             shooter.getIndexer().turnOff();
         }, shooter));
-
-        xboxController.rightBumper().toggleOnTrue(new DriveCommand(drivetrain,xboxController));
+;
+        // xboxController.rightBumper().toggleOnTrue(new DriveCommand(drivetrain,xboxController));
         xboxController.leftBumper().onTrue(drivetrain.resetGyro());
+        xboxController.b().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+
         // xboxController.a().whileTrue(new IntakeCommand(intake));
+
+        // xboxController.a().onTrue(shooter.getIndexer().turnOnIndexerCommand().alongWith(new ShakeItOffCommand(intake)));
+        // xboxController.b().onTrue(shooter.getIndexer().turnOffIndexerCommand().alongWith(new CloseCommand(intake)));
 
     }
 
     private void testShooter(){
-        xboxController.a().whileTrue(new ShootCommand(shooter,drivetrain,intake,vision).beforeStarting(new SpinUp(shooter, drivetrain)));
+
+        LoggedNetworkNumber speed = new LoggedNetworkNumber("Shake/rollerSpeed", 0.3);
+        // xboxController.a().whileTrue((new SpinUp(shooter, drivetrain)
+        //     .andThen(new InstantCommand(() ->
+        //     shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1))), shooter)))
+            
+        //     .andThen(shooter.getIndexer().turnOnIndexerCommand(), new InstantCommand(() -> {
+        //     shooter.toggleKicker(true);
+        //     intake.setIntakeMotorVelocity(speed.get());
+        // })
+        // , new RunCommand(() -> shooter.keepVelocity(SmartDashboard.getNumber("shooterSpeedMPS", 0)), shooter).alongWith(new ShakeItOffCommand(intake))));
+
+        // xboxController.a().onFalse(new InstantCommand(() -> {
+        //     shooter.stopFlyWheel();
+        //     shooter.getIndexer().turnOff();
+        //     shooter.setHoodAngle(Rotation2d.fromDegrees(1));
+        //     intake.stopIntakeMotor();
+        // }, shooter, shooter.getIndexer()));
+
+        xboxController.y().onTrue(new OpenCommand(intake));
         xboxController.b().toggleOnTrue(new DriveCommand(drivetrain, xboxController));
+        xboxController.x().onTrue(new CloseCommand(intake));
+        xboxController.leftBumper().onTrue(new InstantCommand(intake::resetEncoder));
+
+        xboxController.a().toggleOnTrue((
+                (new ShootCommand(shooter, drivetrain, intake, vision).alongWith(new InstantCommand(() -> intake.setPercent(speed.getAsDouble())))
+            .   alongWith(new ShakeItOffCommand(intake))).
+            beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(new DriveAndHomeCommand(drivetrain, xboxController)))
+        );
+
+        xboxController.rightBumper().onTrue(new InstantCommand(drivetrain::resetGyro));
+        // xboxController.a().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
+        // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        // xboxController.b().toggleOnTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController, intake, vision));
+        // xboxController.y().whileTrue(new IntakeCommand(intake));
+        // xboxController.leftBumper().onTrue(drivetrain.resetGyro());
+
+        // xboxController.rightBumper().toggleOnTrue(new DriveRobotRelative(drivetrain, xboxController));
+
+
+
     }
 
     private void configurePitBindings() {
-        xboxController.a().onTrue(new SpinUp(shooter, drivetrain)
-        .until(shooter::isShooterAtGoal)
-        .andThen(new RunCommand(() -> shooter.keepVelocity(ShooterConstants.SHOOTING_SPEED), shooter)));
+        // xboxController.a().onTrue(new SpinUp(shooter, drivetrain)
+        // .until(shooter::isShooterAtGoal)
+        // .andThen(Kee, shooter)));
 
         // Disable all subsystems commands
         xboxController.b().onTrue(new InstantCommand(() -> {
@@ -246,7 +291,7 @@ public class RobotContainer
         // xboxController.b().whileTrue(climb.closeCommand());
 
         xboxController.x().onTrue(
-            Sequences.delivery(drivetrain, shooter, xboxController,intake, objectDetector));
+            Sequences.delivery(drivetrain, shooter, xboxController,intake));
 
         xboxController.a().onTrue(drivetrain.resetGyro());
     }
@@ -291,25 +336,25 @@ public class RobotContainer
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake, vision).beforeStarting(new SpinUp(shooter, drivetrain))
+                new ShootCommand(shooter, drivetrain,intake, vision).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController,intake, vision).beforeStarting(new SpinUp(shooter, drivetrain))
+                new ShootCommand(shooter, drivetrain,intake, vision).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new SpinUp(shooter, drivetrain));
 
         NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
-                !objectDetector.hasBalls()));
+                !ObjectDetection.getInstance().hasBalls()).andThen(Commands.print("no balls")));
 
-        NamedCommands.registerCommand("openIntake",
-                new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
-        NamedCommands.registerCommand("closeIntake",
-                new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
+        // NamedCommands.registerCommand("openIntake",
+        //         new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
+        // NamedCommands.registerCommand("closeIntake",
+        //         new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
 
-        NamedCommands.registerCommand("openClimb", new Climb().openCommand());
-        NamedCommands.registerCommand("closeClimb", new Climb().closeCommand());
+        // NamedCommands.registerCommand("openClimb", climb.openCommand());
+        // NamedCommands.registerCommand("closeClimb", climb.closeCommand());
     }
 
     private void testIntake(){
