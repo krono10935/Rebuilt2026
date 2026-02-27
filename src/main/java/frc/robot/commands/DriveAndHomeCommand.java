@@ -36,7 +36,7 @@ public class DriveAndHomeCommand extends Command {
 
     private static final double DEADBAND = 0.1;
 
-    private static final double ANGULAR_DEADBAND = Rotation2d.fromDegrees(30).getRadians(); 
+    private static final double ANGULAR_DEADBAND = Rotation2d.fromDegrees(1).getRadians(); 
 
     public DriveAndHomeCommand(Drivetrain drivetrain, CommandXboxController controller) {
         this.drivetrain = drivetrain;
@@ -82,7 +82,7 @@ public class DriveAndHomeCommand extends Command {
                 angularController.calculate(
                         drivetrain.getEstimatedPosition().getRotation().getRadians(), params.robotAngle().getRadians());
 
-        if(thetaSpeed < ANGULAR_DEADBAND) thetaSpeed = 0;
+        if(Math.abs(thetaSpeed) < ANGULAR_DEADBAND) thetaSpeed = 0;
 
         if(Math.abs(thetaSpeedDriver) >= 0.1)
             thetaSpeed = thetaSpeedDriver;
