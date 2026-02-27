@@ -15,7 +15,7 @@ public class IntakeConstants {
 
     //the positions of the intake (closed and opend)
     public static final double CLOSE_POSITION = 0;
-    public static final double OPEN_POSITION = 0.23;
+    public static final double OPEN_POSITION = 0.27;
 
     public static final double INTAKE_VELOCITY = 4;
 

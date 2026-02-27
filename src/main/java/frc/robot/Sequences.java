@@ -393,7 +393,7 @@ public class Sequences {
     public static Command intakeOpenStart(Intake intake) {
 
         return OpenCommand.openWithErrorHandeling(intake).
-        alongWith(new IntakeCommand(intake));
+        andThen(new IntakeCommand(intake));
     }
 
 
@@ -410,7 +410,8 @@ public class Sequences {
      */
     public static Command stopIntakeAndClose(Intake intake) {
 
-        return CloseCommand.closeWithErrorHandeling(intake);
+        return CloseCommand.closeWithErrorHandeling(intake)
+        .beforeStarting(new InstantCommand(() -> intake.setPercent(0)));
     }
 
     private static boolean matchesDeliveryChassisSpeeds(ChassisSpeeds currentSpeeds){
