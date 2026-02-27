@@ -21,11 +21,13 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -59,7 +61,7 @@ import frc.robot.subsystems.intake.Intake;
 
 
 public class RobotContainer
-{   
+{
     private static RobotContainer instance;
 
     // public final LedManager ledManager;
@@ -76,9 +78,9 @@ public class RobotContainer
 
     public final Drivetrain drivetrain;
 
-     private final LoggedDashboardChooser<Command> autoChooser;
+    private final LoggedDashboardChooser<Command> autoChooser;
 
-    private final LoggedDashboardChooser<FieldConstants.TowerSide> climbChooser; 
+    private final LoggedDashboardChooser<FieldConstants.TowerSide> climbChooser;
 
     private final LoggedNetworkNumber shooterSpeedMPS;
 
@@ -109,12 +111,7 @@ public class RobotContainer
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
 
-        registerNamedCommand(new DriveAndHomeCommand(drivetrain, xboxController));
-
-        autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
-
-        autoChooser.onChange(this::displayChosenAuto);
-
+        autoChooser = registerNamedCommand(new DriveAndHomeCommand(drivetrain, xboxController));
 
         climbChooser = new LoggedDashboardChooser<>("Climb side");
         climbChooser.addOption("Left",TowerSide.left);
@@ -155,18 +152,18 @@ public class RobotContainer
             shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 0));
             shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 30)));
         }, shooter)
-            .andThen(new WaitUntilCommand(() -> shooter.isHoodAtSetpoint() && shooter.isShooterAtGoal()), 
-            shooter.getIndexer().turnOnIndexerCommand(),
-            new InstantCommand(() -> shooter.toggleKicker(true),shooter),
-            new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.getAsDouble()), shooter)));
-        
+                .andThen(new WaitUntilCommand(() -> shooter.isHoodAtSetpoint() && shooter.isShooterAtGoal()),
+                        shooter.getIndexer().turnOnIndexerCommand(),
+                        new InstantCommand(() -> shooter.toggleKicker(true),shooter),
+                        new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.getAsDouble()), shooter)));
+
         xboxController.a().onFalse(new InstantCommand(() -> {
             shooter.stopFlyWheel();
             shooter.setHoodAngle(Rotation2d.fromDegrees(ShootRealConstants.getHoodMotorConfig().constraintsConfig.minValue));
             shooter.toggleKicker(false);
             shooter.getIndexer().turnOff();
         }, shooter));
-;
+        ;
         // xboxController.rightBumper().toggleOnTrue(new DriveCommand(drivetrain,xboxController));
         xboxController.leftBumper().onTrue(drivetrain.resetGyro());
         xboxController.b().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
@@ -185,7 +182,7 @@ public class RobotContainer
         // xboxController.a().whileTrue((new SpinUp(shooter, drivetrain)
         //     .andThen(new InstantCommand(() ->
         //     shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1))), shooter)))
-            
+
         //     .andThen(shooter.getIndexer().turnOnIndexerCommand(), new InstantCommand(() -> {
         //     shooter.toggleKicker(true);
         //     intake.setIntakeMotorVelocity(speed.get());
@@ -206,8 +203,8 @@ public class RobotContainer
 
         xboxController.a().toggleOnTrue((
                 (new ShootCommand(shooter, drivetrain, intake, vision).alongWith(new InstantCommand(() -> intake.setPercent(speed.getAsDouble())))
-            .   alongWith(new ShakeItOffCommand(intake))).
-            beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(new DriveAndHomeCommand(drivetrain, xboxController)))
+                        .   alongWith(new ShakeItOffCommand(intake))).
+                        beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(new DriveAndHomeCommand(drivetrain, xboxController)))
         );
 
         xboxController.rightBumper().onTrue(new InstantCommand(drivetrain::resetGyro));
@@ -280,9 +277,9 @@ public class RobotContainer
                     Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
                     Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
         };
-       new Trigger(isHubActive).
-               and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-        .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController,intake, vision));
+        new Trigger(isHubActive).
+                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+                .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController,intake, vision));
 
         xboxController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, xboxController)));
 
@@ -291,7 +288,7 @@ public class RobotContainer
         // xboxController.b().whileTrue(climb.closeCommand());
 
         xboxController.x().onTrue(
-            Sequences.delivery(drivetrain, shooter, xboxController,intake));
+                Sequences.delivery(drivetrain, shooter, xboxController,intake));
 
         xboxController.a().onTrue(drivetrain.resetGyro());
     }
@@ -320,11 +317,11 @@ public class RobotContainer
         for(PathPlannerPath path : auto){
             poses.addAll(path.getPathPoses());
         }
-        
+
         drivetrain.addPathToField(poses);
     }
 
-    public Command registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
+    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
 
         Command aimRobot = new StartEndCommand(() -> {
             PPController.setThetaOverride(driveAndHomeCommand::calculateThetaPID);
@@ -355,7 +352,10 @@ public class RobotContainer
 
         // NamedCommands.registerCommand("openClimb", climb.openCommand());
         // NamedCommands.registerCommand("closeClimb", climb.closeCommand());
-        return autoChooser.get();
+
+        LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
+        autoChooser.onChange(this::displayChosenAuto);
+        return autoChooser;
     }
 
     private void testIntake(){
