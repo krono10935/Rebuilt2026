@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
+import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.Logger;
@@ -315,6 +316,7 @@ public class RobotContainer
 
         ArrayList<Pose2d> poses = new ArrayList<>();
         for(PathPlannerPath path : auto){
+            path = ChassisConstants.shouldFlipPath() ? path : path.flipPath();
             poses.addAll(path.getPathPoses());
         }
 
