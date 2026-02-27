@@ -72,7 +72,8 @@ public class Robot extends LoggedRobot
         VirtualSubSystem.virtualperiodic();
         ShotCalculator.getInstance().getParameters(
                 RobotContainer.getInstance().drivetrain.getEstimatedPosition(),
-                RobotContainer.getInstance().drivetrain.getChassisSpeeds());       CommandScheduler.getInstance().run();
+                RobotContainer.getInstance().drivetrain.getChassisSpeeds());
+        CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();
         SmartDashboard.putNumber("Battery voltage", RobotController.getBatteryVoltage());

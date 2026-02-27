@@ -26,7 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test Trench (L) - Trench (L) - Climb (shooting in the start)"
+            "pathName": "Trench (L) - Trench (L) - Climb (shooting in the start)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "closeClimb"
           }
         }
       ]

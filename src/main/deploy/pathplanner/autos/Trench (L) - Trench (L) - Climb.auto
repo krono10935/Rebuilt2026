@@ -5,28 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "waitUntilNoBalls"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shootAndAimStationary"
-                }
-              }
-            ]
+            "pathName": "Trench (L) - Trench (L) - Climb"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Test Trench (L) - Trench (L) - Climb"
+            "name": "closeClimb"
           }
         }
       ]

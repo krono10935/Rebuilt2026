@@ -3,8 +3,6 @@
   "robotLength": 0.85,
   "holonomicMode": true,
   "pathFolders": [
-    "Bump (L) - Trench (L) - Climb",
-    "Bump (R) - Trench (R) - Climb",
     "Depot - Climb",
     "Outpost - Climb",
     "Testing",
