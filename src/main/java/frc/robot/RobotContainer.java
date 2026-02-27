@@ -21,6 +21,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.DriveToPoseConstants;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.epilogue.Logged;
@@ -121,9 +122,18 @@ public class RobotContainer
 
         ObjectDetection.getInstance();
 
+        DriveToPoseConstants.MAX_LINEAR_SPEED = 4.5;
+        DriveToPoseConstants.POSE_TOLERANCE = 0.01;
+        SmartDashboard.putData(DriveToPoseConstants.ANGULAR_PID_GAINS);
+        SmartDashboard.putData(DriveToPoseConstants.LINEAR_PID_GAINS);
+
+
+
+    
+
         // ledManager = new LedManager();
         // configureBindings();
-        testShooter();
+        testIntake();
     }
 
     private void configureTestBindings(){
@@ -168,6 +178,13 @@ public class RobotContainer
         // xboxController.a().onTrue(shooter.getIndexer().turnOnIndexerCommand().alongWith(new ShakeItOffCommand(intake)));
         // xboxController.b().onTrue(shooter.getIndexer().turnOffIndexerCommand().alongWith(new CloseCommand(intake)));
 
+    }
+
+    private void testIntake(){
+        xboxController.a().onTrue(Sequences.intakeOpenStart(intake));
+        xboxController.b().onTrue(Sequences.stopIntakeAndClose(intake));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        xboxController.y().onTrue(drivetrain.resetGyro());
     }
 
     private void testShooter(){
@@ -353,12 +370,4 @@ public class RobotContainer
         autoChooser.onChange(this::displayChosenAuto);
         return autoChooser;
     }
-
-    private void testIntake(){
-        xboxController.a().onTrue(new InstantCommand(() -> intake.setPosition(0.3)));
-        xboxController.b().onTrue(new InstantCommand(() -> intake.setPosition(0)));
-        xboxController.x().onTrue(new InstantCommand(intake::resetEncoder).ignoringDisable(true));
-    }
-
-
 }

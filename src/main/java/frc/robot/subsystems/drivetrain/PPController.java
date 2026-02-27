@@ -28,7 +28,7 @@ public class PPController implements PathFollowingController {
     public PPController(PIDConstants translationConstants, PIDConstants rotationConstants, double period) {
 
         this.xController = new PIDController(translationConstants.kP, translationConstants.kI, translationConstants.kD, period);
-        this.xController.setIZone(translationConstants.iZone);
+        this.xController.setIZone(0.15);
 
         this.yController = new PIDController(translationConstants.kP, translationConstants.kI, translationConstants.kD, period);
         this.yController.setIZone(translationConstants.iZone);
@@ -36,6 +36,8 @@ public class PPController implements PathFollowingController {
         this.rotationController = new PIDController(rotationConstants.kP, rotationConstants.kI, rotationConstants.kD, period);
         this.rotationController.setIZone(rotationConstants.iZone);
         this.rotationController.enableContinuousInput(-Math.PI, Math.PI);
+
+        this.xController.setIntegratorRange(-1.5, 1.5);
 
         SmartDashboard.putData("xController", xController);
         SmartDashboard.putData("yController", yController);
