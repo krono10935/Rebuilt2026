@@ -324,7 +324,7 @@ public class RobotContainer
         drivetrain.addPathToField(poses);
     }
 
-    public void registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
+    public Command registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
 
         Command aimRobot = new StartEndCommand(() -> {
             PPController.setThetaOverride(driveAndHomeCommand::calculateThetaPID);
@@ -355,6 +355,7 @@ public class RobotContainer
 
         // NamedCommands.registerCommand("openClimb", climb.openCommand());
         // NamedCommands.registerCommand("closeClimb", climb.closeCommand());
+        return autoChooser.get();
     }
 
     private void testIntake(){
