@@ -350,8 +350,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Command resetGyro(){
-        return new InstantCommand(()->
-         reset(new Pose2d(getEstimatedPosition().getTranslation(), Rotation2d.kZero)));
+        return new InstantCommand(this::resetOnlyGyro).ignoringDisable(true);
     }
 
 

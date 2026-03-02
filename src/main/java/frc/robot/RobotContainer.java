@@ -296,7 +296,7 @@ public class RobotContainer
 
         // xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter,vision));
 
-        // xboxController.b().whileTrue(climb.closeCommand());
+        // xboxController.b().whileTrue(climb.closeCommand()); // TODO fix to actually do climb.
 
         xboxController.x().onTrue(
                 Sequences.delivery(drivetrain, shooter, xboxController,intake));
