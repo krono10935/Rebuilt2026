@@ -211,7 +211,7 @@ public class RobotContainer
         xboxController.b().toggleOnTrue(new DriveCommand(drivetrain, xboxController));
         xboxController.x().onTrue(new CloseCommand(intake));
         xboxController.leftBumper().onTrue(new InstantCommand(intake::resetEncoder));
-
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
         xboxController.a().toggleOnTrue((
                 (new ShootCommand(shooter, drivetrain, intake, vision).alongWith(new InstantCommand(() -> intake.setPercent(speed.getAsDouble())))
                         .   alongWith(new ShakeItOffCommand(intake))).

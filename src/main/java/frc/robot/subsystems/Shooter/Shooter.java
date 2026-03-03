@@ -30,6 +30,7 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
 
     private boolean failedToClose;
 
+    private boolean isKeepingVelocity;
     /**
     * Create a shooter IO based on the robot's state (sim, dev, comp)
     */
@@ -70,7 +71,6 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
     Logger.recordOutput("Shooter/is shooter at setpoint", isShooterAtGoal());
     SmartDashboard.putBoolean("ShooterAtSetpoint", isShooterAtGoal());
 
-
     }
 
 
@@ -91,18 +91,21 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
     * @param speedMPS speed to spinUp to
     */
     public void spinUp(double speedMPS){
-    io.spinUp(speedMPS);
+        io.spinUp(speedMPS);
+        isKeepingVelocity = false;
     }
 
     public void keepVelocity(double speedMPS){
-    io.keepVelocity(speedMPS);
+        io.keepVelocity(speedMPS);
+        isKeepingVelocity = true;
     }
 
     /**
     * stop the flywheel
     */
     public void stopFlyWheel(){
-    io.stopFlyWheel();
+        io.stopFlyWheel();
+        isKeepingVelocity = false;
     }
 
     /**
@@ -156,6 +159,8 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
     public void dutyCycle(double dutyCycle){
       io.setFlyWheelVoltage(dutyCycle * 12);
     }
+
+    public boolean isKeepingVelocity(){return isKeepingVelocity;}
 
     @Override
     public void send(boolean shouldDisplayError, int code) {

@@ -7,8 +7,8 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.utils.ErrorMessage;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -114,5 +114,7 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
 
         String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
         Logger.recordOutput("Intake/Current Command ", currCommand);
+
+
     }
 }
