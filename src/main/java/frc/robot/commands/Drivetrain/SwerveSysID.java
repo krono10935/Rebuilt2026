@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Drivetrain;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;

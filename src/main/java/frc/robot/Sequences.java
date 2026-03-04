@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.FieldConstants.TowerSide;
-import frc.robot.commands.DriveAndHomeToSupplierCommand;
+import frc.robot.commands.Drivetrain.DriveAndHomeToSupplierCommand;
+import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.SpinUpForDelivery;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
@@ -443,12 +444,12 @@ public class Sequences {
         SequentialCommandGroup spinUpAndAimHood =
                 new SequentialCommandGroup();
 
-        spinUpAndAimHood.addCommands(
+        spinUpAndAimHood.addCommands(new DriveCommand(drivetrain, controller).withDeadline(
                 new SpinUpForDelivery(
                         drivetrain,
                         shooter,
                         ShooterConstants.DELIVERY_SPEED_MPS
-                ).alongWith(new InstantCommand(()->shooter.setHoodAngle(ShooterConstants.DELIVERY_HOOD_ANGLE)))
+                ).alongWith(new InstantCommand(()->shooter.setHoodAngle(ShooterConstants.DELIVERY_HOOD_ANGLE))))
         );
 
         Supplier<Translation2d> closestTrenchSupplier =

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.Drivetrain;
 
 import com.pathplanner.lib.path.DriveToPoseConstants;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -23,39 +23,25 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 
-public class DriveAndHomeCommand extends Command {
-    private final Drivetrain drivetrain;
-    private final CommandXboxController controller;
+public class DriveAndHomeCommand extends DriveCommand {
 
-    private static double MAX_LINEAR_SPEED ;
-    private static double MIN_LINEAR_SPEED ;
 
     private final ProfiledPIDController angularController;
     public static final Rotation2d robotAngleTolerance = Rotation2d.fromDegrees(2);
     private final Supplier<Rotation2d> targetAngleSupplier;
 
-    private static final double DEADBAND = 0.1;
-
     private static final double ANGULAR_DEADBAND = Rotation2d.fromDegrees(1).getRadians(); 
 
     public DriveAndHomeCommand(Drivetrain drivetrain, CommandXboxController controller) {
-        this.drivetrain = drivetrain;
-        this.controller = controller;
-        addRequirements(drivetrain);
+        super(drivetrain, controller);
 
         angularController = Constants.THETA_CONTROLLER;
 
         SmartDashboard.putData("DriveAndHome/thetaController", angularController);
         MAX_LINEAR_SPEED = 2;
-        MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed();
 
         targetAngleSupplier = () -> ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
                 drivetrain.getChassisSpeeds()).robotAngle();
-    }
-
-    private Rotation2d angleFieldRelative(){
-        return ChassisConstants.shouldFlipPath()?
-                drivetrain.getGyroAngle():drivetrain.getGyroAngle().rotateBy(Rotation2d.k180deg);
     }
 
     @Override
@@ -68,12 +54,7 @@ public class DriveAndHomeCommand extends Command {
 
     @Override
     public void execute() {
-        double speed = lerp(1 - controller.getRightTriggerAxis());
-
-
-        double xSpeed = deadband(-controller.getLeftY()) * speed;
-        double ySpeed = deadband(-controller.getLeftX()) * speed;
-        double thetaSpeedDriver = deadband(-controller.getRightX()) * speed;
+        ChassisSpeeds speeds = getControllerInputs();
 
         ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
         drivetrain.getChassisSpeeds());
@@ -84,11 +65,11 @@ public class DriveAndHomeCommand extends Command {
 
         if(Math.abs(thetaSpeed) < ANGULAR_DEADBAND) thetaSpeed = 0;
 
-        if(Math.abs(thetaSpeedDriver) >= 0.1)
-            thetaSpeed = thetaSpeedDriver;
+        if(Math.abs(speeds.omegaRadiansPerSecond) >= 0.1)
+            thetaSpeed = speeds.omegaRadiansPerSecond;
 
         drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed, ySpeed, thetaSpeed, angleFieldRelative()));
+                speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, thetaSpeed, angleFieldRelative()));
 
         Logger.recordOutput("ShootCommand/thetaError", angularController.getPositionError());
 
@@ -114,22 +95,4 @@ public class DriveAndHomeCommand extends Command {
         return MIN_LINEAR_SPEED + Math.sqrt(MAX_LINEAR_SPEED - MIN_LINEAR_SPEED) * value;
     }
 
-    /**
-     * Calculate if the value is passed the deadband value
-     * @param value
-     * @return 0 if the absolute {@code value} is less than deadband, otherwise {@code value}
-     */
-    private static double deadband(double value){
-        if (Math.abs(value) < DEADBAND){
-            return 0;
-        }
-
-        return value;
-    }
-
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-        drivetrain.stop();
-    }
 }

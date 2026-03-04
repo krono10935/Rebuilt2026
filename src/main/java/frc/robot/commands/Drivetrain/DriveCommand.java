@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.Drivetrain;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -13,13 +13,14 @@ import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 
 
 public class DriveCommand extends Command {
-  private final Drivetrain drivetrain;
-  private final CommandXboxController controller;
 
-  private static double MAX_LINEAR_SPEED ;
-  private static double MIN_LINEAR_SPEED ;
-  private static double MAX_ANGULAR_SPEED;
-  private static double MIN_ANGULAR_SPEED;
+  protected final Drivetrain drivetrain;
+  protected final CommandXboxController controller;
+
+  protected static double MAX_LINEAR_SPEED ;
+  protected static double MIN_LINEAR_SPEED ;
+  protected static double MAX_ANGULAR_SPEED;
+  protected static double MIN_ANGULAR_SPEED;
   
 
   private static final double DEADBAND = 0.1;
@@ -35,7 +36,7 @@ public class DriveCommand extends Command {
     MIN_ANGULAR_SPEED = drivetrain.getConstants().MIN_ANGULAR_SPEED;
   }
 
-  private Rotation2d angleFieldRelative(){
+  protected Rotation2d angleFieldRelative(){
       return ChassisConstants.shouldFlipPath()?
               drivetrain.getGyroAngle():drivetrain.getGyroAngle().rotateBy(Rotation2d.k180deg) ;
   }
@@ -43,14 +44,10 @@ public class DriveCommand extends Command {
 
   @Override
   public void execute() {
-    double speed = lerp(1 - controller.getRightTriggerAxis());
-    double angularSpeed = angularLerp(1 - controller.getRightTriggerAxis());
+    ChassisSpeeds speeds = getControllerInputs(); 
 
-    double xSpeed = deadband(-controller.getLeftY()) * speed;
-    double ySpeed = deadband(-controller.getLeftX()) * speed;
-    double thetaSpeed = deadband(-controller.getRightX()) * angularSpeed;
-
-    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, thetaSpeed, angleFieldRelative()));
+    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
+      speeds.omegaRadiansPerSecond, angleFieldRelative()));
   }
 
   /**
@@ -76,7 +73,7 @@ public class DriveCommand extends Command {
    * @param value
    * @return 0 if the absolute {@code value} is less than deadband, otherwise {@code value}
    */
-  private static double deadband(double value){
+  protected static double deadband(double value){
     if (Math.abs(value) < DEADBAND){
       return 0;
     }
@@ -88,5 +85,16 @@ public class DriveCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     drivetrain.stop();
+  }
+
+  public ChassisSpeeds getControllerInputs(){
+    double speed = lerp(1 - controller.getRightTriggerAxis());
+    double angularSpeed = angularLerp(1 - controller.getRightTriggerAxis());
+
+    double xSpeed = deadband(-controller.getLeftY()) * speed;
+    double ySpeed = deadband(-controller.getLeftX()) * speed;
+    double thetaSpeed = deadband(-controller.getRightX()) * angularSpeed;
+
+    return new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed);
   }
 }

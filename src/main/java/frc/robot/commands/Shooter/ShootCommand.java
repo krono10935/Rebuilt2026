@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Shooter;
 
+import java.lang.Character.Subset;
 import java.lang.invoke.ConstantBootstraps;
 import java.util.function.BooleanSupplier;
 
@@ -11,7 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.commands.DriveAndHomeCommand;
+import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -30,6 +31,10 @@ import org.opencv.core.Mat;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
   /** Creates a new ShootCommand. */
+
+  private static Rotation2d hoodOffset = Rotation2d.kZero;
+
+  private static double shooterSpeedOffset = 0;
 
   private final Shooter shooter;
 
@@ -67,7 +72,11 @@ public class ShootCommand extends Command {
   @Override
   public void initialize(){
     vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
+
+    hoodOffset = Rotation2d.kZero;
+    shooterSpeedOffset = 0;
   }
+
 
   private boolean hasReachedTargetVelocity = false;
   private double lastTargetVelocity = 0;
@@ -77,13 +86,16 @@ public class ShootCommand extends Command {
     ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
      drivetrain.getChassisSpeeds());
 
-    if(Math.abs(params.flywheelSpeed() - lastTargetVelocity) > 0.3){
-      lastTargetVelocity = params.flywheelSpeed();
+     double targetFlywheelSpeed = params.flywheelSpeed() + shooterSpeedOffset;
+     Rotation2d targetHoodAngle = params.hoodAngle().plus(hoodOffset);
+
+    if(Math.abs(targetFlywheelSpeed - lastTargetVelocity) > 0.3){
+      lastTargetVelocity = targetFlywheelSpeed;
       hasReachedTargetVelocity = false;
     }
 
-    shooter.keepVelocity(params.flywheelSpeed());
-    shooter.setHoodAngle(params.hoodAngle());
+    shooter.keepVelocity(targetFlywheelSpeed);
+    shooter.setHoodAngle(targetHoodAngle);
 
     boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
 
@@ -126,5 +138,13 @@ public class ShootCommand extends Command {
     shooter.stopFlyWheel();
     shooter.toggleKicker(false);
     shooter.getIndexer().turnOff();
+  }
+
+  public static void AddToHoodOffset(Rotation2d offset, boolean subtract){
+    hoodOffset = subtract ? hoodOffset.minus(offset) : hoodOffset.plus(offset);
+  }
+
+  public static void AddToFlywheelOffset(double offset){
+    shooterSpeedOffset += offset;
   }
 }

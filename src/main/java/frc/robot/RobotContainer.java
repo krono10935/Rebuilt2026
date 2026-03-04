@@ -29,16 +29,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.TowerSide;
-import frc.robot.commands.DriveAndHomeCommand;
-import frc.robot.commands.DriveCommand;
-import frc.robot.commands.DriveRobotRelative;
-import frc.robot.commands.SwerveSysID;
+import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
+import frc.robot.commands.Drivetrain.DriveCommand;
+import frc.robot.commands.Drivetrain.DriveRobotRelative;
+import frc.robot.commands.Drivetrain.SwerveSysID;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
@@ -46,6 +48,7 @@ import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
@@ -69,7 +72,9 @@ public class RobotContainer
 
     // public final Climb climb;
 
-    private final CommandXboxController xboxController;
+    private final CommandXboxController driverController;
+
+    private final GenericHID operatorController;
 
     public final Drivetrain drivetrain;
 
@@ -101,12 +106,14 @@ public class RobotContainer
 
         // climb = new Climb();
 
-        xboxController = new CommandXboxController(0);
+        driverController = new CommandXboxController(0);
+
+        operatorController = new GenericHID(1);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
 
-        autoChooser = registerNamedCommand(new DriveAndHomeCommand(drivetrain, xboxController));
+        autoChooser = registerNamedCommand(new DriveAndHomeCommand(drivetrain, driverController));
 
         climbChooser = new LoggedDashboardChooser<>("Climb side");
         climbChooser.addOption("Left",TowerSide.left);
@@ -133,8 +140,8 @@ public class RobotContainer
 
         // ledManager = new LedManager();
         // configureBindings();
-        testIntake();
     }
+
 
     private void configureTestBindings(){
         // xboxController.a().onTrue(new SpinUp(shooter, drivetrain).alongWith(new OpenCommand(intake))
@@ -152,7 +159,7 @@ public class RobotContainer
         //     .getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())));
 
 
-        xboxController.a().onTrue(new InstantCommand(() ->  {
+        driverController.a().onTrue(new InstantCommand(() ->  {
             shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 0));
             shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 30)));
         }, shooter)
@@ -161,7 +168,7 @@ public class RobotContainer
                         new InstantCommand(() -> shooter.toggleKicker(true),shooter),
                         new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.getAsDouble()), shooter)));
 
-        xboxController.a().onFalse(new InstantCommand(() -> {
+        driverController.a().onFalse(new InstantCommand(() -> {
             shooter.stopFlyWheel();
             shooter.setHoodAngle(Rotation2d.fromDegrees(ShootRealConstants.getHoodMotorConfig().constraintsConfig.minValue));
             shooter.toggleKicker(false);
@@ -169,9 +176,9 @@ public class RobotContainer
         }, shooter));
         ;
         // xboxController.rightBumper().toggleOnTrue(new DriveCommand(drivetrain,xboxController));
-        xboxController.leftBumper().onTrue(drivetrain.resetGyro());
-        xboxController.b().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        driverController.leftBumper().onTrue(drivetrain.resetGyro());
+        driverController.b().toggleOnTrue(new DriveAndHomeCommand(drivetrain, driverController));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
 
         // xboxController.a().whileTrue(new IntakeCommand(intake));
 
@@ -181,10 +188,10 @@ public class RobotContainer
     }
 
     private void testIntake(){
-        xboxController.a().onTrue(Sequences.intakeOpenStart(intake));
-        xboxController.b().onTrue(Sequences.stopIntakeAndClose(intake));
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
-        xboxController.y().onTrue(drivetrain.resetGyro());
+        driverController.a().onTrue(Sequences.intakeOpenStart(intake));
+        driverController.b().onTrue(Sequences.stopIntakeAndClose(intake));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+        driverController.y().onTrue(drivetrain.resetGyro());
     }
 
     private void testShooter(){
@@ -207,18 +214,18 @@ public class RobotContainer
         //     intake.stopIntakeMotor();
         // }, shooter, shooter.getIndexer()));
 
-        xboxController.y().onTrue(new OpenCommand(intake));
-        xboxController.b().toggleOnTrue(new DriveCommand(drivetrain, xboxController));
-        xboxController.x().onTrue(new CloseCommand(intake));
-        xboxController.leftBumper().onTrue(new InstantCommand(intake::resetEncoder));
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
-        xboxController.a().toggleOnTrue((
+        driverController.y().onTrue(new OpenCommand(intake));
+        driverController.b().toggleOnTrue(new DriveCommand(drivetrain, driverController));
+        driverController.x().onTrue(new CloseCommand(intake));
+        driverController.leftBumper().onTrue(new InstantCommand(intake::resetEncoder));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+        driverController.a().toggleOnTrue((
                 (new ShootCommand(shooter, drivetrain, intake, vision).alongWith(new InstantCommand(() -> intake.setPercent(speed.getAsDouble())))
                         .   alongWith(new ShakeItOffCommand(intake))).
-                        beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(new DriveAndHomeCommand(drivetrain, xboxController)))
+                        beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(new DriveAndHomeCommand(drivetrain, driverController)))
         );
 
-        xboxController.rightBumper().onTrue(new InstantCommand(drivetrain::resetGyro));
+        driverController.rightBumper().onTrue(new InstantCommand(drivetrain::resetGyro));
         // xboxController.a().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
         // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
         // xboxController.b().toggleOnTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController, intake, vision));
@@ -237,7 +244,7 @@ public class RobotContainer
         // .andThen(Kee, shooter)));
 
         // Disable all subsystems commands
-        xboxController.b().onTrue(new InstantCommand(() -> {
+        driverController.b().onTrue(new InstantCommand(() -> {
             drivetrain.getCurrentCommand().cancel();
             CommandScheduler.getInstance().schedule(drivetrain.idle());
             shooter.getCurrentCommand().cancel();
@@ -248,38 +255,38 @@ public class RobotContainer
             // CommandScheduler.getInstance().schedule(climb.idle());
         }));
 
-        xboxController.y().debounce(0.3).whileTrue(new OpenCommand(intake));
+        driverController.y().debounce(0.3).whileTrue(new OpenCommand(intake));
 
-        xboxController.y().onFalse(new CloseCommand(intake));
+        driverController.y().onFalse(new CloseCommand(intake));
 
-        xboxController.x().onTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
+        driverController.x().onTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
 
         // xboxController.povDown().onTrue(climb.closeCommand());
 
         // xboxController.povUp().onTrue(climb.openCommand());
-        xboxController.povLeft().whileTrue(shooter.idle());
+        driverController.povLeft().whileTrue(shooter.idle());
 
-        xboxController.povCenter().onTrue(drivetrain.resetGyro());
+        driverController.povCenter().onTrue(drivetrain.resetGyro());
     }
 
     private void configureBindingsSysid(){
-        SwerveSysID sysID = new SwerveSysID(drivetrain, xboxController);
+        SwerveSysID sysID = new SwerveSysID(drivetrain, driverController);
         // xboxController.a().whileTrue(sysID.sysIdDynamicDrive(Direction.kForward));
         // xboxController.b().whileTrue(sysID.sysIdDynamicDrive(Direction.kReverse));
         // xboxController.y().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kForward));
         // xboxController.x().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kReverse));
         // Rotation2d[] arr = {Rotation2d.kZero, Rotation2d.kZero, Rotation2d.kZero, Rotation2d.kZero};
         //xboxController.rightBumper().onTrue(new InstantCommand(() -> drivetrain.setDriveVoltageAndSteerAngle(0, arr)));
-        xboxController.a().whileTrue(sysID.sysIdDynamicSpin(Direction.kForward));
-        xboxController.b().whileTrue(sysID.sysIdDynamicSpin(Direction.kReverse));
-        xboxController.x().whileTrue(sysID.sysIdQuasistaticSpin(Direction.kForward));
-        xboxController.y().whileTrue(sysID.sysIdQuasistaticSpin(Direction.kReverse));
-        xboxController.leftBumper().onTrue(drivetrain.resetGyro());
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        driverController.a().whileTrue(sysID.sysIdDynamicSpin(Direction.kForward));
+        driverController.b().whileTrue(sysID.sysIdDynamicSpin(Direction.kReverse));
+        driverController.x().whileTrue(sysID.sysIdQuasistaticSpin(Direction.kForward));
+        driverController.y().whileTrue(sysID.sysIdQuasistaticSpin(Direction.kReverse));
+        driverController.leftBumper().onTrue(drivetrain.resetGyro());
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
     }
 
     private void configureBindings() {
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
 
         BooleanSupplier isHubActive = () -> {
             double time = DriverStation.getMatchTime();
@@ -290,18 +297,66 @@ public class RobotContainer
         };
         new Trigger(isHubActive).
                 and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-                .whileTrue(ShootCommand.shootCommandFactory(shooter,drivetrain,xboxController,intake, vision));
+                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
 
-        xboxController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, xboxController)));
+        driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, driverController)));
 
         // xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter,vision));
 
         // xboxController.b().whileTrue(climb.closeCommand()); // TODO fix to actually do climb.
 
-        xboxController.x().onTrue(
-                Sequences.delivery(drivetrain, shooter, xboxController,intake));
+        driverController.x().onTrue(
+                Sequences.delivery(drivetrain, shooter, driverController,intake));
 
-        xboxController.a().onTrue(drivetrain.resetGyro());
+        driverController.a().onTrue(drivetrain.resetGyro());
+
+        Trigger povUp = new Trigger(() -> 
+            Math.abs(
+                operatorController.getPOV() - ShooterConstants.ANGLE_UP.getDegrees()
+            ) < ShooterConstants.POV_TOLERANCE.getDegrees());
+
+        Trigger povRight = new Trigger(() -> 
+            Math.abs(
+                operatorController.getPOV() - ShooterConstants.ANGLE_RIGHT.getDegrees()
+            ) < ShooterConstants.POV_TOLERANCE.getDegrees());
+
+        Trigger povDown = new Trigger(() -> 
+            Math.abs(
+                operatorController.getPOV() - ShooterConstants.ANGLE_DOWN.getDegrees()
+            ) < ShooterConstants.POV_TOLERANCE.getDegrees());
+
+        Trigger povLeft = new Trigger(() -> 
+            Math.abs(
+                operatorController.getPOV() - ShooterConstants.ANGLE_LEFT.getDegrees()
+            ) < ShooterConstants.POV_TOLERANCE.getDegrees());
+
+        povUp.onTrue(new InstantCommand(() -> 
+            ShootCommand.AddToHoodOffset(
+                ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK, false
+                )
+            )
+        );
+
+        povDown.onTrue(new InstantCommand(() -> 
+            ShootCommand.AddToHoodOffset(
+                ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK, true
+                )
+            )
+        );
+
+        povRight.onTrue(new InstantCommand(() -> 
+            ShootCommand.AddToFlywheelOffset(
+                ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK
+                )
+            )
+        );
+
+        povLeft.onTrue(new InstantCommand(() -> 
+            ShootCommand.AddToFlywheelOffset(
+                -ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK
+                )
+            )
+        );
     }
     public Command getAutonomousCommand()
     {
