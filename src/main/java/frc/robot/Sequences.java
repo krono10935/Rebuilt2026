@@ -1,7 +1,11 @@
 package frc.robot;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -60,9 +64,9 @@ public class Sequences {
      * @param robotPose current robot pose
      * @return true if close enough to open climb
      */
-    private static boolean closeEnoughToOpenClimb(Pose2d robotPose) {
+    private static boolean closeEnoughToOpenClimb(Pose2d robotPose, Translation2d towerSidePose) {
 
-        return robotPose.getTranslation().getDistance(FieldConstants.tower)
+        return robotPose.getTranslation().getDistance(towerSidePose)
                 < ClimbConstants.MIN_DISTANCE_FROM_TOWER_TO_OPEN_CLIMB;
     }
 
@@ -74,9 +78,9 @@ public class Sequences {
      * @param robotPose current robot pose
      * @return true if far enough to close climb
      */
-    private static boolean farEnoughToCloseClimb(Pose2d robotPose) {
+    private static boolean farEnoughToCloseClimb(Pose2d robotPose, Translation2d towerSidePose) {
 
-        return robotPose.getTranslation().getDistance(FieldConstants.tower)
+        return robotPose.getTranslation().getDistance(towerSidePose)
                 >= ClimbConstants.MIN_DISTANCE_FROM_TOWER_TO_CLOSE_CLIMB;
     }
 
@@ -157,7 +161,7 @@ public class Sequences {
      * then performs an error check.
      *
      * @param intake  intake subsystem
-     * @param climb   climb subsystem
+     * @param climb   optional climb subsystem to close
      * @param shooter shooter subsystem
      * @return command that safely closes all subsystems
      */
@@ -174,14 +178,16 @@ public class Sequences {
 
                         shooter.getIndexer().turnOffIndexerCommand(),
 
-                        new InstantCommand(shooter::stopFlyWheel),
+                        new InstantCommand(shooter::stopFlyWheel, shooter),
 
                         new InstantCommand(() ->
-                                shooter.toggleKicker(false)
-                        ),
+                                shooter.toggleKicker(false))
 
-                        climb.closeCommand()
                 );
+
+        if (climb != null){
+                closeSubsystemsParallel.addCommands(climb.closeCommand());
+        }
 
 
         ParallelRaceGroup giveTimeToCloseSubsystems =
@@ -218,7 +224,7 @@ public class Sequences {
     ) {
 
         return new SequentialCommandGroup(
-                closeSubsystems(intake, climb, shooter),
+                closeSubsystems(intake, null, shooter), // Don't close climb
                 climb.openCommand()
         );
     }
@@ -285,8 +291,7 @@ public class Sequences {
             Vision vision
     ) {
 
-        ParallelCommandGroup parallelClimbCommand =
-                new ParallelCommandGroup(
+        ParallelCommandGroup prepareForClimb = new ParallelCommandGroup(
                         closeSubsystems(intake, climb, shooter),
 
                         new StartEndCommand(() -> {
@@ -299,23 +304,29 @@ public class Sequences {
                                 
                                 },
 
-                                () -> vision.clearPriority()),
+                                () -> vision.clearPriority()));
 
-                        new SequentialCommandGroup(
-                                new WaitUntilCommand(() ->
-                                        closeEnoughToOpenClimb(
-                                                drivetrain.getEstimatedPosition()
-                                        )
-                                ),
-                                climb.openCommand()),
+        Command autoClimbSubsystemsSequence = prepareForClimb.withDeadline(new WaitUntilCommand(() ->
+                                closeEnoughToOpenClimb(drivetrain.getEstimatedPosition(), 
+                                getTowerSideTargetPose(climbSideSupplier.get(), false).getTranslation())))
+                                .andThen(climb.openCommand());
 
-                        drivetrain.driveToPose(getTowerSideTargetPose(climbSideSupplier.get(), false)
-                ) );
+        ParallelCommandGroup autoClimbSequence = autoClimbSubsystemsSequence
+                .alongWith(new SelectCommand<TowerSide>(getClimbSideMap(drivetrain, false), climbSideSupplier));
 
-        return parallelClimbCommand.onlyIf(() ->
-                DriverStation.getMatchTime() > 140
+                
+        return autoClimbSequence.onlyIf(() ->
+                DriverStation.getMatchTime() < 20
                         || DriverStation.isAutonomous()
         );
+    }
+
+    private static Map<TowerSide, Command> getClimbSideMap(Drivetrain drivetrain, boolean driveBack){
+        Map<TowerSide, Command> commandMap = new TreeMap<TowerSide, Command>();
+        for (TowerSide value : TowerSide.values()) {
+                commandMap.put(value, drivetrain.driveToPose(getTowerSideTargetPose(value, driveBack)));
+        }
+        return commandMap;
     }
 
 
@@ -354,18 +365,13 @@ public class Sequences {
         );
 
         mainDeclimbCommand.addCommands(
-                drivetrain.driveToPose(
-                        getTowerSideTargetPose(
-                                climbSideSupplier.get(),
-                                true
-                        )
-                )
-        );
+                new SelectCommand<TowerSide>(getClimbSideMap(drivetrain, true), climbSideSupplier));
 
         mainDeclimbCommand.addCommands(
                 new WaitUntilCommand(() ->
                         farEnoughToCloseClimb(
-                                drivetrain.getEstimatedPosition()
+                                drivetrain.getEstimatedPosition(),
+                                getTowerSideTargetPose(climbSideSupplier.get(), true).getTranslation()
                         )
                 )
         );

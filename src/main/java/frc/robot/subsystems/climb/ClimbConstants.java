@@ -37,15 +37,14 @@ public class ClimbConstants {
 
         var sparkConfig = ((BasicSparkConfig)config);
         sparkConfig.currentLimitConfig.freeSpeedCurrentLimit = 20; 
-
-        config.simulationConfig.kA = 0.1;
-        config.simulationConfig.kV = 0.1;
-        config.simulationConfig.momentOfInertia = 67;
+        
+        config.simulationConfig.kA = 0.023275;
+        config.simulationConfig.kV = 0.31938;
         
 
         return config;
     }
 
     public static final Rotation2d CLOSED_ANGLE = Rotation2d.kZero; //Rotation2d.fromRotations(0.75)
-    public static final Rotation2d OPENED_ANGLE = Rotation2d.kZero;
+    public static final Rotation2d OPENED_ANGLE = Rotation2d.kCW_90deg;
 }

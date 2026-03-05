@@ -70,13 +70,11 @@ public class FieldConstants {
     public static Translation2d trenchRight = new Translation2d(); //TODO: find actual translations
     public static Translation2d trenchLeft = new Translation2d();
 
-    public static Translation2d tower = new Translation2d();
+    public static Translation2d towerLeft = new Translation2d(5,5);
+    public static Translation2d towerLeftBack = new Translation2d(4,4);
 
-    public static Translation2d towerLeft = new Translation2d();
-    public static Translation2d towerLeftBack = new Translation2d();
-
-    public static Translation2d towerRight = new Translation2d();
-    public static Translation2d towerRightBack = new Translation2d();
+    public static Translation2d towerRight = new Translation2d(4,3);
+    public static Translation2d towerRightBack = new Translation2d(3,4);
 
     public  static enum TowerSide {
         left,

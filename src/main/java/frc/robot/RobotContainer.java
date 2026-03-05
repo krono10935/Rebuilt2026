@@ -52,6 +52,7 @@ import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.PPController;
@@ -70,7 +71,7 @@ public class RobotContainer
 
     public final Intake intake;
 
-    // public final Climb climb;
+    public final Climb climb;
 
     private final CommandXboxController driverController;
 
@@ -104,7 +105,7 @@ public class RobotContainer
 
         intake = new Intake();
 
-        // climb = new Climb();
+        climb = new Climb();
 
         driverController = new CommandXboxController(0);
 
@@ -116,7 +117,7 @@ public class RobotContainer
         autoChooser = registerNamedCommand(new DriveAndHomeCommand(drivetrain, driverController));
 
         climbChooser = new LoggedDashboardChooser<>("Climb side");
-        climbChooser.addOption("Left",TowerSide.left);
+        climbChooser.addDefaultOption("Left",TowerSide.left);
         climbChooser.addOption("Right", TowerSide.right);
 
         shooterSpeedMPS = new LoggedNetworkNumber("shooterSpeedMPS", 10);
@@ -134,12 +135,14 @@ public class RobotContainer
         SmartDashboard.putData(DriveToPoseConstants.ANGULAR_PID_GAINS);
         SmartDashboard.putData(DriveToPoseConstants.LINEAR_PID_GAINS);
 
-
-
-    
-
         // ledManager = new LedManager();
         // configureBindings();
+        testing();
+    }
+
+    private void testing(){
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+        driverController.button(1).onTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter, vision));
     }
 
 

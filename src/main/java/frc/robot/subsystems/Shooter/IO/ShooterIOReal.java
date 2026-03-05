@@ -158,6 +158,6 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void logSysID() {
-        System.out.println("Kalush is mad");
+        
     }   
 }

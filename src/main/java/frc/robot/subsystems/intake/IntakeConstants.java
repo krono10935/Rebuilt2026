@@ -40,8 +40,8 @@ public class IntakeConstants {
         intakeMotorConfig.slot0Config.pidConfig.kD = 0;
         intakeMotorConfig.slot0Config.pidConfig.tolerance = 0.1;
 
-        intakeMotorConfig.simulationConfig.kA = 0.1;
-        intakeMotorConfig.simulationConfig.kV = 0.1;
+        intakeMotorConfig.simulationConfig.kA = 0.023275; // Not real value, taken from shooter for sim
+        intakeMotorConfig.simulationConfig.kV = 0.31938; // Not real value, taken from shooter for sim
 
         var specifConfig = (BasicSparkConfig)intakeMotorConfig;
 
@@ -79,8 +79,8 @@ public class IntakeConstants {
         positionMotorConfig.constraintsConfig.maxOutput = 5;
         positionMotorConfig.constraintsConfig.minOutput = 5;
 
-        positionMotorConfig.simulationConfig.kA = 0.1;
-        positionMotorConfig.simulationConfig.kV = 0.1;
+        positionMotorConfig.simulationConfig.kA = 0.023275; // Not real value, taken from shooter for sim
+        positionMotorConfig.simulationConfig.kV = 0.31938; // Not real value, taken from shooter for sim
 
           var specifConfig = (BasicSparkConfig)positionMotorConfig;
 
