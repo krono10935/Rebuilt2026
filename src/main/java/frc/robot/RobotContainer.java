@@ -335,14 +335,14 @@ public class RobotContainer
 
         povUp.onTrue(new InstantCommand(() -> 
             ShootCommand.AddToHoodOffset(
-                ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK, false
+                ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK
                 )
             )
         );
 
         povDown.onTrue(new InstantCommand(() -> 
             ShootCommand.AddToHoodOffset(
-                ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK, true
+                ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK.unaryMinus()
                 )
             )
         );

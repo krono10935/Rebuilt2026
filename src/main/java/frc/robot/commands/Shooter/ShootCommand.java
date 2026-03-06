@@ -140,8 +140,8 @@ public class ShootCommand extends Command {
     shooter.getIndexer().turnOff();
   }
 
-  public static void AddToHoodOffset(Rotation2d offset, boolean subtract){
-    hoodOffset = subtract ? hoodOffset.minus(offset) : hoodOffset.plus(offset);
+  public static void AddToHoodOffset(Rotation2d offset){
+    hoodOffset = hoodOffset.plus(offset);
   }
 
   public static void AddToFlywheelOffset(double offset){
