@@ -9,7 +9,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -22,6 +24,7 @@ import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
@@ -30,29 +33,12 @@ import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.utils.ErrorMessage;
+import frc.utils.ParallelRaceGroupWithWinner;
 
 import static frc.robot.FieldConstants.getTowerSideTargetPose;
 
 
 public class Sequences {
-
-    /**
-     * Checks if any of the given subsystems are still running commands
-     * after attempting to close them, and reports errors if needed.
-     *
-     * @param requirements subsystems to check
-     * @return command that sends error messages if closing failed
-     */
-    public static Command checkForErrorsAfterTryingToClose(Set<Subsystem> requirements) {
-
-        return new InstantCommand(() ->
-                requirements.forEach((requirement) -> {
-                    ((ErrorMessage.ErrorSender) requirement).send(
-                            requirement.getCurrentCommand() != null,0 //TODO fix the check
-                    );
-                })
-        );
-    }
 
 
     /**
@@ -98,54 +84,16 @@ public class Sequences {
 
         SequentialCommandGroup retry = new SequentialCommandGroup(
 
-                new InstantCommand(() -> {
-                    if (!climb.isAtSetPoint()) {
-                        SmartDashboard.putString(
-                                "Climb",
-                                "had problems with closing, retrying now"
-                        );
-                        SmartDashboard.putBoolean("ClimbErrorFatal", false);
-                        climb.send(true,0);
-                    }
-                }),
-
                 climb.openCommand(),
 
-                new WaitCommand(
-                        ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB
-                ),
-
-                climb.closeCommand().withDeadline(
-                        new WaitCommand(
-                                ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB
-                        ).withDeadline(
-                                new WaitUntilCommand(climb::isAtSetPoint)
-                        )
-                ),
-
-                new InstantCommand(() -> {
-                    if (!climb.isAtSetPoint()) {
-                        SmartDashboard.putString(
-                                "Climb",
-                                "had problems with closing, shutting down"
-                        );
-                        SmartDashboard.putBoolean("ClimbErrorFatal", true);
-                        climb.send(true,0);
-                    }
-                })
+                climb.closeCommand()
         );
 
 
         SequentialCommandGroup closeAndRetryIfFailed =
                 new SequentialCommandGroup(
 
-                        climb.closeCommand().withDeadline(
-                                new WaitCommand(
-                                        ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB
-                                ).withDeadline(
-                                        new WaitUntilCommand(climb::isAtSetPoint)
-                                )
-                        ),
+                        climb.closeCommand(),
 
                         retry.unless(climb::isAtSetPoint)
                 );
@@ -187,21 +135,7 @@ public class Sequences {
                 closeSubsystemsParallel.addCommands(climb.closeCommand());
         }
 
-
-        ParallelRaceGroup giveTimeToCloseSubsystems =
-                new ParallelRaceGroup(
-                        closeSubsystemsParallel,
-                        new WaitCommand(
-                                Constants.ALL_SUBSYSTEMS_MAX_CLOSING_TIME
-                        )
-                );
-
-
-        return giveTimeToCloseSubsystems.andThen(
-                checkForErrorsAfterTryingToClose(
-                        closeSubsystemsParallel.getRequirements()
-                )
-        );
+        return closeSubsystemsParallel;
     }
 
 
@@ -209,14 +143,12 @@ public class Sequences {
      * Closes all subsystems and then opens the climb.
      *
      * @param intake     intake subsystem
-     * @param drivetrain drivetrain subsystem
      * @param climb      climb subsystem
      * @param shooter    shooter subsystem
      * @return command that prepares and opens the climb
      */
     public static Command climbOpen(
             Intake intake,
-            Drivetrain drivetrain,
             Climb climb,
             Shooter shooter
     ) {
@@ -225,43 +157,6 @@ public class Sequences {
                 closeSubsystems(intake, null, shooter), // Don't close climb
                 climb.openCommand()
         );
-    }
-
-
-    /**
-     * Attempts to close the climb and checks for errors.
-     *
-     * @param intake     intake subsystem
-     * @param climb      climb subsystem
-     * @param shooter    shooter subsystem
-     * @param drivetrain drivetrain subsystem
-     * @return command that closes the climb
-     */
-    public static Command climbClose(
-            Intake intake,
-            Climb climb,
-            Shooter shooter,
-            Drivetrain drivetrain
-    ) {
-
-        SequentialCommandGroup climbCommand =
-                new SequentialCommandGroup();
-
-        climbCommand.addCommands(climb.closeCommand());
-
-        climbCommand.addCommands(
-                new WaitCommand(
-                        ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB
-                )
-        );
-
-        climbCommand.addCommands(
-                checkForErrorsAfterTryingToClose(
-                        climbCommand.getRequirements()
-                )
-        );
-
-        return climbCommand;
     }
 
 
@@ -352,30 +247,19 @@ public class Sequences {
     ) {
 
         SequentialCommandGroup mainDeclimbCommand =
-                new SequentialCommandGroup();
-
-        mainDeclimbCommand.addCommands(
-                climb.openCommand()
-        );
-
-        mainDeclimbCommand.addCommands(
-                new InstantCommand(() -> vision.clearPriority())
-        );
-
-        mainDeclimbCommand.addCommands(
-                new SelectCommand<TowerSide>(getClimbSideMap(drivetrain, true), climbSideSupplier));
-
-        mainDeclimbCommand.addCommands(
-                new WaitUntilCommand(() ->
-                        farEnoughToCloseClimb(
-                                drivetrain.getEstimatedPosition(),
-                                getTowerSideTargetPose(climbSideSupplier.get(), true).getTranslation()
+                new SequentialCommandGroup(climb.openCommand().alongWith(
+                        new InstantCommand(() -> vision.clearPriority()),
+                        
+                        new SelectCommand<TowerSide>(
+                                getClimbSideMap(drivetrain, true), climbSideSupplier),
+                        
+                        new WaitUntilCommand(() -> farEnoughToCloseClimb(
+                        drivetrain.getEstimatedPosition(), getTowerSideTargetPose(
+                                climbSideSupplier.get(), true).getTranslation()
+                        )).andThen(
+                                closeAndRetryClosingIfFailed(climb)
                         )
                 )
-        );
-
-        mainDeclimbCommand.addCommands(
-                closeAndRetryClosingIfFailed(climb)
         );
 
         return mainDeclimbCommand.onlyIf(
@@ -444,6 +328,8 @@ public class Sequences {
             CommandXboxController controller,
             Intake intake
     ) {
+        Alert hoodAimingFailed = new Alert("Hood failed to aim", AlertType.kError);
+        Alert shooterFailedToKeepVelocity = new Alert("Shooter failed to keep velocity!", AlertType.kError);
 
         SequentialCommandGroup spinUpAndAimHood =
                 new SequentialCommandGroup();
@@ -453,8 +339,18 @@ public class Sequences {
                         drivetrain,
                         shooter,
                         ShooterConstants.DELIVERY_SPEED_MPS
-                ).alongWith(new InstantCommand(()->shooter.setHoodAngle(ShooterConstants.DELIVERY_HOOD_ANGLE))))
-        );
+                ).alongWith(ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
+                        
+                        new InstantCommand(() -> shooter.setHoodAngle(ShooterConstants.DELIVERY_HOOD_ANGLE), shooter)
+                        .andThen(new WaitUntilCommand(shooter::isHoodAtSetpoint),
+                        new InstantCommand(() -> hoodAimingFailed.set(false))),
+
+                        ShootRealConstants.HOOD_SETPOINT_ARRIVAL_TIME, 
+                        
+                        new InstantCommand(() -> {
+                                shooter.setHoodAngle(Rotation2d.kZero);
+                                hoodAimingFailed.set(false);
+                        })))));
 
         Supplier<Translation2d> closestTrenchSupplier =
                 () -> (drivetrain.getEstimatedPosition().getY()
@@ -474,11 +370,19 @@ public class Sequences {
 
 
         ParallelCommandGroup deliver = new ParallelCommandGroup(
-                new RunCommand(() ->
-                        shooter.keepVelocity(
-                                ShooterConstants.DELIVERY_SPEED_MPS
-                        )
-                ).onlyIf(() -> ObjectDetection.getInstance().hasBalls() && matchesDeliveryChassisSpeeds(drivetrain.getChassisSpeeds())),
+                (new RunCommand(() ->
+                        shooter.keepVelocity(ShooterConstants.DELIVERY_SPEED_MPS)
+                        ).raceWith(ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
+                                new WaitUntilCommand(() -> shooter.isShooterAtGoal())
+                                .andThen(new InstantCommand(() -> shooterFailedToKeepVelocity.set(false))),
+
+                                ShootRealConstants.FLYWHEEL_TIME_TO_REACH_GOAL,
+
+                                new InstantCommand(shooter::stopFlyWheel)
+                        .andThen(new InstantCommand(() -> shooterFailedToKeepVelocity.set(true))))
+                        )).onlyIf(
+                                () -> ObjectDetection.getInstance().hasBalls() &&
+                                 matchesDeliveryChassisSpeeds(drivetrain.getChassisSpeeds())),
 
 
                 new DriveAndHomeToSupplierCommand(
@@ -486,6 +390,7 @@ public class Sequences {
                         controller,
                         deliveryAngleSupplier
                 )
+                
 
         );
 

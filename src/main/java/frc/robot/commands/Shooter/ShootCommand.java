@@ -9,14 +9,19 @@ import java.lang.invoke.ConstantBootstraps;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
+import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator.ShootingParameters;
 import frc.robot.subsystems.Shooter.ShotCalculator.ValidityState;
 import frc.robot.subsystems.Vision.Vision;
@@ -36,13 +41,25 @@ public class ShootCommand extends Command {
 
   private static double shooterSpeedOffset = 0;
 
+  private static boolean overrideObjectDetection = false;
+
   private final Shooter shooter;
 
   private final Vision vision;
 
   private final Drivetrain drivetrain;
 
-  private final Intake intake;
+  private final Timer hoodSetpointTimer;
+  private final Alert hoodFailedToSetpoint;
+
+  private final Timer flyWheelSetpointTimer;
+  private final Alert flyWheelFailedToSetpoint;
+
+  private final Timer kickerStuckTimer;
+  private final Alert kickerStuck;
+
+  private final Timer indexerStuckTimer;
+  private final Alert indexerStuck;
 
   private final Rotation2d INTAKE_CLOSING_VELOCITY = Rotation2d.fromDegrees(10);
 
@@ -51,22 +68,26 @@ public class ShootCommand extends Command {
    * @param shooter subsystem to activate the shoot command on
    * @param drivetrain drivetrain
    */
-  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Intake intake, Vision vision ) {
+  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision ) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
     this.drivetrain = drivetrain;
-    this.intake = intake;
     this.vision = vision;
 
-      addRequirements(shooter, shooter.getIndexer());
-  }
+    hoodSetpointTimer = new Timer();
+    hoodFailedToSetpoint = new Alert("Hood failed to reach setpoint", AlertType.kError);
 
-  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
-    DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
-    Command shootCommand = new ShootCommand(shooter, drivetrain, intake, vision).beforeStarting(new SpinUp(shooter, drivetrain));
+    flyWheelSetpointTimer = new Timer();
+    flyWheelFailedToSetpoint = new Alert("Flywheel failed to reach setpoint", AlertType.kError);
 
-    return driveCommand.alongWith(shootCommand).withName("Full Shoot");
+    kickerStuckTimer = new Timer();
+    kickerStuck = new Alert("The kicker is stuck!", AlertType.kError);
+
+    indexerStuckTimer = new Timer();
+    indexerStuck = new Alert("The indexer is stuck!", AlertType.kError);
+
+    addRequirements(shooter, shooter.getIndexer());
   }
 
   @Override
@@ -115,22 +136,79 @@ public class ShootCommand extends Command {
       params.validityState() == ValidityState.VALID &&
       thetaAtSetpoint &&
       hasReachedTargetVelocity && shooter.isHoodAtSetpoint() &&
-      (ObjectDetection.getInstance().hasBalls() || !Constants.USE_OBJECT_DETECTION);
+      (ObjectDetection.getInstance().hasBalls() || !Constants.USE_OBJECT_DETECTION
+       || overrideObjectDetection);
 
     // robot it isn't in shooting zone, go to spin up mode and turn off kicker
     if (shouldShoot){
+      handleHoodErrors();
+      handleFlyWheelErrors();
+      handleIndexerErrors();
+      handleKickerErrors();
+
       shooter.toggleKicker(true);
       shooter.getIndexer().turnOn();
-      //intake.setPositionMotorVelocity(INTAKE_CLOSING_VELOCITY.times(intake.getIntakePosition() / IntakeConstants.OPEN_POSITION));
     }
 
     // otherwise open the kicker and start letting the shooter shoot
     else{
       shooter.toggleKicker(false);
       shooter.getIndexer().turnOff();
-      //intake.setPositionMotorVelocity(Rotation2d.kZero);
-
     }
+  }
+
+  private void handleHoodErrors(){
+    if (!hoodSetpointTimer.isRunning()){
+      hoodSetpointTimer.start();
+    }
+
+    if (shooter.isHoodAtSetpoint()){
+        hoodSetpointTimer.reset();
+        hoodFailedToSetpoint.set(false);
+      } else if (hoodSetpointTimer.get() > ShootRealConstants.HOOD_SETPOINT_ARRIVAL_TIME){
+        hoodFailedToSetpoint.set(true);
+      }
+  }
+
+  private void handleFlyWheelErrors(){
+    if (!flyWheelSetpointTimer.isRunning()){
+      flyWheelSetpointTimer.start();
+    }
+
+    if (shooter.isShooterAtGoal()){
+        flyWheelSetpointTimer.reset();
+        flyWheelFailedToSetpoint.set(false);
+
+      } else if (flyWheelSetpointTimer.get() > ShootRealConstants.FLYWHEEL_TIME_TO_REACH_GOAL){
+        flyWheelFailedToSetpoint.set(true);
+      }
+  }
+
+  private void handleKickerErrors(){
+    if (!kickerStuckTimer.isRunning()){
+      kickerStuckTimer.start();
+    }
+
+    if (shooter.isKickerActive()){
+        kickerStuckTimer.reset();
+        kickerStuck.set(false);
+      } else if (kickerStuckTimer.get() > ShootRealConstants.TIME_TO_NOT_BE_DEADBAND){
+        kickerStuck.set(true);
+      }
+  }
+
+  private void handleIndexerErrors(){
+    if (!indexerStuckTimer.isRunning()){
+      indexerStuckTimer.start();
+    }
+
+    if (!shooter.getIndexer().isStuck()){
+        indexerStuckTimer.reset();
+        indexerStuck.set(false);
+
+      } else if (indexerStuckTimer.get() > ShootRealConstants.TIME_TO_NOT_BE_DEADBAND){
+        indexerStuck.set(true);
+      }
   }
 
   @Override
@@ -146,5 +224,19 @@ public class ShootCommand extends Command {
 
   public static void AddToFlywheelOffset(double offset){
     shooterSpeedOffset += offset;
+  }
+
+  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
+    DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
+    Command shootCommand = (
+        new ShootCommand(shooter, drivetrain, vision)  
+        .alongWith(new ShakeItOffCommand(intake))
+      ).beforeStarting(new SpinUp(shooter, drivetrain));
+
+    return driveCommand.alongWith(shootCommand).withName("Full Shoot");
+  }
+
+  public static void setOverrideObjectDetection(boolean mode){
+    overrideObjectDetection = mode;
   }
 }

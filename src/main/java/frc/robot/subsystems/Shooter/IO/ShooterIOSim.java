@@ -110,4 +110,9 @@ public class ShooterIOSim implements ShooterIO {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'logSysID'");
     }   
+
+    @Override
+    public boolean isKickerStuck() {
+        return false;
+    } 
 }

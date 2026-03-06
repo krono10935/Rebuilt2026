@@ -223,7 +223,7 @@ public class RobotContainer
         driverController.leftBumper().onTrue(new InstantCommand(intake::resetEncoder));
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
         driverController.a().toggleOnTrue((
-                (new ShootCommand(shooter, drivetrain, intake, vision).alongWith(new InstantCommand(() -> intake.setPercent(speed.getAsDouble())))
+                (new ShootCommand(shooter, drivetrain, vision).alongWith(new InstantCommand(() -> intake.setPercent(speed.getAsDouble())))
                         .   alongWith(new ShakeItOffCommand(intake))).
                         beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(new DriveAndHomeCommand(drivetrain, driverController)))
         );
@@ -360,6 +360,11 @@ public class RobotContainer
                 )
             )
         );
+
+        Trigger button1 = new Trigger(() -> operatorController.getRawButton(1));
+
+        button1.onTrue(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(true)))
+        .onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
     }
     public Command getAutonomousCommand()
     {
@@ -403,11 +408,11 @@ public class RobotContainer
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                new ShootCommand(shooter, drivetrain,intake, vision).beforeStarting(new SpinUp(shooter, drivetrain))
+                new ShootCommand(shooter, drivetrain, vision).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                new ShootCommand(shooter, drivetrain,intake, vision).beforeStarting(new SpinUp(shooter, drivetrain))
+                new ShootCommand(shooter, drivetrain, vision).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new SpinUp(shooter, drivetrain));

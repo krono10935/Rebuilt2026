@@ -4,11 +4,15 @@
 
 package frc.robot.commands.IntakeCommands;
 
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
+import frc.utils.ParallelRaceGroupWithWinner;
 
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -41,8 +45,26 @@ public class OpenCommand extends Command {
     }
 
     public static Command openWithErrorHandeling(Intake intake){
-    return new ParallelRaceGroup(new OpenCommand(intake),
-     new IntakeTimeOut(intake, IntakeConstants.TIME_FOR_INTAKE_TO_OPEN, true));
+        @SuppressWarnings("resource")
+        Alert openFailed = new Alert("failed to open intake", AlertType.kError);
+        
+        Command openCommandWithErrorHandling = new OpenCommand(intake)
+            .andThen(new InstantCommand(() -> openFailed.set(false)));
+
+        Command retryOpenCommandWithErrorHandling = new OpenCommand(intake)
+            .andThen(new InstantCommand(() -> openFailed.set(false)));
+
+        return ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
+            openCommandWithErrorHandling,
+            IntakeConstants.TIME_FOR_INTAKE_TO_OPEN,
+
+            ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
+                new CloseCommand(intake).andThen(retryOpenCommandWithErrorHandling),
+                IntakeConstants.TIME_FOR_INTAKE_TO_OPEN + IntakeConstants.TIME_FOR_INTAKE_TO_CLOSE,
+                
+                new CloseCommand(intake).andThen(new InstantCommand(() -> openFailed.set(true)))
+            )
+        );
     }
 }
 

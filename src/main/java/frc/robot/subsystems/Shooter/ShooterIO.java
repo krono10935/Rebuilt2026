@@ -50,6 +50,11 @@ public interface ShooterIO {
      */
     void toggleKicker(boolean isActive);
 
+    /**
+     * @return whether or not the kicker is active
+     */
+    boolean isKickerStuck();
+
 
     /**
      * 

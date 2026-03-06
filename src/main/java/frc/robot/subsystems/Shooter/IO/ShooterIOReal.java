@@ -159,5 +159,11 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void logSysID() {
         
-    }   
+    }
+
+    @Override
+    public boolean isKickerStuck() {
+        return Math.abs(kickerMotor.getController().getSetpointAsDouble()) 
+        < ShootRealConstants.KICKER_SPEED_DEADBAND;
+    } 
 }

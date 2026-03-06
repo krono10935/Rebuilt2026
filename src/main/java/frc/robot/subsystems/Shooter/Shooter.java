@@ -20,7 +20,7 @@ import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
 
-public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
+public class Shooter extends SubsystemBase{
 
     private final ShooterIO io;
 
@@ -28,7 +28,6 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
 
     private final ShooterInputsAutoLogged inputs;
 
-    private boolean failedToClose;
 
     private boolean isKeepingVelocity;
     /**
@@ -49,13 +48,6 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
     }
 
     inputs = new ShooterInputsAutoLogged();
-
-    failedToClose = false;
-
-    ErrorMessage.create(this,
-            "error closing" + this.getName(),
-            () -> failedToClose);
-
     }
 
 
@@ -73,17 +65,8 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
 
     }
 
-
-    public void hasFailedToClose(boolean failedToClose){
-    this.failedToClose = failedToClose;
-    }
-
     public void logSysID(){
     io.logSysID();
-    }
-
-    public void setCloseMode(boolean isClosing){
-      this.failedToClose = isClosing;
     }
 
     /**
@@ -129,7 +112,14 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
     * @param isActive toggle on or off the kicker
     */
     public void toggleKicker(boolean isActive){
-    io.toggleKicker(isActive);
+      io.toggleKicker(isActive);
+    }
+
+    /**
+     * @return whether or not the kicker is active
+     */
+    public boolean isKickerActive(){
+      return !io.isKickerStuck();
     }
 
     /**
@@ -162,10 +152,6 @@ public class Shooter extends SubsystemBase implements ErrorMessage.ErrorSender {
 
     public boolean isKeepingVelocity(){return isKeepingVelocity;}
 
-    @Override
-    public void send(boolean shouldDisplayError, int code) {
-        failedToClose = shouldDisplayError;
-    }
 
     public boolean shouldSpinUpForShootCommand(){
       boolean shouldSpinUp = false;

@@ -146,5 +146,10 @@ public class ShooterIODevBot implements ShooterIO {
     public void logSysID() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'logSysID'");
+    }
+
+    @Override
+    public boolean isKickerStuck() {
+        return false;
     }   
 }

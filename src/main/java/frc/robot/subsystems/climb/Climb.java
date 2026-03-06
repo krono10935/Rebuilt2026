@@ -5,13 +5,18 @@
 package frc.robot.subsystems.climb;
 
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.subsystems.climb.ClimbConstants.ClimbState;
 import frc.utils.ErrorMessage;
+import frc.utils.ParallelRaceGroupWithWinner;
+
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 
 
-public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
+public class Climb extends SubsystemBase{
   /** Creates a new Climb. */
   private final ClimbIO io;
 
@@ -19,25 +24,11 @@ public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
 
   private boolean hasClimbed;
 
-  private boolean failedToClose;
-  private boolean failedToOpen;
   public Climb() {
     io = RobotBase.isReal() ? new ClimbIOReal() : new ClimbIOSim();
     inputs = new ClimbInputsAutoLogged();
 
     hasClimbed = false;
-
-    failedToClose = false;
-    failedToOpen = false;
-
-    ErrorMessage.create(this,
-      "error closing" + this.getName(),
-              () -> failedToClose);
-    
-
-    ErrorMessage.create(this,
-      "error opening" + this.getName(),
-              () -> failedToOpen);
   }
 
   @Override
@@ -65,6 +56,10 @@ public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
     io.open();
   }
 
+  private void stop(){
+    io.stop();
+  }
+
   /**
    * 
    * @return if the climb is at setPoint
@@ -87,11 +82,19 @@ public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
    * @return the close command
    */
   public Command closeCommand(){
+    @SuppressWarnings("resource")
+    Alert failedToClose = new Alert("Failed to close climb!", AlertType.kError);
+
     return new FunctionalCommand(this::close,
             ()->{},
             (interrupted)->io.stop(),
             this::isAtSetPoint,
-            this);
+            this).raceWith(ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
+              new WaitUntilCommand(() -> inputs.state == ClimbState.CLOSED)
+                .andThen(new InstantCommand(() -> failedToClose.set(false))),
+              ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB, 
+              new InstantCommand(this::stop)
+                .andThen(new InstantCommand(() -> failedToClose.set(true)))));
   }
   
   /**
@@ -99,19 +102,20 @@ public class Climb extends SubsystemBase implements ErrorMessage.ErrorSender {
    * @return the open command
    */
   public Command openCommand(){
+    @SuppressWarnings("resource")
+    Alert failedToOpen = new Alert("Failed to open climb!", AlertType.kError);
+    
     return new FunctionalCommand(this::open,
             ()->{},
-            (interrupted) -> {},
+            (interrupted)->io.stop(),
             this::isAtSetPoint,
-            this);
+            this).raceWith(ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
+              new WaitUntilCommand(() -> inputs.state == ClimbState.OPEN)
+                .andThen(new InstantCommand(() -> failedToOpen.set(false))),
+              ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB, 
+              new InstantCommand(this::stop)
+                .andThen(new InstantCommand(() -> failedToOpen.set(true)))));
 
   }
-
-  @Override
-  public void send(boolean shouldDisplayError, int code){
-      failedToClose = shouldDisplayError;
-  }
-
-
 }
 

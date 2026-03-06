@@ -7,37 +7,19 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
-import frc.utils.ErrorMessage;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
+public class Intake extends SubsystemBase{
   private final IntakeIO io;
   private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
-
-  private boolean failedToClose;
-  private boolean failedToOpen;
 
   /** Creates a new Intake. */
   public Intake() {
 
     io = RobotBase.isReal()? new IntakeIOSpark() : new IntakeIOSim();
-
-    failedToClose = false;
-
-    failedToOpen = false;
-
-    ErrorMessage.create(this,
-          "error closing" + this.getName(),
-          () -> failedToClose);
-
-    
-    ErrorMessage.create(this,
-          "error opening" + this.getName(),
-          () -> failedToOpen);
     }
 
     public void setIntakeMotorVelocity(double velocity){
@@ -70,19 +52,6 @@ public class Intake extends SubsystemBase implements ErrorMessage.ErrorSender {
 
     public void setPositionMotorVelocity(Rotation2d velocity){
       io.setPositionMotorVelocity(velocity);
-    }
-
-    @Override
-    public void send(boolean shouldDisplayError, int code){
-        switch (code) {
-            case 0:
-                failedToClose = shouldDisplayError;
-            case 1:
-                failedToOpen = shouldDisplayError;
-            default:
-                break;
-        }
-        
     }
 
     public void stopIntakeOpeningMotor(){

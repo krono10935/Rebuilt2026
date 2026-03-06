@@ -21,5 +21,8 @@ public interface IndexerIO {
 
     void update(IndexerInputs inputs);
 
-
+    /*
+     * @return if the indexer is stuck
+     */
+    boolean isStuck();
 }

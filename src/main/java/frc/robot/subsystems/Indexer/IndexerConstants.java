@@ -8,6 +8,8 @@ public class IndexerConstants {
 
     public static final double SPINNING_TARGET_VELOCITY = 11;//RPS (tuff btw)
 
+    public static final double SPEED_DEADBAND = 0.01;
+
 
     public static BasicSparkConfig getLeftMotorConfig() {
         BasicSparkConfig configLeftMotor = new BasicSparkConfig();
