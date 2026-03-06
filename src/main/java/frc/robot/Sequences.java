@@ -48,7 +48,7 @@ public class Sequences {
         return new InstantCommand(() ->
                 requirements.forEach((requirement) -> {
                     ((ErrorMessage.ErrorSender) requirement).send(
-                            requirement.getCurrentCommand() != null,0
+                            requirement.getCurrentCommand() != null,0 //TODO fix the check
                     );
                 })
         );
