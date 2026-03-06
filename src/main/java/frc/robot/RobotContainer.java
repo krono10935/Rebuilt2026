@@ -71,7 +71,7 @@ public class RobotContainer
 
     public final Intake intake;
 
-    public final Climb climb;
+    // public final Climb climb;
 
     private final CommandXboxController driverController;
 
@@ -82,10 +82,6 @@ public class RobotContainer
     private final LoggedDashboardChooser<Command> autoChooser;
 
     private final LoggedDashboardChooser<FieldConstants.TowerSide> climbChooser;
-
-    private final LoggedNetworkNumber shooterSpeedMPS;
-
-    private final LoggedNetworkNumber hoodAngle;
 
 
     public static RobotContainer getInstance(){
@@ -105,7 +101,7 @@ public class RobotContainer
 
         intake = new Intake();
 
-        climb = new Climb();
+        // climb = new Climb();
 
         driverController = new CommandXboxController(0);
 
@@ -120,131 +116,19 @@ public class RobotContainer
         climbChooser.addDefaultOption("Left",TowerSide.left);
         climbChooser.addOption("Right", TowerSide.right);
 
-        shooterSpeedMPS = new LoggedNetworkNumber("shooterSpeedMPS", 10);
-
-        SmartDashboard.putNumber("shooterSpeedMPS", 10);
-
-        hoodAngle = new LoggedNetworkNumber("hoodAngle", 1);
-
-        SmartDashboard.putNumber("hoodAngle", 1);
 
         ObjectDetection.getInstance();
 
         DriveToPoseConstants.MAX_LINEAR_SPEED = 4.5;
         DriveToPoseConstants.POSE_TOLERANCE = 0.01;
-        SmartDashboard.putData(DriveToPoseConstants.ANGULAR_PID_GAINS);
-        SmartDashboard.putData(DriveToPoseConstants.LINEAR_PID_GAINS);
+
 
         // ledManager = new LedManager();
         // configureBindings();
-        testing();
     }
 
-    private void testing(){
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-        driverController.button(1).onTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter, vision));
-    }
-
-
-    private void configureTestBindings(){
-        // xboxController.a().onTrue(new SpinUp(shooter, drivetrain).alongWith(new OpenCommand(intake))
-        //     .andThen(new ShootCommand(shooter, drivetrain, intake, vision)))
-        // .onFalse(new InstantCommand(() -> {
-        //     shooter.stopFlyWheel();
-        //     shooter.setHoodAngle(Rotation2d.kZero);
-        //     shooter.toggleKicker(false);
-        //     shooter.getIndexer().turnOff();
-        // }, shooter, drivetrain, shooter.getIndexer()).alongWith(new CloseCommand(intake)));
-
-        // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
-
-        // xboxController.b().onTrue(new RunCommand(() -> ShotCalculator.getInstance()
-        //     .getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())));
-
-
-        driverController.a().onTrue(new InstantCommand(() ->  {
-            shooter.spinUp(SmartDashboard.getNumber("shooterSpeedMPS", 0));
-            shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 30)));
-        }, shooter)
-                .andThen(new WaitUntilCommand(() -> shooter.isHoodAtSetpoint() && shooter.isShooterAtGoal()),
-                        shooter.getIndexer().turnOnIndexerCommand(),
-                        new InstantCommand(() -> shooter.toggleKicker(true),shooter),
-                        new RunCommand(() -> shooter.keepVelocity(shooterSpeedMPS.getAsDouble()), shooter)));
-
-        driverController.a().onFalse(new InstantCommand(() -> {
-            shooter.stopFlyWheel();
-            shooter.setHoodAngle(Rotation2d.fromDegrees(ShootRealConstants.getHoodMotorConfig().constraintsConfig.minValue));
-            shooter.toggleKicker(false);
-            shooter.getIndexer().turnOff();
-        }, shooter));
-        ;
-        // xboxController.rightBumper().toggleOnTrue(new DriveCommand(drivetrain,xboxController));
-        driverController.leftBumper().onTrue(drivetrain.resetGyro());
-        driverController.b().toggleOnTrue(new DriveAndHomeCommand(drivetrain, driverController));
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-
-        // xboxController.a().whileTrue(new IntakeCommand(intake));
-
-        // xboxController.a().onTrue(shooter.getIndexer().turnOnIndexerCommand().alongWith(new ShakeItOffCommand(intake)));
-        // xboxController.b().onTrue(shooter.getIndexer().turnOffIndexerCommand().alongWith(new CloseCommand(intake)));
-
-    }
-
-    private void testIntake(){
-        driverController.a().onTrue(Sequences.intakeOpenStart(intake));
-        driverController.b().onTrue(Sequences.stopIntakeAndClose(intake));
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-        driverController.y().onTrue(drivetrain.resetGyro());
-    }
-
-    private void testShooter(){
-
-        LoggedNetworkNumber speed = new LoggedNetworkNumber("Shake/rollerSpeed", 0.3);
-        // xboxController.a().whileTrue((new SpinUp(shooter, drivetrain)
-        //     .andThen(new InstantCommand(() ->
-        //     shooter.setHoodAngle(Rotation2d.fromDegrees(SmartDashboard.getNumber("hoodAngle", 1))), shooter)))
-
-        //     .andThen(shooter.getIndexer().turnOnIndexerCommand(), new InstantCommand(() -> {
-        //     shooter.toggleKicker(true);
-        //     intake.setIntakeMotorVelocity(speed.get());
-        // })
-        // , new RunCommand(() -> shooter.keepVelocity(SmartDashboard.getNumber("shooterSpeedMPS", 0)), shooter).alongWith(new ShakeItOffCommand(intake))));
-
-        // xboxController.a().onFalse(new InstantCommand(() -> {
-        //     shooter.stopFlyWheel();
-        //     shooter.getIndexer().turnOff();
-        //     shooter.setHoodAngle(Rotation2d.fromDegrees(1));
-        //     intake.stopIntakeMotor();
-        // }, shooter, shooter.getIndexer()));
-
-        driverController.y().onTrue(new OpenCommand(intake));
-        driverController.b().toggleOnTrue(new DriveCommand(drivetrain, driverController));
-        driverController.x().onTrue(new CloseCommand(intake));
-        driverController.leftBumper().onTrue(new InstantCommand(intake::resetEncoder));
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-        driverController.a().toggleOnTrue((
-                (new ShootCommand(shooter, drivetrain, vision).alongWith(new InstantCommand(() -> intake.setPercent(speed.getAsDouble())))
-                        .   alongWith(new ShakeItOffCommand(intake))).
-                        beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(new DriveAndHomeCommand(drivetrain, driverController)))
-        );
-
-        driverController.rightBumper().onTrue(new InstantCommand(drivetrain::resetGyro));
-        // xboxController.a().toggleOnTrue(new DriveAndHomeCommand(drivetrain, xboxController));
-        // drivetrain.setDefaultCommand(new DriveCommand(drivetrain, xboxController));
-        // xboxController.b().toggleOnTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, xboxController, intake, vision));
-        // xboxController.y().whileTrue(new IntakeCommand(intake));
-        // xboxController.leftBumper().onTrue(drivetrain.resetGyro());
-
-        // xboxController.rightBumper().toggleOnTrue(new DriveRobotRelative(drivetrain, xboxController));
-
-
-
-    }
 
     private void configurePitBindings() {
-        // xboxController.a().onTrue(new SpinUp(shooter, drivetrain)
-        // .until(shooter::isShooterAtGoal)
-        // .andThen(Kee, shooter)));
 
         // Disable all subsystems commands
         driverController.b().onTrue(new InstantCommand(() -> {
@@ -262,30 +146,13 @@ public class RobotContainer
 
         driverController.y().onFalse(new CloseCommand(intake));
 
-        driverController.x().onTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
+        driverController.x().whileTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
 
         // xboxController.povDown().onTrue(climb.closeCommand());
 
         // xboxController.povUp().onTrue(climb.openCommand());
-        driverController.povLeft().whileTrue(shooter.idle());
 
-        driverController.povCenter().onTrue(drivetrain.resetGyro());
-    }
-
-    private void configureBindingsSysid(){
-        SwerveSysID sysID = new SwerveSysID(drivetrain, driverController);
-        // xboxController.a().whileTrue(sysID.sysIdDynamicDrive(Direction.kForward));
-        // xboxController.b().whileTrue(sysID.sysIdDynamicDrive(Direction.kReverse));
-        // xboxController.y().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kForward));
-        // xboxController.x().whileTrue(sysID.sysIdQuasistaticDrive(Direction.kReverse));
-        // Rotation2d[] arr = {Rotation2d.kZero, Rotation2d.kZero, Rotation2d.kZero, Rotation2d.kZero};
-        //xboxController.rightBumper().onTrue(new InstantCommand(() -> drivetrain.setDriveVoltageAndSteerAngle(0, arr)));
-        driverController.a().whileTrue(sysID.sysIdDynamicSpin(Direction.kForward));
-        driverController.b().whileTrue(sysID.sysIdDynamicSpin(Direction.kReverse));
-        driverController.x().whileTrue(sysID.sysIdQuasistaticSpin(Direction.kForward));
-        driverController.y().whileTrue(sysID.sysIdQuasistaticSpin(Direction.kReverse));
-        driverController.leftBumper().onTrue(drivetrain.resetGyro());
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+        driverController.rightBumper().onTrue(drivetrain.resetGyro());
     }
 
     private void configureBindings() {
@@ -306,7 +173,7 @@ public class RobotContainer
 
         // xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter,vision));
 
-        // xboxController.b().whileTrue(climb.closeCommand()); // TODO fix to actually do climb.
+        // xboxController.b().whileTrue(climb.closeCommand()); 
 
         driverController.x().onTrue(
                 Sequences.delivery(drivetrain, shooter, driverController,intake));
