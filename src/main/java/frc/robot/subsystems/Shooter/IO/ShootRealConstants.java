@@ -12,10 +12,10 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 /** Add your docs here. */
 public class ShootRealConstants {
-    public static final int DUTY_CYCLE_ENCODER_PORT = 0;
+    public static final int DUTY_CYCLE_ENCODER_PORT = 9;
     public static final double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.129;
 
-    public static final double KICKER_SPEED_MPS = 4;
+    public static final double KICKER_SPEED_MPS = 6;
     public static final double KICKER_MAX_ERROR_FOR_FLYWHEEL_FEEDFORWARD = 0.2;
     public static final double KICKER_MIN_ERROR_FOR_FLYWHEEL_FEEDFORWARD = 0.05;
     public static final double KICKER_ERROR_FEEDFORWARD_SCALAR = 2;
@@ -166,7 +166,7 @@ public class ShootRealConstants {
         config.motorConfig.name = "Kicker Motor";
         config.motorConfig.unitConversion = ShooterConstants.FLYWHEEL_CICUMFRENCE / 2;
 
-        config.currentLimitConfig.freeSpeedCurrentLimit = 20;
+        config.currentLimitConfig.freeSpeedCurrentLimit = 40;
         config.currentLimitConfig.freeSpeedRPM = 3000;
 
         config.slot0Config.pidConfig.kP = 0.1;

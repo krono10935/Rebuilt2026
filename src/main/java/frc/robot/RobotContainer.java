@@ -27,6 +27,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -36,6 +37,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.FieldConstants.Hub;
 import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
 import frc.robot.commands.Drivetrain.DriveCommand;
@@ -49,6 +51,7 @@ import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
@@ -125,6 +128,14 @@ public class RobotContainer
 
         // ledManager = new LedManager();
         // configureBindings();
+        test();
+    }
+
+    private void test(){
+        driverController.a().toggleOnTrue(
+            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision).beforeStarting(new SpinUp(shooter, drivetrain)));
+        driverController.b().onTrue(new OpenCommand(intake));
+        driverController.x().onTrue(new CloseCommand(intake));
     }
 
 
@@ -232,6 +243,9 @@ public class RobotContainer
 
         button1.onTrue(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(true)))
         .onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
+
+        
+        // Trigger closeEnoughToSpinUp = new Trigger(() -> drivetrain.getEstimatedPosition().)
     }
     public Command getAutonomousCommand()
     {

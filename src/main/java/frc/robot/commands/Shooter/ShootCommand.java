@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
@@ -41,7 +42,7 @@ public class ShootCommand extends Command {
 
   private static double shooterSpeedOffset = 0;
 
-  private static boolean overrideObjectDetection = false;
+  private static boolean overrideObjectDetection = true;
 
   private final Shooter shooter;
 
@@ -230,7 +231,7 @@ public class ShootCommand extends Command {
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
     Command shootCommand = (
         new ShootCommand(shooter, drivetrain, vision)  
-        .alongWith(new ShakeItOffCommand(intake))
+        .alongWith((new ShakeItOffCommand(intake)))
       ).beforeStarting(new SpinUp(shooter, drivetrain));
 
     return driveCommand.alongWith(shootCommand).withName("Full Shoot");

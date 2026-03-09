@@ -35,6 +35,9 @@ public class SpinUp extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
+  
+    spinUpTimer.reset();
     shooter.spinUp(
       ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds())
       .flywheelSpeed());

@@ -19,6 +19,7 @@ public final class GyroIOPigeon implements GyroIO{
         gyro.getYaw().setUpdateFrequency(1.0 / ChassisConstants.LOOP_TIME_SECONDS);
         gyro.optimizeBusUtilization();
     }
+    
     @Override
     public Optional<GyroPoseOutput> getEstimatedPosition() {
         return Optional.empty();

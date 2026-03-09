@@ -50,7 +50,7 @@ public class ShooterConstants {
 
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
 
-    public static final double KICKER_PERCENT_OUTPUT = 0.5;
+    public static final double KICKER_PERCENT_OUTPUT = 1;
 
 
     public static final double ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES = 0.5;
@@ -59,5 +59,10 @@ public class ShooterConstants {
 
 
     public static final double SECONDS_TO_LOOK_FORWARD_FOR_SPINUP = 3;
+
+    public static final double MIN_DISTANCE_FROM_AZ_TO_SPINUP = 1.67;
+
+
+
 
 }

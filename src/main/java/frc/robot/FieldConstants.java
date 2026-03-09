@@ -12,6 +12,7 @@ public class FieldConstants {
     public static final double fieldLength = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getFieldLength();
     public static final double fieldWidth = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getFieldWidth();
 
+    // public static final double ALLIANCE_ZONE_X = Hub.topCenterPoint.getX(); 
      public static class Hub {
 
     // Dimensions

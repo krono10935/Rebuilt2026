@@ -74,7 +74,7 @@ public class IntakeConstants {
 
         positionMotorConfig.constraintsConfig.constraintType = ConstraintType.LIMITED;
         positionMotorConfig.constraintsConfig.maxValue = 0.3;
-        positionMotorConfig.constraintsConfig.minValue = 0;
+        positionMotorConfig.constraintsConfig.minValue = -0.2;
 
         positionMotorConfig.constraintsConfig.maxOutput = 5;
         positionMotorConfig.constraintsConfig.minOutput = 5;
