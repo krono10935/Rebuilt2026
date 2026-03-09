@@ -91,6 +91,10 @@ public class IntakeIOSim implements IntakeIO {
         positionMotor.getController().getControlMode() == ControlMode.PROFILED_POSITION;
     }
 
+    @Override
+    public void setPositionMotorPercent(double dutyCycle) {
+        positionMotor.setPercentOutput(dutyCycle);
+    }
 
     @Override
     public void resetPositionMotor(double posMeters) {

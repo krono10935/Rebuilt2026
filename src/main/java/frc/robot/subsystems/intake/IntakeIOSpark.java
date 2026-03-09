@@ -92,4 +92,8 @@ public class IntakeIOSpark implements IntakeIO {
         positionMotor.resetEncoder(posMeters);
     }
 
+    @Override
+    public void setPositionMotorPercent(double dutyCycle) {
+        positionMotor.setPercentOutput(dutyCycle);
+    }
 }

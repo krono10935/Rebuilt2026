@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
@@ -43,10 +44,6 @@ import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
 import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.Drivetrain.DriveRobotRelative;
 import frc.robot.commands.Drivetrain.SwerveSysID;
-import frc.robot.commands.IntakeCommands.CloseCommand;
-import frc.robot.commands.IntakeCommands.IntakeCommand;
-import frc.robot.commands.IntakeCommands.OpenCommand;
-import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -133,10 +130,21 @@ public class RobotContainer
 
     private void test(){
         driverController.a().toggleOnTrue(
-            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision).beforeStarting(new SpinUp(shooter, drivetrain)));
-        driverController.b().onTrue(new OpenCommand(intake));
-        driverController.x().onTrue(new CloseCommand(intake));
+            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision));
+        driverController.b().onTrue( Sequences.intakeOpenStart(intake));
+        driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
+
+        LoggedNetworkNumber posPercent = new LoggedNetworkNumber("IntakePercent", -0.05);
+
+        driverController.y().onTrue(IntakeFactory.resetIntake(intake));
+
+        driverController.rightBumper().onTrue(drivetrain.resetGyro());
+
+
+
     }
+
 
 
     private void configurePitBindings() {
@@ -249,7 +257,7 @@ public class RobotContainer
     }
     public Command getAutonomousCommand()
     {
-        return autoChooser.get();
+        return autoChooser.get().beforeStarting(IntakeFactory.resetIntake(intake));
     }
 
     private void displayChosenAuto(Command command){
@@ -302,10 +310,10 @@ public class RobotContainer
                 !ObjectDetection.getInstance().hasBalls()).andThen(new WaitCommand(0.3))
                 .andThen(Commands.print("no balls")));
 
-        // NamedCommands.registerCommand("openIntake",
-        //         new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
-        // NamedCommands.registerCommand("closeIntake",
-        //         new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
+         NamedCommands.registerCommand("openIntake",
+                 new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
+         NamedCommands.registerCommand("closeIntake",
+                 new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
 
         // NamedCommands.registerCommand("openClimb", climb.openCommand());
         // NamedCommands.registerCommand("closeClimb", climb.closeCommand());

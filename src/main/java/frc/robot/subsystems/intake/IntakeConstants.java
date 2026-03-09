@@ -15,11 +15,13 @@ public class IntakeConstants {
 
     //the positions of the intake (closed and opend)
     public static final double CLOSE_POSITION = 0;
-    public static final double OPEN_POSITION = 0.27;
+    public static final double OPEN_POSITION = 0.4;
 
     public static final double INTAKE_VELOCITY = 4;
 
-    public static final double PINION_DIAMETER = 0.03;
+    public static final double PINION_DIAMETER = 0.033;
+
+    public static final double positionOffset = 0;
 
     public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final double TIME_FOR_INTAKE_TO_OPEN = 4;
@@ -64,7 +66,7 @@ public class IntakeConstants {
         posConfig.pidConfig.kD = 0;
         posConfig.pidConfig.iMaxAccum = 4;
         posConfig.pidConfig.iZone = 0.1;
-        posConfig.pidConfig.tolerance = 0.01;
+        posConfig.pidConfig.tolerance = 0.003;
 
         posConfig.profileConfig.maximumMeasurementVelocity = 10; 
         posConfig.profileConfig.maximumMeasurementAcceleration = 10;
@@ -72,12 +74,11 @@ public class IntakeConstants {
 //        posConfig.profileConfig.maximumMeasurementVelocity = 5;
 //        posConfig.profileConfig.maximumMeasurementAcceleration = 10;
 
-        positionMotorConfig.constraintsConfig.constraintType = ConstraintType.LIMITED;
-        positionMotorConfig.constraintsConfig.maxValue = 0.3;
-        positionMotorConfig.constraintsConfig.minValue = -0.2;
+        positionMotorConfig.constraintsConfig.constraintType = ConstraintType.NONE;
+        //positionMotorConfig.constraintsConfig.maxValue = 0.3;
+       // positionMotorConfig.constraintsConfig.minValue = -0.01;
 
-        positionMotorConfig.constraintsConfig.maxOutput = 5;
-        positionMotorConfig.constraintsConfig.minOutput = 5;
+
 
         positionMotorConfig.simulationConfig.kA = 0.023275; // Not real value, taken from shooter for sim
         positionMotorConfig.simulationConfig.kV = 0.31938; // Not real value, taken from shooter for sim

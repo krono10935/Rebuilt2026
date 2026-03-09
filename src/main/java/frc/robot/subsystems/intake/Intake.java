@@ -30,6 +30,10 @@ public class Intake extends SubsystemBase{
         return io.getIntakePosition();
     }
 
+    public void setPositionMotorPercent(double dutyCycle){
+      io.setPositionMotorPercent(dutyCycle);
+    }
+
     public boolean isOpen(){
         return getIntakePosition() >= IntakeConstants.OPEN_POSITION - IntakeConstants.POSITION_TOLERANCE;
     }
@@ -86,4 +90,6 @@ public class Intake extends SubsystemBase{
 
 
     }
+
+
 }

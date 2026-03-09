@@ -74,6 +74,8 @@ public interface IntakeIO {
      */
     void resetPositionMotor(double posMeters);
 
+    void setPositionMotorPercent(double dutyCycle);
+
     void updateInputs(IntakeInputs inputs);
 
 }
