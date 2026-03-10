@@ -242,7 +242,7 @@ public class RobotContainer
         Trigger closeEnoughToSpinUp = new Trigger(()
             -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
                 FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
-            ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP).and(RobotState::isTeleop);
+            ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
         
         closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
         shooter.getCurrentCommand() == shooter.getDefaultCommand()))
