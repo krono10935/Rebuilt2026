@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.FieldConstants.LeftTrench.LinesVertical;
 import frc.utils.AllianceFlipUtil;
 
 public class FieldConstants {
@@ -68,8 +70,77 @@ public class FieldConstants {
     public static final Pose2d leftFace =
         AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getTagPose(21).get().toPose2d();
   }
-    public static Translation2d trenchRight = new Translation2d(); //TODO: find actual translations
-    public static Translation2d trenchLeft = new Translation2d();
+    public static class LeftTrench {
+    // Dimensions
+    public static final double width = Units.inchesToMeters(65.65);
+    public static final double depth = Units.inchesToMeters(47.0);
+    public static final double height = Units.inchesToMeters(40.25);
+    public static final double openingWidth = Units.inchesToMeters(50.34);
+    public static final double openingHeight = Units.inchesToMeters(22.25);
+
+    public static class LinesVertical {
+    public static final double center = fieldLength / 2.0;
+    public static final double starting =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getTagPose(26).get().getX();
+    public static final double allianceZone = starting;
+    public static final double hubCenter =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getTagPose(26).get().getX() + Hub.width / 2.0;
+    public static final double neutralZoneNear = center - Units.inchesToMeters(120);
+    public static final double neutralZoneFar = center + Units.inchesToMeters(120);
+    public static final double oppHubCenter =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getTagPose(4).get().getX() + Hub.width / 2.0;
+    public static final double oppAllianceZone =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded).getTagPose(10).get().getX();
+  }
+
+    // Relevant reference points on alliance side
+    public static final Translation3d openingTopLeft =
+        new Translation3d(LinesVertical.hubCenter, fieldWidth, openingHeight);
+    public static final Translation3d openingTopRight =
+        new Translation3d(LinesVertical.hubCenter, fieldWidth - openingWidth, openingHeight);
+    public static final Translation3d openingTopCenter = 
+        new Translation3d(LinesVertical.hubCenter, fieldWidth - openingWidth / 2, openingHeight);
+
+    // Relevant reference points on opposing side
+    public static final Translation3d oppOpeningTopLeft =
+        new Translation3d(LinesVertical.oppHubCenter, fieldWidth, openingHeight);
+    public static final Translation3d oppOpeningTopRight =
+        new Translation3d(LinesVertical.oppHubCenter, fieldWidth - openingWidth, openingHeight);
+
+    public static final Translation3d oppOpeningTopCenter = 
+        new Translation3d(LinesVertical.hubCenter, fieldWidth - openingWidth / 2, openingHeight);
+  }
+
+  public static class RightTrench {
+
+    // Dimensions
+    public static final double width = Units.inchesToMeters(65.65);
+    public static final double depth = Units.inchesToMeters(47.0);
+    public static final double height = Units.inchesToMeters(40.25);
+    public static final double openingWidth = Units.inchesToMeters(50.34);
+    public static final double openingHeight = Units.inchesToMeters(22.25);
+
+    
+
+    // Relevant reference points on alliance side
+    public static final Translation3d openingTopLeft =
+        new Translation3d(LinesVertical.hubCenter, openingWidth, openingHeight);
+    public static final Translation3d openingTopRight =
+        new Translation3d(LinesVertical.hubCenter, 0, openingHeight);
+
+    public static final Translation3d openingTopCenter = 
+        new Translation3d(LinesVertical.hubCenter, openingWidth / 2, openingHeight);
+
+    // Relevant reference points on opposing side
+    public static final Translation3d oppOpeningTopLeft =
+        new Translation3d(LinesVertical.oppHubCenter, openingWidth, openingHeight);
+    public static final Translation3d oppOpeningTopRight =
+        new Translation3d(LinesVertical.oppHubCenter, 0, openingHeight);
+
+    public static final Translation3d oppOpeningTopCenter = 
+        new Translation3d(LinesVertical.hubCenter, openingWidth / 2, openingHeight);
+  }
+
 
     public static Translation2d towerLeft = new Translation2d(5,5);
     public static Translation2d towerLeftBack = new Translation2d(4,4);
@@ -102,6 +173,14 @@ public class FieldConstants {
         var hubAlliance = AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint);
 
         return poseAlliance.getX() <= hubAlliance.getX();
+    }
+
+    public static Translation2d getClosestTrench(Pose2d robotPose){
+        if (robotPose.getTranslation().getX() < fieldWidth / 2){
+            return AllianceFlipUtil.apply(RightTrench.openingTopCenter.toTranslation2d());
+        } else {
+            return AllianceFlipUtil.apply(LeftTrench.openingTopCenter.toTranslation2d());
+        }
     }
 }
 

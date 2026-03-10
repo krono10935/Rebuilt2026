@@ -5,10 +5,15 @@
 package frc.robot.commands;
 
 
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.utils.AllianceFlipUtil;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -16,6 +21,9 @@ public class SpinUpForDelivery extends Command {
   private final Drivetrain drivetrain;
   private final Shooter shooter;
   private final double maxShootingSpeedMPS;
+
+  private final Timer failedToAimHoodTimer;
+  private final Alert failedToAimHood;
 
   private final double MIN_DELIVERY_DISTANCE = 2; //m
 
@@ -25,28 +33,44 @@ public class SpinUpForDelivery extends Command {
     this.drivetrain = drivetrain;
     this.shooter = shooter;
     this.maxShootingSpeedMPS = MaxSpinUpSpeedMPS;
+    
+    failedToAimHoodTimer = new Timer();
+    failedToAimHood = new Alert("Failed to aim hood!", AlertType.kError);
+
     addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    shooter.setHoodAngle(ShooterConstants.DELIVERY_HOOD_ANGLE);
+    failedToAimHoodTimer.reset();
+    failedToAimHoodTimer.start();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     shooter.spinUp(scale()* maxShootingSpeedMPS);
+
+    if (ShootRealConstants.HOOD_SETPOINT_ARRIVAL_TIME > failedToAimHoodTimer.get()){
+      failedToAimHood.set(true);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    if (shooter.isHoodAtSetpoint()){
+      failedToAimHood.set(false);
+    }
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     double distance = Math.abs(drivetrain.getEstimatedPosition().getX() - AllianceFlipUtil.apply(FieldConstants.Hub.farLeftCorner).getX());
-    return MIN_DELIVERY_DISTANCE < distance && shooter.isShooterAtGoal();
+    return MIN_DELIVERY_DISTANCE < distance && shooter.isShooterAtGoal() || failedToAimHood.get();
   }
 
   /**

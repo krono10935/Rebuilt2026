@@ -339,24 +339,13 @@ public class Sequences {
                         drivetrain,
                         shooter,
                         ShooterConstants.DELIVERY_SPEED_MPS
-                ).alongWith(ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
-                        
-                        new InstantCommand(() -> shooter.setHoodAngle(ShooterConstants.DELIVERY_HOOD_ANGLE), shooter)
-                        .andThen(new WaitUntilCommand(shooter::isHoodAtSetpoint),
-                        new InstantCommand(() -> hoodAimingFailed.set(false))),
-
-                        ShootRealConstants.HOOD_SETPOINT_ARRIVAL_TIME, 
-                        
-                        new InstantCommand(() -> {
-                                shooter.setHoodAngle(Rotation2d.kZero);
-                                hoodAimingFailed.set(false);
-                        })))));
+                )));
 
         Supplier<Translation2d> closestTrenchSupplier =
                 () -> (drivetrain.getEstimatedPosition().getY()
                         >= FieldConstants.fieldWidth / 2.0)
-                        ? FieldConstants.trenchRight
-                        : FieldConstants.trenchLeft;
+                        ? FieldConstants.RightTrench.openingTopCenter.toTranslation2d()
+                        : FieldConstants.LeftTrench.openingTopCenter.toTranslation2d();
 
 
         Supplier<Rotation2d> deliveryAngleSupplier =

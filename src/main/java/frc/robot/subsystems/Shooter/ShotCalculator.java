@@ -161,6 +161,10 @@ public class ShotCalculator {
             }
         }
     }
+
+    public ShootingParameters getStaticParameters(Pose2d estimatedPose){
+        return getParameters(estimatedPose, new ChassisSpeeds());
+    }
     /**
      * 
      * @param estimatedPose Estimated robot pose

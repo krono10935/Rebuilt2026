@@ -46,6 +46,7 @@ import frc.robot.commands.Drivetrain.DriveRobotRelative;
 import frc.robot.commands.Drivetrain.SwerveSysID;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
+import frc.robot.commands.Shooter.SpinUpForEnterTrench;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator;
@@ -124,8 +125,8 @@ public class RobotContainer
 
 
         // ledManager = new LedManager();
-        // configureBindings();
-        test();
+        configureBindings();
+        // test();
     }
 
     private void test(){
@@ -253,7 +254,16 @@ public class RobotContainer
         .onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
 
         
-        // Trigger closeEnoughToSpinUp = new Trigger(() -> drivetrain.getEstimatedPosition().)
+        Trigger closeEnoughToSpinUp = new Trigger(() 
+            -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
+                FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
+            ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
+        
+        closeEnoughToSpinUp.whileTrue(new SpinUpForEnterTrench(shooter,drivetrain))
+            .onFalse(new InstantCommand(()-> shooter.stopFlyWheel(), shooter));
+
+        closeEnoughToSpinUp.onTrue(new InstantCommand(() -> System.out.println("wtf")));
+
     }
     public Command getAutonomousCommand()
     {
