@@ -259,10 +259,9 @@ public class RobotContainer
                 FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
             ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
         
-        closeEnoughToSpinUp.whileTrue(new SpinUpForEnterTrench(shooter,drivetrain))
+        closeEnoughToSpinUp.whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
+        shooter.getCurrentCommand() == shooter.getDefaultCommand()))
             .onFalse(new InstantCommand(()-> shooter.stopFlyWheel(), shooter));
-
-        closeEnoughToSpinUp.onTrue(new InstantCommand(() -> System.out.println("wtf")));
 
     }
     public Command getAutonomousCommand()
