@@ -14,7 +14,7 @@ public class ShooterConstants {
 
     public static final double DELIVERY_SPEED_MPS = 20;
 
-    public static final Rotation2d DELIVERY_HOOD_ANGLE = Rotation2d.kZero;
+    public static final Rotation2d DELIVERY_HOOD_ANGLE = Rotation2d.fromDegrees(20);
 
 
 
