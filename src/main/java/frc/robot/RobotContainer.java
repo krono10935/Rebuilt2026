@@ -254,7 +254,7 @@ public class RobotContainer
         .onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
 
         
-        Trigger closeEnoughToSpinUp = new Trigger(() 
+            Trigger closeEnoughToSpinUp = new Trigger(()
             -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
                 FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
             ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
@@ -266,7 +266,13 @@ public class RobotContainer
     }
     public Command getAutonomousCommand()
     {
-        return autoChooser.get().beforeStarting(IntakeFactory.resetIntake(intake));
+        var selectedAuto = autoChooser.get();
+
+        Command autoCommand = Commands.sequence(IntakeFactory.resetIntake(intake), selectedAuto, drivetrain.idle());
+
+        CommandScheduler.getInstance().removeComposedCommand(selectedAuto);
+
+        return autoCommand.withName(selectedAuto.getName());
     }
 
     private void displayChosenAuto(Command command){
@@ -297,12 +303,14 @@ public class RobotContainer
     public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
 
         Command aimRobot = new StartEndCommand(() -> {
+            driveAndHomeCommand.resetThetaController();
             PPController.setThetaOverride(driveAndHomeCommand::calculateThetaPID);
         }, PPController::clearThetaOverride);
 
         Command aimRobotStationary = new RunCommand(
                 () -> drivetrain.drive(new ChassisSpeeds(
-                        0, 0, driveAndHomeCommand.calculateThetaPID())), drivetrain);
+                        0, 0, driveAndHomeCommand.calculateThetaPID())), drivetrain)
+                .beforeStarting(driveAndHomeCommand::resetThetaController);
 
 
         NamedCommands.registerCommand("shootAndAimMoving",

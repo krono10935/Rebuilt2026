@@ -82,6 +82,12 @@ public class DriveAndHomeCommand extends DriveCommand {
                 drivetrain.getEstimatedPosition().getRotation().getRadians(), targetAngleSupplier.get().getRadians());
     }
 
+    public void resetThetaController(){
+        angularController.reset(
+                new State(drivetrain.getEstimatedPosition().getRotation().getRadians(),
+                        drivetrain.getChassisSpeeds().omegaRadiansPerSecond));
+    }
+
     public boolean atTargetAngle(){
         return angularController.atGoal();
     }

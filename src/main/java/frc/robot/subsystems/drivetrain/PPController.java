@@ -42,6 +42,7 @@ public class PPController implements PathFollowingController {
         SmartDashboard.putData("xController", xController);
         SmartDashboard.putData("yController", yController);
         SmartDashboard.putData("rotationController", rotationController);
+        Logger.recordOutput("thetaOutputOverride", false);
     }
 
     public PPController(PIDConstants translationConstants, PIDConstants rotationConstants) {
@@ -92,9 +93,11 @@ public class PPController implements PathFollowingController {
 
     public static void setThetaOverride(DoubleSupplier output){
         thetaOutputOverride = Optional.of(output);
+        Logger.recordOutput("thetaOutputOverride", true);
     }
 
     public static void clearThetaOverride(){
         thetaOutputOverride = Optional.empty();
+        Logger.recordOutput("thetaOutputOverride", false);
     }
 }
