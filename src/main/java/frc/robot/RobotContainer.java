@@ -72,8 +72,6 @@ public class RobotContainer
 
     public final Intake intake;
 
-    // public final Climb climb;
-
     private final CommandXboxController driverController;
 
     private final GenericHID operatorController;
@@ -101,8 +99,6 @@ public class RobotContainer
 
 
         intake = new Intake();
-
-        // climb = new Climb();
 
         driverController = new CommandXboxController(0);
 
