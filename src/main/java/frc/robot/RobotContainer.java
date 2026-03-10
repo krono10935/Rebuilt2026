@@ -244,7 +244,7 @@ public class RobotContainer
                 FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
             ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP).and(RobotState::isTeleop);
         
-        closeEnoughToSpinUp.whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
+        closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
         shooter.getCurrentCommand() == shooter.getDefaultCommand()))
             .onFalse(new InstantCommand(()-> shooter.stopFlyWheel(), shooter));
 
@@ -256,9 +256,9 @@ public class RobotContainer
                     Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
         };
 
-        new Trigger(isHubActive).
+        new Trigger(isHubActive).and(RobotState::isTeleop).
                 and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision)).and(RobotState::isTeleop);
+                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
 
 
     }
