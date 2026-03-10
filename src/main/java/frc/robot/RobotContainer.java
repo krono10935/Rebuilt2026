@@ -177,18 +177,7 @@ public class RobotContainer
 
     private void configureBindings() {
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-
-        BooleanSupplier isHubActive = () -> {
-            double time = DriverStation.getMatchTime();
-
-            return Constants.HubTiming.isActive(time) ||
-                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
-                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
-        };
-        new Trigger(isHubActive).
-                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
-
+        
         driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, driverController)));
 
         // xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter,vision));
@@ -262,6 +251,19 @@ public class RobotContainer
         closeEnoughToSpinUp.whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
         shooter.getCurrentCommand() == shooter.getDefaultCommand()))
             .onFalse(new InstantCommand(()-> shooter.stopFlyWheel(), shooter));
+
+        BooleanSupplier isHubActive = () -> {
+            double time = DriverStation.getMatchTime();
+
+            return Constants.HubTiming.isActive(time) ||
+                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
+                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
+        };
+
+        new Trigger(isHubActive).
+                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
+
 
     }
     public Command getAutonomousCommand()
