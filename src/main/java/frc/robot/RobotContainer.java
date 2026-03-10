@@ -243,10 +243,10 @@ public class RobotContainer
         .onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
 
         
-            Trigger closeEnoughToSpinUp = new Trigger(()
+        Trigger closeEnoughToSpinUp = new Trigger(()
             -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
                 FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
-            ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
+            ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP).and(RobotState::isTeleop);
         
         closeEnoughToSpinUp.whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
         shooter.getCurrentCommand() == shooter.getDefaultCommand()))
@@ -262,7 +262,7 @@ public class RobotContainer
 
         new Trigger(isHubActive).
                 and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
+                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision)).and(RobotState::isTeleop);
 
 
     }
