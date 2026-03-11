@@ -13,6 +13,7 @@ import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShakeItOffCommand extends Command {
@@ -71,6 +72,10 @@ public class ShakeItOffCommand extends Command {
 
     beginTimer.reset();
     beginTimer.start();
+
+    intake.setPercent(intakeSpeed.get());
+
+    cycles = 0;
     
     
   }
@@ -81,7 +86,7 @@ public class ShakeItOffCommand extends Command {
 
     if(beginTimer.get()> 0.5){
       if(timer.get()>= timeTochange.getAsDouble()){
-        if (!shouldOpen && hasOpened){
+        if (!shouldOpen){
           cycles++;
         }
         shouldOpen = ! shouldOpen;
@@ -90,5 +95,10 @@ public class ShakeItOffCommand extends Command {
         timer.reset();
       }
     }
+  }
+
+  @Override
+  public void end(boolean interrupted){
+    intake.stopIntakeMotor();
   }
 }

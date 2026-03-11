@@ -121,8 +121,8 @@ public class RobotContainer
 
 
         // ledManager = new LedManager();
-        configureBindings();
-        // test();
+        // configureBindings();
+        test();
     }
 
     private void test(){
