@@ -114,8 +114,9 @@ public class Vision extends VirtualSubSystem {
       
         cameras.put(camera, instance);
 
-        instance.selectedStd = camera.stdDevsFactors[PipelineModes.HIGH.ordinal() - 1];
-        instance.camera.setPiplineIndex(PipelineModes.HIGH.ordinal());
+        instance.selectedStd = camera.stdDevsFactors[PipelineModes.LOW.ordinal() - 1];
+        instance.camera.setPiplineIndex(PipelineModes.LOW.ordinal());
+        this.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
       }
       
       this.poseConsumer = estimateListener;

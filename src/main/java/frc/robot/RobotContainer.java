@@ -22,49 +22,43 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.DriveToPoseConstants;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.FieldConstants.Hub;
-import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
 import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.Drivetrain.DriveRobotRelative;
-import frc.robot.commands.Drivetrain.SwerveSysID;
+import frc.robot.commands.Shooter.BasicShootCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
 import frc.robot.commands.Shooter.SpinUpForEnterTrench;
+import frc.robot.leds.LedManager;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator;
-import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
-import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.PPController;
 import frc.robot.subsystems.intake.Intake;
+import frc.utils.CheckFreeSpace;
+import frc.utils.Elastic;
 
 
 public class RobotContainer
 {
     private static RobotContainer instance;
 
-    // public final LedManager ledManager;
+    public final LedManager ledManager;
 
     public final Vision vision;
 
@@ -74,13 +68,12 @@ public class RobotContainer
 
     private final CommandXboxController driverController;
 
-    private final GenericHID operatorController;
+    private final CommandGenericHID operatorController;
 
     public final Drivetrain drivetrain;
 
     private final LoggedDashboardChooser<Command> autoChooser;
 
-    private final LoggedDashboardChooser<FieldConstants.TowerSide> climbChooser;
 
 
     public static RobotContainer getInstance(){
@@ -97,65 +90,73 @@ public class RobotContainer
 
         shooter = new Shooter();
 
+        ledManager = new LedManager();
 
         intake = new Intake();
 
         driverController = new CommandXboxController(0);
 
-        operatorController = new GenericHID(1);
+        operatorController = new CommandGenericHID(1);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
-        vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
 
         autoChooser = registerNamedCommand(new DriveAndHomeCommand(drivetrain, driverController));
-
-        climbChooser = new LoggedDashboardChooser<>("Climb side");
-        climbChooser.addDefaultOption("Left",TowerSide.left);
-        climbChooser.addOption("Right", TowerSide.right);
-
 
         ObjectDetection.getInstance();
 
         DriveToPoseConstants.MAX_LINEAR_SPEED = 4.5;
         DriveToPoseConstants.POSE_TOLERANCE = 0.01;
 
+        CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
-        // ledManager = new LedManager();
-        // configureBindings();
-        test();
+        new Trigger(()-> DriverStation.isDSAttached()).onTrue(new InstantCommand(() -> Elastic.selectTab("Autonomous")));
+
+        SmartDashboard.putNumber("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
+        Logger.recordOutput("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
+
+        CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
+        
+        // TODO enable for comp
+        // if (ModeFileHandling.isCompMode()){
+        //     configureBindings();
+        // } else {
+        //     configurePitBindings();
+        // }
+
+        // test();
     }
 
     private void test(){
         driverController.a().toggleOnTrue(
             ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision));
-        driverController.b().onTrue( Sequences.intakeOpenStart(intake));
+        driverController.b().onTrue(Sequences.intakeOpenStart(intake));
         driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
-
-        LoggedNetworkNumber posPercent = new LoggedNetworkNumber("IntakePercent", -0.05);
 
         driverController.y().onTrue(IntakeFactory.resetIntake(intake));
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
-
-
-
     }
 
 
 
     private void configurePitBindings() {
+        //TODO test these
+        LoggedNetworkNumber spinUpSpeedMPS = new LoggedNetworkNumber("spinUpSpeedMPS", 10);
+        driverController.a().onTrue(new BasicShootCommand(shooter).beforeStarting(
+            new InstantCommand(() -> shooter.spinUp(spinUpSpeedMPS.getAsDouble()))
+            .withDeadline(new WaitUntilCommand(shooter::isHoodAtSetpoint))));
 
         // Disable all subsystems commands
         driverController.b().onTrue(new InstantCommand(() -> {
             drivetrain.getCurrentCommand().cancel();
             CommandScheduler.getInstance().schedule(drivetrain.idle());
+
             shooter.getCurrentCommand().cancel();
             CommandScheduler.getInstance().schedule(shooter.idle());
+
             intake.getCurrentCommand().cancel();
             CommandScheduler.getInstance().schedule(intake.idle());
-            // climb.getCurrentCommand().cancel();
-            // CommandScheduler.getInstance().schedule(climb.idle());
         }));
 
         driverController.y().debounce(0.3).whileTrue(new OpenCommand(intake));
@@ -164,78 +165,37 @@ public class RobotContainer
 
         driverController.x().whileTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
 
-        // xboxController.povDown().onTrue(climb.closeCommand());
-
-        // xboxController.povUp().onTrue(climb.openCommand());
-
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
     }
 
     private void configureBindings() {
+        //TOOD test these
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
         
         driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, driverController)));
-
-        // xboxController.povUp().whileTrue(Sequences.autoClimb(intake, drivetrain, climb, climbChooser::get, shooter,vision));
-
-        // xboxController.b().whileTrue(climb.closeCommand()); 
 
         driverController.x().onTrue(
                 Sequences.delivery(drivetrain, shooter, driverController,intake));
 
         driverController.a().onTrue(drivetrain.resetGyro());
 
-        Trigger povUp = new Trigger(() -> 
-            Math.abs(
-                operatorController.getPOV() - ShooterConstants.ANGLE_UP.getDegrees()
-            ) < ShooterConstants.POV_TOLERANCE.getDegrees());
-
-        Trigger povRight = new Trigger(() -> 
-            Math.abs(
-                operatorController.getPOV() - ShooterConstants.ANGLE_RIGHT.getDegrees()
-            ) < ShooterConstants.POV_TOLERANCE.getDegrees());
-
-        Trigger povDown = new Trigger(() -> 
-            Math.abs(
-                operatorController.getPOV() - ShooterConstants.ANGLE_DOWN.getDegrees()
-            ) < ShooterConstants.POV_TOLERANCE.getDegrees());
-
-        Trigger povLeft = new Trigger(() -> 
-            Math.abs(
-                operatorController.getPOV() - ShooterConstants.ANGLE_LEFT.getDegrees()
-            ) < ShooterConstants.POV_TOLERANCE.getDegrees());
-
-        povUp.onTrue(new InstantCommand(() -> 
-            ShootCommand.AddToHoodOffset(
-                ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK
-                )
-            )
+        operatorController.povUp().onTrue(new InstantCommand(() -> 
+            ShootCommand.AddToHoodOffset(ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK))
         );
 
-        povDown.onTrue(new InstantCommand(() -> 
-            ShootCommand.AddToHoodOffset(
-                ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK.unaryMinus()
-                )
-            )
+        operatorController.povDown().onTrue(new InstantCommand(() -> 
+            ShootCommand.AddToHoodOffset(ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK.unaryMinus()))
         );
 
-        povRight.onTrue(new InstantCommand(() -> 
-            ShootCommand.AddToFlywheelOffset(
-                ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK
-                )
-            )
+        operatorController.povRight().onTrue(new InstantCommand(() -> 
+            ShootCommand.AddToFlywheelOffset(ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK))
         );
 
-        povLeft.onTrue(new InstantCommand(() -> 
-            ShootCommand.AddToFlywheelOffset(
-                -ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK
-                )
-            )
+        operatorController.povLeft().onTrue(new InstantCommand(() -> 
+            ShootCommand.AddToFlywheelOffset(-ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK))
         );
 
-        Trigger button1 = new Trigger(() -> operatorController.getRawButton(1));
-
-        button1.onTrue(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(true)))
+        operatorController.button(1).onTrue(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(true)))
         .onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
 
         
@@ -280,6 +240,7 @@ public class RobotContainer
         }
 
         List<PathPlannerPath> auto;
+
         try{
             auto = PathPlannerAuto.getPathGroupFromAutoFile(command.getName());
         }
@@ -329,9 +290,6 @@ public class RobotContainer
                  new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
          NamedCommands.registerCommand("closeIntake",
                  new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
-
-        // NamedCommands.registerCommand("openClimb", climb.openCommand());
-        // NamedCommands.registerCommand("closeClimb", climb.closeCommand());
 
         LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
         autoChooser.onChange(this::displayChosenAuto);

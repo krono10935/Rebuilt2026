@@ -32,18 +32,6 @@ public class ShooterConstants {
 
     public static final Rotation2d HOOD_ANGLE_OFFSET_PER_CLICK = Rotation2d.fromDegrees(1);
 
-    
-    
-    public static final Rotation2d POV_TOLERANCE = Rotation2d.kZero;
-
-    public static final Rotation2d ANGLE_UP = Rotation2d.kZero;
-
-    public static final Rotation2d ANGLE_RIGHT = Rotation2d.kCW_90deg;
-
-    public static final Rotation2d ANGLE_DOWN = Rotation2d.k180deg;
-
-    public static final Rotation2d ANGLE_LEFT = Rotation2d.kCCW_90deg;
-
 
 
     public static final double SHOOTING_SPEED_TOLERANCE = 0.2;

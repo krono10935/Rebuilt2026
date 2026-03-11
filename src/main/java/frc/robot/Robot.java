@@ -10,6 +10,7 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import com.revrobotics.util.StatusLogger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,6 +38,18 @@ public class Robot extends LoggedRobot
 
     public Robot()
     {
+        initializeLogging(ModeFileHandling.isCompMode());
+
+        RobotContainer.getInstance();
+    }
+
+    private void initializeLogging(boolean isOnField){
+        SignalLogger.enableAutoLogging(false);
+        SignalLogger.stop();
+
+        StatusLogger.disableAutoLogging();
+        StatusLogger.stop();
+
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
@@ -50,7 +63,7 @@ public class Robot extends LoggedRobot
             default -> "Unknown";
             });
 
-
+        // TODO comment out before comp
         if (isReal()) {
             Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
@@ -58,31 +71,24 @@ public class Robot extends LoggedRobot
             Logger.addDataReceiver(new NT4Publisher());
         }
 
-        SignalLogger.enableAutoLogging(false);
-        SignalLogger.stop();
+        //TODO comment in before comp
+        if (RobotBase.isSimulation()){
+            Logger.addDataReceiver(new NT4Publisher());
+        } else {
+            if (ModeFileHandling.isCompMode())
+                Logger.addDataReceiver(new WPILOGWriter());
+            else {
+                Logger.addDataReceiver(new NT4Publisher());
+            }
+        }
 
-        StatusLogger.disableAutoLogging();
-        StatusLogger.stop();
-        
-        Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
-
-        RobotContainer.getInstance();
-
-        
-        CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
-
-        new Trigger(()-> DriverStation.isDSAttached()).onTrue(new InstantCommand(() -> Elastic.selectTab("Autonomous")));
-
-        SmartDashboard.putNumber("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
+        Logger.start();
     }
 
 
     @Override
     public void robotPeriodic() {
         VirtualSubSystem.virtualperiodic();
-        ShotCalculator.getInstance().getParameters(
-                RobotContainer.getInstance().drivetrain.getEstimatedPosition(),
-                RobotContainer.getInstance().drivetrain.getChassisSpeeds());
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();

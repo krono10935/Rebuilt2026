@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
+import java.util.Random;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Shooter.ShootCalculatorWithMovement.ShootCalculatorWithMovementParams;
 import frc.utils.AllianceFlipUtil;
@@ -126,40 +129,16 @@ public class ShotCalculator {
 
     }
 
-
     public Command warmUpShotCalculator(){
-        return new InstantCommand(this::warmUpGeneratePoses);
-    }
+        Random rnd = new Random();
+        return new RunCommand(() -> getParameters(new Pose2d(
+            new Translation2d(rnd.nextDouble(0, 16), rnd.nextDouble(0, 8))
+            , Rotation2d.fromDegrees(rnd.nextDouble(0, 360))
+            ),
 
-    /**
-     * Generate the chassis speeds and then use it and the pose to calculate the shooting params
-     * @param warmUpPose the pose to use to calculate the shooting params
-     */
-    private void warmUpWithPose(Pose2d warmUpPose){
-        for (int speedOmegaRadians = 0; speedOmegaRadians < 360; speedOmegaRadians += 120){
-            for (int speedsXYSpeed = 1; speedsXYSpeed < 4; speedsXYSpeed += 1){
-                clearShootingParameters();
-                getParameters(warmUpPose, new ChassisSpeeds(speedsXYSpeed, speedsXYSpeed, speedOmegaRadians));
-            }
-        }
-    }
-
-
-    /**
-     * Generate the poses from the warm up and for each pose, calculate the shooting params
-     */
-    private void warmUpGeneratePoses(){
-        for (int poseVectorAngleDegrees = 0; poseVectorAngleDegrees < 360; poseVectorAngleDegrees += 120){
-            for (int poseVectorSize = 1; poseVectorSize < 4; poseVectorSize += 1){
-                for (int poseFieldRelativeAngleDegrees = 0; poseFieldRelativeAngleDegrees < 360; poseFieldRelativeAngleDegrees += 120){
-                    warmUpWithPose(
-                        new Pose2d(
-                            new Translation2d(poseVectorSize, Rotation2d.fromDegrees(poseVectorAngleDegrees))
-                        , Rotation2d.fromDegrees(poseFieldRelativeAngleDegrees))
-                    );
-                }
-            }
-        }
+            new ChassisSpeeds(rnd.nextDouble(-6, 6), rnd.nextDouble(-4, 4),
+                rnd.nextDouble(-10*2*Math.PI, 10*2*Math.PI))))
+        .withTimeout(10).ignoringDisable(true);
     }
 
     public ShootingParameters getStaticParameters(Pose2d estimatedPose){
