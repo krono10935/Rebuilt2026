@@ -122,13 +122,14 @@ public class RobotContainer
         // } else {
         //     configurePitBindings();
         // }
-
-        // test();
+        test();
     }
 
     private void test(){
         driverController.a().toggleOnTrue(
-            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision));
+            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision)
+                    .raceWith(new WaitUntilCommand(() ->
+                                    !ObjectDetection.getInstance().hasBalls()).andThen(new WaitCommand(0.3))));
         driverController.b().onTrue(Sequences.intakeOpenStart(intake));
         driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
@@ -273,14 +274,14 @@ public class RobotContainer
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                new ShootCommand(shooter, drivetrain, vision).beforeStarting(new SpinUp(shooter, drivetrain))
+                ( (new ShootCommand(shooter, drivetrain, vision)).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                new ShootCommand(shooter, drivetrain, vision).beforeStarting(new SpinUp(shooter, drivetrain))
+                ( (new ShootCommand(shooter, drivetrain, vision)).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobotStationary));
 
-        NamedCommands.registerCommand("spinUp", new SpinUp(shooter, drivetrain));
+        NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17.5), shooter));
 
         NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
                 !ObjectDetection.getInstance().hasBalls()).andThen(new WaitCommand(0.3))
