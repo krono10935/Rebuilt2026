@@ -89,6 +89,10 @@ public class Intake extends SubsystemBase{
       io.resetPositionMotor(value);
     }
 
+    public double getPositionMotorCurrent() {
+        return io.getPositionMotorCurrent();
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run

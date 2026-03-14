@@ -97,4 +97,11 @@ public class IntakeConstants {
 
         specifConfig.currentLimitConfig.freeSpeedCurrentLimit = 60;
     }
+    public static class ResetConstants{
+        public static final double INITIAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.4;
+        public static final double INITIAL_CURRENT_CHECK_FOR_CLOSE = 40;
+        public static final double FINAL_POSITION_CHECK_FOR_CLOSE = 0.05;
+        public static final double FINAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.1;
+        public static final double FINAL_CURRENT_CHECK_FOR_CLOSE = 20;
+    }
 }
