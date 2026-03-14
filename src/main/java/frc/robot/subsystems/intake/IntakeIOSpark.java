@@ -1,5 +1,10 @@
 package frc.robot.subsystems.intake;
 
+import java.util.function.DoubleSupplier;
+
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.captainsoccer.basicmotor.BasicMotor;
@@ -9,7 +14,7 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 public class IntakeIOSpark implements IntakeIO {
     private final BasicMotor intakeMotor;
     private final BasicMotor positionMotor;
-
+    private final DoubleSupplier currentOutputSupplier;
     public IntakeIOSpark() {
 
         intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
@@ -17,6 +22,16 @@ public class IntakeIOSpark implements IntakeIO {
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
 
         SmartDashboard.putData(positionMotor.getController());
+
+        var motor = ((BasicSparkMAX)positionMotor);
+
+        var positionMotorSpark = motor.getMotor();
+
+        currentOutputSupplier = positionMotorSpark::getOutputCurrent;
+ 
+        motor.getSparkConfig().signals.outputCurrentPeriodMs(10);
+
+        positionMotorSpark.configure(motor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     @Override
@@ -105,5 +120,10 @@ public class IntakeIOSpark implements IntakeIO {
     @Override
     public double getIntakePositionMotorVelocity() {
         return positionMotor.getVelocity();
+    }
+
+    @Override
+    public double getPositionMotorCurrent() {
+        return currentOutputSupplier.getAsDouble();
     }
 }

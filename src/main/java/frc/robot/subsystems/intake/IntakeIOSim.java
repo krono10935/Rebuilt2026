@@ -110,4 +110,10 @@ public class IntakeIOSim implements IntakeIO {
     public void resetPositionMotor(double posMeters) {
         positionMotor.resetEncoder(posMeters);
     }
+
+
+    @Override
+    public double getPositionMotorCurrent() {
+        return positionMotor.getSensorData().currentOutput();
+    }
 }
