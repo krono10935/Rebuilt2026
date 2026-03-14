@@ -302,6 +302,16 @@ public class Drivetrain extends SubsystemBase {
         return poseEstimator.getEstimatedPosition();
     }
 
+
+        /**
+     * Return the latest position of the robot flipped based on alliance
+     *
+     * @return the latest pose flipped based on alliance
+     */
+    public Pose2d getEstimatedPositionFlipped() {
+        return AllianceFlipUtil.apply(getEstimatedPosition());
+    }
+
     /**
      * Set if the module is Brake or Coast
      * @param isBrake whether the module motor should resist outside change in disable
