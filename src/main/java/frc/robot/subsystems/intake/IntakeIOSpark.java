@@ -96,4 +96,14 @@ public class IntakeIOSpark implements IntakeIO {
     public void setPositionMotorPercent(double dutyCycle) {
         positionMotor.setPercentOutput(dutyCycle);
     }
+
+    @Override
+    public void setPositionMotorSlowly(double posMeters){
+        positionMotor.setControl(posMeters,ControlMode.PROFILED_POSITION, 1);
+    }
+
+    @Override
+    public double getIntakePositionMotorVelocity() {
+        return positionMotor.getVelocity();
+    }
 }

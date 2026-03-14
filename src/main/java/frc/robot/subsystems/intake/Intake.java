@@ -73,8 +73,20 @@ public class Intake extends SubsystemBase{
         return !isStopped;
     }
 
+    public void setPositionMotorSlowly(double posMeters){
+      io.setPositionMotorSlowly(posMeters);
+    }
+
+    public double getPositionMotorVelocity(){
+      return io.getIntakePositionMotorVelocity();
+    }
+
     public void resetEncoder(){
         io.resetPositionMotor(0); // arab
+    }
+
+    public void resetEncoderOpen(double value){
+      io.resetPositionMotor(value);
     }
 
     @Override

@@ -97,6 +97,16 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
+    public void setPositionMotorSlowly(double posMeters){
+        positionMotor.setControl(posMeters,ControlMode.PROFILED_POSITION, 1);
+    }
+
+    @Override
+    public double getIntakePositionMotorVelocity() {
+        return positionMotor.getVelocity();
+    }
+
+    @Override
     public void resetPositionMotor(double posMeters) {
         positionMotor.resetEncoder(posMeters);
     }

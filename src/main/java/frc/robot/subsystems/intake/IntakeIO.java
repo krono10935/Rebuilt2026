@@ -76,6 +76,10 @@ public interface IntakeIO {
 
     void setPositionMotorPercent(double dutyCycle);
 
+    void setPositionMotorSlowly(double posMeters);
+
+    double getIntakePositionMotorVelocity ();
+
     void updateInputs(IntakeInputs inputs);
 
 }

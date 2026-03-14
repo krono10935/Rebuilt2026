@@ -72,7 +72,7 @@ public class SwerveModuleBasic extends SwerveModuleIO {
         steeringMotor.setControl(targetState.angle.getRotations(),ControlMode.POSITION);
     }
 
-    //TODO: tune pid with balls 
+    //TODO: tune pid with balls
     @Override
     public void setTargetStateWithBalls(SwerveModuleState targetState){
         drivingMotor.setControl(targetState.speedMetersPerSecond, ControlMode.VELOCITY);

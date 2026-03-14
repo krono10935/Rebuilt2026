@@ -25,7 +25,8 @@ public class ShootRealConstants {
     public static final double HOOD_SETPOINT_ARRIVAL_TIME = 2; //seconds
 
     public static final double FLYWHEEL_TIME_TO_REACH_GOAL = 2; // seconds
-    public static final double FLYWHEEL_TIME_TO_REACH_SPINUP = 5; // seconds
+    public static final double
+            FLYWHEEL_TIME_TO_REACH_SPINUP = 5; // seconds
 
     public static final double TIME_TO_NOT_BE_DEADBAND = 0.1;
 

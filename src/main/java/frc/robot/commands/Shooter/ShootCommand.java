@@ -119,8 +119,8 @@ public class ShootCommand extends Command {
     shooter.keepVelocity(targetFlywheelSpeed);
     shooter.setHoodAngle(targetHoodAngle);
 
-    boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
-
+    //boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
+    boolean thetaAtSetpoint = true;
 
     if(!hasReachedTargetVelocity && shooter.isShooterAtGoal()){
       hasReachedTargetVelocity = true;

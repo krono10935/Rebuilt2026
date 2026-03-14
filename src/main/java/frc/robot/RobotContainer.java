@@ -13,6 +13,9 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
+import frc.utils.AllianceFlipUtil;
+import frc.utils.controllers.ControllerMultiplierType;
+import frc.utils.controllers.ExponentialCommandXboxController;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.Logger;
@@ -66,11 +69,12 @@ public class RobotContainer
 
     public final Intake intake;
 
-    private final CommandXboxController driverController;
+    private final ExponentialCommandXboxController driverController;
 
     private final CommandGenericHID operatorController;
 
     public final Drivetrain drivetrain;
+
 
     private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -94,7 +98,7 @@ public class RobotContainer
 
         intake = new Intake();
 
-        driverController = new CommandXboxController(0);
+        driverController = new ExponentialCommandXboxController(0, ControllerMultiplierType.SQRT);
 
         operatorController = new CommandGenericHID(1);
 
@@ -126,10 +130,7 @@ public class RobotContainer
     }
 
     private void test(){
-        driverController.a().toggleOnTrue(
-            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision)
-                    .raceWith(new WaitUntilCommand(() ->
-                                    !ObjectDetection.getInstance().hasBalls()).andThen(new WaitCommand(0.3))));
+        driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
         driverController.b().onTrue(Sequences.intakeOpenStart(intake));
         driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
@@ -137,6 +138,31 @@ public class RobotContainer
         driverController.y().onTrue(IntakeFactory.resetIntake(intake));
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
+
+        Trigger closeEnoughToSpinUp = new Trigger(()
+                -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
+                FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
+        ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
+
+        closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
+                        shooter.getCurrentCommand() == shooter.getDefaultCommand()));
+
+        BooleanSupplier isHubActive = () -> {
+            double time = DriverStation.getMatchTime();
+
+            return Constants.HubTiming.isActive(time) ||
+                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
+                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
+        };
+
+//        new Trigger( () ->true).and(RobotState::isTeleop).
+//                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())
+//                        && ObjectDetection.getInstance().hasBalls())
+//                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
+//        Logger.recordOutput("alliancePose", FieldConstants.Hub.topCenterPoint);
+//        Logger.recordOutput("alliancePoseAPplu", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
+
+
     }
 
 

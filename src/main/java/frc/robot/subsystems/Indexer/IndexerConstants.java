@@ -6,7 +6,7 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 public class IndexerConstants {
 
 
-    public static final double SPINNING_TARGET_VELOCITY = 14;//RPS (tuff btw)
+    public static final double SPINNING_TARGET_VELOCITY = 22;//RPS (tuff btw)
 
     public static final double SPEED_DEADBAND = 0.01;
 
@@ -20,6 +20,7 @@ public class IndexerConstants {
         configLeftMotor.motorConfig.gearRatio = 42.0/15;
 
         configLeftMotor.currentLimitConfig.freeSpeedCurrentLimit = 40;
+        configLeftMotor.currentLimitConfig.stallCurrentLimit = 80;
 
         configLeftMotor.slot0Config.pidConfig.kP = 0.05;
         configLeftMotor.slot0Config.pidConfig.kI = 0.001;
@@ -50,8 +51,9 @@ public class IndexerConstants {
         configRightMotor.motorConfig.inverted = true;
 
         configRightMotor.currentLimitConfig.freeSpeedCurrentLimit = 40;
+        configRightMotor.currentLimitConfig.stallCurrentLimit = 80;
 
-        configRightMotor.slot0Config.pidConfig.kP = 0.05;
+        configRightMotor.slot0Config.pidConfig.kP = 0.01;
         configRightMotor.slot0Config.pidConfig.kI = 0.001;
 
         configRightMotor.slot0Config.pidConfig.iMaxAccum = 2;

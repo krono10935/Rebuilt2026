@@ -388,6 +388,9 @@ public class Drivetrain extends SubsystemBase {
         Logger.recordOutput("Distance to hub", 
         getEstimatedPosition().getTranslation().getDistance(AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint).toTranslation2d()));
 
+        Logger.recordOutput("usFlipped", AllianceFlipUtil.apply(getEstimatedPosition()));
+        Logger.recordOutput("hubFLipped", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint));
+
 
 
 

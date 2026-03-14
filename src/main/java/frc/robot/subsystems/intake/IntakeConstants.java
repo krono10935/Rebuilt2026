@@ -15,7 +15,7 @@ public class IntakeConstants {
 
     //the positions of the intake (closed and opend)
     public static final double CLOSE_POSITION = 0;
-    public static final double OPEN_POSITION = 0.4;
+    public static final double OPEN_POSITION = 0.367;
 
     public static final double INTAKE_VELOCITY = 4;
 
@@ -67,6 +67,16 @@ public class IntakeConstants {
         posConfig.pidConfig.iMaxAccum = 4;
         posConfig.pidConfig.iZone = 0.1;
         posConfig.pidConfig.tolerance = 0.003;
+
+        SlotConfig posForSlowly = positionMotorConfig.slot1Config;
+        posForSlowly.pidConfig.kP = 30;
+        posForSlowly.pidConfig.kI = 0.5;
+        posForSlowly.pidConfig.kD = 0;
+        posForSlowly.pidConfig.iMaxAccum = 4;
+        posForSlowly.pidConfig.iZone = 0.1;
+        posForSlowly.pidConfig.tolerance = 0.003;
+        posForSlowly.profileConfig.maximumMeasurementVelocity = 0.05;
+        posForSlowly.profileConfig.maximumMeasurementAcceleration = 1;
 
         posConfig.profileConfig.maximumMeasurementVelocity = 10; 
         posConfig.profileConfig.maximumMeasurementAcceleration = 10;
