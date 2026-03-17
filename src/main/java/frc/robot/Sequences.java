@@ -33,6 +33,8 @@ public class Sequences {
 
     /**
      * Checks if robot is close enough to the tower to safely open climb.
+     * @param robotPose the robot pose
+     * @param towerSidePose the pose of the side of the tower that you choose
      */
     private static boolean closeEnoughToOpenClimb(Pose2d robotPose, Translation2d towerSidePose) {
         return robotPose.getTranslation().getDistance(towerSidePose)
@@ -41,6 +43,8 @@ public class Sequences {
 
     /**
      * Checks if robot is far enoughto the tower to safely close climb.
+     * @param robotPose the robot pose
+     * @param towerSidePose the pose of the side of the tower that you choose
      */
     private static boolean farEnoughToCloseClimb(Pose2d robotPose, Translation2d towerSidePose) {
         return robotPose.getTranslation().getDistance(towerSidePose)
@@ -50,6 +54,7 @@ public class Sequences {
     /**
      * Determines from which direction (top or bottom of the field)
      * the robot is approaching the tower.
+     * @param robotPose the robot pose
      */
     private static boolean isComingFromTop(Pose2d robotPose) {
         return robotPose.getX() > 4.0; //TODO Figure out logic of sides, TOP != the same side in both Alliance zone ALSO NO MAGIC NUMBER MAKE IT CONSTANT
@@ -57,6 +62,7 @@ public class Sequences {
 
     /**
      * Attempts to close climb, retries once if failed.
+     * @param climb
      */
     private static Command closeAndRetryClosingIfFailed(Climb climb) {
 
@@ -72,7 +78,11 @@ public class Sequences {
     }
 
     /**
-     * Stops intake, shooter, and optionally climb (whether or not climb is null).
+     * A command which stops intake, shooter, and optionally climb (if climb isn't null).
+     * @param intake
+     * @param climb
+     * @param shooter
+     * @return the command
      */
     private static Command closeSubsystems(Intake intake, Climb climb, Shooter shooter) {
 
@@ -92,6 +102,9 @@ public class Sequences {
 
     /**
      * Closes everything and opens climb.
+     * @param intake
+     * @param climb
+     * @param shooter
      */
     public static Command climbOpen(Intake intake, Climb climb, Shooter shooter) {
         return new SequentialCommandGroup(
@@ -102,6 +115,13 @@ public class Sequences {
 
     /**
      * Full autonomous climb routine.
+     * @param intake
+     * @param drivetrain
+     * @param climb
+     * @param climbSideSupplier which side to climb to
+     * @param shooter
+     * @param vision
+     * @return A full climb command
      */
     public static Command autoClimb(
             Intake intake,
@@ -142,6 +162,9 @@ public class Sequences {
 
     /**
      * Builds map for climb side driving.
+     * @param drivetrain
+     * @param driveBack Whether or not to drive backwards when the declimb is finished
+     * @return
      */
     private static Map<TowerSide, Command> getClimbSideMap(Drivetrain drivetrain, boolean driveBack) {
         Map<TowerSide, Command> map = new TreeMap<>();
@@ -155,6 +178,13 @@ public class Sequences {
 
     /**
      * Autonomous declimb routine.
+     * @param intake
+     * @param drivetrain
+     * @param climb
+     * @param climbSideSupplier Which side to climb to
+     * @param shooter
+     * @param vision
+     * @return the command for the auto declimb
      */
     public static Command autoDeclimb(
             Intake intake,
@@ -185,6 +215,7 @@ public class Sequences {
 
     /**
      * Opens intake safely and starts motor.
+     * @param intake
      */
     public static Command intakeOpenStart(Intake intake) {
         return OpenCommand.openWithErrorHandeling(intake)
@@ -193,6 +224,7 @@ public class Sequences {
 
     /**
      * Stops intake and safely closes it.
+     * @param intake
      */
     public static Command stopIntakeAndClose(Intake intake) {
         return CloseCommand.closeWithErrorHandeling(intake)
@@ -201,6 +233,7 @@ public class Sequences {
 
     /**
      * Checks if chassis speeds match delivery target.
+     * @param speeds The current ChassisSpeeds
      */
     private static boolean matchesDeliveryChassisSpeeds(ChassisSpeeds speeds) {
 
@@ -217,6 +250,9 @@ public class Sequences {
     /**
      * Delivery sequence:
      * spins shooter, aligns robot, and fires.
+     * @param drivetrain
+     * @param shooter
+     * @param controller the driver's controller
      */
     public static Command delivery(
             Drivetrain drivetrain,
