@@ -51,10 +51,6 @@ public class Intake extends SubsystemBase{
         return io.positionMotorAtSetPoint();
     }
 
-    public void setPositionMotorVelocity(Rotation2d velocity){
-      io.setPositionMotorVelocity(velocity);
-    }
-
     public void stopIntakeOpeningMotor(){
         io.stopPositiongMotor();
     }

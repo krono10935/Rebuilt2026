@@ -10,17 +10,17 @@ public interface IndexerIO {
     }
 
     /**
-     * sets the spindexer motor percent to the constant
+     * Sets the spindexer motor percent to the constant
      */
     void turnOn();
 
     /**
-     * stops the motor
+     * Stops the motor
      */
     void turnOff();
 
-    /*
-     * @return if the indexer is stuck
+    /**
+     * @return Whether the indexer is stuck
      */
     boolean isStuck();
 
