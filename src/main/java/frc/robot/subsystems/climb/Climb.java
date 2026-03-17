@@ -1,12 +1,7 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.climb;
 
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.subsystems.climb.ClimbConstants.ClimbState;
-import frc.utils.ErrorMessage;
 import frc.utils.ParallelRaceGroupWithWinner;
 
 import org.littletonrobotics.junction.Logger;
@@ -17,7 +12,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 
 
 public class Climb extends SubsystemBase{
-  /** Creates a new Climb. */
   private final ClimbIO io;
 
   private final ClimbInputsAutoLogged inputs;
@@ -33,52 +27,59 @@ public class Climb extends SubsystemBase{
 
   @Override
   public void periodic() {
-
     io.update(inputs);
 
     Logger.processInputs(getName(), inputs);
-    Logger.recordOutput(getName()+"/command", getCurrentCommand() == null ? "none" : getCurrentCommand().getName());
+    Logger.recordOutput(getName()+"/command",
+        getCurrentCommand() == null ? "none" : getCurrentCommand().getName());
     Logger.recordOutput(getName()+"/isAtSetPoint", isAtSetPoint());
   }
 
   /**
-   * closes the climb
+   * Closes the climb
    */
   private void close(){
     io.close();
   }
 
-
   /**
-   * opens the climb
+   * Opens the climb
    */
   private void open(){
     io.open();
   }
 
+  /**
+   * Stop the motor (activate coast)
+   */
   private void stop(){
     io.stop();
   }
 
   /**
-   * 
-   * @return if the climb is at setPoint
+   * @return whether the climb is at its setpoint
    */
   public boolean isAtSetPoint(){
     return io.isAtSetPoint();
   }
 
-
-    public boolean getHasClimbed() {
-        return hasClimbed;
-    }
-
-    public void setHasClimbed(boolean hasClimbed) {
-        this.hasClimbed = hasClimbed;
-    }
+  /**
+   * @return whether or not the robot has climbed
+   */
+  public boolean getHasClimbed() {
+      return hasClimbed;
+  }
 
   /**
-   * 
+   * Set whether or not the robot has climbed
+   * @param hasClimbed whether or not the robot has climbed
+   */
+  public void setHasClimbed(boolean hasClimbed) {
+      this.hasClimbed = hasClimbed; //TODO actually use this in our sequences
+  }
+
+  /**
+   * Builds a command that tries to close the climb, and if it takes too long stop
    * @return the close command
    */
   public Command closeCommand(){
@@ -92,13 +93,13 @@ public class Climb extends SubsystemBase{
             this).raceWith(ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
               new WaitUntilCommand(() -> inputs.state == ClimbState.CLOSED)
                 .andThen(new InstantCommand(() -> failedToClose.set(false))),
-              ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB, 
+              ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN, 
               new InstantCommand(this::stop)
                 .andThen(new InstantCommand(() -> failedToClose.set(true)))));
   }
   
   /**
-   * 
+   * Builds a command that tries to open the climb, and if it takes too long stop
    * @return the open command
    */
   public Command openCommand(){
@@ -106,16 +107,17 @@ public class Climb extends SubsystemBase{
     Alert failedToOpen = new Alert("Failed to open climb!", AlertType.kError);
     
     return new FunctionalCommand(this::open,
-            ()->{},
-            (interrupted)->io.stop(),
-            this::isAtSetPoint,
-            this).raceWith(ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
-              new WaitUntilCommand(() -> inputs.state == ClimbState.OPEN)
-                .andThen(new InstantCommand(() -> failedToOpen.set(false))),
-              ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN_CLIMB, 
-              new InstantCommand(this::stop)
-                .andThen(new InstantCommand(() -> failedToOpen.set(true)))));
-
+      ()->{},
+      (interrupted)->io.stop(),
+      this::isAtSetPoint,
+      this).raceWith(ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
+        new WaitUntilCommand(() -> inputs.state == ClimbState.OPEN)
+          .andThen(new InstantCommand(() -> failedToOpen.set(false))),
+        ClimbConstants.TIME_FOR_CLIMB_TO_CLOSE_OR_OPEN, 
+        new InstantCommand(this::stop)
+          .andThen(new InstantCommand(() -> failedToOpen.set(true)))
+      )
+    );
   }
 }
 

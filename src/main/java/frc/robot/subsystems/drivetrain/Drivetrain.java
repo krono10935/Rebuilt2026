@@ -26,8 +26,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drivetrain.gyro.GyroIO;
@@ -55,8 +53,8 @@ public class Drivetrain extends SubsystemBase {
         public ChassisSpeeds speeds = new ChassisSpeeds();
         public SwerveModuleState[] moduleStates = new SwerveModuleState[4];
     }
-    private final ChassisConstants constants;
 
+    private final ChassisConstants constants;
 
     private final DrivetrainInputsAutoLogged inputs = new DrivetrainInputsAutoLogged();
 
@@ -92,8 +90,7 @@ public class Drivetrain extends SubsystemBase {
 
 
 
-
-        for(int i=0;i<4;i++){
+        for(int i = 0; i < 4; i++){
             io[i] = new SwerveModuleBasic(constants.MODULE_CONSTANTS[i]);
             inputs.moduleStates[i] = io[i].getState();
             modulePositions[i] = io[i].getPosition();
@@ -221,7 +218,6 @@ public class Drivetrain extends SubsystemBase {
      */
     public void stop(){
 
-
         previousSetpoint = new SwerveSetpoint(new ChassisSpeeds(),kinematics.toSwerveModuleStates(new ChassisSpeeds()),ZEROS);
 
         for (int i = 0; i < 4; i++){
@@ -344,13 +340,20 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    /**
+     * Clear the displayed path
+     */
     public void clearFiledPath(){
         field.getObject("path").setPoses();
     }
 
+    /**
+     * @param path the path to display
+     */
     public void addPathToField(ArrayList<Pose2d> path){
         field.getObject("path").setPoses(path);
     }
+
     /**
      *
      * @param goalPose goal position to drive to
@@ -361,7 +364,9 @@ public class Drivetrain extends SubsystemBase {
                 0, DriveToPoseConstants.DISTANCE_TO_STOP_PP);
     }
 
-
+    /**
+     * @return a command that resets the gyro
+     */
     public Command resetGyro(){
         return new InstantCommand(this::resetOnlyGyro).ignoringDisable(true);
     }
@@ -371,7 +376,7 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         inputs.gyroAngle = this.gyro.update();
 
-        for (int i=0;i<4;i++){
+        for (int i = 0; i < 4; i++){
             io[i].update();
             this.inputs.moduleStates[i] = io[i].getState();
             modulePositions[i] = io[i].getPosition();
@@ -401,11 +406,7 @@ public class Drivetrain extends SubsystemBase {
         Logger.recordOutput("usFlipped", AllianceFlipUtil.apply(getEstimatedPosition()));
         Logger.recordOutput("hubFLipped", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint));
 
-
-
-
     }
-
 
 }
 

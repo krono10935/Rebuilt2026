@@ -13,7 +13,6 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
-import frc.utils.AllianceFlipUtil;
 import frc.utils.controllers.ControllerMultiplierType;
 import frc.utils.controllers.ExponentialCommandXboxController;
 import org.json.simple.parser.ParseException;
@@ -30,12 +29,12 @@ import com.pathplanner.lib.path.DriveToPoseConstants;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
 import frc.robot.commands.Drivetrain.DriveCommand;
@@ -115,7 +114,7 @@ public class RobotContainer
 
         new Trigger(()-> DriverStation.isDSAttached()).onTrue(new InstantCommand(() -> Elastic.selectTab("Autonomous")));
 
-        SmartDashboard.putNumber("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
+        SmartDashboard.putNumber("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage()); //TODO: fix
         Logger.recordOutput("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
 
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
@@ -129,6 +128,9 @@ public class RobotContainer
         test();
     }
 
+    /**
+     * Test bindings
+     */
     private void test(){
         driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
         driverController.b().onTrue(Sequences.intakeOpenStart(intake));
@@ -165,8 +167,9 @@ public class RobotContainer
 
     }
 
-
-
+    /**
+     * Configure bindings for the Pit.
+     */
     private void configurePitBindings() {
         //TODO test these
         LoggedNetworkNumber spinUpSpeedMPS = new LoggedNetworkNumber("spinUpSpeedMPS", 10);
@@ -177,12 +180,18 @@ public class RobotContainer
         // Disable all subsystems commands
         driverController.b().onTrue(new InstantCommand(() -> {
             drivetrain.getCurrentCommand().cancel();
+            drivetrain.stop();
             CommandScheduler.getInstance().schedule(drivetrain.idle());
 
             shooter.getCurrentCommand().cancel();
+            shooter.stopFlyWheel();
+            shooter.toggleKicker(false);
+            shooter.getIndexer().turnOff();
             CommandScheduler.getInstance().schedule(shooter.idle());
 
             intake.getCurrentCommand().cancel();
+            intake.stopIntakeMotor();
+            intake.stopIntakeOpeningMotor();
             CommandScheduler.getInstance().schedule(intake.idle());
         }));
 
@@ -195,8 +204,11 @@ public class RobotContainer
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
     }
 
+    /**
+     * Configure the bindings for the match
+     */
     private void configureBindings() {
-        //TOOD test these
+        //TODO test these
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
         
         driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, driverController)));
@@ -222,8 +234,10 @@ public class RobotContainer
             ShootCommand.AddToFlywheelOffset(-ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK))
         );
 
-        operatorController.button(1).onTrue(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(true)))
-        .onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
+        operatorController.button(1).onTrue(    
+            new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(true))
+
+        ).onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
 
         
         Trigger closeEnoughToSpinUp = new Trigger(()
@@ -246,20 +260,27 @@ public class RobotContainer
         new Trigger(isHubActive).and(RobotState::isTeleop).
                 and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
                 .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
-
-
     }
+
+    /**
+     * @return the chosen autonomous command.
+     */
     public Command getAutonomousCommand()
     {
         var selectedAuto = autoChooser.get();
 
-        Command autoCommand = Commands.sequence(IntakeFactory.resetIntake(intake), selectedAuto, drivetrain.idle());
+        Command autoCommand = Commands.sequence(
+            IntakeFactory.resetIntake(intake), selectedAuto, drivetrain.idle());
 
         CommandScheduler.getInstance().removeComposedCommand(selectedAuto);
 
         return autoCommand.withName(selectedAuto.getName());
     }
 
+    /**
+     * Displays the path the auto {@code command} takes
+     * @param command the command runnning in auto
+     */
     private void displayChosenAuto(Command command){
         if(RobotState.isEnabled()){
             drivetrain.clearFiledPath();
@@ -286,6 +307,12 @@ public class RobotContainer
         drivetrain.addPathToField(poses);
     }
 
+
+    /**
+     * @param driveAndHomeCommand that pathplanner will use (replaces it with a PPController)
+     * @return A LoggedDashboardChooser for the auto commands and gives
+     * PathPlanner sequences for our auto commands
+     */
     public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
 
         Command aimRobot = new StartEndCommand(() -> {

@@ -23,6 +23,8 @@ public class ShooterIOSim implements ShooterIO {
 
     private boolean isKickerActive;
 
+    private double targetVelocity;
+
     public ShooterIOSim(){
         shooterConfig = ShootRealConstants.getLeadShootingMotorConfig();
         leadShootingMotor = new BasicFlywheelSim(shooterConfig);
@@ -37,22 +39,14 @@ public class ShooterIOSim implements ShooterIO {
 
         @Override
     public void spinUp(double speedMPS){
+        targetVelocity = speedMPS;
         leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 0);
         Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
-    public void keepVelocity(double speedMPS){
-
-        double arbFF = 0;
-        double kicker_error = kickerMotor.getController().getSetpointAsDouble() - kickerMotor.getVelocity();
-
-        if (ShootRealConstants.KICKER_MAX_ERROR_FOR_FLYWHEEL_FEEDFORWARD < kicker_error 
-            && kicker_error > ShootRealConstants.KICKER_MIN_ERROR_FOR_FLYWHEEL_FEEDFORWARD){
-            arbFF = kicker_error * ShootRealConstants.KICKER_ERROR_FEEDFORWARD_SCALAR;
-        }
-
-        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, arbFF, 1);
+    public void keepVelocity(double speedMPS){ // TODO WTF THIS SHOULD NOT WORK
+        leadShootingMotor.setControl(targetVelocity , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
 
@@ -75,7 +69,7 @@ public class ShooterIOSim implements ShooterIO {
     @Override
     public void toggleKicker(boolean isActive){
         if(isActive){
-            kickerMotor.setPercentOutput(ShooterConstants.KICKER_PERCENT_OUTPUT);
+            kickerMotor.setControl(ShootRealConstants.KICKER_SPEED_MPS, ControlMode.VELOCITY);
         }
         else{
             kickerMotor.stop();

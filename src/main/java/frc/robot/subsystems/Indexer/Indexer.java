@@ -7,11 +7,9 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
-import frc.utils.ErrorMessage;
 import frc.utils.ParallelRaceGroupWithWinner;
 
 public class Indexer extends SubsystemBase {
@@ -20,9 +18,8 @@ public class Indexer extends SubsystemBase {
 
     private IndexerInputsAutoLogged inputs = new IndexerInputsAutoLogged();
 
-
     public Indexer(){
-        this.io = RobotBase.isReal()? new IndexerIOReal(): new IndexerIOSim();
+        this.io = RobotBase.isReal() ? new IndexerIOReal(): new IndexerIOSim();
     }
 
     @Override
@@ -33,21 +30,21 @@ public class Indexer extends SubsystemBase {
     }
 
     /**
-     * sets the spindexer motor precent to the constant
+     * Enables the indexer
      */
     public void turnOn(){
         io.turnOn();
     }
 
     /**
-     * stops the motor
+     * Diisable the indexer
      */
     public void turnOff(){
         io.turnOff();
     }
 
     /**
-     * @return command which turns on the indexer
+     * @return A command which enables the indexer, waits long enough to be sure it is stuck, and if it is stuck disable it.
      */
     public Command turnOnIndexerCommand(){
         @SuppressWarnings("resource")
@@ -76,14 +73,14 @@ public class Indexer extends SubsystemBase {
     }
 
     /**
-     * @return command which turns off the indexer
+     * @return a command which disables the indexer
      */
     public Command turnOffIndexerCommand(){
         return new InstantCommand(() -> turnOff(), this);
     }
 
     /**
-     * @return if the indexer is stuck
+     * @return whether or not the indexer is stuck
      */
     public boolean isStuck(){
         return io.isStuck();

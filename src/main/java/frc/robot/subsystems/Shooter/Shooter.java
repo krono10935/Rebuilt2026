@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.Shooter;
 
-import frc.utils.ErrorMessage;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -43,7 +42,7 @@ public class Shooter extends SubsystemBase{
     else if(Constants.CHASSIS_TYPE == ChassisType.DEVBOT){
       io = new ShooterIODevBot();
     }
-    else{
+    else {
       io = new ShooterIOReal();
     }
 
@@ -65,8 +64,11 @@ public class Shooter extends SubsystemBase{
 
     }
 
+    /**
+     * Log for sysid
+     */
     public void logSysID(){
-    io.logSysID();
+      io.logSysID();
     }
 
     /**
@@ -84,7 +86,7 @@ public class Shooter extends SubsystemBase{
     }
 
     /**
-    * stop the flywheel
+    * Stop the flywheel
     */
     public void stopFlyWheel(){
         io.stopFlyWheel();
@@ -93,18 +95,18 @@ public class Shooter extends SubsystemBase{
 
     /**
     *
-    * @return is shooter at setpoint
+    * @return whether the shooter is at setpoint
     */
     public boolean isShooterAtGoal(){
-    return io.isShooterAtGoal();
+      return io.isShooterAtGoal();
     }
 
     /**
     *
-    * @param voltage apply the voltage to the flywheel motor(s)
+    * @param voltage apply this voltage to the flywheel motor(s)
     */
     public void setVoltage(double voltage){
-    io.setFlyWheelVoltage(voltage);
+      io.setFlyWheelVoltage(voltage);
     }
 
     /**
@@ -124,10 +126,10 @@ public class Shooter extends SubsystemBase{
 
     /**
     *
-    * @return is hood at setpoint
+    * @return whether the hood is at setpoint
     */
     public boolean isHoodAtSetpoint(){
-    return io.isHoodAtSetpoint();
+      return io.isHoodAtSetpoint();
     }
 
     /**
@@ -135,29 +137,35 @@ public class Shooter extends SubsystemBase{
     * @param angle angle to set the hood to
     */
     public void setHoodAngle(Rotation2d angle){
-    io.setHoodAngle(angle);
+      io.setHoodAngle(angle);
     }
 
+    /**
+     * @return whether the shooter is ready to shoot
+     */
     public boolean readyToShoot(){
-    return isHoodAtSetpoint() && isShooterAtGoal();
+      return isHoodAtSetpoint() && isShooterAtGoal();
     }
 
+    /**
+     * @return the indexer (the subsystem is coupled with shooter)
+     */
     public Indexer getIndexer(){
-    return indexer;
+      return indexer;
     }
 
+    /**
+     * @param dutyCycle apply this duty cycle to the flywheel
+     */
     public void dutyCycle(double dutyCycle){
       io.setFlyWheelVoltage(dutyCycle * 12);
     }
 
-    public boolean isKeepingVelocity(){return isKeepingVelocity;}
-
-
-    public boolean shouldSpinUpForShootCommand(){
-      boolean shouldSpinUp = false;
-      Phase closePhase =
-       Phase.getActivePhase(DriverStation.getMatchTime() - ShooterConstants.SECONDS_TO_LOOK_FORWARD_FOR_SPINUP);
-
-      return shouldSpinUp;
+    /**
+     * @return whether the shooter is keeping velocity
+     */
+    public boolean isKeepingVelocity(){
+      return isKeepingVelocity;
     }
+
 }
