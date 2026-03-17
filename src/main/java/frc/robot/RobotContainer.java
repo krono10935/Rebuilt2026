@@ -11,10 +11,9 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
-import frc.utils.controllers.ControllerMultiplierType;
-import frc.utils.controllers.ExponentialCommandXboxController;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.Logger;
@@ -67,7 +66,7 @@ public class RobotContainer
 
     public final Intake intake;
 
-    private final ExponentialCommandXboxController driverController;
+    private final CommandXboxController driverController;
 
     private final CommandGenericHID operatorController;
 
@@ -96,7 +95,7 @@ public class RobotContainer
 
         intake = new Intake();
 
-        driverController = new ExponentialCommandXboxController(0, ControllerMultiplierType.SQRT);
+        driverController = new CommandXboxController(0);
 
         operatorController = new CommandGenericHID(1);
 
@@ -200,7 +199,7 @@ public class RobotContainer
         driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, driverController)));
 
         driverController.x().onTrue(
-                Sequences.delivery(drivetrain, shooter, driverController,intake));
+                Sequences.delivery(drivetrain, shooter, driverController));
 
         driverController.a().onTrue(drivetrain.resetGyro());
 
