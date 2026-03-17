@@ -9,6 +9,7 @@ public interface IntakeIO {
     class IntakeInputs {
         double position;
         double velocity;
+        double positionMotorCurrent;
     }
 
     /**
@@ -79,11 +80,6 @@ public interface IntakeIO {
     void setPositionMotorSlowly(double posMeters);
 
     double getIntakePositionMotorVelocity ();
-    /**
-     * 
-     * @return the current current applied to the position motor
-     */
-    double getPositionMotorCurrent();
 
     void updateInputs(IntakeInputs inputs);
 

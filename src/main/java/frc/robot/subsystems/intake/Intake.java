@@ -90,7 +90,7 @@ public class Intake extends SubsystemBase{
     }
 
     public double getPositionMotorCurrent() {
-        return io.getPositionMotorCurrent();
+        return inputs.positionMotorCurrent;
     }
 
     @Override

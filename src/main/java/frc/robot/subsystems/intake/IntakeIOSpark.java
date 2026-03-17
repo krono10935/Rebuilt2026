@@ -94,7 +94,8 @@ public class IntakeIOSpark implements IntakeIO {
     @Override
     public void updateInputs(IntakeInputs inputs) {
         inputs.position = positionMotor.getPosition();
-        inputs.velocity = intakeMotor.getVelocity(); 
+        inputs.velocity = intakeMotor.getVelocity();
+        inputs.positionMotorCurrent = currentOutputSupplier.getAsDouble();
     }
 
     @Override
@@ -120,10 +121,5 @@ public class IntakeIOSpark implements IntakeIO {
     @Override
     public double getIntakePositionMotorVelocity() {
         return positionMotor.getVelocity();
-    }
-
-    @Override
-    public double getPositionMotorCurrent() {
-        return currentOutputSupplier.getAsDouble();
     }
 }
