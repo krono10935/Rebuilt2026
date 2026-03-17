@@ -1,11 +1,9 @@
 package frc.robot.subsystems.intake;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig.SlotConfig;
 import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
-import io.github.captainsoccer.basicmotor.gains.FeedForwardsGains.KG;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class IntakeConstants {
@@ -103,5 +101,7 @@ public class IntakeConstants {
         public static final double FINAL_POSITION_CHECK_FOR_CLOSE = 0.05;
         public static final double FINAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.15;
         public static final double FINAL_CURRENT_CHECK_FOR_CLOSE = 30;
+
+        public static final double MAX_CURRENT_LIMIT = 50;
     }
 }
