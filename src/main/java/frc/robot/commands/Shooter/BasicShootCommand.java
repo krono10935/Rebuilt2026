@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
+import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
@@ -190,7 +190,7 @@ public class BasicShootCommand extends Command {
 
 
   public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
-    DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
+    DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
     Command shootCommand = (
         new ShootCommand(shooter, drivetrain, vision)  
         .alongWith((new ShakeItOffCommand(intake)))

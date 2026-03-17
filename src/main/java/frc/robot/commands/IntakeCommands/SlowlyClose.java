@@ -5,56 +5,49 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-import org.opencv.core.Mat;
 
+/**
+ * Command to slowly close the intake by controlling its motor percentage.
+ * Gradually reduces the open position and moves the intake motor slowly.
+ */
 public class SlowlyClose extends Command {
 
     private final Intake intake;
-
     private final LoggedNetworkNumber slowlyClosePercent;
 
-    private double openPos = IntakeConstants.OPEN_POSITION;
-
+    private double openPos;
     private boolean closing = true;
+    private final Timer timerToOpenAgain;
 
-    private Timer timerToOpenAgain;
-
+    /**
+     * Creates a new SlowlyClose command.
+     *
+     * @param intake The intake subsystem to control.
+     */
     public SlowlyClose(Intake intake) {
         this.intake = intake;
-        slowlyClosePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0 );
-        openPos = IntakeConstants.OPEN_POSITION;
-        timerToOpenAgain = new Timer();
-
+        this.slowlyClosePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0);
+        this.openPos = IntakeConstants.OPEN_POSITION;
+        this.timerToOpenAgain = new Timer();
     }
 
     @Override
-    public boolean isFinished() {
-        return super.isFinished();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
-        intake.setPositionMotorPercent(0);
+    public void initialize() {
+        intake.setPositionMotorSlowly(0);
+        intake.setPercent(-0.2);
     }
 
     @Override
     public void execute() {
-        super.execute();
 
-//        if((intake.getPositionMotorVelocity() <= 0.001 && closing) && timerToOpenAgain.get() > 1.5){
-//            openPos /=2.0;
-//            intake.setPosition(openPos);
-//            closing = false;
-//            timerToOpenAgain.reset();
-//
-//        }
-        if(Math.abs(intake.getIntakePosition()) <= 0.003  ){
-            openPos /=2.0;
+        // Gradually reduce open position and move intake
+        if (Math.abs(intake.getIntakePosition()) <= 0.003) {
+            openPos /= 2.0;
             intake.setPosition(openPos);
             closing = false;
         }
-        if(closing && Math.abs(intake.getIntakePosition() - openPos) <= 0.003  ){
+
+        if (closing && Math.abs(intake.getIntakePosition() - openPos) <= 0.003) {
             closing = true;
             intake.setPositionMotorSlowly(0);
             timerToOpenAgain.reset();
@@ -63,12 +56,12 @@ public class SlowlyClose extends Command {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        intake.setPositionMotorSlowly(0);
-        intake.setPercent(-0.2);
-
+    public void end(boolean interrupted) {
+        intake.setPositionMotorPercent(0);
     }
 
-
+    @Override
+    public boolean isFinished() {
+        return false; // This command never finishes on its own
+    }
 }

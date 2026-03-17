@@ -8,17 +8,23 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.utils.ParallelRaceGroupWithWinner;
 
+/**
+ * Command to close the intake mechanism.
+ */
 public class CloseCommand extends Command {
-    private Intake intake;
+    private final Intake intake;
 
+    /**
+     * Creates a new CloseCommand.
+     *
+     * @param intake The intake subsystem this command controls.
+     */
     public CloseCommand(Intake intake) {
-
-    this.intake = intake;
+        this.intake = intake;
         addRequirements(intake);
     }
 
@@ -29,34 +35,36 @@ public class CloseCommand extends Command {
     }
 
     @Override
-    public boolean isFinished(){
-    return intake.positionAtSetPoint();
+    public boolean isFinished() {
+        return intake.positionAtSetPoint();
     }
 
-    public static Command closeWithErrorHandeling(Intake intake){
+    /**
+     * Returns a command that attempts to close the intake with error handling.
+     *
+     * @param intake The intake subsystem to control.
+     * @return A command that closes the intake with retries and alerts if it fails.
+     */
+    public static Command closeWithErrorHandeling(Intake intake) {
         @SuppressWarnings("resource")
         Alert closeFailed = new Alert("failed to close intake", AlertType.kError);
-        
+
         Command closeCommandWithErrorHandling = new CloseCommand(intake)
-            .andThen(new InstantCommand(() -> closeFailed.set(false)));
-        
+                .andThen(new InstantCommand(() -> closeFailed.set(false)));
+
         Command retryCloseCommandWithErrorHandling = new CloseCommand(intake)
-            .andThen(new InstantCommand(() -> closeFailed.set(false)));
+                .andThen(new InstantCommand(() -> closeFailed.set(false)));
 
         return ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
-            closeCommandWithErrorHandling,
-            IntakeConstants.TIME_FOR_INTAKE_TO_CLOSE,
+                closeCommandWithErrorHandling,
+                IntakeConstants.TIME_FOR_INTAKE_TO_CLOSE,
 
-            ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
-                new OpenCommand(intake).andThen(retryCloseCommandWithErrorHandling),
-                IntakeConstants.TIME_FOR_INTAKE_TO_OPEN + IntakeConstants.TIME_FOR_INTAKE_TO_CLOSE,
-                
-                new OpenCommand(intake).andThen(new InstantCommand(() -> closeFailed.set(true)))
-            )
+                ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
+                        new OpenCommand(intake).andThen(retryCloseCommandWithErrorHandling),
+                        IntakeConstants.TIME_FOR_INTAKE_TO_OPEN + IntakeConstants.TIME_FOR_INTAKE_TO_CLOSE,
+
+                        new OpenCommand(intake).andThen(new InstantCommand(() -> closeFailed.set(true)))
+                )
         );
     }
 }
-
-
-
-

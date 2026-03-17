@@ -4,22 +4,15 @@
 
 package frc.robot.commands.Shooter;
 
-import java.lang.Character.Subset;
-import java.lang.invoke.ConstantBootstraps;
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
-import frc.robot.commands.IntakeCommands.IntakeCommand;
+import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
-import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
@@ -30,9 +23,7 @@ import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
-import org.opencv.core.Mat;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
@@ -119,8 +110,7 @@ public class ShootCommand extends Command {
     shooter.keepVelocity(targetFlywheelSpeed);
     shooter.setHoodAngle(targetHoodAngle);
 
-    //boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
-    boolean thetaAtSetpoint = true;
+    boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeToHubCommand.robotAngleTolerance.getRadians();
 
     if(!hasReachedTargetVelocity && shooter.isShooterAtGoal()){
       hasReachedTargetVelocity = true;
@@ -228,7 +218,7 @@ public class ShootCommand extends Command {
   }
 
   public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
-    DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
+    DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
     Command shootCommand = (
         new ShootCommand(shooter, drivetrain, vision)  
         .alongWith((new ShakeItOffCommand(intake)))

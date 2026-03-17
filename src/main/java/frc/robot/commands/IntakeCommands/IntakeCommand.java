@@ -11,33 +11,35 @@ import frc.robot.subsystems.intake.IntakeConstants;
 import frc.utils.Elastic;
 
 /**
- * the intake command
+ * Command to run the intake mechanism at a constant velocity.
+ * Starts a timer to track possession of a ball and selects the intake camera tab.
  */
 public class IntakeCommand extends Command {
-  /** Creates a new IntakeCommand. */
-  private final Intake intake;
-  private final Timer hasBallTimer = new Timer();
 
+    private final Intake intake;
+    private final Timer hasBallTimer = new Timer();
 
-  public IntakeCommand(Intake intake) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.intake = intake;
-    addRequirements(intake);
-  }
+    /**
+     * Creates a new IntakeCommand.
+     *
+     * @param intake The intake subsystem this command controls.
+     */
+    public IntakeCommand(Intake intake) {
+        this.intake = intake;
+        addRequirements(intake);
+    }
 
-  @Override
-  public void initialize(){
-    intake.setIntakeMotorVelocity(IntakeConstants.INTAKE_VELOCITY);
-    hasBallTimer.reset();
-    hasBallTimer.start();
-    Elastic.selectTab("Intake Camera");
-  }
+    @Override
+    public void initialize() {
+        intake.setIntakeMotorVelocity(IntakeConstants.INTAKE_VELOCITY);
+        hasBallTimer.reset();
+        hasBallTimer.start();
+        Elastic.selectTab("Intake Camera");
+    }
 
-  @Override
-  public void end(boolean interrupted){
-      intake.stopIntakeMotor();
-      hasBallTimer.stop();
-  }
-
-
+    @Override
+    public void end(boolean interrupted) {
+        intake.stopIntakeMotor();
+        hasBallTimer.stop();
+    }
 }

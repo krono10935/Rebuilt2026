@@ -13,7 +13,6 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
-import frc.utils.AllianceFlipUtil;
 import frc.utils.controllers.ControllerMultiplierType;
 import frc.utils.controllers.ExponentialCommandXboxController;
 import org.json.simple.parser.ParseException;
@@ -35,9 +34,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
+import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.Drivetrain.DriveRobotRelative;
 import frc.robot.commands.Shooter.BasicShootCommand;
@@ -104,7 +102,7 @@ public class RobotContainer
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
-        autoChooser = registerNamedCommand(new DriveAndHomeCommand(drivetrain, driverController));
+        autoChooser = registerNamedCommand(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         ObjectDetection.getInstance();
 
@@ -286,17 +284,17 @@ public class RobotContainer
         drivetrain.addPathToField(poses);
     }
 
-    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
+    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeToHubCommand driveAndHomeToHubCommand){
 
         Command aimRobot = new StartEndCommand(() -> {
-            driveAndHomeCommand.resetThetaController();
-            PPController.setThetaOverride(driveAndHomeCommand::calculateThetaPID);
+            driveAndHomeToHubCommand.resetThetaController();
+            PPController.setThetaOverride(driveAndHomeToHubCommand::calculateThetaPID);
         }, PPController::clearThetaOverride);
 
         Command aimRobotStationary = new RunCommand(
                 () -> drivetrain.drive(new ChassisSpeeds(
-                        0, 0, driveAndHomeCommand.calculateThetaPID())), drivetrain)
-                .beforeStarting(driveAndHomeCommand::resetThetaController);
+                        0, 0, driveAndHomeToHubCommand.calculateThetaPID())), drivetrain)
+                .beforeStarting(driveAndHomeToHubCommand::resetThetaController);
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
