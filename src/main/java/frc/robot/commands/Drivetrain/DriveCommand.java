@@ -23,6 +23,35 @@ import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
  */
 public class DriveCommand extends Command {
 
+    public enum ControllerMode {
+        NONE(1),
+        BRAKE_EXPONENTIAL(0.5),
+        STICKS_EXPONENTIAL(0.5),
+        BOTH_EXPONENTIAL(0.5);
+
+        public final double exponent;
+
+        ControllerMode(double exponent) {
+            this.exponent = exponent;
+        }
+
+        public double calculateTrigger(double value){
+            if(this == STICKS_EXPONENTIAL) return value;
+
+            return calculateExponential(value, exponent);
+        }
+
+        public double calculateStick(double value){
+            if(this == BRAKE_EXPONENTIAL) return value;
+
+            return  calculateExponential(value, exponent);
+        }
+
+        private static double calculateExponential(double value, double exponential) {
+            return Math.copySign(Math.pow(Math.abs(value), exponential), value);
+        }
+    }
+
     protected final Drivetrain drivetrain;
     protected final CommandXboxController controller;
 
@@ -31,8 +60,12 @@ public class DriveCommand extends Command {
     protected static double MAX_ANGULAR_SPEED;
     protected static double MIN_ANGULAR_SPEED;
 
-    /** Deadband threshold for controller inputs */
+    /**
+     * Deadband threshold for controller inputs
+     */
     protected static final double DEADBAND = 0.1;
+
+    private static final ControllerMode CONTROLLER_MODE = ControllerMode.BOTH_EXPONENTIAL;
 
     public DriveCommand(Drivetrain drivetrain, CommandXboxController controller) {
         this.drivetrain = drivetrain;
@@ -106,14 +139,14 @@ public class DriveCommand extends Command {
      */
     public ChassisSpeeds getControllerInputs() {
 
-        double trigger = controller.getRightTriggerAxis();
+        double triggerValue = CONTROLLER_MODE.calculateTrigger(1 - controller.getRightTriggerAxis());
 
-        double speed = interpolate(1 - trigger);
-        double angularSpeed = angularInterpolate(1 - trigger);
+        double speed = interpolate(1 - triggerValue);
+        double angularSpeed = angularInterpolate(1 - triggerValue);
 
-        double xSpeed = deadband(controller.getLeftY()) * speed;
-        double ySpeed = deadband(controller.getLeftX()) * speed;
-        double thetaSpeed = deadband(-controller.getRightX()) * angularSpeed;
+        double xSpeed = deadband(CONTROLLER_MODE.calculateStick(controller.getLeftY())) * speed;
+        double ySpeed = deadband(CONTROLLER_MODE.calculateStick(controller.getLeftX())) * speed;
+        double thetaSpeed = deadband(CONTROLLER_MODE.calculateStick(-controller.getRightX())) * angularSpeed;
 
         return new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed);
     }
