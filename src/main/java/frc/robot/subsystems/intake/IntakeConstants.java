@@ -1,11 +1,9 @@
 package frc.robot.subsystems.intake;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig.SlotConfig;
 import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
-import io.github.captainsoccer.basicmotor.gains.FeedForwardsGains.KG;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class IntakeConstants {

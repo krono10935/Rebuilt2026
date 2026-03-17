@@ -1,7 +1,5 @@
 package frc.robot.subsystems.intake;
-
 import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface IntakeIO {
@@ -24,7 +22,12 @@ public interface IntakeIO {
      */
     void setIntakeMotorVelocity(double velocity);
 
+    /**
+     * sets the intake motor to a certa
+     * @param dutyCycle
+     */
     void setIntakeMotorPercent(double dutyCycle);
+
     /**
      * stops the intake motor
      */

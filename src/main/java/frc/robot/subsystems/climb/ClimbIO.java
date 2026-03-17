@@ -32,9 +32,11 @@ public interface ClimbIO {
      */
     boolean isAtSetPoint();
 
+    /**
+     * stops the motor
+     */
     void stop();
     
-
     void update(ClimbInputs inputs);
 
 }
