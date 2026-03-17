@@ -23,8 +23,8 @@ public interface IntakeIO {
     void setIntakeMotorVelocity(double velocity);
 
     /**
-     * sets the intake motor to a certa
-     * @param dutyCycle
+     * sets the intake motor to a certain percent of power
+     * @param dutyCycle the percent (0-1)
      */
     void setIntakeMotorPercent(double dutyCycle);
 
@@ -34,14 +34,9 @@ public interface IntakeIO {
     void stopIntakeMotor();
 
     /**
-     * stops the opening intake motor
+     * stops the position motor
      */
-    void stopIntakeOpeningMotor();
-
-    /**
-     * sets the power of the motor in percent
-     */
-    void setPositionMotorPercentOutput(double percent);
+    void stopPositiongMotor();
 
     /**
      * 
@@ -49,6 +44,10 @@ public interface IntakeIO {
      */
     boolean positionMotorAtSetPoint();
 
+    /**
+     * sets the motor to a certain speed in RPS
+     * @param velocity the RPS
+     */
     void setPositionMotorVelocity(Rotation2d velocity);
 
     /**
@@ -78,12 +77,24 @@ public interface IntakeIO {
      */
     void resetPositionMotor(double posMeters);
 
+    /**
+     * sets the power of the position motor in percent
+     * @param dutyCycle the percent 
+     */
     void setPositionMotorPercent(double dutyCycle);
 
+    /**
+     * sets the motor to a certain position. the motor will execute slowly
+     * @param posMeters the position in meters
+     */
     void setPositionMotorSlowly(double posMeters);
 
-    double getIntakePositionMotorVelocity ();
-
+    /**
+     * 
+     * @return the current velocity of the motor
+     */
+    double getPositionMotorVelocity();
+    
     void updateInputs(IntakeInputs inputs);
 
 }

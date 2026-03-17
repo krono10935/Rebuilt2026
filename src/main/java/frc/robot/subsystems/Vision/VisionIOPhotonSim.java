@@ -23,8 +23,6 @@ public class VisionIOPhotonSim extends VisionIOPhoton {
     // Simulated camera
     PhotonCameraSim cameraSim;
 
-
-
     /**
      * Constructor for the simulated Vision I/O
      * @param camConst - constants/config for this camera
@@ -60,8 +58,6 @@ public class VisionIOPhotonSim extends VisionIOPhoton {
         cameraSim.enableDrawWireframe(true);
 
     }
-
-
     /**
      * Updates the simulated vision system
      * @param inputs - the data structure where vision results will be stored

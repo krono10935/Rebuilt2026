@@ -66,7 +66,10 @@ public record VisionFrame(
      * @param inputs The VisionInputs instance to populate
      */
     public void updateInputs(VisionInputs inputs);
-
+    
+    /**
+     * @param index the index of what pipeline to use
+     */
     public void setPiplineIndex(int index);
 
 }

@@ -3,12 +3,9 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.intake;
-
-
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -59,7 +56,7 @@ public class Intake extends SubsystemBase{
     }
 
     public void stopIntakeOpeningMotor(){
-        io.stopIntakeOpeningMotor();
+        io.stopPositiongMotor();
     }
 
     private boolean isMoving(){
@@ -78,7 +75,7 @@ public class Intake extends SubsystemBase{
     }
 
     public double getPositionMotorVelocity(){
-      return io.getIntakePositionMotorVelocity();
+      return io.getPositionMotorVelocity();
     }
 
     public void resetEncoder(){
@@ -103,9 +100,5 @@ public class Intake extends SubsystemBase{
 
         String currCommand = getCurrentCommand() == null? "None" : getCurrentCommand().getName();
         Logger.recordOutput("Intake/Current Command ", currCommand);
-
-
     }
-
-
 }

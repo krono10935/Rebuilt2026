@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import io.github.captainsoccer.basicmotor.measurements.Measurements;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -62,30 +61,6 @@ public class ShooterIOReal implements ShooterIO {
         CommandScheduler.getInstance().schedule(new InstantCommand(
                 () -> hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
                         .beforeStarting(new WaitUntilCommand(() -> dutyCycleEncoder.get() != 0)).ignoringDisable(true));
-
-//        hoodMotor.setMeasurements(new Measurements() {
-//            @Override
-//            protected double getUpdatedPosition() {
-//                return (dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8;
-//            }
-//
-//            @Override
-//            protected double getUpdatedVelocity() {
-//                return defaultEncoder.getVelocity();
-//            }
-//
-//            @Override
-//            protected double getUpdatedAcceleration() {
-//                return defaultEncoder.getAcceleration();
-//            }
-//
-//            @Override
-//            public void setPosition(double v) {
-//
-//            }
-//        });
-
-
         SmartDashboard.putData(hoodMotor.getController());
     }
 

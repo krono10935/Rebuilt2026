@@ -6,6 +6,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import java.util.ArrayList;
 
 public class LEDStrip {
+    
     /**
      * The publisher for the LED states
      */

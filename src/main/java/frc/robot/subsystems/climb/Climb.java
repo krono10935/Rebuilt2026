@@ -6,7 +6,6 @@ package frc.robot.subsystems.climb;
 
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.subsystems.climb.ClimbConstants.ClimbState;
-import frc.utils.ErrorMessage;
 import frc.utils.ParallelRaceGroupWithWinner;
 
 import org.littletonrobotics.junction.Logger;
@@ -69,13 +68,13 @@ public class Climb extends SubsystemBase{
   }
 
 
-    public boolean getHasClimbed() {
-        return hasClimbed;
-    }
+  public boolean getHasClimbed() {
+      return hasClimbed;
+  }
 
-    public void setHasClimbed(boolean hasClimbed) {
-        this.hasClimbed = hasClimbed;
-    }
+  public void setHasClimbed(boolean hasClimbed) {
+      this.hasClimbed = hasClimbed;
+  }
 
   /**
    * 
@@ -84,7 +83,7 @@ public class Climb extends SubsystemBase{
   public Command closeCommand(){
     @SuppressWarnings("resource")
     Alert failedToClose = new Alert("Failed to close climb!", AlertType.kError);
-
+    
     return new FunctionalCommand(this::close,
             ()->{},
             (interrupted)->io.stop(),

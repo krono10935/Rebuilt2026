@@ -38,5 +38,5 @@ public interface ClimbIO {
     void stop();
     
     void update(ClimbInputs inputs);
-
+    
 }

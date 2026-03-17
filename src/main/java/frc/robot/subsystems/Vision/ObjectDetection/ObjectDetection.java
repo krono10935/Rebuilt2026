@@ -58,7 +58,6 @@ public class ObjectDetection extends VirtualSubSystem {
         return hasBalls;
     }
 
-
     @Override
     public void periodic() {
         try{
@@ -87,6 +86,5 @@ public class ObjectDetection extends VirtualSubSystem {
             Logger.recordOutput("ObjectDetection/has balls", hasBalls);
             Logger.recordOutput("ObjectDetection/is Enabled", isEnabled);
         }
-
     }
 }

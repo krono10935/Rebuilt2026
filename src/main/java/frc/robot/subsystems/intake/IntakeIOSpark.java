@@ -51,13 +51,8 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
-    public void stopIntakeOpeningMotor() {
+    public void stopPositiongMotor() {
         positionMotor.stop();
-    }
-
-    @Override
-    public void setPositionMotorPercentOutput(double percent){
-        positionMotor.setPercentOutput(percent);
     }
 
     @Override
@@ -90,7 +85,6 @@ public class IntakeIOSpark implements IntakeIO {
         intakeMotor.setPercentOutput(dutyCycle);
     }
 
-
     @Override
     public void updateInputs(IntakeInputs inputs) {
         inputs.position = positionMotor.getPosition();
@@ -115,11 +109,11 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void setPositionMotorSlowly(double posMeters){
-        positionMotor.setControl(posMeters,ControlMode.PROFILED_POSITION, 1);
+        positionMotor.setControl(posMeters, ControlMode.PROFILED_POSITION, 1);
     }
 
     @Override
-    public double getIntakePositionMotorVelocity() {
+    public double getPositionMotorVelocity() {
         return positionMotor.getVelocity();
     }
 }

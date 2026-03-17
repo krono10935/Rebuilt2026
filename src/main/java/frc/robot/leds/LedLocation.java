@@ -6,7 +6,7 @@ package frc.robot.leds;
 public enum LedLocation{
     BASE(0,149),
     ARM(150,299),
-    END_EFFECTOR(2,3),
+    END_EFFECTOR(294,299),
     ALL(0, 299);
 
     /**

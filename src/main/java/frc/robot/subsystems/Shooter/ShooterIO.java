@@ -55,7 +55,6 @@ public interface ShooterIO {
      */
     boolean isKickerStuck();
 
-
     /**
      * 
      * @param angle the angle to set the hood to

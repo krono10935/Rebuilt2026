@@ -147,9 +147,6 @@ public class VisionIOPhoton implements VisionIO {
         Logger.recordOutput("VisionIO/Last pose", lastPoseSupplier.get());
     }
 
-    /**
-     * @param index the index of what pipeline to use
-     */
     @Override
     public void setPiplineIndex(int index) {
         camera.setPipelineIndex(index);

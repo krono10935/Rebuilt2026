@@ -25,7 +25,7 @@ public abstract class SwerveModuleIO {
     /**
      * @return The drive motor position in meters
      */
-    protected abstract double getDriveDistance();
+    protected abstract double getDrivePos();
 
     /**
      * @return The steer motor position in rotations
@@ -87,7 +87,7 @@ public abstract class SwerveModuleIO {
         currentState.angle = Rotation2d.fromRotations(getSteerAngle());
         position.angle = currentState.angle;
         currentState.speedMetersPerSecond = getDriveVelocity();
-        position.distanceMeters = getDriveDistance();
+        position.distanceMeters = getDrivePos();
     }
 
 }
