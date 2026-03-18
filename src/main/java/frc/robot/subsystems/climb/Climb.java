@@ -85,7 +85,7 @@ public class Climb extends SubsystemBase{
   public Command closeCommand(){
     @SuppressWarnings("resource")
     Alert failedToClose = new Alert("Failed to close climb!", AlertType.kError);
-
+    
     return new FunctionalCommand(this::close,
             ()->{},
             (interrupted)->io.stop(),

@@ -18,7 +18,7 @@ public interface ShooterIO {
 
     /**
      * 
-     * @param speedMPS speeed to spin up the flywheel to
+     * @param speedMPS speed to spin up the flywheel to
      */
     void spinUp(double speedMPS);
 
@@ -28,13 +28,13 @@ public interface ShooterIO {
     void keepVelocity(double speedMPS);
 
     /**
-     * stops the flywheel
+     * Stops the flywheel
      */
     void stopFlyWheel();
 
     /**
      * 
-     * @return whether or not the shooter is at it's setpoint
+     * @return Whether or not the shooter is at it's setpoint
      */
     boolean isShooterAtGoal();
 
@@ -51,10 +51,9 @@ public interface ShooterIO {
     void toggleKicker(boolean isActive);
 
     /**
-     * @return whether or not the kicker is active
+     * @return Whether or not the kicker is active
      */
     boolean isKickerStuck();
-
 
     /**
      * 
@@ -64,7 +63,7 @@ public interface ShooterIO {
 
     /**
      * 
-     * @return whether or not the hood is at it's setpoint
+     * @return Whether or not the hood is at it's setpoint
      */
     boolean isHoodAtSetpoint();
 

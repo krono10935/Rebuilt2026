@@ -1,7 +1,5 @@
 package frc.robot.subsystems.intake;
-
 import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface IntakeIO {
@@ -14,67 +12,75 @@ public interface IntakeIO {
 
     /**
      * 
-     * @return if the intake motor is at the setPoint
+     * @return Whether the intake motor is at the setpoint
      */
     boolean intakeMotorAtSetPoint();
 
     /**
      * 
-     * @param velocity velocity per second
+     * @param velocity Intake roller speed MPS
      */
     void setIntakeMotorVelocity(double velocity);
 
-    void setIntakeMotorPercent(double dutyCycle);
     /**
-     * stops the intake motor
+     * Sets the intake motor to a certain percent of power
+     * @param dutyCycle the percent (0-1)
+     */
+    void setIntakeMotorPercent(double dutyCycle);
+
+    /**
+     * Stops the intake motor
      */
     void stopIntakeMotor();
 
     /**
-     * stops the opening intake motor
+     * Stops the position motor
      */
-    void stopIntakeOpeningMotor();
-
-    /**
-     * sets the power of the motor in percent
-     */
-    void setPositionMotorPercentOutput(double percent);
+    void stopPositiongMotor();
 
     /**
      * 
-     * @return if the position motor is at the setPoint
+     * @return Whether the position motor is at the set point
      */
     boolean positionMotorAtSetPoint();
 
     /**
      * 
-     * @return position of the motor in meters
+     * @return Position of the motor in meters
      */
     double getIntakePosition();
 
     /**
-     * sets the postion of the intake
+     * Sets the postion of the intake
      * @param positionMeters the current position of the intake motor in meters
      */
     void setPositionMotor(double positionMeters);
 
     /**
-     * @return the speed which the open/close motor is spinning
+     * @return The speed which the open/close motor is spinning
      */
     Rotation2d getSpeedPositionMotor();
 
     /**
-     * @return if position motor is in position control
+     * @return If position motor is in position control
      */
     boolean isInPositionControl();
 
     /**
-     * resets the position to a certain position in units of meters
+     * Resets the position to a certain position in units of meters
      */
     void resetPositionMotor(double posMeters);
 
+    /**
+     * Sets the power of the position motor in percent
+     * @param dutyCycle the percent 
+     */
     void setPositionMotorPercent(double dutyCycle);
 
+    /**
+     * Sets the motor to a certain position. the motor will execute slowly
+     * @param posMeters the position in meters
+     */
     void setPositionMotorSlowly(double posMeters);
 
     void updateInputs(IntakeInputs inputs);

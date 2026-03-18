@@ -57,7 +57,7 @@ public class SwerveModuleBasic extends SwerveModuleIO {
     }
 
     @Override
-    protected double getDriveDistance() {
+    protected double getDrivePos() {
         return drivingMotor.getPosition();
     }
 

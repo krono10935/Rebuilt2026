@@ -8,7 +8,6 @@ public class IntakeIOSim implements IntakeIO {
     private final BasicMotorSim intakeMotor;
     private final BasicMotorSim positionMotor;
 
-
     public IntakeIOSim() {
 
         intakeMotor = new BasicMotorSim(IntakeConstants.intakeMotorConfig);
@@ -16,7 +15,6 @@ public class IntakeIOSim implements IntakeIO {
         positionMotor = new BasicMotorSim(IntakeConstants.positionMotorConfig);
 
     }
-
 
     @Override
     public boolean intakeMotorAtSetPoint() {
@@ -31,11 +29,6 @@ public class IntakeIOSim implements IntakeIO {
     @Override
     public void stopIntakeMotor() {
         intakeMotor.stop();
-    }
-
-    @Override
-    public void setPositionMotorPercentOutput(double percent){
-        positionMotor.setPercentOutput(percent);
     }
 
     @Override
@@ -58,7 +51,6 @@ public class IntakeIOSim implements IntakeIO {
         positionMotor.setControl(positionMeters, ControlMode.POSITION);
     }
 
-
     @Override
     public void updateInputs(IntakeInputs inputs) {
         inputs.position = positionMotor.getPosition();
@@ -66,12 +58,10 @@ public class IntakeIOSim implements IntakeIO {
         inputs.velocity = intakeMotor.getVelocity(); 
     }
 
-
     @Override
-    public void stopIntakeOpeningMotor() {
+    public void stopPositiongMotor() {
         positionMotor.stop();
     }
-
 
     @Override
     public Rotation2d getSpeedPositionMotor() {

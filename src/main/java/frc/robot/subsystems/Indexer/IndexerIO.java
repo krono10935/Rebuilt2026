@@ -3,26 +3,26 @@ package frc.robot.subsystems.Indexer;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IndexerIO {
-
-    /**
-     * sets the spindexer motor percent to the constant
-     */
-    void turnOn();
-
-    /**
-     * stops the motor
-     */
-    void turnOff();
-
+    
     @AutoLog
     class IndexerInputs{
         boolean isOn;
     }
 
-    void update(IndexerInputs inputs);
+    /**
+     * Sets the spindexer motor percent to the constant
+     */
+    void turnOn();
 
-    /*
-     * @return if the indexer is stuck
+    /**
+     * Stops the motor
+     */
+    void turnOff();
+
+    /**
+     * @return Whether the indexer is stuck
      */
     boolean isStuck();
+
+    void update(IndexerInputs inputs);
 }

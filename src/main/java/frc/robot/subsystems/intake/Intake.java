@@ -1,6 +1,4 @@
 package frc.robot.subsystems.intake;
-
-
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
@@ -80,7 +78,7 @@ public class Intake extends SubsystemBase{
      * Stop the opening motor
      */
     public void stopIntakeOpeningMotor(){
-        io.stopIntakeOpeningMotor();
+        io.stopPositiongMotor();
     }
 
     /**

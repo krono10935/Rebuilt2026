@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Phase;
 import frc.robot.subsystems.Indexer.Indexer;
-import frc.robot.subsystems.Shooter.IO.ShooterIODevBot;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
@@ -39,10 +38,7 @@ public class Shooter extends SubsystemBase{
     if (!RobotBase.isReal()){
       io = new ShooterIOSim();
     }
-    else if(Constants.CHASSIS_TYPE == ChassisType.DEVBOT){
-      io = new ShooterIODevBot();
-    }
-    else {
+    else{
       io = new ShooterIOReal();
     }
 
