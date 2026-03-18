@@ -48,13 +48,6 @@ public class IntakeIOSim implements IntakeIO {
         return positionMotor.atSetpoint();
     }
 
-
-
-    @Override
-    public void setPositionMotorVelocity(Rotation2d velocity){
-        positionMotor.setControl(velocity.getRotations(), ControlMode.VELOCITY);
-    }
-
     @Override
     public double getIntakePosition() {
         return positionMotor.getPosition();
@@ -99,11 +92,6 @@ public class IntakeIOSim implements IntakeIO {
     @Override
     public void setPositionMotorSlowly(double posMeters){
         positionMotor.setControl(posMeters,ControlMode.PROFILED_POSITION, 1);
-    }
-
-    @Override
-    public double getIntakePositionMotorVelocity() {
-        return positionMotor.getVelocity();
     }
 
     @Override

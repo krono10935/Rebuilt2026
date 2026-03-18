@@ -1,19 +1,17 @@
 package frc.robot.subsystems.intake;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig.SlotConfig;
 import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
-import io.github.captainsoccer.basicmotor.gains.FeedForwardsGains.KG;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class IntakeConstants {
 
-    //the toletrance of the position of the intake
+    //The tolerance of the position of the intake
     public static final double POSITION_TOLERANCE = 0.05;
 
-    //the positions of the intake (closed and opend)
+    //The positions of the intake (closed and opened)
     public static final double CLOSE_POSITION = 0;
     public static final double OPEN_POSITION = 0.367;
 
@@ -21,12 +19,9 @@ public class IntakeConstants {
 
     public static final double PINION_DIAMETER = 0.033;
 
-    public static final double positionOffset = 0;
-
     public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final double TIME_FOR_INTAKE_TO_OPEN = 4;
 
-    public static final double TIME_FOR_BALL_TO_BE_INTAKED = 1.5;
 
     public static final BasicMotorConfig intakeMotorConfig = new BasicSparkConfig();
     static{
@@ -97,6 +92,7 @@ public class IntakeConstants {
 
         specifConfig.currentLimitConfig.freeSpeedCurrentLimit = 60;
     }
+    
     public static class ResetConstants{
         public static final double INITIAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.4;
         public static final double INITIAL_CURRENT_CHECK_FOR_CLOSE = 35;

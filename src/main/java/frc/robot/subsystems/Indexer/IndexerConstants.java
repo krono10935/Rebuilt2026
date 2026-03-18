@@ -10,7 +10,9 @@ public class IndexerConstants {
 
     public static final double SPEED_DEADBAND = 0.01;
 
-
+    /**
+     * @return The BasicMotor config for the left motor
+     */
     public static BasicSparkConfig getLeftMotorConfig() {
         BasicSparkConfig configLeftMotor = new BasicSparkConfig();
 
@@ -41,6 +43,9 @@ public class IndexerConstants {
         return configLeftMotor;
     }
 
+    /**
+     * @return The BasicMotor config for the right motor
+     */
     public static BasicSparkConfig getRightMotorConfig(){
         BasicSparkConfig configRightMotor = new BasicSparkConfig();
 

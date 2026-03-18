@@ -46,8 +46,6 @@ public interface IntakeIO {
      */
     boolean positionMotorAtSetPoint();
 
-    void setPositionMotorVelocity(Rotation2d velocity);
-
     /**
      * 
      * @return position of the motor in meters
@@ -78,8 +76,6 @@ public interface IntakeIO {
     void setPositionMotorPercent(double dutyCycle);
 
     void setPositionMotorSlowly(double posMeters);
-
-    double getIntakePositionMotorVelocity ();
 
     void updateInputs(IntakeInputs inputs);
 

@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.Shooter.IO;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,15 +6,12 @@ import frc.robot.subsystems.Shooter.ShooterConstants;
 import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
-/** Add your docs here. */
 public class ShootRealConstants {
+
     public static final int DUTY_CYCLE_ENCODER_PORT = 9;
     public static final double DUTY_CYCLE_ENCODER_ZERO_OFFSET = 0.129;
 
     public static final double KICKER_SPEED_MPS = 6;
-    public static final double KICKER_MAX_ERROR_FOR_FLYWHEEL_FEEDFORWARD = 0.2;
-    public static final double KICKER_MIN_ERROR_FOR_FLYWHEEL_FEEDFORWARD = 0.05;
-    public static final double KICKER_ERROR_FEEDFORWARD_SCALAR = 2;
     public static final double KICKER_SPEED_DEADBAND = 0.01;
 
     public static final Rotation2d HOOD_TOLERANCE = Rotation2d.fromDegrees(2.5);
@@ -32,7 +25,7 @@ public class ShootRealConstants {
 
     /**
      * 
-     * @return the motor config for shooting motor
+     * @return the motor config for lead shooting motor
      */
     public static BasicSparkConfig getLeadShootingMotorConfig(){
 
@@ -91,7 +84,7 @@ public class ShootRealConstants {
 
     /**
      * 
-     * @return the motor config for shooting motor
+     * @return the motor config for following shooting motor
      */
     public static BasicSparkConfig getFollowShootingMotorConfig(){
 

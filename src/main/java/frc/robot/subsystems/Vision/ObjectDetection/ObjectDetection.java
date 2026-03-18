@@ -70,16 +70,20 @@ public class ObjectDetection extends VirtualSubSystem {
             }
 
             var results = camera.getAllUnreadResults();
-            if(!isEnabled){
-                return;
-            }
-            
-            if(results.isEmpty()){
+            if(!isEnabled || results.isEmpty()){
                 return;
             }
 
             var result = results.get(results.size() -1);
-            hasBalls = result.targets.size() > 0;
+
+
+            hasBalls = false;
+            for (var target : result.targets){
+                if (target.area > ObjectDetectionContstants.MIN_AREA){
+                    hasBalls = true;
+                    return;
+                }
+            }
         }
 
         finally{

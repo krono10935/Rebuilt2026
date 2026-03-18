@@ -192,11 +192,11 @@ public class ShotCalculator {
         //     state = ValidityState.HUB_INACTIVE;
         // }
 
-        if (Math.abs(robotRelativeVelocity.omegaRadiansPerSecond) > ShooterConstants.ZERO_ANGULAR_SPEED_TOLERANCE_DEGREES){
+        if (Math.abs(robotRelativeVelocity.omegaRadiansPerSecond) > ShooterConstants.ANGULAR_SPEED_DEADBAND_DEGREES){
                 state = ValidityState.TOO_MUCH_OMEGA_SPEED;
         }
 
-        if (!ShooterConstants.SHOOT_WITH_MOVEMENT && Math.abs(shooterFieldRelativeSpeeds.getNorm()) > ShooterConstants.ZERO_LINEAR_SPEED_TOLERANCE_MPS){
+        if (!ShooterConstants.SHOOT_WITH_MOVEMENT && Math.abs(shooterFieldRelativeSpeeds.getNorm()) > ShooterConstants.LINEAR_SPEED_DEADBAND_MPS){
             state = ValidityState.SHOULD_NOT_BE_MOVING;
         }
 
