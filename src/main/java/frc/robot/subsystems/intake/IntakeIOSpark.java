@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,9 +24,9 @@ public class IntakeIOSpark implements IntakeIO {
 
         SmartDashboard.putData(positionMotor.getController());
 
-        var motor = ((BasicSparkMAX)positionMotor);
+        BasicSparkMAX motor = ((BasicSparkMAX)positionMotor);
 
-        var positionMotorSpark = motor.getMotor();
+        SparkBase positionMotorSpark = motor.getMotor();
 
         currentOutputSupplier = positionMotorSpark::getOutputCurrent;
  
@@ -36,11 +37,11 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public boolean intakeMotorAtSetPoint() {
-        return intakeMotor.atSetpoint();
+        return intakeMotor.atGoal();
     }
 
     @Override
-    public void setIntakeMotorVelocity(double velocity) {
+    public void setIntake90PercentSpeed(double velocity) {
         intakeMotor.setPercentOutput(0.9);
         // intakeMotor.setControl(velocity, ControlMode.VELOCITY);
     }
@@ -71,8 +72,8 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
-    public Rotation2d getSpeedPositionMotor() {
-        return Rotation2d.fromRotations(positionMotor.getVelocity());
+    public double getSpeedPositionMotor() {
+        return positionMotor.getVelocity();
     }
 
     @Override
@@ -90,6 +91,11 @@ public class IntakeIOSpark implements IntakeIO {
     @Override
     public boolean isInPositionControl() {
         return positionMotor.getController().getControlMode().isPositionControl();
+    }
+
+    @Override
+    public boolean isInVelocityControl() {
+        return positionMotor.getController().getControlMode().isVelocityControl();
     }
 
     @Override

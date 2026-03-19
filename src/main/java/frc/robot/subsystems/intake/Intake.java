@@ -14,16 +14,15 @@ public class Intake extends SubsystemBase{
     }
 
     /**
-     * Gives the intake roller a speed in MPS
-     * @param velocity the speed MPS
+     * Gives the intake roller a speed in MPS(not really, just sets it to 90% power)
+     * @param scam the speed MPS (ignored)
      */
-    public void setIntakeMotorVelocity(double velocity){
-        io.setIntakeMotorVelocity(velocity);
+    public void setIntake90PercentSpeed(double scam){
+        io.setIntake90PercentSpeed(scam);
     }
 
     /**
-     * The position of the intake opening motor in meters
-     * @return
+     * @return The position of the intake opening motor in meters
      */
     public double getIntakePosition(){
         return io.getIntakePosition();
@@ -85,14 +84,11 @@ public class Intake extends SubsystemBase{
      * @return whether or not the intake is moving
      */
     private boolean isMoving(){
-        boolean isPositionControl = io.isInPositionControl();
-        boolean stoppedInPositionControl = isPositionControl && io.positionMotorAtSetPoint();
-        double intakeMotorSpeedMPS = io.getSpeedPositionMotor().getRotations() * IntakeConstants.positionMotorConfig.motorConfig.unitConversion;
-        boolean isAtZeroSpeed = Math.abs(intakeMotorSpeedMPS) <  IntakeConstants.positionMotorConfig.slot0Config.pidConfig.tolerance;
-        boolean stoppedInVelocityControl = !isPositionControl && isAtZeroSpeed;
-        boolean isStopped = stoppedInPositionControl || stoppedInVelocityControl;
 
-        return !isStopped;
+        double intakeMotorSpeedMPS = io.getSpeedPositionMotor();
+        boolean isAtZeroSpeed = Math.abs(intakeMotorSpeedMPS) < IntakeConstants.SPEED_DEADBAND;
+
+        return !isAtZeroSpeed;
     }
 
     /**

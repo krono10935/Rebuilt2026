@@ -27,7 +27,7 @@ public class IntakeCommand extends Command {
 
   @Override
   public void initialize(){
-    intake.setIntakeMotorVelocity(IntakeConstants.INTAKE_VELOCITY);
+    intake.setIntake90PercentSpeed(IntakeConstants.INTAKE_VELOCITY);
     hasBallTimer.reset();
     hasBallTimer.start();
     Elastic.selectTab("Intake Camera");

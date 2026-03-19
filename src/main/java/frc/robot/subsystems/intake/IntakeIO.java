@@ -18,9 +18,9 @@ public interface IntakeIO {
 
     /**
      * 
-     * @param velocity Intake roller speed MPS
+     * @param scam Intake roller speed MPS (not really, just sets it to 90% power)
      */
-    void setIntakeMotorVelocity(double velocity);
+    void setIntake90PercentSpeed(double scam);
 
     /**
      * Sets the intake motor to a certain percent of power
@@ -59,12 +59,17 @@ public interface IntakeIO {
     /**
      * @return The speed which the open/close motor is spinning
      */
-    Rotation2d getSpeedPositionMotor();
+    double getSpeedPositionMotor();
 
     /**
-     * @return If position motor is in position control
+     * @return Whether position motor is in position control
      */
     boolean isInPositionControl();
+
+    /**
+     * @return Whether position motor is in velocity control
+     */
+    boolean isInVelocityControl();
 
     /**
      * Resets the position to a certain position in units of meters

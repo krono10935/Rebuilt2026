@@ -10,15 +10,17 @@ public class IntakeConstants {
 
     //The tolerance of the position of the intake
     public static final double POSITION_TOLERANCE = 0.05;
+
+    public static final double SPEED_DEADBAND = 0.005;
     
 
     //The positions of the intake (closed and opened)
     public static final double CLOSE_POSITION = 0;
-    public static final double OPEN_POSITION = 0.35;
+    public static final double OPEN_POSITION = 0.35; //m
 
     public static final double INTAKE_VELOCITY = 4;
 
-    public static final double PINION_DIAMETER = 0.033;
+    public static final double PINION_DIAMETER = 0.03069;
 
     public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final double TIME_FOR_INTAKE_TO_OPEN = 4;

@@ -22,7 +22,7 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
-    public void setIntakeMotorVelocity(double velocity) {
+    public void setIntake90PercentSpeed(double velocity) {
         intakeMotor.setControl(velocity, ControlMode.VELOCITY);
     }
 
@@ -64,14 +64,18 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
-    public Rotation2d getSpeedPositionMotor() {
-        return Rotation2d.fromRotations(positionMotor.getPosition());
+    public double getSpeedPositionMotor() {
+        return positionMotor.getPosition();
     }
 
     @Override
     public boolean isInPositionControl() {
-        return positionMotor.getController().getControlMode() == ControlMode.POSITION || 
-        positionMotor.getController().getControlMode() == ControlMode.PROFILED_POSITION;
+        return positionMotor.getController().getControlMode().isPositionControl();
+    }
+
+    @Override
+    public boolean isInVelocityControl() {
+        return positionMotor.getController().getControlMode().isVelocityControl();
     }
 
     @Override
