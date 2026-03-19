@@ -41,7 +41,7 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void setIntakeMotorVelocity(double velocity) {
-        intakeMotor.setPercentOutput(0.5);
+        intakeMotor.setPercentOutput(0.9);
         // intakeMotor.setControl(velocity, ControlMode.VELOCITY);
     }
 

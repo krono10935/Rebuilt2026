@@ -5,15 +5,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-import org.opencv.core.Mat;
 
 public class SlowlyClose extends Command {
 
-    private final Intake intake;
+    protected final Intake intake;
 
     private final LoggedNetworkNumber slowlyClosePercent;
 
-    private double openPos = IntakeConstants.OPEN_POSITION;
+    protected double openPos = IntakeConstants.OPEN_POSITION;
 
     private boolean closing = true;
 
@@ -24,7 +23,7 @@ public class SlowlyClose extends Command {
         slowlyClosePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0 );
         openPos = IntakeConstants.OPEN_POSITION;
         timerToOpenAgain = new Timer();
-
+        addRequirements(intake);
     }
 
     @Override

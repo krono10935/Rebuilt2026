@@ -22,6 +22,8 @@ public class ShakeItOffCommand extends Command {
 
   private final LoggedNetworkNumber openPos;
 
+  private final LoggedNetworkNumber reversePos;
+
   private final LoggedNetworkNumber tolerance;
 
   private final LoggedNetworkNumber closePos;
@@ -50,6 +52,7 @@ public class ShakeItOffCommand extends Command {
 
     tolerance = new LoggedNetworkNumber("Shake/tolerance", 0.0025);
     openPos = new LoggedNetworkNumber("Shake/openPos", 0.25);
+    reversePos = new LoggedNetworkNumber("Shake/reversePos", 0.1);
     closePos = new LoggedNetworkNumber("Shake/closePos", 0.00);
     closeLessPercent = new LoggedNetworkNumber("Shake/closeLessMultiplier", 0.75);
     timeTochange = new LoggedNetworkNumber("Shake/time", 1);
@@ -84,7 +87,7 @@ public class ShakeItOffCommand extends Command {
   @Override
   public void execute() {
 
-    if(beginTimer.get()> 0.5){
+    if(beginTimer.get()> 0.0){
       if(timer.get()>= timeTochange.getAsDouble()){
         if (!shouldOpen){
           cycles++;
@@ -94,6 +97,10 @@ public class ShakeItOffCommand extends Command {
           , cycles) : closePos.getAsDouble());
         timer.reset();
       }
+    }
+
+    if (intake.getIntakePosition() <= reversePos.getAsDouble()){
+          intake.setPercent(-intakeSpeed.get());
     }
   }
 

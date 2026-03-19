@@ -92,7 +92,7 @@ public class ShotCalculator {
     static {
         minDistance = 1; // TODO: find the real value
         maxDistance = 5.60; // TODO: find the real value
-        phaseDelay = 0.03; // TODO: find the real value
+        phaseDelay = 0.015; // TODO: find the real value
 
         putToMaps(1.065, 3, 15.0, 0.9);
         putToMaps(1.196, 4, 15.5, 1.0 );

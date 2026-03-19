@@ -10,10 +10,11 @@ public class IntakeConstants {
 
     //The tolerance of the position of the intake
     public static final double POSITION_TOLERANCE = 0.05;
+    
 
     //The positions of the intake (closed and opened)
     public static final double CLOSE_POSITION = 0;
-    public static final double OPEN_POSITION = 0.367;
+    public static final double OPEN_POSITION = 0.38;
 
     public static final double INTAKE_VELOCITY = 4;
 

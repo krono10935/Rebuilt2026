@@ -134,10 +134,12 @@ public class RobotContainer
     private void test(){
         driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
         driverController.b().onTrue(Sequences.intakeOpenStart(intake));
-        driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
+        driverController.x().toggleOnTrue(Sequences.stopIntakeAndClose(intake));
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
 
         driverController.y().onTrue(IntakeFactory.resetIntake(intake));
+        
+        //TODO: add intake outtake functionality
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
 

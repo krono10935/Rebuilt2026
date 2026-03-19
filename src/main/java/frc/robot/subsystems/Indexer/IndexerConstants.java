@@ -6,7 +6,7 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 public class IndexerConstants {
 
 
-    public static final double SPINNING_TARGET_VELOCITY = 22;//RPS (tuff btw)
+    public static final double SPINNING_TARGET_VELOCITY = 15;//RPS
 
     public static final double SPEED_DEADBAND = 0.01;
 

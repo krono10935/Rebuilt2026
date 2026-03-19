@@ -17,8 +17,12 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
+import frc.robot.commands.IntakeCommands.CloseSlowAndThenFast;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
+import frc.robot.commands.IntakeCommands.ShakeItOffCommandBangBang;
+import frc.robot.commands.IntakeCommands.SlowlyClose;
+import frc.robot.commands.IntakeCommands.TwoInOneOut;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
@@ -119,8 +123,7 @@ public class ShootCommand extends Command {
     shooter.keepVelocity(targetFlywheelSpeed);
     shooter.setHoodAngle(targetHoodAngle);
 
-    //boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
-    boolean thetaAtSetpoint = true;
+    boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeCommand.robotAngleTolerance.getRadians();
 
     if(!hasReachedTargetVelocity && shooter.isShooterAtGoal()){
       hasReachedTargetVelocity = true;
@@ -231,7 +234,7 @@ public class ShootCommand extends Command {
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
     Command shootCommand = (
         new ShootCommand(shooter, drivetrain, vision)  
-        .alongWith((new ShakeItOffCommand(intake)))
+        .alongWith(TwoInOneOut.factory(intake))
       ).beforeStarting(new SpinUp(shooter, drivetrain));
 
     return driveCommand.alongWith(shootCommand).withName("Full Shoot");
