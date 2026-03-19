@@ -14,7 +14,7 @@ public class IntakeConstants {
 
     //The positions of the intake (closed and opened)
     public static final double CLOSE_POSITION = 0;
-    public static final double OPEN_POSITION = 0.38;
+    public static final double OPEN_POSITION = 0.35;
 
     public static final double INTAKE_VELOCITY = 4;
 
@@ -52,7 +52,7 @@ public class IntakeConstants {
         positionMotorConfig.motorConfig.id = 42;
         positionMotorConfig.motorConfig.inverted = false;
         positionMotorConfig.motorConfig.idleMode = IdleMode.BRAKE;
-        positionMotorConfig.motorConfig.gearRatio = 6;
+        positionMotorConfig.motorConfig.gearRatio = 5.4;
         positionMotorConfig.motorConfig.motorType = DCMotor.getNEO(1);
         positionMotorConfig.motorConfig.unitConversion = Math.PI * PINION_DIAMETER;
 

@@ -64,6 +64,11 @@ public class TwoInOneOut extends Command {
         Logger.recordOutput("TwoInOneOut/setpoint", setpoint);
     }
 
+    public void end(boolean interrupted){
+        System.out.println("end of debugging");
+        intake.stopIntakeOpeningMotor();
+    }
+
 public boolean shouldStop(){
     var shouldStop = isMovingOut ? intake.getIntakePosition() >= setpoint : Math.abs(intake.getIntakePosition() - setpoint) 
             <= positionTolerance.getAsDouble();
@@ -71,10 +76,6 @@ public boolean shouldStop(){
     Logger.recordOutput("ShakeBangBang/setpoint", setpoint);
     return shouldStop;
   }
-
-    public static Command factory(Intake intake){
-        return new OpenPositionCommand(intake).andThen(new TwoInOneOut(intake));
-    }
 }
 
 

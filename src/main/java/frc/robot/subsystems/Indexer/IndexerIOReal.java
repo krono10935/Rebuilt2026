@@ -23,6 +23,13 @@ public class IndexerIOReal implements IndexerIO {
     }
 
     @Override
+    public void reverse() {
+        motorLeft.setControl(-IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
+        motorRight.setControl(-IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
+        isSpinning = true;
+    }
+
+    @Override
     public void turnOff() {
         motorLeft.stop();
         motorRight.stop();

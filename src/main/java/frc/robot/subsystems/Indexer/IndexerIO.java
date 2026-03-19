@@ -15,6 +15,11 @@ public interface IndexerIO {
     void turnOn();
 
     /**
+     * Sets the spindexer motor percent to the constant but reverse
+     */
+    void reverse();
+
+    /**
      * Stops the motor
      */
     void turnOff();

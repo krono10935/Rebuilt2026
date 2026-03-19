@@ -143,6 +143,8 @@ public class RobotContainer
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
 
+        driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.getIndexer().reverse()));
+
         Trigger closeEnoughToSpinUp = new Trigger(()
                 -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
                 FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())

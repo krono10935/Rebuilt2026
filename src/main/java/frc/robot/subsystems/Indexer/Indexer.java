@@ -37,6 +37,13 @@ public class Indexer extends SubsystemBase {
     }
 
     /**
+     * Enables the indexer in reverse
+     */
+    public void reverse(){
+        io.reverse();
+    }
+
+    /**
      * Diisable the indexer
      */
     public void turnOff(){

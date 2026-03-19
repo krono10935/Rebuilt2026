@@ -57,7 +57,7 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public boolean positionMotorAtSetPoint() {
-        return positionMotor.atSetpoint();
+        return positionMotor.atGoal();
     }
 
     @Override

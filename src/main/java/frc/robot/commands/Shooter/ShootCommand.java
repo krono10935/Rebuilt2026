@@ -234,7 +234,7 @@ public class ShootCommand extends Command {
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
     Command shootCommand = (
         new ShootCommand(shooter, drivetrain, vision)  
-        .alongWith(TwoInOneOut.factory(intake))
+        .alongWith(new WaitCommand(1).andThen(new TwoInOneOut(intake), new ShakeItOffCommandBangBang(intake)))
       ).beforeStarting(new SpinUp(shooter, drivetrain));
 
     return driveCommand.alongWith(shootCommand).withName("Full Shoot");
