@@ -143,7 +143,7 @@ public class RobotContainer
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
 
-        driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.getIndexer().reverse()));
+        //driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.getIndexer().reverse()));
 
         Trigger closeEnoughToSpinUp = new Trigger(()
                 -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
@@ -331,11 +331,11 @@ public class RobotContainer
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                ( (new ShootCommand(shooter, drivetrain, vision)).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                ( (new ShootCommand(shooter, drivetrain, vision , () -> false)).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                ( (new ShootCommand(shooter, drivetrain, vision)).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                ( (new ShootCommand(shooter, drivetrain, vision, () -> false )).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17.5), shooter));

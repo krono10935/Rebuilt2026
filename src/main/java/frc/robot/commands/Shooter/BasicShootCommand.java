@@ -21,6 +21,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import org.opencv.features2d.FlannBasedMatcher;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class BasicShootCommand extends Command {
@@ -192,7 +193,7 @@ public class BasicShootCommand extends Command {
   public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
     Command shootCommand = (
-        new ShootCommand(shooter, drivetrain, vision)  
+        new ShootCommand(shooter, drivetrain, vision, () ->false )  
         .alongWith((new ShakeItOffCommand(intake)))
       ).beforeStarting(new SpinUp(shooter, drivetrain));
 

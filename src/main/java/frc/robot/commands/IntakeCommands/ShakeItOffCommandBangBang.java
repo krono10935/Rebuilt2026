@@ -27,6 +27,8 @@ public class ShakeItOffCommandBangBang extends Command {
 
   private final LoggedNetworkNumber closePos;
 
+  private final LoggedNetworkNumber firstClosePos;
+
   private final LoggedNetworkNumber openLessMultiplier;
 
   private final Timer beginTimer;
@@ -48,11 +50,13 @@ public class ShakeItOffCommandBangBang extends Command {
 
 
     tolerance = new LoggedNetworkNumber("ShakeBangBang/tolerance", 0.05);
-    openingDutyCycle = new LoggedNetworkNumber("ShakeBangBang/openDutyCycle", 0.5);
-    closingDutyCycle = new LoggedNetworkNumber("ShakeBangBang/closingDutyCycle", 0.5);
-    openPos = new LoggedNetworkNumber("ShakeBangBang/openPos", 0.25);
+    openingDutyCycle = new LoggedNetworkNumber("ShakeBangBang/openDutyCycle", 0.9);
+    closingDutyCycle = new LoggedNetworkNumber("ShakeBangBang/closingDutyCycle", 0.9);
+    openPos = new LoggedNetworkNumber("ShakeBangBang/openPos", 0.15);
+    firstClosePos = new LoggedNetworkNumber("ShakeBangBang/firstClosePos", 0.075);
+
     closePos = new LoggedNetworkNumber("ShakeBangBang/closePos", 0.00);
-    openLessMultiplier = new LoggedNetworkNumber("ShakeBangBang/openLessMultiplier", 0.75);
+    openLessMultiplier = new LoggedNetworkNumber("ShakeBangBang/openLessMultiplier", 0.7);
     beginTimer = new Timer();
     intakeSpeed = new LoggedNetworkNumber("ShakeBangBang/intakeDutyCycle", 0.5);
     cycles = 0;
@@ -70,6 +74,10 @@ public class ShakeItOffCommandBangBang extends Command {
 
     hasOpened = false;
     shouldOpen = false;
+
+    intake.setPercent(intakeSpeed.getAsDouble());
+
+    setpoint = intake.getIntakePosition();
 
     cycles = 0;
   }
@@ -92,8 +100,13 @@ public class ShakeItOffCommandBangBang extends Command {
          Math.pow(Math.sqrt(openLessMultiplier.getAsDouble()), cycles) : 
          -closingDutyCycle.getAsDouble());
 
+        if (hasOpened){
         setpoint = shouldOpen ? openPos.getAsDouble() * Math.pow(openLessMultiplier.getAsDouble(), cycles) :
-         closePos.getAsDouble();
+          closePos.getAsDouble();
+        } else {
+           setpoint = shouldOpen ? openPos.getAsDouble() * Math.pow(openLessMultiplier.getAsDouble(), cycles) :
+          firstClosePos.getAsDouble();
+        }
       }
     }
   }
@@ -108,5 +121,6 @@ public class ShakeItOffCommandBangBang extends Command {
 
   public void end(boolean interrupted){
     intake.stopIntakeOpeningMotor();
+    intake.stopIntakeMotor();
   }
 }

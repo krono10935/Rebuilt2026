@@ -92,4 +92,8 @@ public class Indexer extends SubsystemBase {
     public boolean isStuck(){
         return io.isStuck();
     }
+
+    public void setSpeed(double rps){
+        io.setSpeed(rps);
+    }
 }

@@ -73,6 +73,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void keepVelocity(double speedMPS){ // TODO WTF THIS SHOULD NOT WORK
+        targetVelocity = speedMPS;
         leadShootingMotor.setControl(targetVelocity , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }

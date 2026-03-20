@@ -42,4 +42,10 @@ public class IndexerIOSim implements IndexerIO {
         return Math.abs(motorLeft.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND ||
             Math.abs(motorRight.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND;
     }
+
+     @Override
+    public void setSpeed(double speedRps){
+        motorLeft.setControl(speedRps,ControlMode.VELOCITY);
+        motorRight.setControl(speedRps,ControlMode.VELOCITY);
+    }
 }

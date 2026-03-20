@@ -29,5 +29,7 @@ public interface IndexerIO {
      */
     boolean isStuck();
 
+    void setSpeed(double speedRps);
+
     void update(IndexerInputs inputs);
 }

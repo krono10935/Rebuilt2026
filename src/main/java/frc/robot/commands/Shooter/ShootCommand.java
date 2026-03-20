@@ -7,6 +7,7 @@ package frc.robot.commands.Shooter;
 import java.lang.Character.Subset;
 import java.lang.invoke.ConstantBootstraps;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
@@ -15,15 +16,19 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Sequences;
 import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
 import frc.robot.commands.IntakeCommands.CloseSlowAndThenFast;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
+import frc.robot.commands.IntakeCommands.OpenCommand;
 import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
 import frc.robot.commands.IntakeCommands.ShakeItOffCommandBangBang;
 import frc.robot.commands.IntakeCommands.SlowlyClose;
 import frc.robot.commands.IntakeCommands.TwoInOneOut;
 import frc.robot.subsystems.Indexer.Indexer;
+import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
@@ -68,17 +73,20 @@ public class ShootCommand extends Command {
 
   private final Rotation2d INTAKE_CLOSING_VELOCITY = Rotation2d.fromDegrees(10);
 
+  private final BooleanSupplier reverseIndexer;
+
   /**
    * 
    * @param shooter subsystem to activate the shoot command on
    * @param drivetrain drivetrain
    */
-  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision ) {
+  public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision, BooleanSupplier reverseIndexer ) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
     this.drivetrain = drivetrain;
     this.vision = vision;
+    this.reverseIndexer  = reverseIndexer;
 
     hoodSetpointTimer = new Timer();
     hoodFailedToSetpoint = new Alert("Hood failed to reach setpoint", AlertType.kError);
@@ -151,7 +159,8 @@ public class ShootCommand extends Command {
       handleKickerErrors();
 
       shooter.toggleKicker(true);
-      shooter.getIndexer().turnOn();
+      shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean()? -IndexerConstants.SPINNING_TARGET_VELOCITY : 
+      IndexerConstants.SPINNING_TARGET_VELOCITY);
     }
 
     // otherwise open the kicker and start letting the shooter shoot
@@ -233,9 +242,19 @@ public class ShootCommand extends Command {
   public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
     DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
     Command shootCommand = (
-        new ShootCommand(shooter, drivetrain, vision)  
-        .alongWith(new WaitCommand(1).andThen(new TwoInOneOut(intake), new ShakeItOffCommandBangBang(intake)))
+        new ShootCommand(shooter, drivetrain, vision, () -> controller.leftBumper().getAsBoolean())  
+        .alongWith(new ShakeItOffCommandBangBang(intake))
       ).beforeStarting(new SpinUp(shooter, drivetrain));
+
+    return driveCommand.alongWith(shootCommand).withName("Full Shoot");
+  }
+
+
+  public static Command shootCommandFactoryStaticIntake(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
+    DriveAndHomeCommand driveCommand = new DriveAndHomeCommand(drivetrain, controller);
+    Command shootCommand = (
+        new ShootCommand(shooter, drivetrain, vision, () -> controller.leftBumper().getAsBoolean())
+      ).beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(Sequences.intakeOpenStart(intake));
 
     return driveCommand.alongWith(shootCommand).withName("Full Shoot");
   }
