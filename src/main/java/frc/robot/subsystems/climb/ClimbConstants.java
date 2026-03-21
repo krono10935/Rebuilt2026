@@ -31,7 +31,7 @@ public class ClimbConstants {
     public static BasicMotorConfig getClimbConfig(){
         BasicMotorConfig config = new BasicSparkConfig();
 
-        config.motorConfig.gearRatio = 1; //TODO: idk yet
+        config.motorConfig.gearRatio = 45;
         config.motorConfig.id = 47;
         config.motorConfig.idleMode = IdleMode.COAST;
         config.motorConfig.motorType = DCMotor.getNEO(1);
@@ -44,7 +44,7 @@ public class ClimbConstants {
         // config.slot0Config.pidConfig.tolerance = 0.1;
 
         var sparkConfig = ((BasicSparkConfig)config);
-        sparkConfig.currentLimitConfig.freeSpeedCurrentLimit = 40; 
+        sparkConfig.currentLimitConfig.freeSpeedCurrentLimit = 80; 
         
         config.simulationConfig.kA = 0.023275; // Not real
         config.simulationConfig.kV = 0.31938;

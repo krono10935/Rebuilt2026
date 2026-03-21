@@ -391,6 +391,7 @@ public class Drivetrain extends SubsystemBase {
 
         Logger.processInputs("drivetrain", inputs);
         Logger.recordOutput("drivetrain/estimated pose", getEstimatedPosition());
+        Logger.recordOutput("drivetrain/flipped estimated pose", getEstimatedPositionFlipped());
 
         field.setRobotPose(getEstimatedPosition());
 

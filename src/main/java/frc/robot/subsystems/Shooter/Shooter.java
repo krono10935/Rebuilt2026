@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Phase;
@@ -162,6 +164,18 @@ public class Shooter extends SubsystemBase{
      */
     public boolean isKeepingVelocity(){
       return isKeepingVelocity;
+    }
+
+    /**
+     * @return A command to reset the shooter and indexer
+     */
+    public Command resetShooterCommand(){
+      return new InstantCommand(() -> {
+        stopFlyWheel();
+        setHoodAngle(Rotation2d.fromDegrees(1));
+        toggleKicker(false);
+        getIndexer().turnOff();
+      }, this, getIndexer());
     }
 
 }

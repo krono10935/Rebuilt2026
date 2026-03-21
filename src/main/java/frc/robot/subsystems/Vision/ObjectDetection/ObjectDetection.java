@@ -7,7 +7,9 @@ package frc.robot.subsystems.Vision.ObjectDetection;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.utils.VirtualSubSystem;
 
 /** Add your docs here. */
@@ -55,7 +57,7 @@ public class ObjectDetection extends VirtualSubSystem {
      * @return if the robot has balls
      */
     public boolean hasBalls(){
-        return hasBalls;
+        return hasBalls || !Constants.USE_OBJECT_DETECTION;
     }
 
     @Override

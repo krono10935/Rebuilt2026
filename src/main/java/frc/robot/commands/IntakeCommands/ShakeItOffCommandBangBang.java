@@ -99,14 +99,14 @@ public class ShakeItOffCommandBangBang extends Command {
         intake.setPositionMotorPercent(shouldOpen ? openingDutyCycle.getAsDouble() *
          Math.pow(Math.sqrt(openLessMultiplier.getAsDouble()), cycles) : 
          -closingDutyCycle.getAsDouble());
+      }
 
-        if (hasOpened){
+      if (hasOpened){
         setpoint = shouldOpen ? openPos.getAsDouble() * Math.pow(openLessMultiplier.getAsDouble(), cycles) :
           closePos.getAsDouble();
-        } else {
+      } else {
            setpoint = shouldOpen ? openPos.getAsDouble() * Math.pow(openLessMultiplier.getAsDouble(), cycles) :
           firstClosePos.getAsDouble();
-        }
       }
     }
   }

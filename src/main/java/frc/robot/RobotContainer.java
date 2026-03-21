@@ -52,6 +52,7 @@ import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.PPController;
 import frc.robot.subsystems.intake.Intake;
+import frc.utils.AllianceFlipUtil;
 import frc.utils.CheckFreeSpace;
 import frc.utils.Elastic;
 
@@ -74,6 +75,9 @@ public class RobotContainer
 
     public final Drivetrain drivetrain;
 
+    private Trigger AutoShoot;
+
+    private Trigger test;
 
     private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -112,8 +116,6 @@ public class RobotContainer
 
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
-        new Trigger(()-> DriverStation.isDSAttached()).onTrue(new InstantCommand(() -> Elastic.selectTab("Autonomous")));
-
         SmartDashboard.putNumber("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage()); //TODO: fix
         Logger.recordOutput("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
 
@@ -145,13 +147,13 @@ public class RobotContainer
 
         //driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.getIndexer().reverse()));
 
-        Trigger closeEnoughToSpinUp = new Trigger(()
-                -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
-                FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
-        ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
+        // Trigger closeEnoughToSpinUp = new Trigger(()
+        //         -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
+        //         FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
+        // ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
 
-        closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
-                        shooter.getCurrentCommand() == shooter.getDefaultCommand()));
+        // closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
+        //                 shooter.getCurrentCommand() == shooter.getDefaultCommand()));
 
         BooleanSupplier isHubActive = () -> {
             double time = DriverStation.getMatchTime();
@@ -161,12 +163,14 @@ public class RobotContainer
                     Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
         };
 
-//        new Trigger( () ->true).and(RobotState::isTeleop).
-//                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())
-//                        && ObjectDetection.getInstance().hasBalls())
-//                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
-//        Logger.recordOutput("alliancePose", FieldConstants.Hub.topCenterPoint);
-//        Logger.recordOutput("alliancePoseAPplu", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
+        AutoShoot = new Trigger(RobotState::isTeleop).
+                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())
+                        && ObjectDetection.getInstance().hasBalls())
+                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision))
+                .onFalse(shooter.resetShooterCommand().alongWith(IntakeFactory.resetIntake(intake)));
+                
+        Logger.recordOutput("alliancePose", FieldConstants.Hub.topCenterPoint);
+        Logger.recordOutput("alliancePoseAPplu", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
 
 
     }

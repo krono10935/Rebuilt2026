@@ -40,6 +40,8 @@ public class Robot extends LoggedRobot
     {
         initializeLogging(ModeFileHandling.isCompMode());
 
+        new Trigger(()-> DriverStation.isDSAttached()).onTrue(new InstantCommand(() -> Elastic.selectTab("Autonomous")));
+
         RobotContainer.getInstance();
     }
 
@@ -124,6 +126,7 @@ public class Robot extends LoggedRobot
         if (autonomousCommand != null)
         {
             CommandScheduler.getInstance().schedule(autonomousCommand);
+            
         }
     }
     

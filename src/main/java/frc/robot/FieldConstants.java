@@ -169,9 +169,9 @@ public class FieldConstants {
     }
 
     public static boolean isInAllianceZone(Pose2d pose){
-        var hubAlliance = AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint);
+        var hubAlliance = FieldConstants.Hub.topCenterPoint;
 
-        return pose.getX() <= hubAlliance.getX();
+        return AllianceFlipUtil.apply(pose).getX() <= hubAlliance.getX() && AllianceFlipUtil.apply(pose).getX() > 0;
     }
 
     public static Translation2d getClosestTrench(Pose2d robotPose){
