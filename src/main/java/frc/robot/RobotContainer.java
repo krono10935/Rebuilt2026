@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.Drivetrain.DriveAndHomeToIntake;
 import frc.robot.commands.Drivetrain.SwerveSysID;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
@@ -37,7 +39,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.Drivetrain.DriveAndHomeCommand;
+import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.Drivetrain.DriveRobotRelative;
 import frc.robot.commands.Shooter.BasicShootCommand;
@@ -70,7 +72,7 @@ public class RobotContainer
 
     public final Intake intake;
 
-    private final ExponentialCommandXboxController driverController;
+    private final CommandXboxController driverController;
 
     private final CommandGenericHID operatorController;
 
@@ -93,7 +95,6 @@ public class RobotContainer
 
     private RobotContainer()
     {
-
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         shooter = new Shooter();
@@ -102,13 +103,13 @@ public class RobotContainer
 
         intake = new Intake();
 
-        driverController = new ExponentialCommandXboxController(0, ControllerMultiplierType.SQRT);
+        driverController = new CommandXboxController(0);
 
         operatorController = new CommandGenericHID(1);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
-        autoChooser = registerNamedCommand(new DriveAndHomeCommand(drivetrain, driverController));
+        autoChooser = registerNamedCommand(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         ObjectDetection.getInstance();
 
@@ -231,10 +232,10 @@ public class RobotContainer
         //TODO test these
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
         
-        driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, driverController)));
+        driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveAndHomeToIntake(drivetrain, driverController)));
 
         driverController.x().onTrue(
-                Sequences.delivery(drivetrain, shooter, driverController,intake));
+                Sequences.delivery(drivetrain, shooter, driverController));
 
         driverController.a().onTrue(drivetrain.resetGyro());
 
@@ -328,6 +329,7 @@ public class RobotContainer
         drivetrain.addPathToField(poses);
     }
 
+    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeToHubCommand driveAndHomeToHubCommand){
 
     /**
      * @param driveAndHomeCommand that pathplanner will use (replaces it with a PPController)
@@ -337,14 +339,14 @@ public class RobotContainer
     public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
 
         Command aimRobot = new StartEndCommand(() -> {
-            driveAndHomeCommand.resetThetaController();
-            PPController.setThetaOverride(driveAndHomeCommand::calculateThetaPID);
+            driveAndHomeToHubCommand.resetThetaController();
+            PPController.setThetaOverride(driveAndHomeToHubCommand::calculateThetaPID);
         }, PPController::clearThetaOverride);
 
         Command aimRobotStationary = new RunCommand(
                 () -> drivetrain.drive(new ChassisSpeeds(
-                        0, 0, driveAndHomeCommand.calculateThetaPID())), drivetrain)
-                .beforeStarting(driveAndHomeCommand::resetThetaController);
+                        0, 0, driveAndHomeToHubCommand.calculateThetaPID())), drivetrain)
+                .beforeStarting(driveAndHomeToHubCommand::resetThetaController);
 
 
         NamedCommands.registerCommand("shootAndAimMoving",

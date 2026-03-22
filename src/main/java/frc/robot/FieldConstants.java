@@ -148,7 +148,7 @@ public class FieldConstants {
     public static Translation2d towerRight = new Translation2d(4,3);
     public static Translation2d towerRightBack = new Translation2d(3,4);
 
-    public  static enum TowerSide {
+    public  enum TowerSide {
         left,
         right,
     }

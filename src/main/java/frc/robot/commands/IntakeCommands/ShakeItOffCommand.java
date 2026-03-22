@@ -1,55 +1,73 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.IntakeCommands;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-import org.opencv.core.Mat;
 
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/**
+ * Command that repeatedly opens and closes the intake to "shake" it.
+ * The open/close timing, positions, and speed are configurable via LoggedNetworkNumbers.
+ */
 public class ShakeItOffCommand extends Command {
-  /** Creates a new ShakeItOffCommand. */
-  private  final Intake intake;
 
-  private final LoggedNetworkNumber openPos;
+    private final Intake intake;
 
+    private final LoggedNetworkNumber openPos;
+    private final LoggedNetworkNumber tolerance;
+    private final LoggedNetworkNumber closePos;
+    private final LoggedNetworkNumber closeLessPercent;
+    private final LoggedNetworkNumber timeTochange;
+    private final LoggedNetworkNumber intakeSpeed;
   private final LoggedNetworkNumber reversePos;
 
   private final LoggedNetworkNumber tolerance;
 
-  private final LoggedNetworkNumber closePos;
+    private final Timer timer;
+    private final Timer beginTimer;
 
-  private final LoggedNetworkNumber closeLessPercent;
+    private int cycles;
 
-  private final Timer timer;
+    @AutoLogOutput(key = "Shake/shouldOpen")
+    private boolean shouldOpen = false;
 
-  private final LoggedNetworkNumber timeTochange;
+    @AutoLogOutput(key = "Shake/hasOpened")
+    private boolean hasOpened = false;
 
-  private final Timer beginTimer;
+    /**
+     * Creates a new ShakeItOffCommand.
+     *
+     * @param intake The intake subsystem this command controls.
+     */
+    public ShakeItOffCommand(Intake intake) {
+        this.intake = intake;
+        addRequirements(intake);
 
-  private int cycles;
+        tolerance = new LoggedNetworkNumber("Shake/tolerance", 0.0025);
+        openPos = new LoggedNetworkNumber("Shake/openPos", 0.25);
+        closePos = new LoggedNetworkNumber("Shake/closePos", 0.00);
+        closeLessPercent = new LoggedNetworkNumber("Shake/closeLessMultiplier", 0.75);
+        timeTochange = new LoggedNetworkNumber("Shake/time", 1);
+        intakeSpeed = new LoggedNetworkNumber("Shake/intakeDutyCycle", 0.5);
 
-  private LoggedNetworkNumber intakeSpeed;
-  @AutoLogOutput(key =  "Shake/shouldOpen")
-  private boolean shouldOpen = false;
+        timer = new Timer();
+        beginTimer = new Timer();
+        cycles = 0;
+    }
 
-  @AutoLogOutput(key = "Shake/hasOpened")
-  private boolean hasOpened = false;
-  public ShakeItOffCommand(Intake intake) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.intake = intake;
-    addRequirements(intake);
+    @Override
+    public void initialize() {
+        timer.reset();
+        timer.start();
 
+        beginTimer.reset();
+        beginTimer.start();
 
+        intake.setPercent(intakeSpeed.get());
+        cycles = 0;
+    }
     tolerance = new LoggedNetworkNumber("Shake/tolerance", 0.0025);
     openPos = new LoggedNetworkNumber("Shake/openPos", 0.25);
     reversePos = new LoggedNetworkNumber("Shake/reversePos", 0.1);
@@ -61,8 +79,22 @@ public class ShakeItOffCommand extends Command {
     intakeSpeed = new LoggedNetworkNumber("Shake/intakeDutyCycle", 0.5);
     cycles = 0;
 
+    @Override
+    public void execute() {
+        if (beginTimer.get() > 0.5) {
+            if (timer.get() >= timeTochange.getAsDouble()) {
+                if (!shouldOpen) {
+                    cycles++;
+                }
+                shouldOpen = !shouldOpen;
 
+                double targetPosition = shouldOpen
+                        ? openPos.getAsDouble() * Math.pow(closeLessPercent.getAsDouble(), cycles)
+                        : closePos.getAsDouble();
 
+                intake.setPosition(targetPosition);
+                timer.reset();
+            }
   }
 
   // Called when the command is initially scheduled.
@@ -92,11 +124,6 @@ public class ShakeItOffCommand extends Command {
         if (!shouldOpen){
           cycles++;
         }
-        shouldOpen = ! shouldOpen;
-        intake.setPosition(shouldOpen ? openPos.getAsDouble() * Math.pow(closeLessPercent.getAsDouble()
-          , cycles) : closePos.getAsDouble());
-        timer.reset();
-      }
     }
 
     if (intake.getIntakePosition() <= reversePos.getAsDouble()){
@@ -104,8 +131,8 @@ public class ShakeItOffCommand extends Command {
     }
   }
 
-  @Override
-  public void end(boolean interrupted){
-    intake.stopIntakeMotor();
-  }
+    @Override
+    public void end(boolean interrupted) {
+        intake.stopIntakeMotor();
+    }
 }
