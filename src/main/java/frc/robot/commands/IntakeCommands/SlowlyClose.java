@@ -12,12 +12,11 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
  */
 public class SlowlyClose extends Command {
 
-    private final Intake intake;
     protected final Intake intake;
 
     private final LoggedNetworkNumber slowlyClosePercent;
 
-    private double openPos;
+
     protected double openPos = IntakeConstants.OPEN_POSITION;
 
     private boolean closing = true;
@@ -33,9 +32,7 @@ public class SlowlyClose extends Command {
         this.slowlyClosePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0);
         this.openPos = IntakeConstants.OPEN_POSITION;
         this.timerToOpenAgain = new Timer();
-        slowlyClosePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0 );
         openPos = IntakeConstants.OPEN_POSITION;
-        timerToOpenAgain = new Timer();
         addRequirements(intake);
     }
 

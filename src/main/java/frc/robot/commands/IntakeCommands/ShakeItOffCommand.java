@@ -21,9 +21,8 @@ public class ShakeItOffCommand extends Command {
     private final LoggedNetworkNumber closeLessPercent;
     private final LoggedNetworkNumber timeTochange;
     private final LoggedNetworkNumber intakeSpeed;
-  private final LoggedNetworkNumber reversePos;
+    private final LoggedNetworkNumber reversePos;
 
-  private final LoggedNetworkNumber tolerance;
 
     private final Timer timer;
     private final Timer beginTimer;
@@ -51,6 +50,7 @@ public class ShakeItOffCommand extends Command {
         closeLessPercent = new LoggedNetworkNumber("Shake/closeLessMultiplier", 0.75);
         timeTochange = new LoggedNetworkNumber("Shake/time", 1);
         intakeSpeed = new LoggedNetworkNumber("Shake/intakeDutyCycle", 0.5);
+        reversePos = new LoggedNetworkNumber("Shake/reversePos", 0.15);
 
         timer = new Timer();
         beginTimer = new Timer();
@@ -68,16 +68,6 @@ public class ShakeItOffCommand extends Command {
         intake.setPercent(intakeSpeed.get());
         cycles = 0;
     }
-    tolerance = new LoggedNetworkNumber("Shake/tolerance", 0.0025);
-    openPos = new LoggedNetworkNumber("Shake/openPos", 0.25);
-    reversePos = new LoggedNetworkNumber("Shake/reversePos", 0.1);
-    closePos = new LoggedNetworkNumber("Shake/closePos", 0.00);
-    closeLessPercent = new LoggedNetworkNumber("Shake/closeLessMultiplier", 0.75);
-    timeTochange = new LoggedNetworkNumber("Shake/time", 1);
-    timer = new Timer();
-    beginTimer = new Timer();
-    intakeSpeed = new LoggedNetworkNumber("Shake/intakeDutyCycle", 0.5);
-    cycles = 0;
 
     @Override
     public void execute() {
@@ -95,41 +85,8 @@ public class ShakeItOffCommand extends Command {
                 intake.setPosition(targetPosition);
                 timer.reset();
             }
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    
-    timer.reset();
-    
-    timer.start();
-
-    beginTimer.reset();
-    beginTimer.start();
-
-    intake.setPercent(intakeSpeed.get());
-
-    cycles = 0;
-    
-    
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-
-    if(beginTimer.get()> 0.0){
-      if(timer.get()>= timeTochange.getAsDouble()){
-        if (!shouldOpen){
-          cycles++;
+          }
         }
-    }
-
-    if (intake.getIntakePosition() <= reversePos.getAsDouble()){
-          intake.setPercent(-intakeSpeed.get());
-    }
-  }
 
     @Override
     public void end(boolean interrupted) {

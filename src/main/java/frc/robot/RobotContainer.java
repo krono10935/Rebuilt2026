@@ -16,8 +16,6 @@ import frc.robot.commands.Drivetrain.DriveAndHomeToIntake;
 import frc.robot.commands.Drivetrain.SwerveSysID;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
-import frc.utils.controllers.ControllerMultiplierType;
-import frc.utils.controllers.ExponentialCommandXboxController;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.Logger;
@@ -329,14 +327,14 @@ public class RobotContainer
         drivetrain.addPathToField(poses);
     }
 
-    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeToHubCommand driveAndHomeToHubCommand){
+
 
     /**
-     * @param driveAndHomeCommand that pathplanner will use (replaces it with a PPController)
+     * @param driveAndHomeToHubCommand that pathplanner will use (replaces it with a PPController)
      * @return A LoggedDashboardChooser for the auto commands and gives
      * PathPlanner sequences for our auto commands
      */
-    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeCommand driveAndHomeCommand){
+    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeToHubCommand driveAndHomeToHubCommand){
 
         Command aimRobot = new StartEndCommand(() -> {
             driveAndHomeToHubCommand.resetThetaController();

@@ -29,20 +29,14 @@ public class IntakeCommand extends Command {
         addRequirements(intake);
     }
 
+
     @Override
-    public void initialize() {
-        intake.setIntakeMotorVelocity(IntakeConstants.INTAKE_VELOCITY);
-        hasBallTimer.reset();
-        hasBallTimer.start();
-        Elastic.selectTab("Intake Camera");
+    public void initialize(){
+      intake.setIntake90PercentSpeed(IntakeConstants.INTAKE_VELOCITY);
+      hasBallTimer.reset();
+      hasBallTimer.start();
+      Elastic.selectTab("Intake Camera");
     }
-  @Override
-  public void initialize(){
-    intake.setIntake90PercentSpeed(IntakeConstants.INTAKE_VELOCITY);
-    hasBallTimer.reset();
-    hasBallTimer.start();
-    Elastic.selectTab("Intake Camera");
-  }
 
     @Override
     public void end(boolean interrupted) {
