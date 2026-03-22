@@ -12,6 +12,7 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.Drivetrain.DriveAndHomeToIntake;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
@@ -86,7 +87,6 @@ public class RobotContainer
 
     private RobotContainer()
     {
-
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         shooter = new Shooter();
@@ -196,7 +196,7 @@ public class RobotContainer
         //TOOD test these
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
         
-        driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveRobotRelative(drivetrain, driverController)));
+        driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveAndHomeToIntake(drivetrain, driverController)));
 
         driverController.x().onTrue(
                 Sequences.delivery(drivetrain, shooter, driverController));

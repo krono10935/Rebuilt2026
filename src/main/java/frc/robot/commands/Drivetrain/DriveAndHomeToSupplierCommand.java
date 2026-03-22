@@ -85,10 +85,7 @@ public class DriveAndHomeToSupplierCommand extends DriveCommand {
 
         ChassisSpeeds speeds = getControllerInputs();
 
-        double thetaSpeed = angularController.calculate(
-                drivetrain.getEstimatedPosition().getRotation().getRadians(),
-                angularSupplier.get().getRadians()
-        );
+        double thetaSpeed = calculateThetaPID();
 
         // Prevent jitter
         if (Math.abs(thetaSpeed) < ANGULAR_DEADBAND) {
