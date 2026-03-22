@@ -76,7 +76,7 @@ public class SwerveModuleBasic extends SwerveModuleIO {
     @Override
     public void setTargetStateWithBalls(SwerveModuleState targetState){
         drivingMotor.setControl(targetState.speedMetersPerSecond, ControlMode.VELOCITY);
-        steeringMotor.setControl(targetState.speedMetersPerSecond, ControlMode.POSITION);
+        steeringMotor.setControl(targetState.angle.getRotations(), ControlMode.POSITION);
     }
 
     @Override

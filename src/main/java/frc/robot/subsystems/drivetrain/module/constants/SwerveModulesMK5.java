@@ -17,7 +17,7 @@ public enum SwerveModulesMK5 {
             6,  -0.435, 12
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
-            new FeedForwardsGains(2.4805, 0),
+            new FeedForwardsGains(2.4805, 0.32),
             0.32661,
             4,
             new PIDGains(30, 5, 0, 0, 0, 0),
@@ -34,7 +34,7 @@ public enum SwerveModulesMK5 {
             9,  -0.445, 13
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
-            new FeedForwardsGains(2.3745, 0),
+            new FeedForwardsGains(2.3745, 0.32),
             0.40069,
             5,
             new PIDGains(30, 5, 0, 0, 0, 0),
@@ -50,7 +50,7 @@ public enum SwerveModulesMK5 {
             7,  0.263, 11
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
-            new FeedForwardsGains(2.4752, 0),
+            new FeedForwardsGains(2.4752, 0.32),
             0.91735,
             3,
             new PIDGains(30, 5, 0, 0, 0, 0),
@@ -67,13 +67,13 @@ public enum SwerveModulesMK5 {
             8,  0.24, 10
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
-            new FeedForwardsGains(2.3786, 0),
+            new FeedForwardsGains(2.3786, 0.32),
             0.71613,
             2,
             new PIDGains(30, 5, 0, 0, 0, 0),
             new FeedForwardsGains(2.5978, 0),
             2.5978,0.53702,
-            new Translation2d(-0.3, 0.3),
+            new Translation2d(-0.3, -0.3),
             new PIDGains(),
             new FeedForwardsGains(),
             new PIDGains(),

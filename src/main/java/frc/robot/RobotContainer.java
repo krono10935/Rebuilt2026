@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.commands.Drivetrain.SwerveSysID;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import frc.utils.controllers.ControllerMultiplierType;
@@ -120,7 +121,7 @@ public class RobotContainer
         Logger.recordOutput("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
 
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
-        
+
         // TODO enable for comp
         // if (ModeFileHandling.isCompMode()){
         //     configureBindings();
@@ -134,12 +135,20 @@ public class RobotContainer
      * Test bindings
      */
     private void test(){
-        driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
-        driverController.b().onTrue(Sequences.intakeOpenStart(intake));
-        driverController.x().toggleOnTrue(Sequences.stopIntakeAndClose(intake));
+        //driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
+        //driverController.b().onTrue(Sequences.intakeOpenStart(intake));
+        //driverController.x().toggleOnTrue(Sequences.stopIntakeAndClose(intake));
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
 
-        driverController.y().onTrue(IntakeFactory.resetIntake(intake));
+        SwerveSysID sysid = new SwerveSysID(drivetrain,driverController);
+
+        LoggedNetworkNumber volt = new LoggedNetworkNumber("drivetrain/kstest", 0);
+
+        Command spin = new RunCommand(() -> sysid.spin(volt.getAsDouble()));
+
+        spin.addRequirements(drivetrain);
+        driverController.x().onTrue(spin);
+        //driverController.y().onTrue(IntakeFactory.resetIntake(intake));
         
         //TODO: add intake outtake functionality
 
@@ -163,14 +172,16 @@ public class RobotContainer
                     Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
         };
 
-        AutoShoot = new Trigger(RobotState::isTeleop).
-                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())
-                        && ObjectDetection.getInstance().hasBalls())
-                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision))
-                .onFalse(shooter.resetShooterCommand().alongWith(IntakeFactory.resetIntake(intake)));
+//        AutoShoot = new Trigger(RobotState::isTeleop).
+//                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())
+//                        && ObjectDetection.getInstance().hasBalls())
+//                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision))
+//                .onFalse(shooter.resetShooterCommand().alongWith(IntakeFactory.resetIntake(intake)));
                 
         Logger.recordOutput("alliancePose", FieldConstants.Hub.topCenterPoint);
         Logger.recordOutput("alliancePoseAPplu", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
+
+
 
 
     }
@@ -278,7 +289,8 @@ public class RobotContainer
         var selectedAuto = autoChooser.get();
 
         Command autoCommand = Commands.sequence(
-            IntakeFactory.resetIntake(intake), selectedAuto, drivetrain.idle());
+//            IntakeFactory.resetIntake(intake),
+                selectedAuto, drivetrain.idle());
 
         CommandScheduler.getInstance().removeComposedCommand(selectedAuto);
 
