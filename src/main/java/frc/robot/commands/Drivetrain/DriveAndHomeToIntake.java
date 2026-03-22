@@ -9,6 +9,11 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.utils.AllianceFlipUtil;
 
 public class DriveAndHomeToIntake extends DriveAndHomeToSupplierCommand{
+
+    private static final double RESET_ANGLE_ERROR = 50;
+    private static final double MAX_ANGLE_ERROR = 90;
+    private static final double MAX_ANGLE_ERROR_TIMEOUT = 4;
+    
     public DriveAndHomeToIntake(Drivetrain drivetrain, CommandXboxController controller) {
         super(drivetrain, controller, DriveAndHomeToIntake::getControllerVectorAngle);
     }
@@ -39,21 +44,21 @@ public class DriveAndHomeToIntake extends DriveAndHomeToSupplierCommand{
 
     private final Timer timer = new Timer();
 
-    private boolean flag;
+    private boolean ignoreMaxAngleError;
 
-    private boolean shouldLookAtIntake(Rotation2d errorVector) {
-        double error = Math.abs(errorVector.getDegrees());
-        if(error < 50) flag = false;
+    private boolean shouldLookAtIntake(Rotation2d errorVectorAngle) {
+        double error = Math.abs(errorVectorAngle.getDegrees());
+        if(error <= RESET_ANGLE_ERROR) ignoreMaxAngleError = false;
 
-        if(error <= 90 || flag){
+        if(error <= MAX_ANGLE_ERROR || ignoreMaxAngleError){
             timer.stop();
             return true;
         }
 
         if(!timer.isRunning()) timer.restart();
 
-        if(timer.hasElapsed(4)){
-            flag = true;
+        if(timer.hasElapsed(MAX_ANGLE_ERROR_TIMEOUT)){
+            ignoreMaxAngleError = true;
             timer.stop();
             return true;
         }

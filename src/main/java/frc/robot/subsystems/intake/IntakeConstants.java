@@ -104,4 +104,5 @@ public class IntakeConstants {
 
         public static final double MAX_CURRENT_LIMIT = 50;
     }
+
 }

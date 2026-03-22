@@ -105,10 +105,10 @@ public class DriveAndHomeToSupplierCommand extends DriveCommand {
                         angleFieldRelative()
                 )
         );
-
-        Logger.recordOutput("ShootCommand/thetaError", angularController.getPositionError());
-        Logger.recordOutput("ShootCommand/thetaSetpoint", angularController.getGoal());
-        Logger.recordOutput("ShootCommand/thetaMeasurement",
+        String name = "HomeCommand/" + getName();
+        Logger.recordOutput(name + "/thetaError", angularController.getPositionError());
+        Logger.recordOutput(name + "/thetaSetpoint", angularController.getGoal());
+        Logger.recordOutput(name + "/thetaMeasurement",
                 drivetrain.getEstimatedPosition().getRotation());
     }
 
