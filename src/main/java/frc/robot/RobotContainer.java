@@ -136,8 +136,8 @@ public class RobotContainer
      */
     private void test(){
         //driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
-        //driverController.b().onTrue(Sequences.intakeOpenStart(intake));
-        //driverController.x().toggleOnTrue(Sequences.stopIntakeAndClose(intake));
+        driverController.b().onTrue(Sequences.intakeOpenStart(intake));
+        driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
 
         SwerveSysID sysid = new SwerveSysID(drivetrain,driverController);
@@ -147,8 +147,9 @@ public class RobotContainer
         Command spin = new RunCommand(() -> sysid.spin(volt.getAsDouble()));
 
         spin.addRequirements(drivetrain);
-        driverController.x().onTrue(spin);
-        //driverController.y().onTrue(IntakeFactory.resetIntake(intake));
+
+        driverController.leftBumper().onTrue(new InstantCommand(() -> intake.setPercent(-0.9)));
+        driverController.y().onTrue(IntakeFactory.resetIntake(intake));
         
         //TODO: add intake outtake functionality
 

@@ -32,7 +32,7 @@ public class IntakeConstants {
         intakeMotorConfig.motorConfig.id = 22;
         intakeMotorConfig.motorConfig.inverted = true;
         intakeMotorConfig.motorConfig.idleMode = IdleMode.BRAKE; 
-        intakeMotorConfig.motorConfig.gearRatio = 1 / (11.0/35);
+        intakeMotorConfig.motorConfig.gearRatio = 37.0/11.0;
         intakeMotorConfig.motorConfig.motorType = DCMotor.getNEO(1);
 
         intakeMotorConfig.slot0Config.pidConfig.kP = 0;
