@@ -174,12 +174,17 @@ public class FieldConstants {
         return AllianceFlipUtil.apply(pose).getX() <= hubAlliance.getX() && AllianceFlipUtil.apply(pose).getX() > 0;
     }
 
+
+
     public static Translation2d getClosestTrench(Pose2d robotPose){
-        if (robotPose.getTranslation().getX() < fieldWidth / 2){
+
+        if (robotPose.getTranslation().getY() < fieldWidth / 2){
             return AllianceFlipUtil.apply(RightTrench.openingTopCenter.toTranslation2d());
         } else {
             return AllianceFlipUtil.apply(LeftTrench.openingTopCenter.toTranslation2d());
         }
     }
+
+
 }
 

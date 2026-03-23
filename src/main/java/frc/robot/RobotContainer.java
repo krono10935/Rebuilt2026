@@ -30,16 +30,13 @@ import com.pathplanner.lib.path.DriveToPoseConstants;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.commands.Drivetrain.DriveCommand;
-import frc.robot.commands.Drivetrain.DriveRobotRelative;
 import frc.robot.commands.Shooter.BasicShootCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
@@ -55,7 +52,6 @@ import frc.robot.subsystems.drivetrain.PPController;
 import frc.robot.subsystems.intake.Intake;
 import frc.utils.AllianceFlipUtil;
 import frc.utils.CheckFreeSpace;
-import frc.utils.Elastic;
 
 
 public class RobotContainer
@@ -72,7 +68,7 @@ public class RobotContainer
 
     private final CommandXboxController driverController;
 
-    private final CommandGenericHID operatorController;
+    private final CommandXboxController operatorController;
 
     public final Drivetrain drivetrain;
 
@@ -81,6 +77,10 @@ public class RobotContainer
     private Trigger test;
 
     private final LoggedDashboardChooser<Command> autoChooser;
+
+    private boolean autoShootOverride;
+
+    private boolean isHubActiveOverride = false;
 
 
 
@@ -103,7 +103,7 @@ public class RobotContainer
 
         driverController = new CommandXboxController(0);
 
-        operatorController = new CommandGenericHID(1);
+        operatorController = new CommandXboxController(1);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
@@ -228,12 +228,25 @@ public class RobotContainer
      */
     private void configureBindings() {
         //TODO test these
+
+        autoShootOverride = true;
+        BooleanSupplier isHubActive = () -> {
+            double time = DriverStation.getMatchTime();
+
+            return Constants.HubTiming.isActive(time) ||
+                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
+                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE) || isHubActiveOverride;
+        };
+
+        SmartDashboard.putBoolean("autoShoot", autoShootOverride);
+        SmartDashboard.putBoolean("isHubActive", isHubActiveOverride);
+
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
         
-        driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveAndHomeToIntake(drivetrain, driverController)));
+        driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveAndHomeToIntake(drivetrain, driverController)
+                .alongWith(new InstantCommand(() -> autoShootOverride = !autoShootOverride).onlyIf(isHubActive))));
 
-        driverController.x().onTrue(
-                Sequences.delivery(drivetrain, shooter, driverController));
+        new Trigger(isHubActive).whileFalse(new InstantCommand(() -> autoShootOverride = true));
 
         driverController.a().onTrue(drivetrain.resetGyro());
 
@@ -253,12 +266,17 @@ public class RobotContainer
             ShootCommand.AddToFlywheelOffset(-ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK))
         );
 
-        operatorController.button(1).onTrue(    
+        operatorController.a().onTrue(
             new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(true))
 
         ).onFalse(new InstantCommand(() -> ShootCommand.setOverrideObjectDetection(false)));
 
-        
+        operatorController.b().onTrue(new InstantCommand( () -> isHubActiveOverride = !isHubActiveOverride));
+
+
+
+
+
         Trigger closeEnoughToSpinUp = new Trigger(()
             -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
                 FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
@@ -268,17 +286,15 @@ public class RobotContainer
         shooter.getCurrentCommand() == shooter.getDefaultCommand()))
             .onFalse(new InstantCommand(()-> shooter.stopFlyWheel(), shooter));
 
-        BooleanSupplier isHubActive = () -> {
-            double time = DriverStation.getMatchTime();
 
-            return Constants.HubTiming.isActive(time) ||
-                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
-                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
-        };
 
         new Trigger(isHubActive).and(RobotState::isTeleop).
-                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())).and(() -> autoShootOverride)
                 .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
+
+        new Trigger(() -> !FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+                .whileTrue(Sequences.delivery(drivetrain,shooter,driverController));
+
     }
 
     /**
