@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.*;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.Drivetrain.*;
+import frc.robot.commands.Shooter.ShootForDelivery;
 import frc.robot.commands.SpinUpForDelivery;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.Shooter.*;
@@ -260,44 +262,29 @@ public class Sequences {
             CommandXboxController controller
     ) {
 
-        Alert shooterFailed = new Alert("Shooter failed to keep velocity!", AlertType.kError);
 
-        SequentialCommandGroup spinUp = new SequentialCommandGroup(
-                new DriveCommand(drivetrain, controller).withDeadline(
-                        new SpinUpForDelivery(drivetrain, shooter, ShooterConstants.DELIVERY_SPEED_MPS)
-                )
-        );
+        BooleanSupplier isRobotStopped = () ->
+                drivetrain.getChassisSpeeds().vxMetersPerSecond < 0.1 &&
+                        drivetrain.getChassisSpeeds().vyMetersPerSecond < 0.1 &&
+                        drivetrain.getChassisSpeeds().omegaRadiansPerSecond < 0.1;
 
-        Supplier<Translation2d> trench = () ->
-                (drivetrain.getEstimatedPosition().getY() >= FieldConstants.fieldWidth / 2.0)
-                        ? FieldConstants.RightTrench.openingTopCenter.toTranslation2d()
-                        : FieldConstants.LeftTrench.openingTopCenter.toTranslation2d();
 
-        Supplier<Rotation2d> angle = () ->
-                trench.get()
-                        .minus(drivetrain.getEstimatedPosition().getTranslation())
+
+        Supplier<Translation2d> trench = () -> FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition());
+
+
+        BooleanSupplier isRobotAligned = () -> trench.get().
+                minus(drivetrain.getEstimatedPositionFlipped().getTranslation()).getAngle().getDegrees() < 5;
+
+        Supplier<Rotation2d> angle = () -> trench.get()
+                        .minus(drivetrain.getEstimatedPositionFlipped().getTranslation())
                         .getAngle();
 
-        ParallelCommandGroup deliver = new ParallelCommandGroup(
+        Command shooting = new ConditionalCommand(new ShootForDelivery(shooter), new InstantCommand(() -> {}), isRobotAligned);
+        Command homing = new ConditionalCommand(new DriveAndHomeToSupplierCommand(drivetrain, controller, angle),
+                new InstantCommand(() -> {}), isRobotStopped);
 
-                new RunCommand(() ->
-                        shooter.keepVelocity(ShooterConstants.DELIVERY_SPEED_MPS)
-                ).raceWith(
-                        ParallelRaceGroupWithWinner.andThenOnlyIfTimeout(
-                                new WaitUntilCommand(shooter::isShooterAtGoal)
-                                        .andThen(new InstantCommand(() -> shooterFailed.set(false))),
-                                ShootRealConstants.FLYWHEEL_TIME_TO_REACH_GOAL,
-                                new InstantCommand(shooter::stopFlyWheel)
-                                        .andThen(new InstantCommand(() -> shooterFailed.set(true)))
-                        )
-                ).onlyIf(() ->
-                        ObjectDetection.getInstance().hasBalls()
-                                && matchesDeliveryChassisSpeeds(drivetrain.getChassisSpeeds())
-                ),
 
-                new DriveAndHomeToSupplierCommand(drivetrain, controller, angle)
-        );
-
-        return spinUp.andThen(deliver);
+        return shooting.alongWith(homing);
     }
 }
