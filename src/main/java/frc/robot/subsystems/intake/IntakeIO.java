@@ -8,6 +8,7 @@ public interface IntakeIO {
         double position;
         double velocity;
         double positionMotorCurrent;
+        double intakeMotorCurrent;
     }
 
     /**

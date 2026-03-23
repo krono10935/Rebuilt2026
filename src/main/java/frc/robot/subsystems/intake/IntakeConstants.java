@@ -25,6 +25,8 @@ public class IntakeConstants {
     public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final double TIME_FOR_INTAKE_TO_OPEN = 4;
 
+    public static double MAX_INTAKE_CURRENT_TOLERANCE = 29;
+
 
     public static final BasicMotorConfig intakeMotorConfig = new BasicSparkConfig();
     static{

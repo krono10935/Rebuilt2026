@@ -18,7 +18,7 @@ public class IntakeCommand extends Command {
 
     private final Intake intake;
     private final Timer hasBallTimer = new Timer();
-
+    
     /**
      * Creates a new IntakeCommand.
      *
@@ -29,12 +29,22 @@ public class IntakeCommand extends Command {
         addRequirements(intake);
     }
 
+    /**
+     * 
+     * @return if the intake roller is stuck
+     */
+    public boolean isStuck(){
+        return intake.getIntakeMotorCurrent() > IntakeConstants.MAX_INTAKE_CURRENT_TOLERANCE;
+    }
 
     @Override
     public void initialize(){
       intake.setIntake90PercentSpeed(IntakeConstants.INTAKE_VELOCITY);
       hasBallTimer.reset();
       hasBallTimer.start();
+      if(isStuck()){
+        intake.setIntake90PercentSpeed(IntakeConstants.INTAKE_VELOCITY * (-1));
+      }
       Elastic.selectTab("Intake Camera");
     }
 
