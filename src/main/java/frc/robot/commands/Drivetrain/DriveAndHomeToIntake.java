@@ -1,5 +1,7 @@
 package frc.robot.commands.Drivetrain;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,6 +16,8 @@ public class DriveAndHomeToIntake extends DriveAndHomeToSupplierCommand{
     
     public DriveAndHomeToIntake(Drivetrain drivetrain, CommandXboxController controller) {
         super(drivetrain, controller,  DriveAndHomeToIntake::getControllerVectorAngle);
+
+        
     }
 
     private static ChassisSpeeds latestControllerInputs = new  ChassisSpeeds();
@@ -34,6 +38,8 @@ public class DriveAndHomeToIntake extends DriveAndHomeToSupplierCommand{
     public double calculateThetaPID() {
         var driverVectorAngle = getControllerVectorAngle();
 
+        Logger.recordOutput("DriveAndHomeToIntake/error", driverVectorAngle);
+
         if(!shouldLookAtIntake(driverVectorAngle.minus(drivetrain.getEstimatedPosition().getRotation()))){
             return 0;
         }
@@ -44,6 +50,8 @@ public class DriveAndHomeToIntake extends DriveAndHomeToSupplierCommand{
 
     private boolean shouldLookAtIntake(Rotation2d errorVectorAngle) {
         double error = Math.abs(errorVectorAngle.getDegrees());
+
+        Logger.recordOutput("DriveAndHomeToIntake/error", error);
 
         return error <= MAX_ANGLE_ERROR;
     }

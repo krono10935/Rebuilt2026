@@ -72,7 +72,7 @@ public class RobotContainer
 
     private final CommandXboxController driverController;
 
-    private final CommandGenericHID operatorController;
+    private final CommandXboxController operatorController;
 
     public final Drivetrain drivetrain;
 
@@ -103,7 +103,7 @@ public class RobotContainer
 
         driverController = new CommandXboxController(0);
 
-        operatorController = new CommandGenericHID(1);
+        operatorController = new CommandXboxController(1);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
@@ -147,12 +147,25 @@ public class RobotContainer
 
         spin.addRequirements(drivetrain);
 
-        driverController.leftBumper().onTrue(new InstantCommand(() -> intake.setPercent(-0.9)));
+        driverController.a().onTrue(new DriveAndHomeToIntake(drivetrain, driverController));
+
+        driverController.povUp()
+            .toggleOnTrue(ShootCommand.basicShootCommandFactory(shooter,intake));
+
+        driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setPercent(-0.9)))
+            .onFalse(new InstantCommand(() -> intake.stopIntakeMotor()));
+
         driverController.y().onTrue(IntakeFactory.resetIntake(intake));
         
         //TODO: add intake outtake functionality
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
+
+        operatorController.a().whileTrue(new InstantCommand(() -> shooter.getIndexer().reverse(), shooter.getIndexer()))
+            .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
+
+        operatorController.b().whileTrue(new InstantCommand(() -> shooter.getIndexer().turnOn(), shooter.getIndexer()))
+            .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
 
         //driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.getIndexer().reverse()));
 

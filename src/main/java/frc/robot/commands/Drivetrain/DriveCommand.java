@@ -1,5 +1,7 @@
 package frc.robot.commands.Drivetrain;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
+import frc.utils.AllianceFlipUtil;
 
 /**
  * Base driving command for the drivetrain.
@@ -37,6 +40,8 @@ public class DriveCommand extends Command {
 
         public double calculateTrigger(double value){
             if(this == STICKS_EXPONENTIAL) return value;
+
+            Logger.recordOutput("DriveCommand/trigger value input", value);
 
             return calculateExponential(value, exponent);
         }
@@ -83,9 +88,7 @@ public class DriveCommand extends Command {
      * Calculates the field-relative reference angle.
      */
     protected Rotation2d angleFieldRelative() {
-        return ChassisConstants.shouldFlipPath()
-                ? drivetrain.getGyroAngle()
-                : drivetrain.getGyroAngle().rotateBy(Rotation2d.k180deg);
+        return AllianceFlipUtil.apply(drivetrain.getGyroAngle());
     }
 
     @Override
@@ -141,12 +144,14 @@ public class DriveCommand extends Command {
 
         double triggerValue = CONTROLLER_MODE.calculateTrigger(1 - controller.getRightTriggerAxis());
 
-        double speed = interpolate(1 - triggerValue);
-        double angularSpeed = angularInterpolate(1 - triggerValue);
+        double speed = interpolate(triggerValue);
+        double angularSpeed = angularInterpolate(triggerValue);
 
-        double xSpeed = deadband(CONTROLLER_MODE.calculateStick(controller.getLeftY())) * speed;
-        double ySpeed = deadband(CONTROLLER_MODE.calculateStick(controller.getLeftX())) * speed;
-        double thetaSpeed = deadband(CONTROLLER_MODE.calculateStick(-controller.getRightX())) * angularSpeed;
+        Logger.recordOutput("DriveCommand/trigger value calculated", triggerValue);
+
+        double xSpeed = CONTROLLER_MODE.calculateStick(deadband(-controller.getLeftY())) * speed;
+        double ySpeed = CONTROLLER_MODE.calculateStick(deadband(-controller.getLeftX())) * speed;
+        double thetaSpeed = CONTROLLER_MODE.calculateStick(deadband(-controller.getRightX())) * angularSpeed;
 
         return new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed);
     }

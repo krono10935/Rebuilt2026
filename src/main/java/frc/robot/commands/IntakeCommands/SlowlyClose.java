@@ -16,6 +16,11 @@ public class SlowlyClose extends Command {
 
     private final LoggedNetworkNumber slowlyClosePercent;
 
+    private final LoggedNetworkNumber spinReversePos;
+
+    private final LoggedNetworkNumber intakePercent;
+
+
 
     protected double openPos = IntakeConstants.OPEN_POSITION;
 
@@ -30,6 +35,8 @@ public class SlowlyClose extends Command {
     public SlowlyClose(Intake intake) {
         this.intake = intake;
         this.slowlyClosePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0);
+        this.intakePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0.1);
+        this.spinReversePos = new LoggedNetworkNumber("SlowlyClose/spinReversePos", 0.1);
         this.openPos = IntakeConstants.OPEN_POSITION;
         this.timerToOpenAgain = new Timer();
         openPos = IntakeConstants.OPEN_POSITION;
@@ -39,7 +46,7 @@ public class SlowlyClose extends Command {
     @Override
     public void initialize() {
         intake.setPositionMotorSlowly(0);
-        intake.setPercent(-0.2);
+        // intake.setPercent(intakePercent.getAsDouble());
     }
 
     @Override
@@ -49,20 +56,25 @@ public class SlowlyClose extends Command {
         if (Math.abs(intake.getIntakePosition()) <= 0.003) {
             openPos /= 2.0;
             intake.setPosition(openPos);
-            closing = false;
+            closing = true;
+            intake.setPercent(intakePercent.getAsDouble());
         }
 
         if (closing && Math.abs(intake.getIntakePosition() - openPos) <= 0.003) {
-            closing = true;
+            closing = false;
             intake.setPositionMotorSlowly(0);
             timerToOpenAgain.reset();
             timerToOpenAgain.start();
+        }
+
+        if (closing && intake.getIntakePosition() < spinReversePos.getAsDouble()) {
+            intake.setPercent(-intakePercent.getAsDouble());
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.setPositionMotorPercent(0);
+        intake.stopIntakeOpeningMotor();
     }
 
     @Override

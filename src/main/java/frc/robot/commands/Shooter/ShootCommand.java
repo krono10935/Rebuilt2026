@@ -12,11 +12,13 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.Sequences;
 import frc.robot.commands.IntakeCommands.ShakeItOffCommandBangBang;
+import frc.robot.commands.IntakeCommands.SlowlyCloseOnce;
 import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
@@ -228,10 +230,20 @@ public class ShootCommand extends Command {
         DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
         Command shootCommand = (
             new ShootCommand(shooter, drivetrain, vision, () -> controller.leftBumper().getAsBoolean())  
-            .alongWith(new ShakeItOffCommandBangBang(intake))
+           .alongWith(new ShakeItOffCommandBangBang(intake))
         ).beforeStarting(new SpinUp(shooter, drivetrain));
 
         return driveCommand.alongWith(shootCommand).withName("Full Shoot");
+    }
+
+
+    public static Command basicShootCommandFactory(Shooter shooter, Intake intake){
+        Command shootCommand = (
+            new BasicShootCommand(shooter)  
+            .alongWith(new ShakeItOffCommandBangBang(intake))
+        ).beforeStarting(new InstantCommand(() -> shooter.spinUp(17)));
+
+        return shootCommand.withName("Basic Shoot");
     }
 
 

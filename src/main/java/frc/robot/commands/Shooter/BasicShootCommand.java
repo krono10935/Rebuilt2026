@@ -57,9 +57,9 @@ public class BasicShootCommand extends Command {
 
     this.shooter = shooter;
 
-    speedMPS = new LoggedNetworkNumber("speedMPS", 10);
+    speedMPS = new LoggedNetworkNumber("speedMPS", 17);
 
-    hoodAngleDegrees = new LoggedNetworkNumber("hoodAngleDegrees", 1);
+    hoodAngleDegrees = new LoggedNetworkNumber("hoodAngleDegrees", 22);
 
     hoodSetpointTimer = new Timer();
     hoodFailedToSetpoint = new Alert("Hood failed to reach setpoint", AlertType.kError);

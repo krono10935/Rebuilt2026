@@ -61,6 +61,9 @@ public class DriveAndHomeToSupplierCommand extends DriveCommand {
         );
 
         angularController.enableContinuousInput(-Math.PI, Math.PI);
+
+        MAX_ANGULAR_SPEED /= 2;
+        MAX_LINEAR_SPEED /= 2;
     }
 
     /**

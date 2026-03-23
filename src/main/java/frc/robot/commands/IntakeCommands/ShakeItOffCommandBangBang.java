@@ -85,7 +85,7 @@ public class ShakeItOffCommandBangBang extends Command {
     @Override
     public void execute() {
 
-        if(beginTimer.get()> 0.5){
+        if(beginTimer.get()> 2){
             if(shouldStop()){
 
                 if (!shouldOpen && hasOpened){

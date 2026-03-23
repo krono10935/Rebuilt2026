@@ -21,7 +21,6 @@ public class SlowlyCloseOnce extends SlowlyClose {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-        intake.setPositionMotorPercent(0);
     }
 
     @Override
@@ -37,7 +36,6 @@ public class SlowlyCloseOnce extends SlowlyClose {
     public void initialize() {
         super.initialize();
         intake.setPositionMotorSlowly(0);
-        intake.setPercent(-0.2);
 
     }
 
