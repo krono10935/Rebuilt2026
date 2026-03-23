@@ -10,12 +10,10 @@ import frc.utils.AllianceFlipUtil;
 
 public class DriveAndHomeToIntake extends DriveAndHomeToSupplierCommand{
 
-    private static final double RESET_ANGLE_ERROR = 50;
     private static final double MAX_ANGLE_ERROR = 90;
-    private static final double MAX_ANGLE_ERROR_TIMEOUT = 4;
     
     public DriveAndHomeToIntake(Drivetrain drivetrain, CommandXboxController controller) {
-        super(drivetrain, controller, DriveAndHomeToIntake::getControllerVectorAngle);
+        super(drivetrain, controller,  DriveAndHomeToIntake::getControllerVectorAngle);
     }
 
     private static ChassisSpeeds latestControllerInputs = new  ChassisSpeeds();
@@ -28,7 +26,8 @@ public class DriveAndHomeToIntake extends DriveAndHomeToSupplierCommand{
 
     private static Rotation2d getControllerVectorAngle() {
         return AllianceFlipUtil.apply(
-                new Translation2d(latestControllerInputs.vxMetersPerSecond, latestControllerInputs.vyMetersPerSecond).getAngle());
+                new Translation2d(latestControllerInputs.vxMetersPerSecond, latestControllerInputs.vyMetersPerSecond)
+                .getAngle().plus(Rotation2d.kPi));
     }
 
     @Override
@@ -42,27 +41,10 @@ public class DriveAndHomeToIntake extends DriveAndHomeToSupplierCommand{
         return super.calculateThetaPID();
     }
 
-    private final Timer timer = new Timer();
-
-    private boolean ignoreMaxAngleError;
 
     private boolean shouldLookAtIntake(Rotation2d errorVectorAngle) {
         double error = Math.abs(errorVectorAngle.getDegrees());
-        if(error <= RESET_ANGLE_ERROR) ignoreMaxAngleError = false;
 
-        if(error <= MAX_ANGLE_ERROR || ignoreMaxAngleError){
-            timer.stop();
-            return true;
-        }
-
-        if(!timer.isRunning()) timer.restart();
-
-        if(timer.hasElapsed(MAX_ANGLE_ERROR_TIMEOUT)){
-            ignoreMaxAngleError = true;
-            timer.stop();
-            return true;
-        }
-
-        return false;
+        return error <= MAX_ANGLE_ERROR;
     }
 }
