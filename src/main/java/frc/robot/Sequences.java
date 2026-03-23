@@ -7,8 +7,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -16,17 +14,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.Drivetrain.*;
 import frc.robot.commands.Shooter.ShootForDelivery;
-import frc.robot.commands.SpinUpForDelivery;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.Shooter.*;
-import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.Vision.*;
-import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.climb.*;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
-import frc.utils.ParallelRaceGroupWithWinner;
 
 import static frc.robot.FieldConstants.getTowerSideTargetPose;
 
@@ -270,13 +264,13 @@ public class Sequences {
 
 
 
-        Supplier<Translation2d> trench = () -> FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition());
+        Supplier<Translation2d> bump = () -> FieldConstants.getClosestBump(drivetrain.getEstimatedPosition());
 
 
-        BooleanSupplier isRobotAligned = () -> trench.get().
+        BooleanSupplier isRobotAligned = () -> bump.get().
                 minus(drivetrain.getEstimatedPositionFlipped().getTranslation()).getAngle().getDegrees() < 5;
 
-        Supplier<Rotation2d> angle = () -> trench.get()
+        Supplier<Rotation2d> angle = () -> bump.get()
                         .minus(drivetrain.getEstimatedPositionFlipped().getTranslation())
                         .getAngle();
 

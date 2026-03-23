@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.FieldConstants.LeftTrench.LinesVertical;
 import frc.utils.AllianceFlipUtil;
 
@@ -141,6 +140,40 @@ public class FieldConstants {
         new Translation3d(LinesVertical.hubCenter, openingWidth / 2, openingHeight);
   }
 
+    /** Left Bump related constants */
+    public static class LeftBump {
+
+        // Dimensions
+        public static final double width = Units.inchesToMeters(73.0);
+        public static final double height = Units.inchesToMeters(6.513);
+        public static final double depth = Units.inchesToMeters(44.4);
+
+        // Relevant reference points on alliance side
+        public static final Translation2d nearLeftCorner =
+                Hub.nearLeftCorner.plus(new Translation2d(0.0, width));
+        public static final Translation2d nearRightCorner = Hub.nearLeftCorner;
+        public static final Translation2d farLeftCorner =
+                Hub.farLeftCorner.plus(new Translation2d(0.0, width));
+        public static final Translation2d farRightCorner = Hub.farLeftCorner;
+
+    }
+
+    /** Right Bump related constants */
+    public static class RightBump {
+        // Dimensions
+        public static final double width = Units.inchesToMeters(73.0);
+        public static final double height = Units.inchesToMeters(6.513);
+        public static final double depth = Units.inchesToMeters(44.4);
+
+        // Relevant reference points on alliance side
+        public static final Translation2d nearLeftCorner = Hub.nearRightCorner;
+        public static final Translation2d nearRightCorner =
+                Hub.nearRightCorner.minus(new Translation2d(0.0, width));
+        public static final Translation2d farLeftCorner = Hub.farRightCorner;
+        public static final Translation2d farRightCorner =
+                Hub.farRightCorner.minus(new Translation2d(0.0, width));
+    }
+
 
     public static Translation2d towerLeft = new Translation2d(5,5);
     public static Translation2d towerLeftBack = new Translation2d(4,4);
@@ -176,12 +209,12 @@ public class FieldConstants {
 
 
 
-    public static Translation2d getClosestTrench(Pose2d robotPose){
+    public static Translation2d getClosestBump(Pose2d robotPose){
 
         if (robotPose.getTranslation().getY() < fieldWidth / 2){
-            return AllianceFlipUtil.apply(RightTrench.openingTopCenter.toTranslation2d());
+            return AllianceFlipUtil.apply(RightBump.farRightCorner);
         } else {
-            return AllianceFlipUtil.apply(LeftTrench.openingTopCenter.toTranslation2d());
+            return AllianceFlipUtil.apply(LeftBump.farLeftCorner);
         }
     }
 

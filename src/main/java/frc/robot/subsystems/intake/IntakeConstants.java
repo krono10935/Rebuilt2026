@@ -98,7 +98,7 @@ public class IntakeConstants {
     
     public static class ResetConstants{
         public static final double INITIAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.4;
-        public static final double INITIAL_CURRENT_CHECK_FOR_CLOSE = 35;
+        public static final double INITIAL_CURRENT_CHECK_FOR_CLOSE = 26;
         public static final double FINAL_POSITION_CHECK_FOR_CLOSE = 0.05;
         public static final double FINAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.15;
         public static final double FINAL_CURRENT_CHECK_FOR_CLOSE = 30;

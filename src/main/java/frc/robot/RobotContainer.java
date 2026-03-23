@@ -134,11 +134,11 @@ public class RobotContainer
      * Test bindings
      */
     private void test(){
-        //driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
+        driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
         driverController.b().onTrue(Sequences.intakeOpenStart(intake));
         driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
-
+        //driverController.a().onTrue(new InstantCommand(shooter.getIndexer()::turnOn));
         SwerveSysID sysid = new SwerveSysID(drivetrain,driverController);
 
         LoggedNetworkNumber volt = new LoggedNetworkNumber("drivetrain/kstest", 0);
@@ -292,7 +292,7 @@ public class RobotContainer
 
         Trigger closeEnoughToSpinUp = new Trigger(()
             -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
-                FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
+                FieldConstants.getClosestBump(drivetrain.getEstimatedPosition())
             ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
         
         closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->

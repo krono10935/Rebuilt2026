@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.utils.AllianceFlipUtil;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -43,7 +42,7 @@ public class SpinUpForEnterTrench extends Command {
     
   
     spinUpTimer.reset();
-    Translation2d closestTrench = FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition());
+    Translation2d closestTrench = FieldConstants.getClosestBump(drivetrain.getEstimatedPosition());
     shooter.spinUp(
       ShotCalculator.getInstance().getStaticParameters(new Pose2d(closestTrench,AllianceFlipUtil.apply(Rotation2d.k180deg)))
       .flywheelSpeed());
