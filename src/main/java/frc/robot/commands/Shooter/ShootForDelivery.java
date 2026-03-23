@@ -23,18 +23,21 @@ public class ShootForDelivery extends Command {
 
     }
 
+    @Override
     public void initialize(){
         shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
 
 
     }
 
+    @Override
     public void execute(){
         shooter.keepVelocity(flyWheelSpeed.getAsDouble());
         shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
 
     }
 
+    @Override
     public void end(boolean interrupted){
         shooter.stopFlyWheel();
         shooter.toggleKicker(false);
