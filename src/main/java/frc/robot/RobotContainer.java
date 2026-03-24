@@ -252,13 +252,6 @@ public class RobotContainer {
         var intakeCommand = Sequences.intakeOpenStart(intake)
                 .alongWith(new DriveIntakeCommand(drivetrain, driverController));
 
-        CommandScheduler.getInstance().schedule(new RunCommand(() ->
-                SmartDashboard.putBoolean("ishubactive", isHubActive.getAsBoolean()))
-                .ignoringDisable(true));
-
-        var intakeCommand = Sequences.intakeOpenStart(intake);
-//        .alongWith(new DriveAndHomeToIntake(drivetrain, driverController));
-
         driverController.leftTrigger(0.2).whileTrue(intakeCommand);
 
         driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setPercent(-0.3), intake)).
