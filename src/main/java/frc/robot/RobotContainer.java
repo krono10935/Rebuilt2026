@@ -329,9 +329,9 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         var selectedAuto = autoChooser.get();
 
-        Command autoCommand = Commands.sequence(
-                IntakeFactory.resetIntake(intake),
-                selectedAuto, drivetrain.idle());
+        Command autoCommand = IntakeFactory.resetIntake(intake).asProxy()
+                .alongWith(selectedAuto)
+                .andThen(drivetrain.idle());
 
         CommandScheduler.getInstance().removeComposedCommand(selectedAuto);
 
