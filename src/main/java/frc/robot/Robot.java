@@ -10,7 +10,6 @@ import com.revrobotics.util.StatusLogger;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -18,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HubTiming;
 import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.Elastic;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
@@ -92,6 +92,13 @@ public class Robot extends LoggedRobot
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();
+        
+        for (IntakeMode mode : IntakeMode.values()){
+            boolean isOn = mode == RobotContainer.getInstance().currentIntakeMode;
+            SmartDashboard.putBoolean(mode.name(), isOn);
+        }
+
+
 
         if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
             HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());

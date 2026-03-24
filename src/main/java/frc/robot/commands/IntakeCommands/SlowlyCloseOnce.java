@@ -13,6 +13,11 @@ public class SlowlyCloseOnce extends SlowlyClose {
         hasClosed = false;
     }
 
+    
+    public static SlowlyCloseOnce factory(Intake intake){
+        return new SlowlyCloseOnce(intake);
+    }
+
     @Override
     public boolean isFinished() {
         return super.isFinished() || hasClosed;

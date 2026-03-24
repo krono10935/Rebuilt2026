@@ -5,18 +5,18 @@
 package frc.robot.commands.Shooter;
 
 import java.util.function.BooleanSupplier;
-
+import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer;
 import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
-import frc.robot.Sequences;
 import frc.robot.commands.IntakeCommands.TwoInOneOut;
 import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -29,6 +29,8 @@ import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
+
 import org.littletonrobotics.junction.Logger;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -42,6 +44,8 @@ public class ShootCommand extends Command {
     private final Vision vision;
 
     private final Drivetrain drivetrain;
+
+    private final Intake intake;
 
     private final Timer hoodSetpointTimer;
     private final Alert hoodFailedToSetpoint;
@@ -61,17 +65,23 @@ public class ShootCommand extends Command {
     private boolean hasReachedTargetVelocity = false;
     private double lastTargetVelocity = 0;
 
+    private Supplier<IntakeMode> intakeModeSupplier;
+    private IntakeMode previousIntakeMode = null;
+    private IntakeMode currentIntakeMode = null;
+
     /**
      * 
      * @param shooter subsystem to activate the shoot command on
      * @param drivetrain drivetrain
      */
-    public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision, BooleanSupplier reverseIndexer ) {
+    public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
+             BooleanSupplier reverseIndexer, Supplier<IntakeMode> intakeModeSupplier) {
         // Use addRequirements() here to declare subsystem dependencies.
 
         this.shooter = shooter;
         this.drivetrain = drivetrain;
         this.vision = vision;
+        this.intake = intake;
         this.reverseIndexer  = reverseIndexer;
 
         hoodSetpointTimer = new Timer();
@@ -86,12 +96,16 @@ public class ShootCommand extends Command {
         indexerStuckTimer = new Timer();
         indexerStuck = new Alert("The indexer is stuck!", AlertType.kError);
 
+        this.intakeModeSupplier = intakeModeSupplier;
+
         addRequirements(shooter, shooter.getIndexer());
     }
 
     @Override
     public void initialize(){
         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
+
+        currentIntakeMode = intakeModeSupplier.get();
 
     }
 
@@ -138,6 +152,9 @@ public class ShootCommand extends Command {
             handleIndexerErrors();
             handleKickerErrors();
 
+
+            handleIntakeMode();
+
             shooter.toggleKicker(true);
             shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean()? -IndexerConstants.SPINNING_TARGET_VELOCITY : 
             IndexerConstants.SPINNING_TARGET_VELOCITY);
@@ -145,6 +162,12 @@ public class ShootCommand extends Command {
 
         // otherwise open the kicker and start letting the shooter shoot
         else{
+
+            if(currentIntakeMode.getCommand(intake).isScheduled()){
+                currentIntakeMode.getCommand(intake).cancel();
+            }
+            previousIntakeMode = null;
+
             shooter.toggleKicker(false);
             shooter.getIndexer().turnOff();
         }
@@ -204,19 +227,33 @@ public class ShootCommand extends Command {
         }
     }
 
+    private void handleIntakeMode(){
+        currentIntakeMode = intakeModeSupplier.get();
+
+        if (currentIntakeMode != previousIntakeMode){
+            CommandScheduler.getInstance().schedule(currentIntakeMode.getCommand(intake));
+            previousIntakeMode = currentIntakeMode;
+        }
+    }
+
     @Override
     public void end(boolean interrupted){
+
+        if(currentIntakeMode.getCommand(intake).isScheduled()){
+            currentIntakeMode.getCommand(intake).cancel();
+        }
+        previousIntakeMode = null;
+
         shooter.stopFlyWheel();
         shooter.toggleKicker(false);
         shooter.getIndexer().turnOff();
     }
 
     public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller,
-     Intake intake, Vision vision, BooleanSupplier invertIndexer){
+     Intake intake, Vision vision, BooleanSupplier invertIndexer, Supplier<IntakeMode> intakeModeSupplier){
         DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
         Command shootCommand = (
-            new ShootCommand(shooter, drivetrain, vision, invertIndexer)  
-           .alongWith(new TwoInOneOut(intake))
+            new ShootCommand(shooter, drivetrain, vision, intake, invertIndexer, intakeModeSupplier)
         ).beforeStarting(new SpinUp(shooter, drivetrain));
 
         return driveCommand.alongWith(shootCommand).withName("Full Shoot");
@@ -230,17 +267,6 @@ public class ShootCommand extends Command {
         ).beforeStarting(new InstantCommand(() -> shooter.spinUp(17)));
 
         return shootCommand.withName("Basic Shoot");
-    }
-
-
-    public static Command shootCommandFactoryStaticIntake(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
-        DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
-        
-        Command shootCommand = (
-            new ShootCommand(shooter, drivetrain, vision, () -> controller.leftBumper().getAsBoolean())
-        ).beforeStarting(new SpinUp(shooter, drivetrain)).alongWith(Sequences.intakeOpenStart(intake));
-
-        return driveCommand.alongWith(shootCommand).withName("Full Shoot");
     }
 
     public static void setOverrideObjectDetection(boolean mode){

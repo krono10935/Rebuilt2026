@@ -1,6 +1,5 @@
 package frc.robot.commands.Drivetrain;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;

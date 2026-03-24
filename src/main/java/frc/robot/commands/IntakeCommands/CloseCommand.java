@@ -28,6 +28,10 @@ public class CloseCommand extends Command {
         addRequirements(intake);
     }
 
+    public static CloseCommand factory(Intake intake){
+        return new CloseCommand(intake);
+    }
+
     @Override
     public void initialize() {
         intake.stopIntakeMotor();

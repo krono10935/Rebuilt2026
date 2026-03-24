@@ -1,6 +1,5 @@
 package frc.robot.commands.Drivetrain;
 
-import com.pathplanner.lib.path.DriveToPoseConstants;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;

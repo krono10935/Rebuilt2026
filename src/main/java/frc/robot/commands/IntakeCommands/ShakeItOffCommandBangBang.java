@@ -63,6 +63,10 @@ public class ShakeItOffCommandBangBang extends Command {
         cycles = 0;
     }
 
+    public static ShakeItOffCommandBangBang factory(Intake intake){
+        return new ShakeItOffCommandBangBang(intake);
+    }
+
 
     // Called when the command is initially scheduled.
     @Override

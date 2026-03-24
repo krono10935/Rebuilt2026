@@ -11,14 +11,12 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
-import frc.robot.commands.IntakeCommands.ShakeItOffCommand;
+
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
-import frc.robot.subsystems.Vision.Vision;
+
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
-import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.intake.Intake;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -194,17 +192,6 @@ public class BasicShootCommand extends Command {
     shooter.stopFlyWheel();
     shooter.toggleKicker(false);
     shooter.getIndexer().turnOff();
-  }
-
-
-  public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
-    DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
-    Command shootCommand = (
-        new ShootCommand(shooter, drivetrain, vision, () ->false )  
-        .alongWith((new ShakeItOffCommand(intake)))
-      ).beforeStarting(new SpinUp(shooter, drivetrain));
-
-    return driveCommand.alongWith(shootCommand).withName("Full Shoot");
   }
 
   public static void setOverrideObjectDetection(boolean mode){
