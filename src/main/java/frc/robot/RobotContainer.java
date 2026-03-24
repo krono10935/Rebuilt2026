@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.DriveAndHomeToIntake;
 import frc.robot.commands.Drivetrain.SwerveSysID;
 import frc.robot.commands.IntakeCommands.*;
+import frc.robot.commands.publishTimeToNextShift;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
@@ -245,15 +246,27 @@ public class RobotContainer
         };
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+
+        shooter.setDefaultCommand(new RunCommand(() -> shooter.spinUp(15), shooter).onlyIf(isHubActive));
     
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
 
         driverController.a().onTrue(new InstantCommand(() -> cancelAutomations = !cancelAutomations));
 
-        var intakeCommand = Sequences.intakeOpenStart(intake)
-        .alongWith(new DriveAndHomeToIntake(drivetrain, driverController));
+        CommandScheduler.getInstance().schedule(new publishTimeToNextShift(DriverStation::getMatchTime)
+                .ignoringDisable(true));
+
+        CommandScheduler.getInstance().schedule(new RunCommand(() ->
+                SmartDashboard.putBoolean("ishubactive", isHubActive.getAsBoolean()))
+                .ignoringDisable(true));
+
+        var intakeCommand = Sequences.intakeOpenStart(intake);
+//        .alongWith(new DriveAndHomeToIntake(drivetrain, driverController));
 
         driverController.leftTrigger(0.2).whileTrue(intakeCommand);
+
+        driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setPercent(-0.3), intake)).
+                onFalse(new InstantCommand(intake::stopIntakeMotor));
 
         BooleanSupplier isIntakeOff = () -> !intakeCommand.isScheduled();
 
@@ -263,7 +276,8 @@ public class RobotContainer
             .and(ObjectDetection.getInstance()::hasBalls).and(() -> !cancelAutomations).or(()-> overrideShooting);
 
         autoShoot.whileTrue(
-            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y()));
+            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision,() ->  operatorController.y().getAsBoolean())
+                    .raceWith(new WaitUntilCommand(() -> !ObjectDetection.getInstance().hasBalls()).andThen(new WaitCommand(1))));
 
         // Trigger deliver = new Trigger(() -> );
 

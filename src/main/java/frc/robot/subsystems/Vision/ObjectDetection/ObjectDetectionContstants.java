@@ -5,5 +5,5 @@ public class ObjectDetectionContstants {
 
     public static final double MIN_AREA = 6;
 
-    public static final double LAST_BALL_TIMEOUT = 0.3;
+    public static final double LAST_BALL_TIMEOUT = 2.5;
 }

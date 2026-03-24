@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
 
 public class Constants {
@@ -35,12 +36,12 @@ public class Constants {
 
     public enum Phase{
             AUTO(0 ,0),
-            TranistionShift(140,130),
-            FirstShift(130,105),
-            SecondShift(105,80),
-            ThirdShift(80,55),
-            FourthShift(55,30),
-            EndGame(30,0),
+            TranistionShift(140,130.1),
+            FirstShift(130,105.1),
+            SecondShift(105,80.1),
+            ThirdShift(80,55.1),
+            FourthShift(55,30.1),
+            EndGame(30,0.1),
             Invalid(0,0);
 
 
@@ -92,8 +93,13 @@ public class Constants {
 
         public static void setHumanActiveFirst(boolean isActiveFirstHumanInput){
             isActiveFirstHuman = Boolean.valueOf(isActiveFirstHumanInput);
+            SmartDashboard.putBoolean("Human Active First", isActiveFirstHuman);
         }
 
+        public static double timeRemainingToShift(double time){
+            Phase phase = Phase.getActivePhase(time);
+            return time - phase.FINSIHING_TIME;
+        }
         public static boolean isActiveFirst(){
             if (isActiveFirst != null) return isActiveFirst;
             if (isActiveFirstHuman != null) return isActiveFirstHuman;

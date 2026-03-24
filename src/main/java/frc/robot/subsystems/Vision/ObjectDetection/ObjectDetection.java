@@ -61,7 +61,7 @@ public class ObjectDetection extends VirtualSubSystem {
      * @return if the robot has balls
      */
     public boolean hasBalls(){
-        return hasBalls || !Constants.USE_OBJECT_DETECTION || !shotLastBall;
+        return hasBalls || !Constants.USE_OBJECT_DETECTION ;
     }
 
     public Command waitUntilNoBalls(){
