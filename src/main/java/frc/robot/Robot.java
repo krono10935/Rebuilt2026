@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.HubTiming;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.utils.Elastic;
 import frc.utils.ModeFileHandling;
@@ -93,6 +94,9 @@ public class Robot extends LoggedRobot
         ShotCalculator.getInstance().clearShootingParameters();
         SmartDashboard.putNumber("Battery voltage", RobotController.getBatteryVoltage());
 
+        if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
+            HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
+        }
     }
     
     

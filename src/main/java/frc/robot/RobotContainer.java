@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.HubTiming;
 import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.Shooter.BasicShootCommand;
@@ -330,6 +331,14 @@ public class RobotContainer
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
 
         operatorController.a().onTrue(new InstantCommand(() -> overrideShooting = !overrideShooting));
+
+
+        //TODO check real buttons
+        operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(false)).ignoringDisable(true));
+
+        operatorController.back().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
+
+
     }
 
     /**

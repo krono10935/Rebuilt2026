@@ -68,7 +68,8 @@ public class Constants {
 
     public static class HubTiming{
         
-        private static boolean isActiveFirst;
+        private static Boolean isActiveFirst = null;
+        private static Boolean isActiveFirstHuman = null;
 
         /**
          * 
@@ -85,6 +86,21 @@ public class Constants {
             }
         }
 
+        public static Boolean getAutoIsActiveDetection(){
+            return isActiveFirst;
+        }
+
+        public static void setHumanActiveFirst(boolean isActiveFirstHumanInput){
+            isActiveFirstHuman = Boolean.valueOf(isActiveFirstHumanInput);
+        }
+
+        public static boolean isActiveFirst(){
+            if (isActiveFirst != null) return isActiveFirst;
+            if (isActiveFirstHuman != null) return isActiveFirstHuman;
+            return true;
+        }
+        
+
         /**
          * 
          * @param time time to check if the hub would be activated during
@@ -99,9 +115,9 @@ public class Constants {
                 case SecondShift,FourthShift:
                     // If red is inactive first and we are red, then we will be active shifts 2,4
                     // Otherwise we will be inactive in those Shifts
-                    return isActiveFirst;
+                    return isActiveFirst();
                 case FirstShift,ThirdShift:
-                    return !isActiveFirst;
+                    return !isActiveFirst();
                 default:
                     return false;
             }
