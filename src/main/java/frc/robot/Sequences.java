@@ -214,7 +214,7 @@ public class Sequences {
      * @param intake
      */
     public static Command intakeOpenStart(Intake intake) {
-        return OpenCommand.openWithErrorHandeling(intake)
+        return OpenCommand.openWithErrorHandeling(intake).unless(intake::isOpen)
                 .andThen(new IntakeCommand(intake));
     }
 
@@ -224,7 +224,7 @@ public class Sequences {
      */
     public static Command stopIntakeAndClose(Intake intake) {
         return CloseCommand.closeWithErrorHandeling(intake)
-                .beforeStarting(new InstantCommand(() -> intake.setPercent(0)));
+                .beforeStarting(new InstantCommand(intake::stopIntakeMotor));
     }
 
     /**

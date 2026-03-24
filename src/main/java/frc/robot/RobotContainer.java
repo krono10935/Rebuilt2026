@@ -75,6 +75,8 @@ public class RobotContainer
 
     public boolean overrideShooting = false;
 
+    public boolean cancelAutomations = false;
+
 
     public static RobotContainer getInstance(){
         if (instance == null){
@@ -233,22 +235,36 @@ public class RobotContainer
      * Configure the bindings for the match
      */
     private void configureBindings() {
-        // BooleanSupplier isHubActive = () -> {
-        //     double time = DriverStation.getMatchTime();
+        BooleanSupplier isHubActive = () -> {
+            double time = DriverStation.getMatchTime();
 
-        //     return Constants.HubTiming.isActive(time) ||
-        //             Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
-        //             Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE) || isHubActiveOverride;
-        // };
+            return Constants.HubTiming.isActive(time) ||
+                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
+                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
+        };
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-        
-
-        Trigger intakeOpen = driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake)
-        .alongWith(new DriveAndHomeToIntake(drivetrain, driverController)));
-        
-
+    
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
+
+        driverController.a().onTrue(new InstantCommand(() -> cancelAutomations = !cancelAutomations));
+
+        var intakeCommand = Sequences.intakeOpenStart(intake)
+        .alongWith(new DriveAndHomeToIntake(drivetrain, driverController));
+
+        driverController.leftTrigger(0.2).whileTrue(intakeCommand);
+
+        BooleanSupplier isIntakeOff = () -> !intakeCommand.isScheduled();
+
+        Trigger autoShoot = new Trigger(isHubActive)
+            .and(isIntakeOff)
+            .and(()-> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+            .and(ObjectDetection.getInstance()::hasBalls).and(() -> !cancelAutomations).or(()-> overrideShooting);
+
+        autoShoot.whileTrue(
+            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y()));
+
+        // Trigger deliver = new Trigger(() -> );
 
         // Trigger closeEnoughToSpinUp = new Trigger(()
         //     -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
@@ -392,8 +408,7 @@ public class RobotContainer
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17.5), shooter));
 
-        NamedCommands.registerCommand("waitUntilNoBalls", new WaitUntilCommand(() ->
-                !ObjectDetection.getInstance().hasBalls()).andThen(new WaitCommand(0.3))
+        NamedCommands.registerCommand("waitUntilNoBalls", ObjectDetection.getInstance().waitUntilNoBalls()
                 .andThen(Commands.print("no balls")));
 
          NamedCommands.registerCommand("openIntake",

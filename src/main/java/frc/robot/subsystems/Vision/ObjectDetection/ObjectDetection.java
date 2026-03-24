@@ -7,8 +7,8 @@ package frc.robot.subsystems.Vision.ObjectDetection;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.utils.VirtualSubSystem;
@@ -20,6 +20,9 @@ public class ObjectDetection extends VirtualSubSystem {
     private boolean isConnected;
     private boolean hasBalls;
     private boolean isEnabled;
+
+    private boolean shotLastBall;
+    private final Timer lastBallTimer = new Timer();
 
 
     private final PhotonCamera camera;
@@ -58,12 +61,11 @@ public class ObjectDetection extends VirtualSubSystem {
      * @return if the robot has balls
      */
     public boolean hasBalls(){
-        return hasBalls || !Constants.USE_OBJECT_DETECTION;
+        return hasBalls || !Constants.USE_OBJECT_DETECTION || !shotLastBall;
     }
 
-    public Command waitUntilNoBalls(double extraTimeSeconds){
-        return new WaitUntilCommand(() -> !this.hasBalls())
-        .andThen(new WaitCommand(extraTimeSeconds));
+    public Command waitUntilNoBalls(){
+        return new WaitUntilCommand(() -> !this.hasBalls());
     }
 
     @Override
@@ -88,6 +90,8 @@ public class ObjectDetection extends VirtualSubSystem {
             for (var target : result.targets){
                 if (target.area > ObjectDetectionContstants.MIN_AREA){
                     hasBalls = true;
+                    shotLastBall = false;
+                    lastBallTimer.stop();
                     return;
                 }
             }
@@ -97,6 +101,15 @@ public class ObjectDetection extends VirtualSubSystem {
             Logger.recordOutput("ObjectDetection/is connected", isConnected);
             Logger.recordOutput("ObjectDetection/has balls", hasBalls);
             Logger.recordOutput("ObjectDetection/is Enabled", isEnabled);
+            Logger.recordOutput("ObjectDetection/timer", lastBallTimer.get());
+            Logger.recordOutput("ObjectDetection/shotLastBall", shotLastBall);
+
+            if (!hasBalls && !shotLastBall && !lastBallTimer.isRunning()){
+                lastBallTimer.restart();
+            } else if (lastBallTimer.hasElapsed(ObjectDetectionContstants.LAST_BALL_TIMEOUT)){
+                shotLastBall = true;
+                lastBallTimer.stop();
+            }
         }
     }
 }
