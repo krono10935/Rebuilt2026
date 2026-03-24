@@ -15,8 +15,10 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Shooter.ShootCalculatorWithMovement.ShootCalculatorWithMovementParams;
 import frc.utils.AllianceFlipUtil;
@@ -222,9 +224,9 @@ public class ShotCalculator {
 
         ValidityState state = ValidityState.VALID;
 
-        // if (!Constants.HubTiming.isActive(DriverStation.getMatchTime() + timeOfFlightMap.get(lookaheadShooterToTargetDistance))){
-        //     state = ValidityState.HUB_INACTIVE;
-        // }
+        if (!Constants.HubTiming.isActive(DriverStation.getMatchTime() - timeOfFlightMap.get(lookaheadShooterToTargetDistance))){
+            state = ValidityState.HUB_INACTIVE;
+        }
 
         if (Math.abs(robotRelativeVelocity.omegaRadiansPerSecond) > ShooterConstants.ANGULAR_SPEED_DEADBAND_DEGREES){
                 state = ValidityState.TOO_MUCH_OMEGA_SPEED;

@@ -239,9 +239,7 @@ public class RobotContainer
         BooleanSupplier isHubActive = () -> {
             double time = DriverStation.getMatchTime();
 
-            return Constants.HubTiming.isActive(time) ||
-                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
-                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
+            return Constants.HubTiming.isActiveWithMargin(time, Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE, Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
         };
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));

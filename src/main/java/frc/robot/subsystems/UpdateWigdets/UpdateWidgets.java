@@ -3,6 +3,7 @@ package frc.robot.subsystems.UpdateWigdets;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.HubTiming;
 import frc.robot.FieldConstants.Hub;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
@@ -37,6 +38,9 @@ public class UpdateWidgets extends VirtualSubSystem{
         SmartDashboard.putNumber("HoodAngleOffset", params.hoodAngleOffset().getDegrees());
         SmartDashboard.putNumber("FlyWheelSpeedOffset", params.flyWheelOffset());
         SmartDashboard.putNumber("distanceToHub", distanceToHub);
+
+
+        SmartDashboard.putBoolean("IsHubActive", HubTiming.isActive(DriverStation.getMatchTime()));
 
     }
 
