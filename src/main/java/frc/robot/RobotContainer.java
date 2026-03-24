@@ -243,6 +243,12 @@ public class RobotContainer {
 
         driverController.a().onTrue(new InstantCommand(() -> cancelAutomations = !cancelAutomations));
 
+        driverController.leftBumper().whileTrue(new StartEndCommand(
+                () -> intake.setPercent(-0.3),
+                intake::stopIntakeMotor,
+                intake
+        ));
+
         var intakeCommand = Sequences.intakeOpenStart(intake)
                 .alongWith(new DriveIntakeCommand(drivetrain, driverController));
 

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
 import org.littletonrobotics.junction.Logger;
 
@@ -52,6 +53,10 @@ public class Constants {
                 FINSIHING_TIME = FinishingTime;
             }
 
+            public double timeToShiftEnd(double time){
+                return time - FINSIHING_TIME;
+            }
+
             public static Phase getActivePhase(double time){
                 if(RobotState.isAutonomous()) return AUTO;
 
@@ -70,6 +75,10 @@ public class Constants {
         private static Boolean isActiveFirst = null;
         private static Boolean isActiveFirstHuman = null;
 
+        static {
+            SmartDashboard.putBoolean("received FMS data", false);
+            SmartDashboard.putBoolean("Human sent first", false);
+        }
         /**
          * 
          * @param team Get from driverstations game specific message the team
@@ -84,7 +93,7 @@ public class Constants {
                 isActiveFirst = true;
             }
 
-            Logger.recordOutput("isActiveFirstFMS", isActiveFirst);
+            SmartDashboard.putBoolean("received FMS data", true);
         }
 
         public static Boolean getAutoIsActiveDetection(){
@@ -93,7 +102,7 @@ public class Constants {
 
         public static void setHumanActiveFirst(boolean isActiveFirstHumanInput){
             isActiveFirstHuman = isActiveFirstHumanInput;
-            Logger.recordOutput("isActiveFirstHuman", isActiveFirstHuman);
+            SmartDashboard.putBoolean("Human sent first", isActiveFirst == null);
         }
 
         public static boolean isActiveFirst(){
@@ -101,7 +110,10 @@ public class Constants {
             if (isActiveFirstHuman != null) return isActiveFirstHuman;
             return true;
         }
-        
+
+        public static double timeToNextShift(double time){
+            return Phase.getActivePhase(time).timeToShiftEnd(time);
+        }
 
         /**
          * 

@@ -23,7 +23,9 @@ public class UpdateWidgets extends VirtualSubSystem{
         SmartDashboard.putBoolean("Intake moving", RobotContainer.getInstance().intake.isMoving());
         SmartDashboard.putBoolean("Shooter spun up", RobotContainer.getInstance().shooter.isKeepingVelocity());
 
-        SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
+
+        double time = DriverStation.getMatchTime();
+        SmartDashboard.putNumber("MatchTime", time);
         
         var drivetrain = RobotContainer.getInstance().drivetrain;
 
@@ -42,7 +44,9 @@ public class UpdateWidgets extends VirtualSubSystem{
         SmartDashboard.putNumber("distanceToHub", distanceToHub);
 
 
-        SmartDashboard.putBoolean("IsHubActive", HubTiming.isActive(DriverStation.getMatchTime()));
+        SmartDashboard.putBoolean("IsHubActive", HubTiming.isActive(time));
+
+        SmartDashboard.putNumber("timeToNextShift", HubTiming.timeToNextShift(time));
 
         var driveTrainCommand = drivetrain.getCurrentCommand();
         SmartDashboard.putBoolean("NormalDrive",
