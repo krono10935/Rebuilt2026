@@ -25,11 +25,11 @@ public class TwoInOneOut extends Command {
         this.intake = intake;
             addRequirements(intake);
 
-        distanceToMoveOut = new LoggedNetworkNumber("TwoInOneOut/distanceOut", 0.3);
-        distanceToMoveIn = new LoggedNetworkNumber("TwoInOneOut/distanceToMoveIn", 0.3);
+        distanceToMoveOut = new LoggedNetworkNumber("TwoInOneOut/distanceOut", 0.02);
+        distanceToMoveIn = new LoggedNetworkNumber("TwoInOneOut/distanceToMoveIn", 0.04);
         powerMoveOut = new LoggedNetworkNumber("TwoInOneOut/powerMoveOut", 0.3);
         powerToMoveIn = new LoggedNetworkNumber("TwoInOneOut/powerToMoveIn", 0.3);
-        positionTolerance = new LoggedNetworkNumber("TwoInOneOut/positionTolerance", 0.01);
+        positionTolerance = new LoggedNetworkNumber("TwoInOneOut/positionTolerance", 0.02);
         setpoint = 0;
         
         isMovingOut = true;// start after the intake has been moved out
@@ -39,8 +39,6 @@ public class TwoInOneOut extends Command {
     public void initialize() {
         isMovingOut = true;
         setpoint = intake.getIntakePosition();
-                System.out.println("init two \n");
-
     }
 
     @Override
@@ -65,15 +63,14 @@ public class TwoInOneOut extends Command {
     }
 
     public void end(boolean interrupted){
-        System.out.println("end of debugging");
         intake.stopIntakeOpeningMotor();
     }
 
 public boolean shouldStop(){
     var shouldStop = isMovingOut ? intake.getIntakePosition() >= setpoint : Math.abs(intake.getIntakePosition() - setpoint) 
             <= positionTolerance.getAsDouble();
-    Logger.recordOutput("ShakeBangBang/shouldStop", shouldStop);
-    Logger.recordOutput("ShakeBangBang/setpoint", setpoint);
+    Logger.recordOutput("TwoInOneOut/shouldStop", shouldStop);
+    Logger.recordOutput("TwoInOneOut/setpoint", setpoint);
     return shouldStop;
   }
 }

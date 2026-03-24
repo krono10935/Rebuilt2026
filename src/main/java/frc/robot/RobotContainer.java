@@ -20,6 +20,7 @@ import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -82,6 +83,11 @@ public class RobotContainer
 
     private boolean isHubActiveOverride = false;
 
+    private boolean finishedIntaking = false;
+
+    LoggedNetworkBoolean isHubActiveLogged;
+
+    public boolean shouldOpenIntake = true;
 
 
     public static RobotContainer getInstance(){
@@ -127,7 +133,7 @@ public class RobotContainer
         // } else {
         //     configurePitBindings();
         // }
-        test();
+        configureBindings();
     }
 
     /**
@@ -150,7 +156,7 @@ public class RobotContainer
         driverController.a().onTrue(new DriveAndHomeToIntake(drivetrain, driverController));
 
         driverController.povUp()
-            .toggleOnTrue(ShootCommand.basicShootCommandFactory(shooter,intake));
+            .toggleOnTrue(ShootCommand.basicShootCommandFactory(shooter, intake, operatorController));
 
         driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setPercent(-0.9)))
             .onFalse(new InstantCommand(() -> intake.stopIntakeMotor()));
@@ -205,7 +211,7 @@ public class RobotContainer
     private void configurePitBindings() {
         //TODO test these
         LoggedNetworkNumber spinUpSpeedMPS = new LoggedNetworkNumber("spinUpSpeedMPS", 10);
-        driverController.a().onTrue(new BasicShootCommand(shooter).beforeStarting(
+        driverController.a().onTrue(new BasicShootCommand(shooter, operatorController).beforeStarting(
             new InstantCommand(() -> shooter.spinUp(spinUpSpeedMPS.getAsDouble()))
             .withDeadline(new WaitUntilCommand(shooter::isHoodAtSetpoint))));
 
@@ -243,23 +249,42 @@ public class RobotContainer
         //TODO test these
 
         autoShootOverride = true;
-        BooleanSupplier isHubActive = () -> {
-            double time = DriverStation.getMatchTime();
+        // BooleanSupplier isHubActive = () -> {
+        //     double time = DriverStation.getMatchTime();
 
-            return Constants.HubTiming.isActive(time) ||
-                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
-                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE) || isHubActiveOverride;
-        };
+        //     return Constants.HubTiming.isActive(time) ||
+        //             Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
+        //             Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE) || isHubActiveOverride;
+        // };
 
-        SmartDashboard.putBoolean("autoShoot", autoShootOverride);
+        
+        isHubActiveLogged = new LoggedNetworkBoolean("isHubActive", false);
+
+        BooleanSupplier isHubActive = () -> isHubActiveLogged.get();
+       // SmartDashboard.putBoolean("autoShoot", autoShootOverride);
         SmartDashboard.putBoolean("isHubActive", isHubActiveOverride);
+
+        
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
         
-        driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake).alongWith(new DriveAndHomeToIntake(drivetrain, driverController)
-                .alongWith(new InstantCommand(() -> autoShootOverride = !autoShootOverride).onlyIf(isHubActive))));
 
-        new Trigger(isHubActive).whileFalse(new InstantCommand(() -> autoShootOverride = true));
+        Trigger intakeOpen = driverController.y().toggleOnTrue(Sequences.intakeOpenStart(intake)
+        .alongWith(new DriveAndHomeToIntake(drivetrain, driverController)));
+
+        driverController.y().onTrue(new InstantCommand(() -> shouldOpenIntake = !shouldOpenIntake));
+
+        new Trigger(() -> shouldOpenIntake).onChange(getIntakeCommand());
+        
+        CommandScheduler.getInstance().schedule(new RunCommand(
+            () -> SmartDashboard.putBoolean("finishedIntaking", finishedIntaking)).ignoringDisable(true));
+        
+
+
+        driverController.x().onTrue(new InstantCommand( () -> finishedIntaking = true));
+        
+
+        new Trigger(isHubActive).whileFalse(new InstantCommand(() -> finishedIntaking = true));
 
         driverController.a().onTrue(drivetrain.resetGyro());
 
@@ -286,27 +311,40 @@ public class RobotContainer
 
         operatorController.b().onTrue(new InstantCommand( () -> isHubActiveOverride = !isHubActiveOverride));
 
+        operatorController.y().onTrue(IntakeFactory.resetIntake(intake));
 
 
 
 
-        Trigger closeEnoughToSpinUp = new Trigger(()
-            -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
-                FieldConstants.getClosestBump(drivetrain.getEstimatedPosition())
-            ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
+
+        // Trigger closeEnoughToSpinUp = new Trigger(()
+        //     -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
+        //         FieldConstants.getClosestBump(drivetrain.getEstimatedPosition())
+        //     ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
         
-        closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
-        shooter.getCurrentCommand() == shooter.getDefaultCommand()))
-            .onFalse(new InstantCommand(()-> shooter.stopFlyWheel(), shooter));
+        // closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
+        // shooter.getCurrentCommand() == shooter.getDefaultCommand()))
+        //     .onFalse(new InstantCommand(()-> shooter.stopFlyWheel(), shooter));
 
 
 
-        new Trigger(isHubActive).and(RobotState::isTeleop).
-                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())).and(() -> autoShootOverride)
-                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
+        Trigger shouldShootTeleOp = new Trigger(isHubActive).and(RobotState::isTeleop).
+                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+                .and(() -> finishedIntaking);
 
-        new Trigger(() -> !FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-                .whileTrue(Sequences.delivery(drivetrain,shooter,driverController));
+        shouldShootTeleOp.whileTrue((ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision)
+        .raceWith(waitUntilNoBallsMoreTime(2))).andThen(new InstantCommand(() -> finishedIntaking = false)));
+
+        shouldShootTeleOp.onFalse(new InstantCommand( () -> finishedIntaking = false).andThen(Sequences.intakeOpenStart(intake)));
+
+               
+
+
+
+        //new Trigger(() -> !FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
+               // .whileTrue(Sequences.delivery(drivetrain,shooter,driverController));
+
+        
 
     }
 
@@ -318,7 +356,7 @@ public class RobotContainer
         var selectedAuto = autoChooser.get();
 
         Command autoCommand = Commands.sequence(
-//            IntakeFactory.resetIntake(intake),
+           IntakeFactory.resetIntake(intake),
                 selectedAuto, drivetrain.idle());
 
         CommandScheduler.getInstance().removeComposedCommand(selectedAuto);
@@ -397,6 +435,16 @@ public class RobotContainer
 
         LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
         autoChooser.onChange(this::displayChosenAuto);
+        autoChooser.addDefaultOption("idle", drivetrain.idle());
         return autoChooser;
+    }
+
+    public Command waitUntilNoBallsMoreTime(double seconds){
+        return new WaitUntilCommand(() -> !ObjectDetection.getInstance().hasBalls())
+        .andThen(new WaitCommand(seconds));
+    }
+
+    public Command getIntakeCommand(){
+        return new ConditionalCommand(Sequences.intakeOpenStart(intake), Sequences.stopIntakeAndClose(intake),() ->  shouldOpenIntake);
     }
 }

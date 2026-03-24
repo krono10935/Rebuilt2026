@@ -31,6 +31,8 @@ public class BasicShootCommand extends Command {
 
   private final Shooter shooter;
 
+  private final CommandXboxController controller;
+
   private final LoggedNetworkNumber speedMPS;
 
   private final LoggedNetworkNumber hoodAngleDegrees;
@@ -52,10 +54,12 @@ public class BasicShootCommand extends Command {
    * @param shooter subsystem to activate the shoot command on
    * @param drivetrain drivetrain
    */
-  public BasicShootCommand(Shooter shooter) {
+  public BasicShootCommand(Shooter shooter, CommandXboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.shooter = shooter;
+
+    this.controller = controller;
 
     speedMPS = new LoggedNetworkNumber("speedMPS", 17);
 
@@ -118,7 +122,11 @@ public class BasicShootCommand extends Command {
       handleKickerErrors();
 
       shooter.toggleKicker(true);
-      shooter.getIndexer().turnOn();
+      if (controller.a().getAsBoolean()) {
+        shooter.getIndexer().reverse();
+      } else {
+        shooter.getIndexer().turnOn();
+      }
     }
 
     // otherwise open the kicker and start letting the shooter shoot
