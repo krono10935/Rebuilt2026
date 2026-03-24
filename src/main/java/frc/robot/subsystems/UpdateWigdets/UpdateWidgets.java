@@ -17,16 +17,21 @@ public class UpdateWidgets extends VirtualSubSystem{
         SmartDashboard.putBoolean("Are there Balls", ObjectDetection.getInstance().hasBalls());
         SmartDashboard.putNumber("Battery Voltage", ConduitApi.getInstance().getPDPVoltage());
         SmartDashboard.putBoolean("Intake Open", RobotContainer.getInstance().intake.isOpen());
+        SmartDashboard.putBoolean("Intake moving", RobotContainer.getInstance().intake.isMoving());
         SmartDashboard.putBoolean("Shooter spun up", RobotContainer.getInstance().shooter.isKeepingVelocity());
 
         SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
         
         var drivetrain = RobotContainer.getInstance().drivetrain;
 
+        var chassisSpeeds = drivetrain.getChassisSpeeds();
+
+        SmartDashboard.putNumber("Velocity", Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond));
+
         double distanceToHub = AllianceFlipUtil.apply(Hub.innerCenterPoint.toTranslation2d())
             .getDistance(drivetrain.getEstimatedPosition().getTranslation());
 
-        var params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(), drivetrain.getChassisSpeeds());
+        var params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(), chassisSpeeds);
         
         SmartDashboard.putNumber("RobotAngleOffset", params.robotAngleOffset().getDegrees());
         SmartDashboard.putNumber("HoodAngleOffset", params.hoodAngleOffset().getDegrees());

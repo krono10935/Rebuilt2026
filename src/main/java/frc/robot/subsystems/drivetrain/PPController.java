@@ -11,7 +11,6 @@ import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -55,9 +54,6 @@ public class PPController implements PathFollowingController {
 
         this.xController.setIntegratorRange(-1.5, 1.5);
 
-        SmartDashboard.putData("xController", xController);
-        SmartDashboard.putData("yController", yController);
-        SmartDashboard.putData("rotationController", rotationController);
         Logger.recordOutput("thetaOutputOverride", false);
     }
 

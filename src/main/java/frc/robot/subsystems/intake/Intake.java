@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -83,7 +82,7 @@ public class Intake extends SubsystemBase{
     /**
      * @return whether or not the intake is moving
      */
-    private boolean isMoving(){
+    public boolean isMoving(){
 
         double intakeMotorSpeedMPS = io.getSpeedPositionMotor();
         boolean isAtZeroSpeed = Math.abs(intakeMotorSpeedMPS) < IntakeConstants.SPEED_DEADBAND;
@@ -118,9 +117,6 @@ public class Intake extends SubsystemBase{
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs(getName(), inputs);
-        
-        SmartDashboard.putBoolean("Is intake open", isOpen());
-        SmartDashboard.putBoolean("Is intake moving", isMoving());
 
         String currCommand = getCurrentCommand() == null ? "None" : getCurrentCommand().getName();
         Logger.recordOutput("Intake/Current Command ", currCommand);

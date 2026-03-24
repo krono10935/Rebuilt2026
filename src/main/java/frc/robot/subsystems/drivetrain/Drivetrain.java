@@ -398,8 +398,6 @@ public class Drivetrain extends SubsystemBase {
         String currentCommand = getCurrentCommand() == null ? "None" : getCurrentCommand().getName();
 
         Logger.recordOutput("drivetrain/current command", currentCommand);
-
-        SmartDashboard.putNumber("Velocity", Math.hypot(getChassisSpeeds().vxMetersPerSecond, getChassisSpeeds().vyMetersPerSecond));
         
         Logger.recordOutput("Distance to hub", 
         getEstimatedPosition().getTranslation().getDistance(AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint).toTranslation2d()));

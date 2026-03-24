@@ -2,7 +2,6 @@ package frc.robot.subsystems.Shooter.IO;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -61,7 +60,7 @@ public class ShooterIOReal implements ShooterIO {
         CommandScheduler.getInstance().schedule(new InstantCommand(
                 () -> hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
                         .beforeStarting(new WaitUntilCommand(() -> dutyCycleEncoder.get() != 0)).ignoringDisable(true));
-        SmartDashboard.putData(hoodMotor.getController());
+
     }
 
     @Override
