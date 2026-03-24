@@ -60,10 +60,10 @@ public class DriveCommand extends Command {
     protected final Drivetrain drivetrain;
     protected final CommandXboxController controller;
 
-    protected static double MAX_LINEAR_SPEED;
-    protected static double MIN_LINEAR_SPEED;
-    protected static double MAX_ANGULAR_SPEED;
-    protected static double MIN_ANGULAR_SPEED;
+    protected double MAX_LINEAR_SPEED;
+    protected double MIN_LINEAR_SPEED;
+    protected double MAX_ANGULAR_SPEED;
+    protected double MIN_ANGULAR_SPEED;
 
     /**
      * Deadband threshold for controller inputs
@@ -112,7 +112,7 @@ public class DriveCommand extends Command {
      * @param value normalized input (0–1)
      * @return interpolated linear speed
      */
-    private static double interpolate(double value) {
+    private double interpolate(double value) {
         return MIN_LINEAR_SPEED + (MAX_LINEAR_SPEED - MIN_LINEAR_SPEED) * value;
     }
 
@@ -122,7 +122,7 @@ public class DriveCommand extends Command {
      * @param value normalized input (0–1)
      * @return interpolated angular speed
      */
-    private static double angularInterpolate(double value) {
+    private double angularInterpolate(double value) {
         return MIN_ANGULAR_SPEED + (MAX_ANGULAR_SPEED - MIN_ANGULAR_SPEED) * value;
     }
 

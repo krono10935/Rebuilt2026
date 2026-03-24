@@ -3,12 +3,15 @@ package frc.robot.subsystems.UpdateWigdets;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.HubTiming;
 import frc.robot.FieldConstants.Hub;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.utils.AllianceFlipUtil;
 import frc.utils.VirtualSubSystem;
 import org.littletonrobotics.conduit.ConduitApi;
+
+import java.util.Objects;
 
 public class UpdateWidgets extends VirtualSubSystem{
 
@@ -20,7 +23,9 @@ public class UpdateWidgets extends VirtualSubSystem{
         SmartDashboard.putBoolean("Intake moving", RobotContainer.getInstance().intake.isMoving());
         SmartDashboard.putBoolean("Shooter spun up", RobotContainer.getInstance().shooter.isKeepingVelocity());
 
-        SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
+
+        double time = DriverStation.getMatchTime();
+        SmartDashboard.putNumber("MatchTime", time);
         
         var drivetrain = RobotContainer.getInstance().drivetrain;
 
@@ -38,6 +43,14 @@ public class UpdateWidgets extends VirtualSubSystem{
         SmartDashboard.putNumber("FlyWheelSpeedOffset", params.flyWheelOffset());
         SmartDashboard.putNumber("distanceToHub", distanceToHub);
 
+
+        SmartDashboard.putBoolean("IsHubActive", HubTiming.isActive(time));
+
+        SmartDashboard.putNumber("timeToNextShift", HubTiming.timeToNextShift(time));
+
+        var driveTrainCommand = drivetrain.getCurrentCommand();
+        SmartDashboard.putBoolean("NormalDrive",
+                driveTrainCommand != null && Objects.equals(driveTrainCommand.getName(), "DriveCommand"));
     }
 
 }

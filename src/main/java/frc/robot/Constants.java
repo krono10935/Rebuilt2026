@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
+import org.littletonrobotics.junction.Logger;
 
 public class Constants {
 
@@ -18,13 +19,12 @@ public class Constants {
 
     public static final double ALL_SUBSYSTEMS_MAX_CLOSING_TIME = 1.0;
 
-    public static final double HUB_ACTIVITY_DEABAND_AFTER_ACTIVE = 1;
+    public static final double HUB_ACTIVITY_DEABAND_AFTER_ACTIVE = 3;
 
-    public static final double HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE = 1;
+    public static final double HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE = 2;
 
     public static final ProfiledPIDController THETA_CONTROLLER = 
-        //new ProfiledPIDController(4, 4, 0,
-        new ProfiledPIDController(6.7,0,0.067,
+        new ProfiledPIDController(4,4,0,
         new Constraints(10, 5));
 
     static{
@@ -45,13 +45,16 @@ public class Constants {
             Invalid(0,0);
 
 
-            public static final double EXTRA_TIME_TO_SCORE = 3;
             public final double STARTING_TIME;
             public final double FINSIHING_TIME;
             
             Phase(double StartingTime, double FinishingTime){
                 STARTING_TIME = StartingTime;
-                FINSIHING_TIME = FinishingTime + EXTRA_TIME_TO_SCORE;
+                FINSIHING_TIME = FinishingTime;
+            }
+
+            public double timeToShiftEnd(double time){
+                return time - FINSIHING_TIME;
             }
 
             public static Phase getActivePhase(double time){
@@ -72,19 +75,25 @@ public class Constants {
         private static Boolean isActiveFirst = null;
         private static Boolean isActiveFirstHuman = null;
 
+        static {
+            SmartDashboard.putBoolean("received FMS data", false);
+            SmartDashboard.putBoolean("Human sent first", false);
+        }
         /**
          * 
          * @param team Get from driverstations game specific message the team
          * @param alliance Get from driverstation
          */
         public static void setStartingTeam(String team, Alliance alliance){
-            boolean isRed = alliance == Alliance.Red; 
+            boolean isRed = alliance == Alliance.Red;
 
-            if (team == "R" && isRed || team == "B" && !isRed){
+            if ((team.charAt(0) == 'R' && isRed) || (team.charAt(0) == 'B' && !isRed)){
                 isActiveFirst = false;
             } else {
                 isActiveFirst = true;
             }
+
+            SmartDashboard.putBoolean("received FMS data", true);
         }
 
         public static Boolean getAutoIsActiveDetection(){
@@ -92,8 +101,8 @@ public class Constants {
         }
 
         public static void setHumanActiveFirst(boolean isActiveFirstHumanInput){
-            isActiveFirstHuman = Boolean.valueOf(isActiveFirstHumanInput);
-            SmartDashboard.putBoolean("Human Active First", isActiveFirstHuman);
+            isActiveFirstHuman = isActiveFirstHumanInput;
+            SmartDashboard.putBoolean("Human sent first", isActiveFirst == null);
         }
 
         public static double timeRemainingToShift(double time){
@@ -105,7 +114,10 @@ public class Constants {
             if (isActiveFirstHuman != null) return isActiveFirstHuman;
             return true;
         }
-        
+
+        public static double timeToNextShift(double time){
+            return Phase.getActivePhase(time).timeToShiftEnd(time);
+        }
 
         /**
          * 
@@ -128,6 +140,17 @@ public class Constants {
                     return false;
             }
             
+        }
+
+        /**
+         * 
+         * @param time time to check if the hub would be activated during
+         * @param timeBefore time before the timestamp to check activity
+         * @param timeAfter time after the timestamp to check activity
+         * @return whether or not at a given timestamp the hub would be active for your team
+         */
+        public static boolean isActiveWithMargin(double time, double timeBefore, double timeAfter){
+            return isActive(time + timeBefore) || isActive(time) || isActive(time - timeAfter);
         }
     }
 }
