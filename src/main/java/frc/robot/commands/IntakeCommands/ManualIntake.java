@@ -1,18 +1,14 @@
 package frc.robot.commands.IntakeCommands;
 
-import org.littletonrobotics.junction.Logger;
+
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
+
 import frc.robot.subsystems.intake.Intake;
-import frc.utils.AllianceFlipUtil;
 
 /**
  * Base driving command for the drivetrain.

@@ -32,6 +32,9 @@ public class ShooterConstants {
 
     public static final Rotation2d HOOD_ANGLE_OFFSET_PER_CLICK = Rotation2d.fromDegrees(1);
 
+    public static final Rotation2d ROBOT_ANGLE_OFFSET_PER_CLICK = Rotation2d.fromDegrees(1);
+
+
 
 
     public static final double SHOOTING_SPEED_TOLERANCE = 0.2;

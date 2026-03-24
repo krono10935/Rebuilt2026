@@ -18,11 +18,6 @@ public class ShooterSysID {
      */
    private SysIdRoutine flyWheelRoutine;
 
-   /**
-     * Robot's shooter to apply the sysID routine to
-     */
-   private Shooter shooter;
-
     /**
      * Voltage to use in dynamic mode for SYSID
      */
@@ -43,7 +38,6 @@ public class ShooterSysID {
    * @param shooter the shooter subsystem to apply the sys id to
    */
    public ShooterSysID(Shooter shooter) {
-      this.shooter = shooter; 
                 
 
       flyWheelRoutine = new SysIdRoutine(

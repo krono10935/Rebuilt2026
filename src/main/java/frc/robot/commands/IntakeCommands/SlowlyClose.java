@@ -14,8 +14,6 @@ public class SlowlyClose extends Command {
 
     protected final Intake intake;
 
-    private final LoggedNetworkNumber slowlyClosePercent;
-
     private final LoggedNetworkNumber spinReversePos;
 
     private final LoggedNetworkNumber intakePercent;
@@ -34,7 +32,6 @@ public class SlowlyClose extends Command {
      */
     public SlowlyClose(Intake intake) {
         this.intake = intake;
-        this.slowlyClosePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0);
         this.intakePercent = new LoggedNetworkNumber("SlowlyClose/percent", 0.1);
         this.spinReversePos = new LoggedNetworkNumber("SlowlyClose/spinReversePos", 0.1);
         this.openPos = IntakeConstants.OPEN_POSITION;

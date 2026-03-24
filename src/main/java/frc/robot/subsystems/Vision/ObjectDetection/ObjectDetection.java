@@ -7,8 +7,9 @@ package frc.robot.subsystems.Vision.ObjectDetection;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.utils.VirtualSubSystem;
 
@@ -58,6 +59,11 @@ public class ObjectDetection extends VirtualSubSystem {
      */
     public boolean hasBalls(){
         return hasBalls || !Constants.USE_OBJECT_DETECTION;
+    }
+
+    public Command waitUntilNoBalls(double extraTimeSeconds){
+        return new WaitUntilCommand(() -> !this.hasBalls())
+        .andThen(new WaitCommand(extraTimeSeconds));
     }
 
     @Override

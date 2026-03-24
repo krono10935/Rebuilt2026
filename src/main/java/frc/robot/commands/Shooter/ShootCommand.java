@@ -14,12 +14,9 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.Sequences;
-import frc.robot.commands.IntakeCommands.ManualIntake;
-import frc.robot.commands.IntakeCommands.ShakeItOffCommandBangBang;
-import frc.robot.commands.IntakeCommands.SlowlyCloseOnce;
 import frc.robot.commands.IntakeCommands.TwoInOneOut;
 import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -135,7 +132,7 @@ public class ShootCommand extends Command {
             || overrideObjectDetection);
 
         // robot it isn't in shooting zone, go to spin up mode and turn off kicker
-        if (shouldShoot){
+        if (shouldShoot || RobotContainer.getInstance().overrideShooting){
             handleHoodErrors();
             handleFlyWheelErrors();
             handleIndexerErrors();
@@ -214,10 +211,11 @@ public class ShootCommand extends Command {
         shooter.getIndexer().turnOff();
     }
 
-    public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){
+    public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller,
+     Intake intake, Vision vision, BooleanSupplier invertIndexer){
         DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
         Command shootCommand = (
-            new ShootCommand(shooter, drivetrain, vision, () -> controller.leftBumper().getAsBoolean())  
+            new ShootCommand(shooter, drivetrain, vision, invertIndexer)  
            .alongWith(new TwoInOneOut(intake))
         ).beforeStarting(new SpinUp(shooter, drivetrain));
 

@@ -18,10 +18,6 @@ public class HoodSysID {
      */
    private SysIdRoutine flyWheelRoutine;
 
-   /**
-     * Robot's shooter to apply the sysID routine to
-     */
-   private Shooter shooter;
 
     /**
      * Voltage to use in dynamic mode for SYSID
@@ -42,9 +38,7 @@ public class HoodSysID {
    * 
    * @param shooter the shooter subsystem to apply the sys id to
    */
-   public HoodSysID(Shooter shooter) {
-      this.shooter = shooter; 
-                
+   public HoodSysID(Shooter shooter) {                
 
       flyWheelRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(Units.Volts.per(Units.Second).of(VOLT_RAMP_RATE),

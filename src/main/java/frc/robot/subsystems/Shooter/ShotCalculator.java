@@ -16,7 +16,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.Shooter.ShootCalculatorWithMovement.ShootCalculatorWithMovementParams;
@@ -25,9 +24,27 @@ import frc.utils.AllianceFlipUtil;
 public class ShotCalculator {
     private static ShotCalculator instance;
 
-    public Rotation2d robotAngleOffset = Rotation2d.kZero;
-    public Rotation2d hoodOffset = Rotation2d.kZero;
-    public double flyWheelOffset = 0;
+    private static Rotation2d robotAngleOffset = Rotation2d.kZero;
+    private static Rotation2d hoodOffset = Rotation2d.kZero;
+    private static double flyWheelOffset = 0;
+
+    public void addRobotAngleOffset(Rotation2d offset){
+        robotAngleOffset = robotAngleOffset.plus(offset);
+    }
+
+    public void addHoodAngleOffset(Rotation2d offset){
+        hoodOffset = hoodOffset.plus(offset);
+    }
+
+    public void addflyWheelOffset(double offset){
+        flyWheelOffset += offset;
+    }
+
+    public void resetOffsets(){
+        robotAngleOffset = Rotation2d.kZero;
+        hoodOffset = Rotation2d.kZero;
+        flyWheelOffset = 0;
+    }
 
     public enum ValidityState{
         VALID("Valid", AlertType.kInfo),
@@ -57,7 +74,26 @@ public class ShotCalculator {
         ValidityState validityState,
         Rotation2d robotAngle,
         Rotation2d hoodAngle,
-        double flywheelSpeed) {}
+        double flywheelSpeed,
+        Rotation2d robotAngleOffset,
+        Rotation2d hoodAngleOffset,
+        double flyWheelOffset) {
+            public ShootingParameters(ValidityState validityState,
+                Rotation2d robotAngle,
+                Rotation2d hoodAngle,
+                double flywheelSpeed){
+                
+                this(
+                    validityState,
+                    robotAngle.plus(ShotCalculator.robotAngleOffset),
+                    hoodAngle.plus(ShotCalculator.hoodOffset),
+                    flywheelSpeed + ShotCalculator.flyWheelOffset,
+                    ShotCalculator.robotAngleOffset,
+                    ShotCalculator.hoodOffset,
+                    ShotCalculator.flyWheelOffset
+                );
+        }
+        }
         
     private ShootingParameters latestParameters = null;
 
@@ -83,12 +119,6 @@ public class ShotCalculator {
      */
     private static void putToMaps(double distance, double angleDegrees, double shotSpeed, double timeOfFlight){
         distance = distance - ShooterConstants.ROBOT_TO_SHOOTER.getX();
-        shotHoodAngleMap.put(distance, Rotation2d.fromDegrees(angleDegrees));
-        shotFlywheelSpeedMap.put(distance,shotSpeed);
-        timeOfFlightMap.put(distance,timeOfFlight);
-    }
-
-    private static void staticPutToMapsNoTransform(double distance, double angleDegrees, double shotSpeed, double timeOfFlight){
         shotHoodAngleMap.put(distance, Rotation2d.fromDegrees(angleDegrees));
         shotFlywheelSpeedMap.put(distance,shotSpeed);
         timeOfFlightMap.put(distance,timeOfFlight);
@@ -169,27 +199,17 @@ public class ShotCalculator {
         Translation2d shooterFieldRelativeSpeeds = 
             getShooterFieldRelativeSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeVelocity, estimatedPose.getRotation()),
             shooterPosition);
-        ShootingParameters parameters;
         if (ShooterConstants.SHOOT_WITH_MOVEMENT){
 
-            parameters = calculateShootingParametersWithMovement(shooterPosition, shooterFieldRelativeSpeeds, hub, robotRelativeVelocity);
+            return calculateShootingParametersWithMovement(shooterPosition, shooterFieldRelativeSpeeds, hub, robotRelativeVelocity);
 
         } else {
 
-            parameters = calculateShootingParametersWithoutMovement(shooterPosition, shooterFieldRelativeSpeeds, hub, robotRelativeVelocity);
+            return calculateShootingParametersWithoutMovement(shooterPosition, shooterFieldRelativeSpeeds, hub, robotRelativeVelocity);
         }
 
-        return addOffSets(parameters);
     }
 
-    private ShootingParameters addOffSets(ShootingParameters parameters){
-        return new ShootingParameters(
-                parameters.validityState,
-                parameters.robotAngle.plus(robotAngleOffset),
-                parameters.hoodAngle.plus(hoodOffset),
-                parameters.flywheelSpeed + flyWheelOffset
-        );
-    }
     /**
      * @param robotRelativeVelocity The robot relative velocity
      * @param shooterFieldRelativeSpeeds field relative X and Y speed of the robot (and therefore the shooter)

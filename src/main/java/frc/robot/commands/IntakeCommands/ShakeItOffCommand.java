@@ -16,12 +16,10 @@ public class ShakeItOffCommand extends Command {
     private final Intake intake;
 
     private final LoggedNetworkNumber openPos;
-    private final LoggedNetworkNumber tolerance;
     private final LoggedNetworkNumber closePos;
     private final LoggedNetworkNumber closeLessPercent;
     private final LoggedNetworkNumber timeTochange;
     private final LoggedNetworkNumber intakeSpeed;
-    private final LoggedNetworkNumber reversePos;
 
 
     private final Timer timer;
@@ -44,13 +42,11 @@ public class ShakeItOffCommand extends Command {
         this.intake = intake;
         addRequirements(intake);
 
-        tolerance = new LoggedNetworkNumber("Shake/tolerance", 0.0025);
         openPos = new LoggedNetworkNumber("Shake/openPos", 0.25);
         closePos = new LoggedNetworkNumber("Shake/closePos", 0.00);
         closeLessPercent = new LoggedNetworkNumber("Shake/closeLessMultiplier", 0.75);
         timeTochange = new LoggedNetworkNumber("Shake/time", 1);
         intakeSpeed = new LoggedNetworkNumber("Shake/intakeDutyCycle", 0.5);
-        reversePos = new LoggedNetworkNumber("Shake/reversePos", 0.15);
 
         timer = new Timer();
         beginTimer = new Timer();
