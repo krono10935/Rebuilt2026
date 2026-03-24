@@ -52,8 +52,7 @@ import frc.utils.AllianceFlipUtil;
 import frc.utils.CheckFreeSpace;
 
 
-public class RobotContainer
-{
+public class RobotContainer {
     private static RobotContainer instance;
 
     public final LedManager ledManager;
@@ -77,15 +76,14 @@ public class RobotContainer
     public boolean cancelAutomations = false;
 
 
-    public static RobotContainer getInstance(){
-        if (instance == null){
+    public static RobotContainer getInstance() {
+        if (instance == null) {
             instance = new RobotContainer();
         }
         return instance;
     }
 
-    private RobotContainer()
-    {
+    private RobotContainer() {
         drivetrain = new Drivetrain(ConduitApi.getInstance()::getPDPVoltage, Constants.CHASSIS_TYPE.constants);
 
         shooter = new Shooter();
@@ -128,13 +126,13 @@ public class RobotContainer
     /**
      * Test bindings
      */
-    private void test(){
+    private void test() {
         // driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
         driverController.b().onTrue(Sequences.intakeOpenStart(intake));
         driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain,driverController));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
         //driverController.a().onTrue(new InstantCommand(shooter.getIndexer()::turnOn));
-        SwerveSysID sysid = new SwerveSysID(drivetrain,driverController);
+        SwerveSysID sysid = new SwerveSysID(drivetrain, driverController);
 
         LoggedNetworkNumber volt = new LoggedNetworkNumber("drivetrain/kstest", 0);
 
@@ -145,22 +143,22 @@ public class RobotContainer
         driverController.a().onTrue(new DriveAndHomeToIntake(drivetrain, driverController));
 
         driverController.povUp()
-            .toggleOnTrue(ShootCommand.basicShootCommandFactory(shooter, intake, operatorController));
+                .toggleOnTrue(ShootCommand.basicShootCommandFactory(shooter, intake, operatorController));
 
         driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setPercent(-0.9)))
-            .onFalse(new InstantCommand(() -> intake.stopIntakeMotor()));
+                .onFalse(new InstantCommand(() -> intake.stopIntakeMotor()));
 
         driverController.y().onTrue(IntakeFactory.resetIntake(intake));
-        
+
         //TODO: add intake outtake functionality
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
 
         operatorController.a().whileTrue(new InstantCommand(() -> shooter.getIndexer().reverse(), shooter.getIndexer()))
-            .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
+                .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
 
         operatorController.b().whileTrue(new InstantCommand(() -> shooter.getIndexer().turnOn(), shooter.getIndexer()))
-            .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
+                .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
 
         //driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.getIndexer().reverse()));
 
@@ -185,11 +183,9 @@ public class RobotContainer
 //                        && ObjectDetection.getInstance().hasBalls())
 //                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision))
 //                .onFalse(shooter.resetShooterCommand().alongWith(IntakeFactory.resetIntake(intake)));
-                
+
         Logger.recordOutput("alliancePose", FieldConstants.Hub.topCenterPoint);
         Logger.recordOutput("alliancePoseAPplu", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
-
-
 
 
     }
@@ -201,8 +197,8 @@ public class RobotContainer
         //TODO test these
         LoggedNetworkNumber spinUpSpeedMPS = new LoggedNetworkNumber("spinUpSpeedMPS", 10);
         driverController.a().onTrue(new BasicShootCommand(shooter, operatorController).beforeStarting(
-            new InstantCommand(() -> shooter.spinUp(spinUpSpeedMPS.getAsDouble()))
-            .withDeadline(new WaitUntilCommand(shooter::isHoodAtSetpoint))));
+                new InstantCommand(() -> shooter.spinUp(spinUpSpeedMPS.getAsDouble()))
+                        .withDeadline(new WaitUntilCommand(shooter::isHoodAtSetpoint))));
 
         // Disable all subsystems commands
         driverController.b().onTrue(new InstantCommand(() -> {
@@ -242,89 +238,69 @@ public class RobotContainer
         };
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-    
+
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
 
         driverController.a().onTrue(new InstantCommand(() -> cancelAutomations = !cancelAutomations));
 
         var intakeCommand = Sequences.intakeOpenStart(intake)
-        .alongWith(new DriveIntakeCommand(drivetrain, driverController));
+                .alongWith(new DriveIntakeCommand(drivetrain, driverController));
 
         driverController.leftTrigger(0.2).whileTrue(intakeCommand);
 
         BooleanSupplier isIntakeOff = () -> !intakeCommand.isScheduled();
 
+        BooleanSupplier isInAllianceZone = () -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition());
+
+        BooleanSupplier isAutosWorking = () -> !cancelAutomations;
+
         Trigger autoShoot = new Trigger(isHubActive)
-            .and(isIntakeOff)
-            .and(()-> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-            .and(ObjectDetection.getInstance()::hasBalls).and(() -> !cancelAutomations).or(()-> overrideShooting);
+                .and(isIntakeOff)
+                .and(isInAllianceZone)
+                .and(ObjectDetection.getInstance()::hasBalls).and(isAutosWorking).or(() -> overrideShooting);
 
         autoShoot.whileTrue(
-            ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y()));
+                ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y()));
 
-        // Trigger deliver = new Trigger(() -> );
+        Trigger deliver =
+                new Trigger(isHubActive).negate()
+                        .and(isIntakeOff)
+                        .and(() -> !isInAllianceZone.getAsBoolean())
+                        .and(ObjectDetection.getInstance()::hasBalls)
+                        .and(isAutosWorking);
 
-        // Trigger closeEnoughToSpinUp = new Trigger(()
-        //     -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
-        //         FieldConstants.getClosestBump(drivetrain.getEstimatedPosition())
-        //     ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
-        
-        // closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
-        // shooter.getCurrentCommand() == shooter.getDefaultCommand()))
-        //     .onFalse(new InstantCommand(()-> shooter.stopFlyWheel(), shooter));
-
-
-
-        // Trigger shouldShootTeleOp = new Trigger(isHubActive).and(RobotState::isTeleop).
-        //         and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-        //         .and(() -> finishedIntaking);
-
-        // shouldShootTeleOp.whileTrue((ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController,
-        //      intake, vision, operatorController.y())
-        // .raceWith(waitUntilNoBallsMoreTime(2))).andThen(new InstantCommand(() -> finishedIntaking = false)));
-
-        // shouldShootTeleOp.onFalse(new InstantCommand( () -> finishedIntaking = false).andThen(Sequences.intakeOpenStart(intake)));
-
-               
-
-
-
-        //new Trigger(() -> !FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition()))
-               // .whileTrue(Sequences.delivery(drivetrain,shooter,driverController));
-
-        
-
+        deliver.whileTrue(Sequences.delivery(drivetrain, shooter, driverController));
     }
 
-    private void configureOperatorBindings(){
-                operatorController.povUp().onTrue(new InstantCommand(() -> 
-            ShotCalculator.getInstance().addHoodAngleOffset(ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK))
+    private void configureOperatorBindings() {
+        operatorController.povUp().onTrue(new InstantCommand(() ->
+                ShotCalculator.getInstance().addHoodAngleOffset(ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK))
         );
 
-        operatorController.povDown().onTrue(new InstantCommand(() -> 
-            ShotCalculator.getInstance().addHoodAngleOffset(ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK.unaryMinus()))
+        operatorController.povDown().onTrue(new InstantCommand(() ->
+                ShotCalculator.getInstance().addHoodAngleOffset(ShooterConstants.HOOD_ANGLE_OFFSET_PER_CLICK.unaryMinus()))
         );
 
-        operatorController.povRight().onTrue(new InstantCommand(() -> 
-            ShotCalculator.getInstance().addflyWheelOffset(ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK))
+        operatorController.povRight().onTrue(new InstantCommand(() ->
+                ShotCalculator.getInstance().addflyWheelOffset(ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK))
         );
 
-        operatorController.povLeft().onTrue(new InstantCommand(() -> 
-            ShotCalculator.getInstance().addflyWheelOffset(-ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK))
+        operatorController.povLeft().onTrue(new InstantCommand(() ->
+                ShotCalculator.getInstance().addflyWheelOffset(-ShooterConstants.SHOOT_SPEED_MPS_OFFSET_PER_CLICK))
         );
 
-        operatorController.rightBumper().onTrue(new InstantCommand(() -> 
-            ShotCalculator.getInstance().addRobotAngleOffset(ShooterConstants.ROBOT_ANGLE_OFFSET_PER_CLICK.unaryMinus()))
+        operatorController.rightBumper().onTrue(new InstantCommand(() ->
+                ShotCalculator.getInstance().addRobotAngleOffset(ShooterConstants.ROBOT_ANGLE_OFFSET_PER_CLICK.unaryMinus()))
         );
 
-        operatorController.leftBumper().onTrue(new InstantCommand(() -> 
-            ShotCalculator.getInstance().addRobotAngleOffset(ShooterConstants.ROBOT_ANGLE_OFFSET_PER_CLICK))
+        operatorController.leftBumper().onTrue(new InstantCommand(() ->
+                ShotCalculator.getInstance().addRobotAngleOffset(ShooterConstants.ROBOT_ANGLE_OFFSET_PER_CLICK))
         );
 
         operatorController.leftStick().onTrue(new InstantCommand(() -> ShotCalculator.getInstance().resetOffsets()));
 
         operatorController.b().onTrue(new CloseCommand(intake));
-        
+
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
 
         operatorController.a().onTrue(new InstantCommand(() -> overrideShooting = !overrideShooting));
@@ -341,12 +317,11 @@ public class RobotContainer
     /**
      * @return the chosen autonomous command.
      */
-    public Command getAutonomousCommand()
-    {
+    public Command getAutonomousCommand() {
         var selectedAuto = autoChooser.get();
 
         Command autoCommand = Commands.sequence(
-           IntakeFactory.resetIntake(intake),
+                IntakeFactory.resetIntake(intake),
                 selectedAuto, drivetrain.idle());
 
         CommandScheduler.getInstance().removeComposedCommand(selectedAuto);
@@ -356,27 +331,27 @@ public class RobotContainer
 
     /**
      * Displays the path the auto {@code command} takes
+     *
      * @param command the command runnning in auto
      */
-    private void displayChosenAuto(Command command){
-        if(RobotState.isEnabled()){
+    private void displayChosenAuto(Command command) {
+        if (RobotState.isEnabled()) {
             drivetrain.clearFiledPath();
             return;
         }
 
         List<PathPlannerPath> auto;
 
-        try{
+        try {
             auto = PathPlannerAuto.getPathGroupFromAutoFile(command.getName());
-        }
-        catch(IOException | ParseException e){
+        } catch (IOException | ParseException e) {
             Logger.recordOutput("autoDisplay", e.getMessage());
             drivetrain.clearFiledPath();
             return;
         }
 
         ArrayList<Pose2d> poses = new ArrayList<>();
-        for(PathPlannerPath path : auto){
+        for (PathPlannerPath path : auto) {
             path = ChassisConstants.shouldFlipPath() ? path : path.flipPath();
             poses.addAll(path.getPathPoses());
         }
@@ -385,13 +360,12 @@ public class RobotContainer
     }
 
 
-
     /**
      * @param driveAndHomeToHubCommand that pathplanner will use (replaces it with a PPController)
      * @return A LoggedDashboardChooser for the auto commands and gives
      * PathPlanner sequences for our auto commands
      */
-    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeToHubCommand driveAndHomeToHubCommand){
+    public LoggedDashboardChooser<Command> registerNamedCommand(DriveAndHomeToHubCommand driveAndHomeToHubCommand) {
 
         Command aimRobot = new StartEndCommand(() -> {
             driveAndHomeToHubCommand.resetThetaController();
@@ -405,11 +379,11 @@ public class RobotContainer
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                ( (new ShootCommand(shooter, drivetrain, vision , () -> false)).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                ((new ShootCommand(shooter, drivetrain, vision, () -> false)).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                ( (new ShootCommand(shooter, drivetrain, vision, () -> false )).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                ((new ShootCommand(shooter, drivetrain, vision, () -> false)).alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17.5), shooter));
@@ -417,10 +391,10 @@ public class RobotContainer
         NamedCommands.registerCommand("waitUntilNoBalls", ObjectDetection.getInstance().waitUntilNoBalls()
                 .andThen(Commands.print("no balls")));
 
-         NamedCommands.registerCommand("openIntake",
-                 new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
-         NamedCommands.registerCommand("closeIntake",
-                 new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
+        NamedCommands.registerCommand("openIntake",
+                new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
+        NamedCommands.registerCommand("closeIntake",
+                new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
 
         LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
         autoChooser.onChange(this::displayChosenAuto);
