@@ -11,6 +11,8 @@ import frc.utils.AllianceFlipUtil;
 import frc.utils.VirtualSubSystem;
 import org.littletonrobotics.conduit.ConduitApi;
 
+import java.util.Objects;
+
 public class UpdateWidgets extends VirtualSubSystem{
 
     @Override
@@ -42,6 +44,9 @@ public class UpdateWidgets extends VirtualSubSystem{
 
         SmartDashboard.putBoolean("IsHubActive", HubTiming.isActive(DriverStation.getMatchTime()));
 
+        var driveTrainCommand = drivetrain.getCurrentCommand();
+        SmartDashboard.putBoolean("NormalDrive",
+                driveTrainCommand != null && Objects.equals(driveTrainCommand.getName(), "DriveCommand"));
     }
 
 }

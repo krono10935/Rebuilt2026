@@ -21,6 +21,7 @@ import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.climb.*;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import static frc.robot.FieldConstants.getTowerSideTargetPose;
 
@@ -243,6 +244,10 @@ public class Sequences {
                 < ShooterConstants.OMEGA_DELIVERY_SPEED_TOLERANCE_RADIANS;
     }
 
+    private static LoggedNetworkNumber flyWheelSpeed = new LoggedNetworkNumber("Delivery/FlyWheelSpeed", 15);
+
+    private static LoggedNetworkNumber hoodAngle = new LoggedNetworkNumber("Delivery/HoodAngle", 28);
+
     /**
      * Delivery sequence:
      * spins shooter, aligns robot, and fires.
@@ -255,30 +260,29 @@ public class Sequences {
             Shooter shooter,
             CommandXboxController controller
     ) {
-
-
-        BooleanSupplier isRobotStopped = () ->
-                drivetrain.getChassisSpeeds().vxMetersPerSecond < 0.1 &&
-                        drivetrain.getChassisSpeeds().vyMetersPerSecond < 0.1 &&
-                        drivetrain.getChassisSpeeds().omegaRadiansPerSecond < 0.1;
-
-
-
         Supplier<Translation2d> bump = () -> FieldConstants.getClosestBump(drivetrain.getEstimatedPosition());
 
-
-        BooleanSupplier isRobotAligned = () -> bump.get().
-                minus(drivetrain.getEstimatedPositionFlipped().getTranslation()).getAngle().getDegrees() < 5;
-
         Supplier<Rotation2d> angle = () -> bump.get()
-                        .minus(drivetrain.getEstimatedPositionFlipped().getTranslation())
-                        .getAngle();
+                .minus(drivetrain.getEstimatedPosition().getTranslation())
+                .getAngle();
 
-        Command shooting = new ConditionalCommand(new ShootForDelivery(shooter), new InstantCommand(() -> {}), isRobotAligned);
-        Command homing = new ConditionalCommand(new DriveAndHomeToSupplierCommand(drivetrain, controller, angle),
-                new InstantCommand(() -> {}), isRobotStopped);
+        BooleanSupplier isRobotAligned =
+                () -> angle.get().minus(drivetrain.getEstimatedPosition().getRotation()).getDegrees() < 5;
 
+        RunCommand deliver = new  RunCommand(() -> {
+            if(isRobotAligned.getAsBoolean()) {
+                shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
+                shooter.spinUp(flyWheelSpeed.get());
+                shooter.getIndexer().turnOn();
+                shooter.toggleKicker(true);
+            }
+            else{
+                shooter.stopFlyWheel();
+                shooter.toggleKicker(false);
+                shooter.getIndexer().turnOff();
+            }
+        }, shooter);
 
-        return shooting.alongWith(homing);
+        return new DriveAndHomeToSupplierCommand(drivetrain, controller, angle).alongWith(deliver);
     }
 }

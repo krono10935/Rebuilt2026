@@ -6,6 +6,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.drivetrain.constants.ChassisType;
+import org.littletonrobotics.junction.Logger;
 
 public class Constants {
 
@@ -76,13 +77,15 @@ public class Constants {
          * @param alliance Get from driverstation
          */
         public static void setStartingTeam(String team, Alliance alliance){
-            boolean isRed = alliance == Alliance.Red; 
+            boolean isRed = alliance == Alliance.Red;
 
-            if (team.charAt(0) == 'R' && isRed || team.charAt(0) == 'B' && !isRed){
+            if ((team.charAt(0) == 'R' && isRed) || (team.charAt(0) == 'B' && !isRed)){
                 isActiveFirst = false;
             } else {
                 isActiveFirst = true;
             }
+
+            Logger.recordOutput("isActiveFirstFMS", isActiveFirst);
         }
 
         public static Boolean getAutoIsActiveDetection(){
@@ -90,7 +93,8 @@ public class Constants {
         }
 
         public static void setHumanActiveFirst(boolean isActiveFirstHumanInput){
-            isActiveFirstHuman = Boolean.valueOf(isActiveFirstHumanInput);
+            isActiveFirstHuman = isActiveFirstHumanInput;
+            Logger.recordOutput("isActiveFirstHuman", isActiveFirstHuman);
         }
 
         public static boolean isActiveFirst(){

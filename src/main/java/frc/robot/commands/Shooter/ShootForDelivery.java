@@ -18,22 +18,14 @@ public class ShootForDelivery extends Command {
         this.shooter = shooter;
 
         addRequirements(shooter,shooter.getIndexer());
-
-
     }
 
     @Override
     public void initialize(){
         shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
-
-
-    }
-
-    @Override
-    public void execute(){
-        shooter.keepVelocity(flyWheelSpeed.getAsDouble());
-        shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
-
+        shooter.spinUp(flyWheelSpeed.get());
+        shooter.getIndexer().turnOn();
+        shooter.toggleKicker(true);
     }
 
     @Override

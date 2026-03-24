@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.DriveAndHomeToIntake;
 import frc.robot.commands.Drivetrain.SwerveSysID;
 import frc.robot.commands.IntakeCommands.*;
+import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
@@ -105,6 +106,7 @@ public class RobotContainer
         autoChooser = registerNamedCommand(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         ObjectDetection.getInstance();
+        new UpdateWidgets();
 
         DriveToPoseConstants.MAX_LINEAR_SPEED = 4.5;
         DriveToPoseConstants.POSE_TOLERANCE = 0.01;

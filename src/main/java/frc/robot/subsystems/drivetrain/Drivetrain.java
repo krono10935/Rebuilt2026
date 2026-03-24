@@ -298,16 +298,6 @@ public class Drivetrain extends SubsystemBase {
         return poseEstimator.getEstimatedPosition();
     }
 
-
-        /**
-     * Return the latest position of the robot flipped based on alliance
-     *
-     * @return the latest pose flipped based on alliance
-     */
-    public Pose2d getEstimatedPositionFlipped() {
-        return AllianceFlipUtil.apply(getEstimatedPosition());
-    }
-
     /**
      * Set if the module is Brake or Coast
      * @param isBrake whether the module motor should resist outside change in disable
@@ -391,7 +381,6 @@ public class Drivetrain extends SubsystemBase {
 
         Logger.processInputs("drivetrain", inputs);
         Logger.recordOutput("drivetrain/estimated pose", getEstimatedPosition());
-        Logger.recordOutput("drivetrain/flipped estimated pose", getEstimatedPositionFlipped());
 
         field.setRobotPose(getEstimatedPosition());
 
