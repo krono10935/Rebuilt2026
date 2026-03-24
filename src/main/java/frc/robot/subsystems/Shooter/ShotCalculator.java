@@ -25,6 +25,10 @@ import frc.utils.AllianceFlipUtil;
 public class ShotCalculator {
     private static ShotCalculator instance;
 
+    public Rotation2d robotAngleOffset = Rotation2d.kZero;
+    public Rotation2d hoodOffset = Rotation2d.kZero;
+    public double flyWheelOffset = 0;
+
     public enum ValidityState{
         VALID("Valid", AlertType.kInfo),
         OUT_OF_RANGE("Out of shooting range", AlertType.kWarning),
@@ -165,17 +169,27 @@ public class ShotCalculator {
         Translation2d shooterFieldRelativeSpeeds = 
             getShooterFieldRelativeSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeVelocity, estimatedPose.getRotation()),
             shooterPosition);
-
+        ShootingParameters parameters;
         if (ShooterConstants.SHOOT_WITH_MOVEMENT){
 
-            return calculateShootingParametersWithMovement(shooterPosition, shooterFieldRelativeSpeeds, hub, robotRelativeVelocity);
+            parameters = calculateShootingParametersWithMovement(shooterPosition, shooterFieldRelativeSpeeds, hub, robotRelativeVelocity);
 
         } else {
 
-            return calculateShootingParametersWithoutMovement(shooterPosition, shooterFieldRelativeSpeeds, hub, robotRelativeVelocity);
+            parameters = calculateShootingParametersWithoutMovement(shooterPosition, shooterFieldRelativeSpeeds, hub, robotRelativeVelocity);
         }
+
+        return addOffSets(parameters);
     }
 
+    private ShootingParameters addOffSets(ShootingParameters parameters){
+        return new ShootingParameters(
+                parameters.validityState,
+                parameters.robotAngle.plus(robotAngleOffset),
+                parameters.hoodAngle.plus(hoodOffset),
+                parameters.flywheelSpeed + flyWheelOffset
+        );
+    }
     /**
      * @param robotRelativeVelocity The robot relative velocity
      * @param shooterFieldRelativeSpeeds field relative X and Y speed of the robot (and therefore the shooter)

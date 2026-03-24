@@ -38,10 +38,6 @@ import org.littletonrobotics.junction.Logger;
 public class ShootCommand extends Command {
     /** Creates a new ShootCommand. */
 
-    private static Rotation2d hoodOffset = Rotation2d.kZero;
-
-    private static double shooterSpeedOffset = 0;
-
     private static boolean overrideObjectDetection = true;
 
     private final Shooter shooter;
@@ -100,8 +96,6 @@ public class ShootCommand extends Command {
     public void initialize(){
         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
 
-        hoodOffset = Rotation2d.kZero;
-        shooterSpeedOffset = 0;
     }
 
     @Override
@@ -109,8 +103,8 @@ public class ShootCommand extends Command {
         ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
         drivetrain.getChassisSpeeds());
 
-        double targetFlywheelSpeed = params.flywheelSpeed() + shooterSpeedOffset;
-        Rotation2d targetHoodAngle = params.hoodAngle().plus(hoodOffset);
+        double targetFlywheelSpeed = params.flywheelSpeed();
+        Rotation2d targetHoodAngle = params.hoodAngle();
 
         if(Math.abs(targetFlywheelSpeed - lastTargetVelocity) > 0.3){
             lastTargetVelocity = targetFlywheelSpeed;
@@ -218,14 +212,6 @@ public class ShootCommand extends Command {
         shooter.stopFlyWheel();
         shooter.toggleKicker(false);
         shooter.getIndexer().turnOff();
-    }
-
-    public static void AddToHoodOffset(Rotation2d offset){
-        hoodOffset = hoodOffset.plus(offset);
-    }
-
-    public static void AddToFlywheelOffset(double offset){
-        shooterSpeedOffset += offset;
     }
 
     public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller, Intake intake, Vision vision){

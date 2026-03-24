@@ -14,6 +14,7 @@ public class UpdateWidgets extends VirtualSubSystem{
         SmartDashboard.putNumber("Battery Voltage", ConduitApi.getInstance().getPDPVoltage());
         SmartDashboard.putBoolean("Intake Open", RobotContainer.getInstance().intake.isOpen());
         SmartDashboard.putBoolean("Shooter spun up", RobotContainer.getInstance().shooter.isKeepingVelocity());
+
     }
 
 }
