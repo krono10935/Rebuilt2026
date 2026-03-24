@@ -92,6 +92,7 @@ public class ObjectDetection extends VirtualSubSystem {
                     hasBalls = true;
                     shotLastBall = false;
                     lastBallTimer.stop();
+                    lastBallTimer.reset();
                     return;
                 }
             }
@@ -105,10 +106,11 @@ public class ObjectDetection extends VirtualSubSystem {
             Logger.recordOutput("ObjectDetection/shotLastBall", shotLastBall);
 
             if (!hasBalls && !shotLastBall && !lastBallTimer.isRunning()){
-                lastBallTimer.restart();
+                lastBallTimer.start();
             } else if (lastBallTimer.hasElapsed(ObjectDetectionContstants.LAST_BALL_TIMEOUT)){
                 shotLastBall = true;
                 lastBallTimer.stop();
+                lastBallTimer.reset();
             }
         }
     }
