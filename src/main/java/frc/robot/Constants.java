@@ -23,8 +23,7 @@ public class Constants {
     public static final double HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE = 2;
 
     public static final ProfiledPIDController THETA_CONTROLLER = 
-        //new ProfiledPIDController(4, 4, 0,
-        new ProfiledPIDController(6.7,0,0.067,
+        new ProfiledPIDController(4,4,0,
         new Constraints(10, 5));
 
     static{

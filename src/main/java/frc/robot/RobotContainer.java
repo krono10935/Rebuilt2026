@@ -12,8 +12,7 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.Drivetrain.DriveAndHomeToIntake;
-import frc.robot.commands.Drivetrain.SwerveSysID;
+import frc.robot.commands.Drivetrain.*;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
@@ -37,8 +36,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HubTiming;
-import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
-import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.Shooter.BasicShootCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
@@ -251,7 +248,7 @@ public class RobotContainer
         driverController.a().onTrue(new InstantCommand(() -> cancelAutomations = !cancelAutomations));
 
         var intakeCommand = Sequences.intakeOpenStart(intake)
-        .alongWith(new DriveAndHomeToIntake(drivetrain, driverController));
+        .alongWith(new DriveIntakeCommand(drivetrain, driverController));
 
         driverController.leftTrigger(0.2).whileTrue(intakeCommand);
 

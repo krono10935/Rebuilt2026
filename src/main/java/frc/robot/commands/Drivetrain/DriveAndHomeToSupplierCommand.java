@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 import org.littletonrobotics.junction.Logger;
@@ -51,16 +52,7 @@ public class DriveAndHomeToSupplierCommand extends DriveCommand {
 
         this.angularSupplier = angleSupplier;
 
-        var gains = DriveToPoseConstants.ANGULAR_PID_GAINS;
-
-        angularController = new ProfiledPIDController(
-                gains.getP(),
-                gains.getI(),
-                gains.getD(),
-                gains.getConstraints()
-        );
-
-        angularController.enableContinuousInput(-Math.PI, Math.PI);
+        angularController = Constants.THETA_CONTROLLER;
 
         MAX_ANGULAR_SPEED /= 2;
         MAX_LINEAR_SPEED /= 2;
