@@ -280,7 +280,7 @@ public class RobotContainer {
         (autoShoot.or(() -> overrideShooting)).and(RobotState::isTeleop).whileTrue(
                 ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
                  vision, operatorController.y(), () -> currentIntakeMode));
-        
+
         Trigger deliver =
                 new Trigger(isHubActive).negate()
                         .and(isIntakeOff)

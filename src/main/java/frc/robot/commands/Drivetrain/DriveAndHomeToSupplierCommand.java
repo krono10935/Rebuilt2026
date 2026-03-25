@@ -53,8 +53,8 @@ public class DriveAndHomeToSupplierCommand extends DriveCommand {
 
         angularController = Constants.THETA_CONTROLLER;
 
-        MAX_ANGULAR_SPEED /= 2;
-        MAX_LINEAR_SPEED /= 2;
+        MAX_ANGULAR_SPEED /= 4;
+        MAX_LINEAR_SPEED /= 4;
     }
 
     /**
