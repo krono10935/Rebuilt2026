@@ -7,7 +7,6 @@ package frc.robot;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -19,7 +18,6 @@ import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -270,27 +268,37 @@ public class RobotContainer {
 
         BooleanSupplier isInAllianceZone = () -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition());
 
-        BooleanSupplier isAutosWorking = () -> !cancelAutomations;
+         Trigger autoShoot = new Trigger(() -> {
+                if (!RobotState.isTeleop()) return false;
 
-        Trigger autoShoot = (new Trigger(isHubActive)
-                .and(isIntakeOff)
-                .and(isInAllianceZone)
-                .and(ObjectDetection.getInstance()::hasBalls)
-                .and(isAutosWorking));
+                if (overrideShooting) return true;
 
-        (autoShoot.or(() -> overrideShooting)).and(RobotState::isTeleop).whileTrue(
+                if (cancelAutomations) return false;
+
+                return (isHubActive.getAsBoolean() && 
+                        isIntakeOff.getAsBoolean() &&
+                        isInAllianceZone.getAsBoolean() && 
+                        ObjectDetection.getInstance().hasBalls());
+        });
+
+        autoShoot.whileTrue(
                 ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
                  vision, operatorController.y(), () -> currentIntakeMode));
 
-        Trigger deliver =
-                new Trigger(isHubActive).negate()
-                        .and(isIntakeOff)
-                        .and(() -> !isInAllianceZone.getAsBoolean())
-                        .and(ObjectDetection.getInstance()::hasBalls)
-                        .and(isAutosWorking)
-                        .and(RobotState::isTeleop);
+        autoShoot.whileTrue(Commands.print("autoshoot"));
 
-        deliver.whileTrue(Sequences.delivery(drivetrain, shooter, driverController));
+        Trigger deliver = new Trigger(() -> {
+                if (!RobotState.isTeleop() || cancelAutomations) return false;
+
+                return (!isHubActive.getAsBoolean() && 
+                        isIntakeOff.getAsBoolean() &&
+                        isInAllianceZone.getAsBoolean() && 
+                        ObjectDetection.getInstance().hasBalls());
+        });
+
+        deliver.whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
+         operatorController.y(), () -> currentIntakeMode));
+    
     }
 
     private void configureOperatorBindings() {
@@ -337,6 +345,10 @@ public class RobotContainer {
         
         operatorController.rightTrigger(0.3).onTrue(
                 new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getNext()));
+
+        operatorController.y().whileTrue(new StartEndCommand(() -> shooter.getIndexer().reverse(),
+         () -> shooter.getIndexer().turnOn(), shooter.getIndexer())
+         .onlyIf(() -> shooter.getIndexer().getCurrentCommand() == null));
 
     }
 

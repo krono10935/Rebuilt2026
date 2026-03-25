@@ -14,12 +14,15 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.Drivetrain.*;
 import frc.robot.commands.IntakeCommands.*;
+import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Shooter.*;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.climb.*;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
+
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import static frc.robot.FieldConstants.getTowerSideTargetPose;
@@ -257,7 +260,10 @@ public class Sequences {
     public static Command delivery(
             Drivetrain drivetrain,
             Shooter shooter,
-            CommandXboxController controller
+            Intake intake,
+            CommandXboxController controller,
+            BooleanSupplier reverseIndexer,
+            Supplier<IntakeMode> intakeModeSupplier
     ) {
         Supplier<Translation2d> bump = () -> FieldConstants.getClosestBump(drivetrain.getEstimatedPosition());
 
@@ -274,23 +280,33 @@ public class Sequences {
                 shooter.spinUp(flyWheelSpeed.get());
 
                 if(Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) <1 ) {
-                    shooter.getIndexer().turnOn();
+                     shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean()?
+                      -IndexerConstants.SPINNING_TARGET_VELOCITY : 
+                IndexerConstants.SPINNING_TARGET_VELOCITY);
                     shooter.toggleKicker(true);
+                    
+                    
+                IntakeMode.chooseMode(intakeModeSupplier.get());
+                IntakeMode.dealWithChosenMode(intake);
                 }
                 else{
                     shooter.toggleKicker(false);
                     shooter.getIndexer().turnOff();
+                    IntakeMode.resetLastChosen(intake);
+
                 }
             }
             else{
                 shooter.stopFlyWheel();
                 shooter.toggleKicker(false);
                 shooter.getIndexer().turnOff();
+                IntakeMode.resetLastChosen(intake);
             }
         }, shooter).finallyDo(() -> {
             shooter.stopFlyWheel();
             shooter.getIndexer().turnOff();
             shooter.toggleKicker(false);
+            IntakeMode.resetLastChosen(intake);
         });
 
         return new DriveAndHomeToSupplierCommand(drivetrain, controller, angle).alongWith(deliver);

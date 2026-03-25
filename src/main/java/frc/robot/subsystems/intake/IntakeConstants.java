@@ -3,6 +3,7 @@ import java.util.function.Function;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.ShakeItOffCommandBangBang;
 import frc.robot.commands.IntakeCommands.SlowlyCloseOnce;
@@ -128,27 +129,25 @@ public class IntakeConstants {
 
         private IntakeMode prev = null;
 
+        private static IntakeMode previousIntakeMode = null;
+        private static IntakeMode currentIntakeMode = null;
+
         IntakeMode(Function<Intake, Command> commandGenerator){
             this.commandGenerator = commandGenerator;
         }
 
         public static void initializeLinkedList(){
-            for(IntakeMode mode : IntakeMode.values()){
-                int prev = mode.ordinal() - 1;
-                if(prev < 0){
-                    mode.prev = IntakeMode.values()[IntakeMode.values().length - 1];
-                }
-                else{
-                    mode.prev = IntakeMode.values()[prev];
-                }
+            
+            var allIntakeModes = IntakeMode.values();
+            int intakeModeEnumsCount = allIntakeModes.length;
 
-                int next = mode.ordinal() + 1;
-                if(next >= IntakeMode.values().length){
-                    mode.next = IntakeMode.values()[0];
-                }
-                else{
-                    mode.next = IntakeMode.values()[next];
-                }
+            IntakeMode prev = allIntakeModes[intakeModeEnumsCount - 1];
+
+            for (IntakeMode mode : allIntakeModes){
+                mode.prev = prev;
+                mode.prev.next = mode;
+
+                prev = mode;
             }
         }
 
@@ -159,6 +158,26 @@ public class IntakeConstants {
 
             return command;
         }
+
+        public static void resetLastChosen(Intake intake){
+            if(currentIntakeMode.getCommand(intake).isScheduled()){
+                currentIntakeMode.getCommand(intake).cancel();
+            }
+            previousIntakeMode = null;
+        }
+
+        public static void dealWithChosenMode(Intake intake){
+            if ((currentIntakeMode != null && !currentIntakeMode.getCommand(intake).isScheduled()) ||
+                currentIntakeMode != previousIntakeMode){
+                CommandScheduler.getInstance().schedule(currentIntakeMode.getCommand(intake));
+                previousIntakeMode = currentIntakeMode;
+            }
+        }
+
+        public static void chooseMode(IntakeMode intakeMode){
+            currentIntakeMode = intakeMode;
+        }
+        
 
         public IntakeMode getNext(){
             return next;

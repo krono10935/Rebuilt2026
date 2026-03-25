@@ -153,8 +153,10 @@ public class ShootCommand extends Command {
             handleIndexerErrors();
             handleKickerErrors();
 
-
-            if(RobotState.isTeleop()) handleIntakeMode();
+            if(RobotState.isTeleop()) {            
+                IntakeMode.chooseMode(intakeModeSupplier.get());
+                IntakeMode.dealWithChosenMode(intake);
+            }
 
             shooter.toggleKicker(true);
             shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean()? -IndexerConstants.SPINNING_TARGET_VELOCITY : 
@@ -163,12 +165,7 @@ public class ShootCommand extends Command {
 
         // otherwise open the kicker and start letting the shooter shoot
         else{
-
-            if(currentIntakeMode.getCommand(intake).isScheduled()){
-                currentIntakeMode.getCommand(intake).cancel();
-            }
-            previousIntakeMode = null;
-
+            IntakeMode.resetLastChosen(intake);
             shooter.toggleKicker(false);
             shooter.getIndexer().turnOff();
         }
@@ -228,17 +225,6 @@ public class ShootCommand extends Command {
         }
     }
 
-    private void handleIntakeMode(){
-        if(currentIntakeMode != null && !currentIntakeMode.getCommand(intake).isScheduled()){
-            CommandScheduler.getInstance().schedule(currentIntakeMode.getCommand(intake));
-        }
-        currentIntakeMode = intakeModeSupplier.get();
-
-        if (currentIntakeMode != previousIntakeMode){
-            CommandScheduler.getInstance().schedule(currentIntakeMode.getCommand(intake));
-            previousIntakeMode = currentIntakeMode;
-        }
-    }
 
     @Override
     public void end(boolean interrupted){
