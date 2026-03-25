@@ -40,6 +40,7 @@ public class SlowlyClose extends Command {
         addRequirements(intake);
     }
 
+
     @Override
     public void initialize() {
         intake.setPositionMotorSlowly(0);

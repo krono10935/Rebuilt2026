@@ -3,7 +3,6 @@ package frc.robot.subsystems.Shooter;
 import java.util.Random;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Sequences;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;

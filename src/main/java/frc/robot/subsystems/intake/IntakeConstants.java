@@ -1,5 +1,12 @@
 package frc.robot.subsystems.intake;
+import java.util.function.Function;
+
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.IntakeCommands.CloseCommand;
+import frc.robot.commands.IntakeCommands.ShakeItOffCommandBangBang;
+import frc.robot.commands.IntakeCommands.SlowlyCloseOnce;
+import frc.robot.commands.IntakeCommands.TwoInOneOut;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
 import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig.SlotConfig;
@@ -104,6 +111,55 @@ public class IntakeConstants {
         public static final double FINAL_CURRENT_CHECK_FOR_CLOSE = 30;
 
         public static final double MAX_CURRENT_LIMIT = 50;
+    }
+
+
+    public enum IntakeMode{
+        TenBalls(CloseCommand::factory),
+        TwentyBalls(SlowlyCloseOnce::factory),
+        ThirtyBalls(TwoInOneOut::factory),
+        FourtyBalls(ShakeItOffCommandBangBang::factory);
+
+        private Function<Intake, Command> commandGenerator;
+
+        private Command command;
+
+        private IntakeMode next = null;
+
+        private IntakeMode prev = null;
+
+        IntakeMode(Function<Intake, Command> commandGenerator){
+            this.commandGenerator = commandGenerator;
+        }
+
+        public static void initializeLinkedList(){
+            
+            var allIntakeModes = IntakeMode.values();
+            int intakeModeEnumsCount = allIntakeModes.length;
+
+            IntakeMode prev = allIntakeModes[intakeModeEnumsCount - 1];
+
+            for (IntakeMode mode : allIntakeModes){
+                mode.prev = prev;
+                mode.prev.next = mode;
+            }
+        }
+
+        public Command getCommand(Intake intake){
+            if (command == null){
+                command = commandGenerator.apply(intake);
+            }
+
+            return command;
+        }
+
+        public IntakeMode getNext(){
+            return next;
+        }
+
+        public IntakeMode getPrev(){
+            return prev;
+        }
     }
 
 }

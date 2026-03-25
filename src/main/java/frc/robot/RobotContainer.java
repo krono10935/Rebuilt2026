@@ -7,6 +7,7 @@ package frc.robot;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -48,6 +49,7 @@ import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.PPController;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.AllianceFlipUtil;
 import frc.utils.CheckFreeSpace;
 
@@ -75,6 +77,7 @@ public class RobotContainer {
 
     public boolean cancelAutomations = false;
 
+    public IntakeMode currentIntakeMode = IntakeMode.TenBalls;
 
     public static RobotContainer getInstance() {
         if (instance == null) {
@@ -119,6 +122,9 @@ public class RobotContainer {
         // } else {
         //     configurePitBindings();
         // }
+
+        IntakeMode.initializeLinkedList();
+
         configureBindings();
         configureOperatorBindings();
 //        test();
@@ -267,17 +273,22 @@ public class RobotContainer {
         Trigger autoShoot = (new Trigger(isHubActive)
                 .and(isIntakeOff)
                 .and(isInAllianceZone)
-                .and(ObjectDetection.getInstance()::hasBalls).and(isAutosWorking)).or(() -> overrideShooting);
+                .and(ObjectDetection.getInstance()::hasBalls)
+                .and(isAutosWorking)
+        .or(() -> overrideShooting)
+        .and(RobotState::isTeleop);
 
         autoShoot.whileTrue(
-                ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y()));
+                ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
+                 vision, operatorController.y(), () -> currentIntakeMode));
 
         Trigger deliver =
                 new Trigger(isHubActive).negate()
                         .and(isIntakeOff)
                         .and(() -> !isInAllianceZone.getAsBoolean())
                         .and(ObjectDetection.getInstance()::hasBalls)
-                        .and(isAutosWorking);
+                        .and(isAutosWorking)
+                        .and(RobotState::isTeleop);
 
         deliver.whileTrue(Sequences.delivery(drivetrain, shooter, driverController));
     }
@@ -321,6 +332,11 @@ public class RobotContainer {
 
         operatorController.back().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
+        operatorController.leftTrigger(0.3).onTrue(
+                new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getPrev()));
+        
+        operatorController.rightTrigger(0.3).onTrue(
+                new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getNext()));
 
     }
 
@@ -389,11 +405,13 @@ public class RobotContainer {
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                ((new ShootCommand(shooter, drivetrain, vision, () -> false)).alongWith(new TwoInOneOut(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
-                        .alongWith(aimRobot));
+                ((new ShootCommand(shooter, drivetrain, vision, intake,  () -> false, () -> currentIntakeMode))
+                .alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                ((new ShootCommand(shooter, drivetrain, vision, () -> false)).alongWith(new TwoInOneOut(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode))
+                        .alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                         .alongWith(aimRobotStationary));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17), shooter));

@@ -35,6 +35,10 @@ public class TwoInOneOut extends Command {
         isMovingOut = true;// start after the intake has been moved out
     }
 
+    public static TwoInOneOut factory(Intake intake){
+        return new TwoInOneOut(intake);
+    }
+
     @Override
     public void initialize() {
         isMovingOut = true;

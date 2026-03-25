@@ -2,7 +2,6 @@ package frc.robot.subsystems.drivetrain.module;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drivetrain.configsStructure.moduleConfig.ModuleConstants;
 import io.github.captainsoccer.basicmotor.ctre.talonfx.BasicTalonFX;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
