@@ -51,6 +51,11 @@ public class UpdateWidgets extends VirtualSubSystem{
         var driveTrainCommand = drivetrain.getCurrentCommand();
         SmartDashboard.putBoolean("NormalDrive",
                 driveTrainCommand != null && Objects.equals(driveTrainCommand.getName(), "DriveCommand"));
+
+        SmartDashboard.putBoolean("overrideShooting", RobotContainer.getInstance().overrideShooting);
+
+        SmartDashboard.putBoolean("cancelAutomations", RobotContainer.getInstance().cancelAutomations);
+
     }
 
 }

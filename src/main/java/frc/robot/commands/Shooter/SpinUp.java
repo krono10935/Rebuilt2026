@@ -51,6 +51,10 @@ public class SpinUp extends Command {
     }
   }
 
+  public void end(boolean interrupted){
+    if(interrupted) shooter.stopFlyWheel();
+  }
+
   @Override
   public boolean isFinished(){
     return shooter.isShooterAtGoal() || spinUpfailed.get();

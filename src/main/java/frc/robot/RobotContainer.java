@@ -19,6 +19,7 @@ import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -274,13 +275,13 @@ public class RobotContainer {
                 .and(isIntakeOff)
                 .and(isInAllianceZone)
                 .and(ObjectDetection.getInstance()::hasBalls)
-                .and(isAutosWorking)
-        .or(() -> overrideShooting)
-        .and(RobotState::isTeleop);
+                .and(isAutosWorking)).or(() -> overrideShooting);
 
-        autoShoot.whileTrue(
+        autoShoot.and(RobotState::isTeleop).whileTrue(
                 ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
                  vision, operatorController.y(), () -> currentIntakeMode));
+
+        autoShoot.whileTrue(Commands.print("autoshoot"));
 
         Trigger deliver =
                 new Trigger(isHubActive).negate()
@@ -411,8 +412,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("shootAndAimStationary",
                 ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode))
-                        .alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
-                        .alongWith(aimRobotStationary));
+                        .alongWith(new TwoInOneOut(intake), aimRobotStationary)));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17), shooter));
 

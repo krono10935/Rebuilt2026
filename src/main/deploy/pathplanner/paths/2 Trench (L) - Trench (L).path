@@ -80,16 +80,16 @@
     },
     {
       "anchor": {
-        "x": 3.535954922894425,
-        "y": 7.250727272727273
+        "x": 3.233763157894736,
+        "y": 7.36497034400949
       },
       "prevControl": {
-        "x": 3.944804270462635,
-        "y": 7.429525504151838
+        "x": 3.638329453686945,
+        "y": 7.553259241389223
       },
       "nextControl": {
-        "x": 3.228238957846245,
-        "y": 7.1161567502133805
+        "x": 2.4381491228070176,
+        "y": 6.994684210526316
       },
       "isLocked": false,
       "linkedName": null
@@ -100,8 +100,8 @@
         "y": 6.270675438596491
       },
       "prevControl": {
-        "x": 2.816985983642379,
-        "y": 6.697597416118176
+        "x": 2.454061403508772,
+        "y": 6.923078947368421
       },
       "nextControl": null,
       "isLocked": false,
@@ -133,10 +133,10 @@
   "constraintZones": [
     {
       "name": "Intake",
-      "minWaypointRelativePos": 2.0,
-      "maxWaypointRelativePos": 2.9964093357270984,
+      "minWaypointRelativePos": 1.745454545454516,
+      "maxWaypointRelativePos": 3.2976623376623664,
       "constraints": {
-        "maxVelocity": 1.75,
+        "maxVelocity": 0.8,
         "maxAcceleration": 1.75,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -186,8 +186,8 @@
     },
     {
       "name": "Shooting",
-      "waypointRelativePos": 4.1329870129869954,
-      "endWaypointRelativePos": 7.0,
+      "waypointRelativePos": 3.6529870129870057,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {

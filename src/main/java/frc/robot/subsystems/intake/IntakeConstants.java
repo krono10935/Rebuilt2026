@@ -133,15 +133,22 @@ public class IntakeConstants {
         }
 
         public static void initializeLinkedList(){
-            
-            var allIntakeModes = IntakeMode.values();
-            int intakeModeEnumsCount = allIntakeModes.length;
+            for(IntakeMode mode : IntakeMode.values()){
+                int prev = mode.ordinal() - 1;
+                if(prev < 0){
+                    mode.prev = IntakeMode.values()[IntakeMode.values().length - 1];
+                }
+                else{
+                    mode.prev = IntakeMode.values()[prev];
+                }
 
-            IntakeMode prev = allIntakeModes[intakeModeEnumsCount - 1];
-
-            for (IntakeMode mode : allIntakeModes){
-                mode.prev = prev;
-                mode.prev.next = mode;
+                int next = mode.ordinal() + 1;
+                if(next >= IntakeMode.values().length){
+                    mode.next = IntakeMode.values()[0];
+                }
+                else{
+                    mode.next = IntakeMode.values()[next];
+                }
             }
         }
 
