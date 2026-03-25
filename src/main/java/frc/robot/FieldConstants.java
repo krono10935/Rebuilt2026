@@ -211,7 +211,7 @@ public class FieldConstants {
 
     public static Translation2d getClosestBump(Pose2d robotPose){
 
-        if (robotPose.getTranslation().getY() < fieldWidth / 2){
+        if (AllianceFlipUtil.apply(robotPose).getY() < fieldWidth / 2){
             return AllianceFlipUtil.apply(RightBump.farRightCorner);
         } else {
             return AllianceFlipUtil.apply(LeftBump.farLeftCorner);

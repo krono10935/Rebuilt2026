@@ -69,7 +69,7 @@ public class DriveCommand extends Command {
      */
     protected static final double DEADBAND = 0.1;
 
-    private static final ControllerMode CONTROLLER_MODE = ControllerMode.BOTH_EXPONENTIAL;
+    private static final ControllerMode CONTROLLER_MODE = ControllerMode.BRAKE_EXPONENTIAL;
 
     public DriveCommand(Drivetrain drivetrain, CommandXboxController controller) {
         this.drivetrain = drivetrain;

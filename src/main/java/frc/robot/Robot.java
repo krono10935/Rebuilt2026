@@ -155,6 +155,8 @@ public class Robot extends LoggedRobot
             autonomousCommand.cancel();
         }
 
+        RobotContainer.getInstance().drivetrain.reset(RobotContainer.getInstance().drivetrain.getEstimatedPosition());
+
     }
     
     

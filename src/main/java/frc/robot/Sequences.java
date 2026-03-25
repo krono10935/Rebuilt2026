@@ -243,7 +243,7 @@ public class Sequences {
                 < ShooterConstants.OMEGA_DELIVERY_SPEED_TOLERANCE_RADIANS;
     }
 
-    private static LoggedNetworkNumber flyWheelSpeed = new LoggedNetworkNumber("Delivery/FlyWheelSpeed", 15);
+    private static LoggedNetworkNumber flyWheelSpeed = new LoggedNetworkNumber("Delivery/FlyWheelSpeed", 20);
 
     private static LoggedNetworkNumber hoodAngle = new LoggedNetworkNumber("Delivery/HoodAngle", 28);
 
@@ -266,21 +266,32 @@ public class Sequences {
                 .getAngle();
 
         BooleanSupplier isRobotAligned =
-                () -> angle.get().minus(drivetrain.getEstimatedPosition().getRotation()).getDegrees() < 5;
+                () -> Math.abs(angle.get().getDegrees() - drivetrain.getEstimatedPosition().getRotation().getDegrees()) < 5;
 
-        RunCommand deliver = new  RunCommand(() -> {
+        Command deliver = new  RunCommand(() -> {
             if(isRobotAligned.getAsBoolean()) {
                 shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
                 shooter.spinUp(flyWheelSpeed.get());
-                shooter.getIndexer().turnOn();
-                shooter.toggleKicker(true);
+
+                if(Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) <1 ) {
+                    shooter.getIndexer().turnOn();
+                    shooter.toggleKicker(true);
+                }
+                else{
+                    shooter.toggleKicker(false);
+                    shooter.getIndexer().turnOff();
+                }
             }
             else{
                 shooter.stopFlyWheel();
                 shooter.toggleKicker(false);
                 shooter.getIndexer().turnOff();
             }
-        }, shooter);
+        }, shooter).finallyDo(() -> {
+            shooter.stopFlyWheel();
+            shooter.getIndexer().turnOff();
+            shooter.toggleKicker(false);
+        });
 
         return new DriveAndHomeToSupplierCommand(drivetrain, controller, angle).alongWith(deliver);
     }

@@ -172,4 +172,8 @@ public class Shooter extends SubsystemBase {
         }, this, getIndexer());
     }
 
+    public double getShooterVelocity(){
+        return inputs.shooterSpeed;
+    }
+
 }

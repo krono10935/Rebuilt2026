@@ -252,7 +252,7 @@ public class RobotContainer {
         driverController.a().onTrue(new InstantCommand(() -> cancelAutomations = !cancelAutomations));
 
         driverController.leftBumper().whileTrue(new StartEndCommand(
-                () -> intake.setPercent(-0.3),
+                () -> intake.setPercent(-0.5),
                 intake::stopIntakeMotor,
                 intake
         ));
@@ -260,10 +260,11 @@ public class RobotContainer {
         var intakeCommand = Sequences.intakeOpenStart(intake)
                 .alongWith(new DriveIntakeCommand(drivetrain, driverController));
 
-        driverController.leftTrigger(0.2).whileTrue(intakeCommand);
-
-        driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setPercent(-0.3), intake)).
-                onFalse(new InstantCommand(intake::stopIntakeMotor));
+        driverController.leftTrigger(0.2).whileTrue(intakeCommand)
+                .onFalse(new InstantCommand(() -> {
+                    cancelAutomations = true;
+                    currentIntakeMode = IntakeMode.FourtyBalls;
+                }));
 
         BooleanSupplier isIntakeOff = () -> !intakeCommand.isScheduled();
 
@@ -327,9 +328,9 @@ public class RobotContainer {
 
 
         //TODO check real buttons
-        operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(false)).ignoringDisable(true));
+        operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
-        operatorController.back().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
+        operatorController.back().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(false)).ignoringDisable(true));
 
         operatorController.leftTrigger(0.3).onTrue(
                 new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getPrev()));
