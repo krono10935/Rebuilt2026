@@ -32,7 +32,8 @@ public class Sequences {
 
     /**
      * Checks if robot is close enough to the tower to safely open climb.
-     * @param robotPose the robot pose
+     *
+     * @param robotPose     the robot pose
      * @param towerSidePose the pose of the side of the tower that you choose
      */
     private static boolean closeEnoughToOpenClimb(Pose2d robotPose, Translation2d towerSidePose) {
@@ -42,7 +43,8 @@ public class Sequences {
 
     /**
      * Checks if robot is far enoughto the tower to safely close climb.
-     * @param robotPose the robot pose
+     *
+     * @param robotPose     the robot pose
      * @param towerSidePose the pose of the side of the tower that you choose
      */
     private static boolean farEnoughToCloseClimb(Pose2d robotPose, Translation2d towerSidePose) {
@@ -53,6 +55,7 @@ public class Sequences {
     /**
      * Determines from which direction (top or bottom of the field)
      * the robot is approaching the tower.
+     *
      * @param robotPose the robot pose
      */
     private static boolean isComingFromTop(Pose2d robotPose) {
@@ -61,6 +64,7 @@ public class Sequences {
 
     /**
      * Attempts to close climb, retries once if failed.
+     *
      * @param climb
      */
     private static Command closeAndRetryClosingIfFailed(Climb climb) {
@@ -78,6 +82,7 @@ public class Sequences {
 
     /**
      * A command which stops intake, shooter, and optionally climb (if climb isn't null).
+     *
      * @param intake
      * @param climb
      * @param shooter
@@ -101,6 +106,7 @@ public class Sequences {
 
     /**
      * Closes everything and opens climb.
+     *
      * @param intake
      * @param climb
      * @param shooter
@@ -114,6 +120,7 @@ public class Sequences {
 
     /**
      * Full autonomous climb routine.
+     *
      * @param intake
      * @param drivetrain
      * @param climb
@@ -161,8 +168,9 @@ public class Sequences {
 
     /**
      * Builds map for climb side driving.
+     *
      * @param drivetrain
-     * @param driveBack Whether or not to drive backwards when the declimb is finished
+     * @param driveBack  Whether or not to drive backwards when the declimb is finished
      * @return
      */
     private static Map<TowerSide, Command> getClimbSideMap(Drivetrain drivetrain, boolean driveBack) {
@@ -177,6 +185,7 @@ public class Sequences {
 
     /**
      * Autonomous declimb routine.
+     *
      * @param intake
      * @param drivetrain
      * @param climb
@@ -214,6 +223,7 @@ public class Sequences {
 
     /**
      * Opens intake safely and starts motor.
+     *
      * @param intake
      */
     public static Command intakeOpenStart(Intake intake) {
@@ -223,6 +233,7 @@ public class Sequences {
 
     /**
      * Stops intake and safely closes it.
+     *
      * @param intake
      */
     public static Command stopIntakeAndClose(Intake intake) {
@@ -232,6 +243,7 @@ public class Sequences {
 
     /**
      * Checks if chassis speeds match delivery target.
+     *
      * @param speeds The current ChassisSpeeds
      */
     private static boolean matchesDeliveryChassisSpeeds(ChassisSpeeds speeds) {
@@ -253,6 +265,7 @@ public class Sequences {
     /**
      * Delivery sequence:
      * spins shooter, aligns robot, and fires.
+     *
      * @param drivetrain
      * @param shooter
      * @param controller the driver's controller
@@ -274,29 +287,27 @@ public class Sequences {
         BooleanSupplier isRobotAligned =
                 () -> Math.abs(angle.get().getDegrees() - drivetrain.getEstimatedPosition().getRotation().getDegrees()) < 5;
 
-        Command deliver = new  RunCommand(() -> {
-            if(isRobotAligned.getAsBoolean()) {
+        Command deliver = new RunCommand(() -> {
+            if (isRobotAligned.getAsBoolean()) {
                 shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
                 shooter.spinUp(flyWheelSpeed.get());
 
-                if(Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) <1 ) {
-                     shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean()?
-                      -IndexerConstants.SPINNING_TARGET_VELOCITY : 
-                IndexerConstants.SPINNING_TARGET_VELOCITY);
+                if (Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) < 1) {
+                    shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean() ?
+                            -IndexerConstants.SPINNING_TARGET_VELOCITY :
+                            IndexerConstants.SPINNING_TARGET_VELOCITY);
                     shooter.toggleKicker(true);
-                    
-                    
-                IntakeMode.chooseMode(intakeModeSupplier.get());
-                IntakeMode.dealWithChosenMode(intake);
-                }
-                else{
+
+
+                    IntakeMode.chooseMode(intakeModeSupplier.get());
+                    IntakeMode.dealWithChosenMode(intake);
+                } else {
                     shooter.toggleKicker(false);
                     shooter.getIndexer().turnOff();
                     IntakeMode.resetLastChosen(intake);
 
                 }
-            }
-            else{
+            } else {
                 shooter.stopFlyWheel();
                 shooter.toggleKicker(false);
                 shooter.getIndexer().turnOff();
