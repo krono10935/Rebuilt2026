@@ -3,20 +3,7 @@
   "command": {
     "type": "sequential",
     "data": {
-      "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Trench (L) - Trench (L) - Climb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "closeClimb"
-          }
-        }
-      ]
+      "commands": []
     }
   },
   "resetOdom": true,
