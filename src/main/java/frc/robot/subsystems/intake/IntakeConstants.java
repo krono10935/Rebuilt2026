@@ -63,7 +63,7 @@ public class IntakeConstants {
         positionMotorConfig.motorConfig.inverted = false;
         positionMotorConfig.motorConfig.idleMode = IdleMode.BRAKE;
         positionMotorConfig.motorConfig.gearRatio = 5.4;
-        positionMotorConfig.motorConfig.motorType = DCMotor.getNEO(1);
+        positionMotorConfig.motorConfig.motorType = DCMotor.getNeoVortex(1);
         positionMotorConfig.motorConfig.unitConversion = Math.PI * PINION_DIAMETER;
 
         SlotConfig posConfig = positionMotorConfig.slot0Config;

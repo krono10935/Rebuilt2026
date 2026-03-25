@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkBase;
 
 import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
+import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
 public class IntakeIOSpark implements IntakeIO {
@@ -16,7 +17,7 @@ public class IntakeIOSpark implements IntakeIO {
     private final DoubleSupplier currentOutputSupplier;
     public IntakeIOSpark() {
 
-        intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
+        intakeMotor = new BasicSparkFlex(IntakeConstants.intakeMotorConfig);
 
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
 
