@@ -13,7 +13,7 @@
     "Testing"
   ],
   "defaultMaxVel": 3.2,
-  "defaultMaxAccel": 16.0,
+  "defaultMaxAccel": 10.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,

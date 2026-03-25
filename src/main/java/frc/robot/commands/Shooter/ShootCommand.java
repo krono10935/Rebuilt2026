@@ -229,6 +229,9 @@ public class ShootCommand extends Command {
     }
 
     private void handleIntakeMode(){
+        if(currentIntakeMode != null && !currentIntakeMode.getCommand(intake).isScheduled()){
+            CommandScheduler.getInstance().schedule(currentIntakeMode.getCommand(intake));
+        }
         currentIntakeMode = intakeModeSupplier.get();
 
         if (currentIntakeMode != previousIntakeMode){

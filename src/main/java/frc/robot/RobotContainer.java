@@ -275,14 +275,12 @@ public class RobotContainer {
                 .and(isIntakeOff)
                 .and(isInAllianceZone)
                 .and(ObjectDetection.getInstance()::hasBalls)
-                .and(isAutosWorking)).or(() -> overrideShooting);
+                .and(isAutosWorking));
 
-        autoShoot.and(RobotState::isTeleop).whileTrue(
+        (autoShoot.or(() -> overrideShooting)).and(RobotState::isTeleop).whileTrue(
                 ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
                  vision, operatorController.y(), () -> currentIntakeMode));
-
-        autoShoot.whileTrue(Commands.print("autoshoot"));
-
+        
         Trigger deliver =
                 new Trigger(isHubActive).negate()
                         .and(isIntakeOff)
