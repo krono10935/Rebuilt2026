@@ -117,7 +117,6 @@ public class IntakeConstants {
         public static final double MAX_CURRENT_LIMIT = 50;
     }
 
-
     public enum IntakeMode{
         TenBalls(CloseCommand::factory),
         TwentyBalls(SlowlyCloseOnce::factory),
@@ -190,5 +189,5 @@ public class IntakeConstants {
             return prev;
         }
     }
-
 }
+

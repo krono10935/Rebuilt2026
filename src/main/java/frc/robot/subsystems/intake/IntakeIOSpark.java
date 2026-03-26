@@ -18,10 +18,13 @@ public class IntakeIOSpark implements IntakeIO {
     private final DoubleSupplier currentOutputSupplierIntake;
     public IntakeIOSpark() {
 
-        intakeMotor = new BasicSparkFlex(IntakeConstants.intakeMotorConfig);
+        intakeMotor = new BasicSparkMAX(IntakeConstants.intakeMotorConfig);
 
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
-
+        
+        //position
+        BasicSparkMAX rootPositionMotor = ((BasicSparkMAX)positionMotor); 
+        SparkBase positionMotorSpark = rootPositionMotor.getMotor(); 
 
         currentOutputSupplierPosition = positionMotorSpark::getOutputCurrent; 
 
