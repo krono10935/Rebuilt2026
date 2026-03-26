@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.*;
@@ -283,9 +284,9 @@ public class RobotContainer {
 //        driverController.b().and(allowDeliver).whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
 //         operatorController.y(), () -> currentIntakeMode));
 
-       // driverController.x().whileTrue(new BasicShootCommand(shooter,driverController));
+       driverController.x().whileTrue(new BasicShootCommand(shooter,driverController));
 
-        operatorController.a().whileTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y(), () -> currentIntakeMode));
+        //operatorController.a().whileTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y(), () -> currentIntakeMode));
 
          Trigger autoShoot = new Trigger(() -> {
                 if (!RobotState.isTeleop()) return false;
@@ -300,11 +301,23 @@ public class RobotContainer {
                         ObjectDetection.getInstance().hasBalls());
         });
 
-//        //autoShoot.whileTrue(
-//                ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
-//                 vision, operatorController.y(), () -> currentIntakeMode));
+        autoShoot.whileTrue(
+                ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
+                 vision, operatorController.y(), () -> currentIntakeMode));
 
         //autoShoot.whileTrue(Commands.print("autoshoot"));
+
+        new Trigger(isHubActive).onChange(new InstantCommand(
+                () -> {
+                    driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
+                    operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
+                }
+        ).andThen(new WaitCommand(1.5), new InstantCommand(
+                () -> {
+                    driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+                    operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+                }
+        )));
     
     }
 
@@ -355,6 +368,8 @@ public class RobotContainer {
         operatorController.y().whileTrue(new StartEndCommand(() -> shooter.getIndexer().reverse(),
          () -> shooter.getIndexer().turnOn(), shooter.getIndexer())
          .onlyIf(() -> shooter.getIndexer().getCurrentCommand() == null));
+
+
 
     }
 
@@ -440,6 +455,7 @@ public class RobotContainer {
                 new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
         NamedCommands.registerCommand("closeIntake",
                 new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
+
 
         LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
         autoChooser.onChange(this::displayChosenAuto);
