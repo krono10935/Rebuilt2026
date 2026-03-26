@@ -76,7 +76,7 @@ public class RobotContainer {
 
     public boolean cancelAutomations = false;
 
-    public IntakeMode currentIntakeMode = IntakeMode.TenBalls;
+    public IntakeMode currentIntakeMode = IntakeMode.FourtyBalls;
 
     public static RobotContainer getInstance() {
         if (instance == null) {
@@ -175,6 +175,7 @@ public class RobotContainer {
 
         // closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
         //                 shooter.getCurrentCommand() == shooter.getDefaultCommand()));
+
 
         BooleanSupplier isHubActive = () -> {
             double time = DriverStation.getMatchTime();
@@ -279,8 +280,12 @@ public class RobotContainer {
         };
 
 
-        driverController.b().and(allowDeliver).whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
-         operatorController.y(), () -> currentIntakeMode));
+//        driverController.b().and(allowDeliver).whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
+//         operatorController.y(), () -> currentIntakeMode));
+
+       // driverController.x().whileTrue(new BasicShootCommand(shooter,driverController));
+
+        operatorController.a().whileTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y(), () -> currentIntakeMode));
 
          Trigger autoShoot = new Trigger(() -> {
                 if (!RobotState.isTeleop()) return false;
@@ -295,11 +300,11 @@ public class RobotContainer {
                         ObjectDetection.getInstance().hasBalls());
         });
 
-        autoShoot.whileTrue(
-                ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
-                 vision, operatorController.y(), () -> currentIntakeMode));
+//        //autoShoot.whileTrue(
+//                ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake,
+//                 vision, operatorController.y(), () -> currentIntakeMode));
 
-        autoShoot.whileTrue(Commands.print("autoshoot"));
+        //autoShoot.whileTrue(Commands.print("autoshoot"));
     
     }
 

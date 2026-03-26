@@ -131,27 +131,33 @@ public class IntakeConstants {
 
         private IntakeMode prev = null;
 
-        private static IntakeMode previousIntakeMode = null;
-        private static IntakeMode currentIntakeMode = null;
+        private static IntakeMode previousIntakeMode = FourtyBalls;
+        private static IntakeMode currentIntakeMode = FourtyBalls;
 
         IntakeMode(Function<Intake, Command> commandGenerator){
             this.commandGenerator = commandGenerator;
         }
 
         public static void initializeLinkedList(){
-            
-            var allIntakeModes = IntakeMode.values();
-            int intakeModeEnumsCount = allIntakeModes.length;
+            for(IntakeMode mode : IntakeMode.values()){
+                int prev = mode.ordinal() - 1;
+                if(prev < 0){
+                    mode.prev = IntakeMode.values()[IntakeMode.values().length - 1];
+                }
+                else{
+                    mode.prev = IntakeMode.values()[prev];
+                }
 
-            IntakeMode prev = allIntakeModes[intakeModeEnumsCount - 1];
-
-            for (IntakeMode mode : allIntakeModes){
-                mode.prev = prev;
-                mode.prev.next = mode;
-
-                prev = mode;
+                int next = mode.ordinal() + 1;
+                if(next >= IntakeMode.values().length){
+                    mode.next = IntakeMode.values()[0];
+                }
+                else{
+                    mode.next = IntakeMode.values()[next];
+                }
             }
         }
+
 
         public Command getCommand(Intake intake){
             if (command == null){
