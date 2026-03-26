@@ -152,6 +152,10 @@ public class FieldConstants {
         public static final Translation2d nearLeftCorner =
                 Hub.nearLeftCorner.plus(new Translation2d(0.0, width));
         public static final Translation2d nearRightCorner = Hub.nearLeftCorner;
+
+        public static final Translation2d center = Hub.nearLeftCorner
+            .plus(new Translation2d(depth / 2, width / 2));
+
         public static final Translation2d farLeftCorner =
                 Hub.farLeftCorner.plus(new Translation2d(0.0, width));
         public static final Translation2d farRightCorner = Hub.farLeftCorner;
@@ -169,6 +173,10 @@ public class FieldConstants {
         public static final Translation2d nearLeftCorner = Hub.nearRightCorner;
         public static final Translation2d nearRightCorner =
                 Hub.nearRightCorner.minus(new Translation2d(0.0, width));
+
+        public static final Translation2d center = Hub.farRightCorner
+            .minus(new Translation2d(depth / 2, width / 2));
+
         public static final Translation2d farLeftCorner = Hub.farRightCorner;
         public static final Translation2d farRightCorner =
                 Hub.farRightCorner.minus(new Translation2d(0.0, width));
@@ -212,9 +220,9 @@ public class FieldConstants {
     public static Translation2d getClosestBump(Pose2d robotPose){
 
         if (AllianceFlipUtil.apply(robotPose).getY() < fieldWidth / 2){
-            return AllianceFlipUtil.apply(RightBump.farRightCorner);
+            return AllianceFlipUtil.apply(RightBump.center);
         } else {
-            return AllianceFlipUtil.apply(LeftBump.farLeftCorner);
+            return AllianceFlipUtil.apply(LeftBump.center);
         }
     }
 
