@@ -264,9 +264,23 @@ public class RobotContainer {
                     currentIntakeMode = IntakeMode.FourtyBalls;
                 }));
 
+
+
         BooleanSupplier isIntakeOff = () -> !intakeCommand.isScheduled();
 
         BooleanSupplier isInAllianceZone = () -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition());
+
+        BooleanSupplier allowDeliver = () -> {
+        if (!RobotState.isTeleop()) return false;
+
+        return (isIntakeOff.getAsBoolean() &&
+                !isInAllianceZone.getAsBoolean() && 
+                ObjectDetection.getInstance().hasBalls());
+        };
+
+
+        driverController.b().and(allowDeliver).whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
+         operatorController.y(), () -> currentIntakeMode));
 
          Trigger autoShoot = new Trigger(() -> {
                 if (!RobotState.isTeleop()) return false;
@@ -286,18 +300,6 @@ public class RobotContainer {
                  vision, operatorController.y(), () -> currentIntakeMode));
 
         autoShoot.whileTrue(Commands.print("autoshoot"));
-
-        Trigger deliver = new Trigger(() -> {
-                if (!RobotState.isTeleop() || cancelAutomations) return false;
-
-                return (!isHubActive.getAsBoolean() && 
-                        isIntakeOff.getAsBoolean() &&
-                        isInAllianceZone.getAsBoolean() && 
-                        ObjectDetection.getInstance().hasBalls());
-        });
-
-        deliver.whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
-         operatorController.y(), () -> currentIntakeMode));
     
     }
 
@@ -335,7 +337,6 @@ public class RobotContainer {
         operatorController.a().onTrue(new InstantCommand(() -> overrideShooting = !overrideShooting));
 
 
-        //TODO check real buttons
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
         operatorController.back().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(false)).ignoringDisable(true));
