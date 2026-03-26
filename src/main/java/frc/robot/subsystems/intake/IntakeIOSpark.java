@@ -14,7 +14,8 @@ import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 public class IntakeIOSpark implements IntakeIO {
     private final BasicMotor intakeMotor;
     private final BasicMotor positionMotor;
-    private final DoubleSupplier currentOutputSupplier;
+    private final DoubleSupplier currentOutputSupplierPosition;
+    private final DoubleSupplier currentOutputSupplierIntake;
     public IntakeIOSpark() {
 
         intakeMotor = new BasicSparkFlex(IntakeConstants.intakeMotorConfig);
@@ -22,15 +23,21 @@ public class IntakeIOSpark implements IntakeIO {
         positionMotor = new BasicSparkMAX(IntakeConstants.positionMotorConfig);
 
 
-        BasicSparkMAX motor = ((BasicSparkMAX)positionMotor);
+        currentOutputSupplierPosition = positionMotorSpark::getOutputCurrent; 
 
-        SparkBase positionMotorSpark = motor.getMotor();
+        rootPositionMotor.getSparkConfig().signals.outputCurrentPeriodMs(10); 
 
-        currentOutputSupplier = positionMotorSpark::getOutputCurrent;
- 
-        motor.getSparkConfig().signals.outputCurrentPeriodMs(10);
+        positionMotorSpark.configure(rootPositionMotor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters); 
 
-        positionMotorSpark.configure(motor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        //intake
+        BasicSparkMAX rootIntakeMotor = ((BasicSparkMAX)intakeMotor);
+        SparkBase intakeMotorSpark = rootIntakeMotor.getMotor();
+
+        currentOutputSupplierIntake = intakeMotorSpark::getOutputCurrent;
+
+        rootIntakeMotor.getSparkConfig().signals.outputCurrentPeriodMs(10);
+
+        intakeMotorSpark.configure(rootIntakeMotor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     @Override
@@ -83,7 +90,8 @@ public class IntakeIOSpark implements IntakeIO {
     public void updateInputs(IntakeInputs inputs) {
         inputs.position = positionMotor.getPosition();
         inputs.velocity = intakeMotor.getVelocity();
-        inputs.positionMotorCurrent = currentOutputSupplier.getAsDouble();
+        inputs.positionMotorCurrent = currentOutputSupplierPosition.getAsDouble();
+        inputs.intakeMotorCurrent = currentOutputSupplierIntake.getAsDouble();
     }
 
     @Override

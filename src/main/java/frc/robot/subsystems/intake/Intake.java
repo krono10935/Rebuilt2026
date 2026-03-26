@@ -107,10 +107,18 @@ public class Intake extends SubsystemBase{
     }
 
     /**
-     * @return the current postion of the postion motor in meters
+     * @return the electric current of the postion motor
      */
     public double getPositionMotorCurrent() {
         return inputs.positionMotorCurrent;
+    }
+
+    /**
+     * 
+     * @return the electric current of the intake motor
+     */
+    public double getIntakeMotorCurrent(){
+        return inputs.intakeMotorCurrent;
     }
 
     @Override
