@@ -337,7 +337,6 @@ public class RobotContainer {
         operatorController.a().onTrue(new InstantCommand(() -> overrideShooting = !overrideShooting));
 
 
-        //TODO check real buttons
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
         operatorController.back().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(false)).ignoringDisable(true));
