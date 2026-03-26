@@ -48,20 +48,20 @@ public class VisionConstants {
             new StdDevsFactors(0.1,0.3,0.1,0.3),
             new StdDevsFactors(0.15,0.35,0.1,0.3)
             
-        ),
+        );//,
         
-         SIDE_CAMERA(
-            PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
-             "roni",
-             new Transform3d(
-                 new Translation3d(0.317, -0.303, 0.2805),
-                 new Rotation3d(0, 0,Units.degreesToRadians(-90))
+        //  SIDE_CAMERA(
+        //     PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
+        //      "roni",
+        //      new Transform3d(
+        //          new Translation3d(0.317, -0.303, 0.2805),
+        //          new Rotation3d(0, 0,Units.degreesToRadians(-90))
     
-             ),
-             new StdDevsFactors(0.25,0.25,0.1,0.3),
-             new StdDevsFactors(0.3,0.3,0.1,0.3)
+        //      ),
+        //      new StdDevsFactors(0.25,0.25,0.1,0.3),
+        //      new StdDevsFactors(0.3,0.3,0.1,0.3)
             
-         );
+        //  );
         
        
         /**

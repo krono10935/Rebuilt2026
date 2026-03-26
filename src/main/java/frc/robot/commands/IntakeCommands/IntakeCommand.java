@@ -39,11 +39,11 @@ public class IntakeCommand extends Command {
 
     @Override
     public void initialize(){
-      intake.setIntake90PercentSpeed(IntakeConstants.INTAKE_VELOCITY);
+      intake.setPercent(IntakeConstants.INTAKE_DUTYCYCLE);
       hasBallTimer.reset();
       hasBallTimer.start();
       if(isStuck()){
-        intake.setIntake90PercentSpeed(IntakeConstants.INTAKE_VELOCITY * (-1));
+        intake.setPercent(-IntakeConstants.INTAKE_DUTYCYCLE);
       }
       Elastic.selectTab("Intake Camera");
     }
