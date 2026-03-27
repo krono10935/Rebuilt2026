@@ -245,6 +245,12 @@ public class RobotContainer {
             return Constants.HubTiming.isActiveWithMargin(time, Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE, Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
         };
 
+        BooleanSupplier hubAboutToActivate = () -> {
+            double time = DriverStation.getMatchTime();
+
+            return Constants.HubTiming.isActiveWithMargin(time - 9, 1, 1);
+        };
+
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
@@ -307,17 +313,15 @@ public class RobotContainer {
 
         //autoShoot.whileTrue(Commands.print("autoshoot"));
 
-        new Trigger(isHubActive).onChange(new InstantCommand(
+        new Trigger(hubAboutToActivate).onTrue(new InstantCommand(
                 () -> {
                     driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
                     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
-                }
-        ).andThen(new WaitCommand(1.5), new InstantCommand(
-                () -> {
+                })).onFalse(new InstantCommand(() -> {
                     driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
                     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
                 }
-        )));
+        ))
     
     }
 
