@@ -307,7 +307,7 @@ public class RobotContainer {
                         ObjectDetection.getInstance().hasBalls());
         });
 
-        driverController.x().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
+        driverController.x().and(autoShoot).toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         autoShoot.whileTrue(new ShootCommand(shooter, drivetrain, vision, intake, autoShoot,
          () -> currentIntakeMode, () -> immediatelyShoot).beforeStarting(new SpinUp(shooter, drivetrain)));
