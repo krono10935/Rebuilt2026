@@ -241,16 +241,11 @@ public class RobotContainer {
      * Configure the bindings for the match
      */
     private void configureBindings() {
-        BooleanSupplier isHubActive = () -> {
-            double time = DriverStation.getMatchTime();
-
-            return Constants.HubTiming.isActiveWithMargin(time, Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE, Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
-        };
 
         BooleanSupplier hubAboutToActivate = () -> {
             double time = DriverStation.getMatchTime();
 
-            return Constants.HubTiming.isActiveWithMargin(time - 9, 1, 1);
+            return Constants.HubTiming.isActiveWithMargin(time - 10, 0, 2);
         };
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
@@ -276,41 +271,14 @@ public class RobotContainer {
 
 
 
-        BooleanSupplier isIntakeOff = () -> !intakeCommand.isScheduled();
-
-        BooleanSupplier isInAllianceZone = () -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition());
-
-        BooleanSupplier allowDeliver = () -> {
-        if (!RobotState.isTeleop()) return false;
-
-        return (isIntakeOff.getAsBoolean() &&
-                !isInAllianceZone.getAsBoolean() && 
-                ObjectDetection.getInstance().hasBalls());
-        };
-
 
 //        driverController.b().and(allowDeliver).whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
 //         operatorController.y(), () -> currentIntakeMode));
 
         //operatorController.a().whileTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y(), () -> currentIntakeMode));
 
-         Trigger autoShoot = new Trigger(() -> {
-                if (!RobotState.isTeleop()) return false;
 
-                if (overrideShooting) return true;
-
-                if (cancelAutomations) return false;
-
-                return (isHubActive.getAsBoolean() && 
-                        isIntakeOff.getAsBoolean() &&
-                        isInAllianceZone.getAsBoolean() && 
-                        ObjectDetection.getInstance().hasBalls());
-        });
-
-        driverController.x().and(autoShoot).toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
-
-        autoShoot.whileTrue(new ShootCommand(shooter, drivetrain, vision, intake, autoShoot,
-         () -> currentIntakeMode, () -> immediatelyShoot).beforeStarting(new SpinUp(shooter, drivetrain)));
+        driverController.x().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         //autoShoot.whileTrue(Commands.print("autoshoot"));
 
@@ -357,9 +325,9 @@ public class RobotContainer {
 
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
 
-        operatorController.a().onTrue(new InstantCommand(() -> overrideShooting = !overrideShooting));
-
-        operatorController.rightStick().onTrue(new InstantCommand(() -> immediatelyShoot = !immediatelyShoot));
+        operatorController.a().or(operatorController.rightStick()).toggleOnTrue(ShootCommand.operatorShootCommandFactory(
+                shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
+                operatorController.rightStick()).beforeStarting(new SpinUp(shooter, drivetrain)));
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 

@@ -13,10 +13,8 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.RobotContainer;
 import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.commands.IntakeCommands.TwoInOneOut;
 import frc.robot.subsystems.Indexer.IndexerConstants;
@@ -70,9 +68,14 @@ public class ShootCommand extends Command {
     private BooleanSupplier immediatelyShootSupplier;
 
     /**
-     * 
-     * @param shooter subsystem to activate the shoot command on
-     * @param drivetrain drivetrain
+     * Smart shoot with auto calculated parameters
+     * @param shooter
+     * @param drivetrain the drivetrain is used to calculate the shooting params
+     * @param vision used to config vision for shooting
+     * @param intake used to open clogs in the indexer
+     * @param reverseIndexer whether or not the indexer should spin opposite direction (outwards from the kicker)
+     * @param intakeModeSupplier what mode of intake opening clogs should we use
+     * @param immediatelyShootSupplier whether to override all tests other than being spun up and start shooting.
      */
     public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
              BooleanSupplier reverseIndexer, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier) {
@@ -143,7 +146,7 @@ public class ShootCommand extends Command {
             (ObjectDetection.getInstance().hasBalls()
             || overrideObjectDetection);
 
-        shouldShoot = shouldShoot || immediatelyShootSupplier.getAsBoolean();
+        shouldShoot = shouldShoot || (immediatelyShootSupplier.getAsBoolean() && hasReachedTargetVelocity);
 
         // robot it isn't in shooting zone, go to spin up mode and turn off kicker
         if (shouldShoot){
@@ -235,17 +238,31 @@ public class ShootCommand extends Command {
         shooter.getIndexer().turnOff();
     }
 
-    // public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller,
-    //  Intake intake, Vision vision, BooleanSupplier invertIndexer, Supplier<IntakeMode> intakeModeSupplier){
-    //     DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
-    //     Command shootCommand = (
-    //         new ShootCommand(shooter, drivetrain, vision, intake, invertIndexer, intakeModeSupplier)
-    //     ).beforeStarting(new SpinUp(shooter, drivetrain));
+    /**
+     * Smart shoot with auto calculated parameters but with spinUp attached
+     * @param shooter
+     * @param drivetrain the drivetrain is used to calculate the shooting params
+     * @param vision used to config vision for shooting
+     * @param intake used to open clogs in the indexer
+     * @param reverseIndexer whether or not the indexer should spin opposite direction (outwards from the kicker)
+     * @param intakeModeSupplier what mode of intake opening clogs should we use
+     * @param immediatelyShootSupplier whether to override all tests other than being spun up and start shooting.
+     */
+    public static Command operatorShootCommandFactory(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
+    BooleanSupplier reverseIndexerSupplier, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier){
+        Command shootCommand = new ShootCommand(shooter, drivetrain, vision, intake, reverseIndexerSupplier,
+         intakeModeSupplier, immediatelyShootSupplier).beforeStarting(new SpinUp(shooter, drivetrain));
 
-    //     return driveCommand.alongWith(shootCommand).withName("Full Shoot");
-    // }
+         return shootCommand.withName("Operator shoot");
+    }
 
-
+    /**
+     * Simple shooting factory for tests
+     * @param shooter
+     * @param intake
+     * @param controller
+     * @return
+     */
     public static Command basicShootCommandFactory(Shooter shooter, Intake intake, CommandXboxController controller){
         Command shootCommand = (
             new BasicShootCommand(shooter, controller)  
