@@ -19,6 +19,8 @@ import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -75,6 +77,7 @@ public class RobotContainer {
 
     public boolean overrideShooting = false;
 
+    @AutoLogOutput(key = "ShootNOW")
     public boolean immediatelyShoot = false;
 
     public boolean cancelAutomations = false;
@@ -272,23 +275,26 @@ public class RobotContainer {
 
 
 
-//        driverController.b().and(allowDeliver).whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
-//         operatorController.y(), () -> currentIntakeMode));
+       driverController.x().whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
+        operatorController.y(), () -> currentIntakeMode));
 
         //operatorController.a().whileTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y(), () -> currentIntakeMode));
 
 
-        driverController.x().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
+        driverController.y().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         //autoShoot.whileTrue(Commands.print("autoshoot"));
 
-        new Trigger(hubAboutToActivate).onTrue(new InstantCommand(
+        new Trigger(hubAboutToActivate).onTrue(new StartEndCommand(
                 () -> {
                     driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
                     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
-                })).onFalse(new InstantCommand(() -> {
+                    Logger.recordOutput("IsRumbling", true);
+                },
+                () -> {
                     driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
                     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+                    Logger.recordOutput("IsRumbling", false);
                 }
         ));
     
@@ -324,20 +330,29 @@ public class RobotContainer {
         operatorController.b().onTrue(new CloseCommand(intake));
 
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
+
+        var test = new Subsystem() {
+            @Override
+            public void periodic(){
+                Logger.recordOutput("test", getCurrentCommand().getName());
+            }
+        };
+
+        var shootCommand = ShootCommand.operatorShootCommandFactory(
+                                shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
+                                () -> overrideShooting);
         
         operatorController.rightStick().toggleOnTrue(
                 new StartEndCommand(
                         () -> overrideShooting = true,
-                        () -> overrideShooting = false)
+                        () -> overrideShooting = false,
+                        test)
                 .alongWith(
                         ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting)).onlyIf(() -> shooter.getCurrentCommand() == null));
+                                () -> overrideShooting).onlyIf(()-> !shootCommand.isScheduled())));
 
-        operatorController.a().toggleOnTrue(
-                ShootCommand.operatorShootCommandFactory(
-                        shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                        () -> overrideShooting));
+        operatorController.a().toggleOnTrue(shootCommand);
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 

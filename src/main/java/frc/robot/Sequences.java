@@ -292,7 +292,7 @@ public class Sequences {
                 shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
                 shooter.spinUp(flyWheelSpeed.get());
 
-                if (Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) < 1) {
+                if (Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) < 2) {
                     shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean() ?
                             -IndexerConstants.SPINNING_TARGET_VELOCITY :
                             IndexerConstants.SPINNING_TARGET_VELOCITY);
