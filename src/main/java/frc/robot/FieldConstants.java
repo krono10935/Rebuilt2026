@@ -190,20 +190,20 @@ public class FieldConstants {
     public static Translation2d towerRightBack = new Translation2d(3,4);
 
     public  enum TowerSide {
-        left,
-        right,
+        LEFT,
+        RIGHT,
     }
 
     public static Pose2d getTowerSideTargetPose(TowerSide tower, boolean driveBack) {
         if(driveBack) {
             return switch (tower) {
-                case left->new Pose2d(towerLeftBack.getX(),towerLeftBack.getY(), Rotation2d.fromDegrees(0));
-                case right->new Pose2d(towerRightBack.getX(),towerRightBack.getY(), Rotation2d.fromDegrees(180));
+                case LEFT->new Pose2d(towerLeftBack.getX(),towerLeftBack.getY(), Rotation2d.fromDegrees(0));
+                case RIGHT->new Pose2d(towerRightBack.getX(),towerRightBack.getY(), Rotation2d.fromDegrees(180));
             };
         }else  {
             return switch (tower) {
-                case left->new Pose2d(towerLeft.getX(),towerLeft.getY(), Rotation2d.fromDegrees(0));
-                case right->new Pose2d(towerRight.getX(),towerRight.getY(), Rotation2d.fromDegrees(180));
+                case LEFT->new Pose2d(towerLeft.getX(),towerLeft.getY(), Rotation2d.fromDegrees(0));
+                case RIGHT->new Pose2d(towerRight.getX(),towerRight.getY(), Rotation2d.fromDegrees(180));
             };
         }
 
