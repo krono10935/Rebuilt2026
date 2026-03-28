@@ -325,7 +325,7 @@ public class RobotContainer {
 
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
         
-        operatorController.leftStick().toggleOnTrue(
+        operatorController.rightStick().toggleOnTrue(
                 new StartEndCommand(
                         () -> overrideShooting = true,
                         () -> overrideShooting = false)
@@ -337,7 +337,7 @@ public class RobotContainer {
         operatorController.a().toggleOnTrue(
                 ShootCommand.operatorShootCommandFactory(
                         shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                        () -> overrideShooting).onlyIf(() -> shooter.getCurrentCommand() == null));
+                        () -> overrideShooting));
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
