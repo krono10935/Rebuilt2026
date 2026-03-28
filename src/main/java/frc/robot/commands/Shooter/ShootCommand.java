@@ -67,8 +67,7 @@ public class ShootCommand extends Command {
     private double lastTargetVelocity = 0;
 
     private Supplier<IntakeMode> intakeModeSupplier;
-    private IntakeMode previousIntakeMode = null;
-    private IntakeMode currentIntakeMode = null;
+    private BooleanSupplier immediatelyShootSupplier;
 
     /**
      * 
@@ -76,7 +75,7 @@ public class ShootCommand extends Command {
      * @param drivetrain drivetrain
      */
     public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
-             BooleanSupplier reverseIndexer, Supplier<IntakeMode> intakeModeSupplier) {
+             BooleanSupplier reverseIndexer, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier) {
         // Use addRequirements() here to declare subsystem dependencies.
 
         this.shooter = shooter;
@@ -98,6 +97,7 @@ public class ShootCommand extends Command {
         indexerStuck = new Alert("The indexer is stuck!", AlertType.kError);
 
         this.intakeModeSupplier = intakeModeSupplier;
+        this.immediatelyShootSupplier = immediatelyShootSupplier;
 
         addRequirements(shooter, shooter.getIndexer());
     }
@@ -105,9 +105,6 @@ public class ShootCommand extends Command {
     @Override
     public void initialize(){
         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
-
-        currentIntakeMode = intakeModeSupplier.get();
-
     }
 
     @Override
@@ -146,8 +143,10 @@ public class ShootCommand extends Command {
             (ObjectDetection.getInstance().hasBalls()
             || overrideObjectDetection);
 
+        shouldShoot = shouldShoot || immediatelyShootSupplier.getAsBoolean();
+
         // robot it isn't in shooting zone, go to spin up mode and turn off kicker
-        if (shouldShoot || RobotContainer.getInstance().overrideShooting){
+        if (shouldShoot){
             handleHoodErrors();
             handleFlyWheelErrors();
             handleIndexerErrors();
@@ -229,25 +228,22 @@ public class ShootCommand extends Command {
     @Override
     public void end(boolean interrupted){
 
-        if(currentIntakeMode.getCommand(intake).isScheduled()){
-            currentIntakeMode.getCommand(intake).cancel();
-        }
-        previousIntakeMode = null;
+        IntakeMode.resetLastChosen(intake);
 
         shooter.stopFlyWheel();
         shooter.toggleKicker(false);
         shooter.getIndexer().turnOff();
     }
 
-    public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller,
-     Intake intake, Vision vision, BooleanSupplier invertIndexer, Supplier<IntakeMode> intakeModeSupplier){
-        DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
-        Command shootCommand = (
-            new ShootCommand(shooter, drivetrain, vision, intake, invertIndexer, intakeModeSupplier)
-        ).beforeStarting(new SpinUp(shooter, drivetrain));
+    // public static Command shootCommandFactory(Shooter shooter, Drivetrain drivetrain, CommandXboxController controller,
+    //  Intake intake, Vision vision, BooleanSupplier invertIndexer, Supplier<IntakeMode> intakeModeSupplier){
+    //     DriveAndHomeToHubCommand driveCommand = new DriveAndHomeToHubCommand(drivetrain, controller);
+    //     Command shootCommand = (
+    //         new ShootCommand(shooter, drivetrain, vision, intake, invertIndexer, intakeModeSupplier)
+    //     ).beforeStarting(new SpinUp(shooter, drivetrain));
 
-        return driveCommand.alongWith(shootCommand).withName("Full Shoot");
-    }
+    //     return driveCommand.alongWith(shootCommand).withName("Full Shoot");
+    // }
 
 
     public static Command basicShootCommandFactory(Shooter shooter, Intake intake, CommandXboxController controller){
