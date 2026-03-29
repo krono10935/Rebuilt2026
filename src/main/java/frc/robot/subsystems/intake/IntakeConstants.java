@@ -84,7 +84,7 @@ public class IntakeConstants {
         posForSlowly.pidConfig.iMaxAccum = 4;
         posForSlowly.pidConfig.iZone = 0.1;
         posForSlowly.pidConfig.tolerance = 0.003;
-        posForSlowly.profileConfig.maximumMeasurementVelocity = 0.05;
+        posForSlowly.profileConfig.maximumMeasurementVelocity = 0.10;
         posForSlowly.profileConfig.maximumMeasurementAcceleration = 1;
 
         posConfig.profileConfig.maximumMeasurementVelocity = 10; 
