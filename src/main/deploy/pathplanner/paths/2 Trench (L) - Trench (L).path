@@ -133,11 +133,11 @@
   "constraintZones": [
     {
       "name": "Intake",
-      "minWaypointRelativePos": 1.745454545454516,
+      "minWaypointRelativePos": 0.8833034111310579,
       "maxWaypointRelativePos": 3.2976623376623664,
       "constraints": {
         "maxVelocity": 0.8,
-        "maxAcceleration": 1.75,
+        "maxAcceleration": 10.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -175,12 +175,12 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.3125493291239086,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": 4.222621184919202,
       "command": {
         "type": "named",
         "data": {
-          "name": "openIntake"
+          "name": "openIntakeAndReset"
         }
       }
     },

@@ -55,6 +55,8 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.AllianceFlipUtil;
 import frc.utils.CheckFreeSpace;
 
+import javax.naming.Name;
+
 
 public class RobotContainer {
     private static RobotContainer instance;
@@ -447,6 +449,9 @@ public class RobotContainer {
                 new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
         NamedCommands.registerCommand("closeIntake",
                 new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
+
+        NamedCommands.registerCommand("openIntakeAndReset",
+                Sequences.intakeOpenStart(intake).beforeStarting(IntakeFactory.resetIntake(intake)));
 
 
         LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());
