@@ -431,12 +431,12 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("shootAndAimMoving",
                 ((new ShootCommand(shooter, drivetrain, vision, intake,  () -> false, () -> currentIntakeMode, () -> false))
-                .alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                .alongWith(new ShakeItOffCommandBangBang(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                 .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
                 ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode, () -> false))
-                        .alongWith(new TwoInOneOut(intake), aimRobotStationary)));
+                        .alongWith(new ShakeItOffCommandBangBang(intake), aimRobotStationary)));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17), shooter));
 
