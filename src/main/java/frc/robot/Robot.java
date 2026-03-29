@@ -92,13 +92,6 @@ public class Robot extends LoggedRobot
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();
-        
-        for (IntakeMode mode : IntakeMode.values()){
-            boolean isOn = mode == RobotContainer.getInstance().currentIntakeMode;
-            SmartDashboard.putBoolean(mode.name(), isOn);
-        }
-
-
 
         if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
             HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());

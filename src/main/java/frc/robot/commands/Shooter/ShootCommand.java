@@ -28,6 +28,7 @@ import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 
 import org.littletonrobotics.junction.Logger;
@@ -66,6 +67,7 @@ public class ShootCommand extends Command {
 
     private Supplier<IntakeMode> intakeModeSupplier;
     private BooleanSupplier immediatelyShootSupplier;
+    private BooleanSupplier immediatelyCloseIntake;
 
     /**
      * Smart shoot with auto calculated parameters
@@ -76,9 +78,11 @@ public class ShootCommand extends Command {
      * @param reverseIndexer whether or not the indexer should spin opposite direction (outwards from the kicker)
      * @param intakeModeSupplier what mode of intake opening clogs should we use
      * @param immediatelyShootSupplier whether to override all tests other than being spun up and start shooting.
+     * @param immediatelyCloseIntake whether to close the intake immediately
      */
     public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
-             BooleanSupplier reverseIndexer, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier) {
+             BooleanSupplier reverseIndexer, Supplier<IntakeMode> intakeModeSupplier, 
+             BooleanSupplier immediatelyShootSupplier, BooleanSupplier immediatelyCloseIntake) {
         // Use addRequirements() here to declare subsystem dependencies.
 
         this.shooter = shooter;
@@ -101,6 +105,7 @@ public class ShootCommand extends Command {
 
         this.intakeModeSupplier = intakeModeSupplier;
         this.immediatelyShootSupplier = immediatelyShootSupplier;
+        this.immediatelyCloseIntake = immediatelyCloseIntake;
 
         addRequirements(shooter, shooter.getIndexer());
     }
@@ -148,6 +153,7 @@ public class ShootCommand extends Command {
 
         shouldShoot = shouldShoot || (immediatelyShootSupplier.getAsBoolean() && hasReachedTargetVelocity);
 
+
         // robot it isn't in shooting zone, go to spin up mode and turn off kicker
         if (shouldShoot){
             handleHoodErrors();
@@ -155,21 +161,29 @@ public class ShootCommand extends Command {
             handleIndexerErrors();
             handleKickerErrors();
 
-            if(RobotState.isTeleop()) {            
+            shooter.toggleKicker(true);
+            shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean() ? -IndexerConstants.SPINNING_TARGET_VELOCITY : 
+            IndexerConstants.SPINNING_TARGET_VELOCITY);
+
+            if(immediatelyCloseIntake.getAsBoolean()){
+                intake.setPosition(IntakeConstants.CLOSE_POSITION);
+            } else if(RobotState.isTeleop()) {            
                 IntakeMode.chooseMode(intakeModeSupplier.get());
                 IntakeMode.dealWithChosenMode(intake);
             }
-
-            shooter.toggleKicker(true);
-            shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean()? -IndexerConstants.SPINNING_TARGET_VELOCITY : 
-            IndexerConstants.SPINNING_TARGET_VELOCITY);
         }
 
         // otherwise open the kicker and start letting the shooter shoot
         else{
-            IntakeMode.resetLastChosen(intake);
+            
             shooter.toggleKicker(false);
             shooter.getIndexer().turnOff();
+
+            if(immediatelyCloseIntake.getAsBoolean()){
+                intake.setPosition(IntakeConstants.CLOSE_POSITION);
+            } else {
+                IntakeMode.resetLastChosen(intake);
+            }
         }
     }
 
@@ -231,11 +245,15 @@ public class ShootCommand extends Command {
     @Override
     public void end(boolean interrupted){
 
-        IntakeMode.resetLastChosen(intake);
-
         shooter.stopFlyWheel();
         shooter.toggleKicker(false);
         shooter.getIndexer().turnOff();
+
+        if(immediatelyCloseIntake.getAsBoolean()){
+            intake.setPosition(IntakeConstants.CLOSE_POSITION);
+        } else {
+            IntakeMode.resetLastChosen(intake);
+        }
     }
 
     /**
@@ -249,9 +267,10 @@ public class ShootCommand extends Command {
      * @param immediatelyShootSupplier whether to override all tests other than being spun up and start shooting.
      */
     public static Command operatorShootCommandFactory(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
-    BooleanSupplier reverseIndexerSupplier, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier){
+    BooleanSupplier reverseIndexerSupplier, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier,
+    BooleanSupplier immediatelyCloseIntake){
         Command shootCommand = new ShootCommand(shooter, drivetrain, vision, intake, reverseIndexerSupplier,
-         intakeModeSupplier, immediatelyShootSupplier).beforeStarting(new SpinUp(shooter, drivetrain));
+         intakeModeSupplier, immediatelyShootSupplier, immediatelyCloseIntake).beforeStarting(new SpinUp(shooter, drivetrain));
 
          return shootCommand.withName("Operator shoot");
     }

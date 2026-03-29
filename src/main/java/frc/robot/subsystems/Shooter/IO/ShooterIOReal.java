@@ -54,7 +54,6 @@ public class ShooterIOReal implements ShooterIO {
         var spark = leadShootingMotor.getMotor();
 
         leadShooterMotorDutyCycle = spark::getAppliedOutput;
-
     
 
         CommandScheduler.getInstance().schedule(new InstantCommand(

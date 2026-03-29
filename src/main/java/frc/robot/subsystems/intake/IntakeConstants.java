@@ -93,6 +93,7 @@ public class IntakeConstants {
 //        posConfig.profileConfig.maximumMeasurementVelocity = 5;
 //        posConfig.profileConfig.maximumMeasurementAcceleration = 10;
 
+
         positionMotorConfig.constraintsConfig.constraintType = ConstraintType.NONE;
         //positionMotorConfig.constraintsConfig.maxValue = 0.3;
        // positionMotorConfig.constraintsConfig.minValue = -0.01;

@@ -8,6 +8,7 @@ import frc.robot.Constants.HubTiming;
 import frc.robot.FieldConstants.Hub;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.AllianceFlipUtil;
 import org.littletonrobotics.conduit.ConduitApi;
 
@@ -54,6 +55,11 @@ public class UpdateWidgets extends SubsystemBase {
         SmartDashboard.putNumber("HoodAngleOffset", params.hoodAngleOffset().getDegrees());
         SmartDashboard.putNumber("FlyWheelSpeedOffset", params.flyWheelOffset());
         SmartDashboard.putNumber("distanceToHub", distanceToHub);
+
+        for (IntakeMode mode : IntakeMode.values()){
+            boolean isOn = mode == RobotContainer.getInstance().currentIntakeMode;
+            SmartDashboard.putBoolean(mode.name(), isOn);
+        }
     }
 
 }

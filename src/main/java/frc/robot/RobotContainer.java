@@ -19,7 +19,6 @@ import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -55,8 +54,6 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.AllianceFlipUtil;
 import frc.utils.CheckFreeSpace;
 
-import javax.naming.Name;
-
 
 public class RobotContainer {
     private static RobotContainer instance;
@@ -85,6 +82,8 @@ public class RobotContainer {
     public boolean cancelAutomations = false;
 
     public IntakeMode currentIntakeMode = IntakeMode.FourtyBalls;
+
+    public boolean closeIntakeImmediately = false;
 
     public static RobotContainer getInstance() {
         if (instance == null) {
@@ -266,7 +265,8 @@ public class RobotContainer {
         ));
 
         var intakeCommand = Sequences.intakeOpenStart(intake)
-                .alongWith(new DriveIntakeCommand(drivetrain, driverController));
+                .alongWith(new DriveIntakeCommand(drivetrain, driverController),
+                 new InstantCommand(() -> closeIntakeImmediately = !closeIntakeImmediately));
 
         driverController.leftTrigger(0.2).whileTrue(intakeCommand)
                 .onFalse(new InstantCommand(() -> {
@@ -330,13 +330,15 @@ public class RobotContainer {
 
         operatorController.leftStick().onTrue(new InstantCommand(() -> ShotCalculator.getInstance().resetOffsets()));
 
+        operatorController.b().onTrue(new InstantCommand(() -> closeIntakeImmediately = !closeIntakeImmediately));
+
         operatorController.b().onTrue(new CloseCommand(intake));
 
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
 
         var shootCommand = ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting);
+                                () -> overrideShooting, () -> closeIntakeImmediately);
         
         operatorController.rightStick().toggleOnTrue(
                 new StartEndCommand(
@@ -345,7 +347,7 @@ public class RobotContainer {
                 .alongWith(
                         ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting).onlyIf(()-> !shootCommand.isScheduled())));
+                                () -> overrideShooting, () -> closeIntakeImmediately).onlyIf(()-> !shootCommand.isScheduled())));
 
         operatorController.a().toggleOnTrue(shootCommand);
 
@@ -432,12 +434,14 @@ public class RobotContainer {
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                ((new ShootCommand(shooter, drivetrain, vision, intake,  () -> false, () -> currentIntakeMode, () -> false))
+                ((new ShootCommand(shooter, drivetrain, vision, intake,  () -> false, () -> currentIntakeMode, 
+                () -> false, () -> false))
                 .alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                 .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode, () -> false))
+                ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode, 
+                () -> false, () -> false))
                         .alongWith(new ShakeItOffCommandBangBang(intake), aimRobotStationary)));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17), shooter));
