@@ -332,22 +332,27 @@ public class RobotContainer {
 
         operatorController.b().onTrue(new InstantCommand(() -> closeIntakeImmediately = !closeIntakeImmediately));
 
-        operatorController.b().onTrue(new CloseCommand(intake));
-
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
 
         var shootCommand = ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
                                 () -> overrideShooting, () -> closeIntakeImmediately);
+
+        var immediateShootCommand = ShootCommand.operatorShootCommandFactory(
+                                shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
+                                () -> overrideShooting, () -> closeIntakeImmediately).onlyIf(()-> !shootCommand.isScheduled());
+        
+        operatorController.b().onTrue(new CloseCommand(intake).onlyIf(() -> 
+                !shootCommand.isScheduled() && 
+                !immediateShootCommand.isScheduled()
+        ));
         
         operatorController.rightStick().toggleOnTrue(
                 new StartEndCommand(
                         () -> overrideShooting = true,
                         () -> overrideShooting = false)
                 .alongWith(
-                        ShootCommand.operatorShootCommandFactory(
-                                shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting, () -> closeIntakeImmediately).onlyIf(()-> !shootCommand.isScheduled())));
+                        immediateShootCommand));
 
         operatorController.a().toggleOnTrue(shootCommand);
 
