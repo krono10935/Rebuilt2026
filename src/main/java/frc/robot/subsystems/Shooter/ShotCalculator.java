@@ -33,27 +33,21 @@ public class ShotCalculator {
 
     public void addRobotAngleOffset(Rotation2d offset){
         robotAngleOffset = robotAngleOffset.plus(offset);
-        SmartDashboard.putNumber("Robot Angle Offset", robotAngleOffset.getDegrees());
     }
 
     public void addHoodAngleOffset(Rotation2d offset){
 
         hoodOffset = hoodOffset.plus(offset);
-        SmartDashboard.putNumber("Hood Angle Offset", hoodOffset.getDegrees());
     }
 
     public void addflyWheelOffset(double offset){
         flyWheelOffset += offset;
-        SmartDashboard.putNumber("Flywheel Offset", flyWheelOffset);
     }
 
     public void resetOffsets(){
         robotAngleOffset = Rotation2d.kZero;
         hoodOffset = Rotation2d.kZero;
         flyWheelOffset = 0;
-        SmartDashboard.putNumber("Robot Angle Offset", robotAngleOffset.getDegrees());
-        SmartDashboard.putNumber("Flywheel Offset", flyWheelOffset);
-        SmartDashboard.putNumber("Hood Angle Offset", hoodOffset.getDegrees());
     }
 
     public enum ValidityState{

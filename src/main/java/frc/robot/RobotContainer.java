@@ -269,7 +269,7 @@ public class RobotContainer {
         driverController.leftTrigger(0.2).whileTrue(intakeCommand)
                 .onFalse(new InstantCommand(() -> {
                     cancelAutomations = true;
-                    currentIntakeMode = IntakeMode.FourtyBalls;
+                    currentIntakeMode = IntakeMode.ThirtyBalls;
                 }));
 
 
@@ -285,7 +285,8 @@ public class RobotContainer {
 
         //autoShoot.whileTrue(Commands.print("autoshoot"));
 
-        new Trigger(hubAboutToActivate).onTrue(new StartEndCommand(
+
+        new Trigger(hubAboutToActivate).whileTrue(new StartEndCommand(
                 () -> {
                     driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
                     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
@@ -331,13 +332,6 @@ public class RobotContainer {
 
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
 
-        var test = new Subsystem() {
-            @Override
-            public void periodic(){
-                Logger.recordOutput("test", getCurrentCommand().getName());
-            }
-        };
-
         var shootCommand = ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
                                 () -> overrideShooting);
@@ -345,8 +339,7 @@ public class RobotContainer {
         operatorController.rightStick().toggleOnTrue(
                 new StartEndCommand(
                         () -> overrideShooting = true,
-                        () -> overrideShooting = false,
-                        test)
+                        () -> overrideShooting = false)
                 .alongWith(
                         ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
