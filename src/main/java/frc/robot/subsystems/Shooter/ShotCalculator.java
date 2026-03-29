@@ -226,7 +226,11 @@ public class ShotCalculator {
 
         ValidityState state = ValidityState.VALID;
 
-        if (!Constants.HubTiming.isActive(DriverStation.getMatchTime() - timeOfFlightMap.get(lookaheadShooterToTargetDistance))){
+        if (!Constants.HubTiming.isActiveWithMargin(
+            DriverStation.getMatchTime() - timeOfFlightMap.get(lookaheadShooterToTargetDistance),
+            0,
+            1
+        )){
             state = ValidityState.HUB_INACTIVE;
         }
 
