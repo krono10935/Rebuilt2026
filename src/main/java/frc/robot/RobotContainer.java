@@ -438,7 +438,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("shootAndAimMoving",
                 ((new ShootCommand(shooter, drivetrain, vision, intake,  () -> false, () -> currentIntakeMode, () -> false))
-                .alongWith(new ShakeItOffCommandBangBang(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                .alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
                 .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
