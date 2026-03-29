@@ -8,7 +8,7 @@ public class DriveIntakeCommand extends DriveCommand {
     public DriveIntakeCommand(Drivetrain drivetrain, CommandXboxController controller) {
         super(drivetrain, controller);
 
-        super.MAX_LINEAR_SPEED /= 4;
-        super.MAX_ANGULAR_SPEED /= 4;
+        super.MAX_LINEAR_SPEED /= 2;
+        super.MAX_ANGULAR_SPEED /= 2;
     }
 }

@@ -271,7 +271,7 @@ public class RobotContainer {
         driverController.leftTrigger(0.2).whileTrue(intakeCommand)
                 .onFalse(new InstantCommand(() -> {
                     cancelAutomations = true;
-                    currentIntakeMode = IntakeMode.ThirtyBalls;
+                    //currentIntakeMode = IntakeMode.ThirtyBalls;
                 }));
 
 
