@@ -224,8 +224,8 @@
   "eventMarkers": [
     {
       "name": "CloseIntake",
-      "waypointRelativePos": 0.10181818181816651,
-      "endWaypointRelativePos": null,
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 0.5888689407540391,
       "command": {
         "type": "named",
         "data": {
@@ -235,7 +235,7 @@
     },
     {
       "name": "Intake",
-      "waypointRelativePos": 3.0448833034111384,
+      "waypointRelativePos": 2.025134649910244,
       "endWaypointRelativePos": 4.97,
       "command": {
         "type": "named",
