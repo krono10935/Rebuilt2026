@@ -114,19 +114,21 @@ public class Drivetrain extends SubsystemBase {
 
         configPathPlanner(constants.ROBOT_CONFIG);
 
-        var setBrake = new InstantCommand(() -> setBrakeMode(true))
-                .ignoringDisable(true);
+//        var setBrake = new InstantCommand(() -> setBrakeMode(true))
+//                .ignoringDisable(true);
+//
+//
+//        var setCoast = new InstantCommand(() -> setBrakeMode(false))
+//                .ignoringDisable(true);
+//
+//        new Trigger(RobotState::isEnabled)
+//                .onTrue(setBrake)
+//                .onFalse(setCoast);
+//
+//
+//        CommandScheduler.getInstance().schedule(setCoast);
 
-
-        var setCoast = new InstantCommand(() -> setBrakeMode(false))
-                .ignoringDisable(true);
-
-        new Trigger(RobotState::isEnabled)
-                .onTrue(setBrake)
-                .onFalse(setCoast);
-
-
-        CommandScheduler.getInstance().schedule(setCoast);
+        setBrakeMode(false);
 
 
         field = new Field2d();
