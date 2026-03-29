@@ -2,18 +2,18 @@ package frc.robot.subsystems.UpdateWigdets;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.HubTiming;
 import frc.robot.FieldConstants.Hub;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.utils.AllianceFlipUtil;
-import frc.utils.VirtualSubSystem;
 import org.littletonrobotics.conduit.ConduitApi;
 
 import java.util.Objects;
 
-public class UpdateWidgets extends VirtualSubSystem{
+public class UpdateWidgets extends SubsystemBase {
 
     @Override
     public void periodic() {
@@ -37,12 +37,6 @@ public class UpdateWidgets extends VirtualSubSystem{
             .getDistance(drivetrain.getEstimatedPosition().getTranslation());
 
         var params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(), chassisSpeeds);
-        
-        SmartDashboard.putNumber("RobotAngleOffset", params.robotAngleOffset().getDegrees());
-        SmartDashboard.putNumber("HoodAngleOffset", params.hoodAngleOffset().getDegrees());
-        SmartDashboard.putNumber("FlyWheelSpeedOffset", params.flyWheelOffset());
-        SmartDashboard.putNumber("distanceToHub", distanceToHub);
-
 
         SmartDashboard.putBoolean("IsHubActive", HubTiming.isActive(time));
 
@@ -56,6 +50,10 @@ public class UpdateWidgets extends VirtualSubSystem{
 
         SmartDashboard.putBoolean("cancelAutomations", RobotContainer.getInstance().cancelAutomations);
 
+        SmartDashboard.putNumber("RobotAngleOffset", params.robotAngleOffset().getDegrees());
+        SmartDashboard.putNumber("HoodAngleOffset", params.hoodAngleOffset().getDegrees());
+        SmartDashboard.putNumber("FlyWheelSpeedOffset", params.flyWheelOffset());
+        SmartDashboard.putNumber("distanceToHub", distanceToHub);
     }
 
 }
