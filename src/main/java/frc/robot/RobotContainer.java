@@ -288,7 +288,7 @@ public class RobotContainer {
         //autoShoot.whileTrue(Commands.print("autoshoot"));
 
 
-        new Trigger(hubAboutToActivate).whileTrue(new InstantCommand(
+        new Trigger(hubAboutToActivate).onTrue(new InstantCommand(
                 () -> {
                     driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
                     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
