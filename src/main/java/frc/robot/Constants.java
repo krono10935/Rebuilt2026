@@ -71,11 +71,11 @@ public class Constants {
 
     public static class HubTiming{
         
-        private static Boolean isActiveFirst = null;
+        private static Boolean isActiveFirst = false;
         private static Boolean isActiveFirstHuman = null;
 
         static {
-            SmartDashboard.putBoolean("received FMS data", false);
+            SmartDashboard.putBoolean("received FMS data", true);
             SmartDashboard.putBoolean("Human sent first", false);
         }
         /**
@@ -84,15 +84,15 @@ public class Constants {
          * @param alliance Get from driverstation
          */
         public static void setStartingTeam(String team, Alliance alliance){
-            boolean isRed = alliance == Alliance.Red;
+            // boolean isRed = alliance == Alliance.Red;
 
-            if ((team.charAt(0) == 'R' && isRed) || (team.charAt(0) == 'B' && !isRed)){
-                isActiveFirst = false;
-            } else {
-                isActiveFirst = true;
-            }
+            // if ((team.charAt(0) == 'R' && isRed) || (team.charAt(0) == 'B' && !isRed)){
+            //     isActiveFirst = false;
+            // } else {
+            //     isActiveFirst = true;
+            // }
 
-            SmartDashboard.putBoolean("received FMS data", true);
+            // SmartDashboard.putBoolean("received FMS data", true);
         }
 
         public static Boolean getAutoIsActiveDetection(){
@@ -100,8 +100,8 @@ public class Constants {
         }
 
         public static void setHumanActiveFirst(boolean isActiveFirstHumanInput){
-            isActiveFirstHuman = isActiveFirstHumanInput;
-            SmartDashboard.putBoolean("Human sent first", isActiveFirst == null);
+            // isActiveFirstHuman = isActiveFirstHumanInput;
+            // SmartDashboard.putBoolean("Human sent first", isActiveFirst == null);
         }
 
         public static double timeRemainingToShift(double time){
