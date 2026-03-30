@@ -63,19 +63,19 @@ public class Robot extends LoggedRobot
             default -> "Unknown";
             });
 
-        // TODO comment out before comp
-        if (isReal()) {
-            Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-            Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        } else {
-            Logger.addDataReceiver(new NT4Publisher());
-        }
+        // // TODO comment out before comp
+        // if (isReal()) {
+        //     Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+        //     Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        // } else {
+        //     Logger.addDataReceiver(new NT4Publisher());
+        // }
 
         //TODO comment in before comp
         if (RobotBase.isSimulation()){
             Logger.addDataReceiver(new NT4Publisher());
         } else {
-            if (ModeFileHandling.isCompMode())
+            if (true)
                 Logger.addDataReceiver(new WPILOGWriter());
             else {
                 Logger.addDataReceiver(new NT4Publisher());
@@ -93,9 +93,9 @@ public class Robot extends LoggedRobot
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();
 
-        if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
-            HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
-        }
+        // if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
+        //     HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
+        // }
     }
     
     
@@ -138,7 +138,9 @@ public class Robot extends LoggedRobot
 
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+        HubTiming.setStartingTeam("R", DriverStation.getAlliance().get());
+    }
     
     
     @Override

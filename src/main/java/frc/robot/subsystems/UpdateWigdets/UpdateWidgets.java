@@ -11,6 +11,7 @@ import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.AllianceFlipUtil;
 import org.littletonrobotics.conduit.ConduitApi;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.Objects;
 
@@ -58,6 +59,7 @@ public class UpdateWidgets extends SubsystemBase {
 
         for (IntakeMode mode : IntakeMode.values()){
             boolean isOn = mode == RobotContainer.getInstance().currentIntakeMode;
+            Logger.recordOutput("IntakeMode" , mode.name());
             SmartDashboard.putBoolean(mode.name(), isOn);
         }
     }

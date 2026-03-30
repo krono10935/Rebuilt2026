@@ -331,17 +331,15 @@ public class RobotContainer {
 
         operatorController.leftStick().onTrue(new InstantCommand(() -> ShotCalculator.getInstance().resetOffsets()));
 
-        operatorController.b().onTrue(new InstantCommand(() -> closeIntakeImmediately = !closeIntakeImmediately));
-
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
 
         var shootCommand = ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting, () -> closeIntakeImmediately);
+                                () -> overrideShooting, operatorController.b());
 
         var immediateShootCommand = ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting, () -> closeIntakeImmediately).onlyIf(()-> !shootCommand.isScheduled());
+                                () -> overrideShooting, operatorController.b()).onlyIf(()-> !shootCommand.isScheduled());
         
         operatorController.b().onTrue(new CloseCommand(intake).onlyIf(() -> 
                 !shootCommand.isScheduled() && 
@@ -448,7 +446,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("shootAndAimStationary",
                 ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode, 
                 () -> false, () -> false))
-                        .alongWith(new ShakeItOffCommandBangBang(intake), aimRobotStationary)));
+                        .alongWith(new TwoInOneOut(intake), aimRobotStationary)));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17), shooter));
 

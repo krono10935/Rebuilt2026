@@ -124,20 +124,21 @@ public class Constants {
          * @return whether or not at a given timestamp the hub would be active for your team
          */
         public static boolean isActive(double time){
-            Phase phase = Phase.getActivePhase(time);
+            return true;
+            // Phase phase = Phase.getActivePhase(time);
 
-            switch (phase) {
-                case AUTO,TranistionShift,EndGame:
-                    return true;
-                case SecondShift,FourthShift:
-                    // If red is inactive first and we are red, then we will be active shifts 2,4
-                    // Otherwise we will be inactive in those Shifts
-                    return isActiveFirst();
-                case FirstShift,ThirdShift:
-                    return !isActiveFirst();
-                default:
-                    return false;
-            }
+            // switch (phase) {
+            //     case AUTO,TranistionShift,EndGame:
+            //         return true;
+            //     case SecondShift,FourthShift:
+            //         // If red is inactive first and we are red, then we will be active shifts 2,4
+            //         // Otherwise we will be inactive in those Shifts
+            //         return isActiveFirst();
+            //     case FirstShift,ThirdShift:
+            //         return !isActiveFirst();
+            //     default:
+            //         return false;
+            // }
             
         }
 
