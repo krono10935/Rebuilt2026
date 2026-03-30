@@ -249,7 +249,7 @@ public class RobotContainer {
         BooleanSupplier hubAboutToActivate = () -> {
             double time = DriverStation.getMatchTime();
 
-            return Constants.HubTiming.isActiveWithMargin(time - 10, 0, 2);
+            return Constants.HubTiming.isActive(time - 5);
         };
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
@@ -288,18 +288,19 @@ public class RobotContainer {
         //autoShoot.whileTrue(Commands.print("autoshoot"));
 
 
-        new Trigger(hubAboutToActivate).whileTrue(new StartEndCommand(
+        new Trigger(hubAboutToActivate).whileTrue(new InstantCommand(
                 () -> {
                     driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
                     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
                     Logger.recordOutput("IsRumbling", true);
-                },
-                () -> {
-                    driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                    operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                    Logger.recordOutput("IsRumbling", false);
-                }
-        ));
+                })
+                .andThen(new WaitCommand(1.5), new InstantCommand(
+                    () -> {
+                        driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+                        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+                        Logger.recordOutput("IsRumbling", false);
+                    }
+                )));
     
     }
 

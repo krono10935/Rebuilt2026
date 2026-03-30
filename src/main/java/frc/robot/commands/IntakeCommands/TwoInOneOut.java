@@ -25,10 +25,10 @@ public class TwoInOneOut extends Command {
         this.intake = intake;
             addRequirements(intake);
 
-        distanceToMoveOut = new LoggedNetworkNumber("TwoInOneOut/distanceOut", 0.02);
-        distanceToMoveIn = new LoggedNetworkNumber("TwoInOneOut/distanceToMoveIn", 0.04);
-        powerMoveOut = new LoggedNetworkNumber("TwoInOneOut/powerMoveOut", 0.3);
-        powerToMoveIn = new LoggedNetworkNumber("TwoInOneOut/powerToMoveIn", 0.3);
+        distanceToMoveOut = new LoggedNetworkNumber("TwoInOneOut/distanceOut", 0.04);
+        distanceToMoveIn = new LoggedNetworkNumber("TwoInOneOut/distanceToMoveIn", 0.08);
+        powerMoveOut = new LoggedNetworkNumber("TwoInOneOut/powerMoveOut", 0.4);
+        powerToMoveIn = new LoggedNetworkNumber("TwoInOneOut/powerToMoveIn", 0.4);
         positionTolerance = new LoggedNetworkNumber("TwoInOneOut/positionTolerance", 0.02);
         setpoint = 0;
         
