@@ -265,8 +265,7 @@ public class RobotContainer {
         ));
 
         var intakeCommand = Sequences.intakeOpenStart(intake)
-                .alongWith(new DriveIntakeCommand(drivetrain, driverController),
-                 new InstantCommand(() -> closeIntakeImmediately = !closeIntakeImmediately));
+                .alongWith(new DriveIntakeCommand(drivetrain, driverController));
 
         driverController.leftTrigger(0.2).whileTrue(intakeCommand)
                 .onFalse(new InstantCommand(() -> {
@@ -459,7 +458,7 @@ public class RobotContainer {
                 new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
 
         NamedCommands.registerCommand("openIntakeAndReset",
-                Sequences.intakeOpenStart(intake).beforeStarting(IntakeFactory.resetIntake(intake)));
+                Sequences.intakeOpenStart(intake).beforeStarting(new InstantCommand(() -> intake.resetEncoderOpen(0))));
 
 
         LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());

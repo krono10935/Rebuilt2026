@@ -4,6 +4,7 @@ import java.util.function.Function;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.ShakeItOffCommandBangBang;
 import frc.robot.commands.IntakeCommands.SlowlyCloseOnce;
@@ -122,7 +123,7 @@ public class IntakeConstants {
         TenBalls(CloseCommand::factory),
         TwentyBalls(SlowlyCloseOnce::factory),
         ThirtyBalls(TwoInOneOut::factory),
-        FourtyBalls(ShakeItOffCommandBangBang::factory);
+        FourtyBalls((Intake intake) -> new InstantCommand(() -> {}));
 
         private Function<Intake, Command> commandGenerator;
 
