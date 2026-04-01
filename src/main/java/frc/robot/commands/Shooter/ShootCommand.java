@@ -265,12 +265,15 @@ public class ShootCommand extends Command {
      * @param reverseIndexer whether or not the indexer should spin opposite direction (outwards from the kicker)
      * @param intakeModeSupplier what mode of intake opening clogs should we use
      * @param immediatelyShootSupplier whether to override all tests other than being spun up and start shooting.
+     * @param driverController the driver's xbox controller
      */
     public static Command operatorShootCommandFactory(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
     BooleanSupplier reverseIndexerSupplier, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier,
-    BooleanSupplier immediatelyCloseIntake){
+    BooleanSupplier immediatelyCloseIntake, CommandXboxController driverController){
         Command shootCommand = new ShootCommand(shooter, drivetrain, vision, intake, reverseIndexerSupplier,
-         intakeModeSupplier, immediatelyShootSupplier, immediatelyCloseIntake).beforeStarting(new SpinUp(shooter, drivetrain));
+         intakeModeSupplier, immediatelyShootSupplier, immediatelyCloseIntake)
+         .alongWith(new DriveAndHomeToHubCommand(drivetrain, driverController))
+         .beforeStarting(new SpinUp(shooter, drivetrain));
 
          return shootCommand.withName("Operator shoot");
     }

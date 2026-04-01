@@ -70,6 +70,8 @@ public class RobotContainer {
 
     private final CommandXboxController operatorController;
 
+    private final CommandXboxController intakeController;
+
     public final Drivetrain drivetrain;
 
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -104,6 +106,8 @@ public class RobotContainer {
         driverController = new CommandXboxController(0);
 
         operatorController = new CommandXboxController(1);
+
+        intakeController = new CommandXboxController(2);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
@@ -281,9 +285,6 @@ public class RobotContainer {
 
         //operatorController.a().whileTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y(), () -> currentIntakeMode));
 
-
-        driverController.y().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
-
         //autoShoot.whileTrue(Commands.print("autoshoot"));
 
 
@@ -334,11 +335,11 @@ public class RobotContainer {
 
         var shootCommand = ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting, operatorController.b());
+                                () -> overrideShooting, operatorController.b(), driverController);
 
         var immediateShootCommand = ShootCommand.operatorShootCommandFactory(
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting, operatorController.b()).onlyIf(()-> !shootCommand.isScheduled());
+                                () -> overrideShooting, operatorController.b(), driverController).onlyIf(()-> !shootCommand.isScheduled());
         
         operatorController.b().onTrue(new CloseCommand(intake).onlyIf(() -> 
                 !shootCommand.isScheduled() && 
@@ -368,6 +369,10 @@ public class RobotContainer {
          () -> shooter.getIndexer().turnOn(), shooter.getIndexer())
          .onlyIf(() -> shooter.getIndexer().getCurrentCommand() == null));
 
+        intakeController.a().onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.TenBalls));
+        intakeController.b().onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.TwentyBalls));
+        intakeController.y().onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.ThirtyBalls));
+        intakeController.x().onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.FourtyBalls));
 
 
     }
