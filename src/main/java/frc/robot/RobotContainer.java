@@ -12,7 +12,6 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.*;
 import frc.robot.commands.IntakeCommands.*;
@@ -71,7 +70,7 @@ public class RobotContainer {
 
     private final CommandXboxController operatorController;
 
-    private final CommandGenericHID intakeController;
+    private final CommandXboxController intakeController;
 
     public final Drivetrain drivetrain;
 
@@ -108,7 +107,7 @@ public class RobotContainer {
 
         operatorController = new CommandXboxController(1);
 
-        intakeController = new CommandGenericHID(2);
+        intakeController = new CommandXboxController(2);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
 
@@ -360,23 +359,21 @@ public class RobotContainer {
 
         operatorController.back().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(false)).ignoringDisable(true));
 
+        operatorController.leftTrigger(0.3).onTrue(
+                new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getPrev()));
+        
+        operatorController.rightTrigger(0.3).onTrue(
+                new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getNext()));
+
         operatorController.y().whileTrue(new StartEndCommand(() -> shooter.getIndexer().reverse(),
          () -> shooter.getIndexer().turnOn(), shooter.getIndexer())
          .onlyIf(() -> shooter.getIndexer().getCurrentCommand() == null));
 
+        intakeController.a().onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.TenBalls));
+        intakeController.b().onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.TwentyBalls));
+        intakeController.y().onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.ThirtyBalls));
+        intakeController.x().onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.FourtyBalls));
 
-        if (!Constants.USE_THIRD_CONTROLLER){
-            operatorController.leftTrigger(0.3).onTrue(
-                new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getPrev()));
-                
-            operatorController.rightTrigger(0.3).onTrue(
-                new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getNext()));
-        } else {
-            intakeController.button(0).onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.TenBalls));
-            intakeController.button(1).onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.TwentyBalls));
-            intakeController.button(2).onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.ThirtyBalls));
-            intakeController.button(3).onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.FourtyBalls));
-        }
 
     }
 
