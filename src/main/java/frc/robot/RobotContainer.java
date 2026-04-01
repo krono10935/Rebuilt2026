@@ -354,7 +354,7 @@ public class RobotContainer {
                 .alongWith(
                         immediateShootCommand));
 
-        operatorController.a().whileTrue(shootCommand);
+        operatorController.a().toggleOnTrue(shootCommand);
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
