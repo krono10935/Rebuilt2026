@@ -3,6 +3,7 @@ package frc.robot.subsystems.drivetrain;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.DriveToPoseConstants;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
@@ -32,11 +33,16 @@ import frc.robot.subsystems.drivetrain.gyro.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.gyro.GyroIOSim;
 import frc.robot.subsystems.drivetrain.module.SwerveModuleBasic;
 import frc.robot.subsystems.drivetrain.module.SwerveModuleIO;
+import frc.utils.AllianceFlipUtil;
+import frc.robot.Constants;
+import frc.robot.FieldConstants;
+import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetection;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 public class Drivetrain extends SubsystemBase {
@@ -47,8 +53,8 @@ public class Drivetrain extends SubsystemBase {
         public ChassisSpeeds speeds = new ChassisSpeeds();
         public SwerveModuleState[] moduleStates = new SwerveModuleState[4];
     }
-    private final ChassisConstants constants;
 
+    private final ChassisConstants constants;
 
     private final DrivetrainInputsAutoLogged inputs = new DrivetrainInputsAutoLogged();
 
@@ -84,8 +90,7 @@ public class Drivetrain extends SubsystemBase {
 
 
 
-
-        for(int i=0;i<4;i++){
+        for(int i = 0; i < 4; i++){
             io[i] = new SwerveModuleBasic(constants.MODULE_CONSTANTS[i]);
             inputs.moduleStates[i] = io[i].getState();
             modulePositions[i] = io[i].getPosition();
@@ -109,19 +114,21 @@ public class Drivetrain extends SubsystemBase {
 
         configPathPlanner(constants.ROBOT_CONFIG);
 
-        var setBrake = new InstantCommand(() -> setBrakeMode(true))
-                .ignoringDisable(true);
+//        var setBrake = new InstantCommand(() -> setBrakeMode(true))
+//                .ignoringDisable(true);
+//
+//
+//        var setCoast = new InstantCommand(() -> setBrakeMode(false))
+//                .ignoringDisable(true);
+//
+//        new Trigger(RobotState::isEnabled)
+//                .onTrue(setBrake)
+//                .onFalse(setCoast);
+//
+//
+//        CommandScheduler.getInstance().schedule(setCoast);
 
-
-        var setCoast = new InstantCommand(() -> setBrakeMode(false))
-                .ignoringDisable(true);
-
-        new Trigger(RobotState::isEnabled)
-                .onTrue(setBrake)
-                .onFalse(setCoast);
-
-
-        CommandScheduler.getInstance().schedule(setCoast);
+        setBrakeMode(false);
 
 
         field = new Field2d();
@@ -139,7 +146,7 @@ public class Drivetrain extends SubsystemBase {
                 this::getEstimatedPosition, // Robot pose supplier
                 this::reset, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> drive(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                (speeds, feedforwards) -> driveWithoutPP(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
                 new PPController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                             constants.PP_CONFIG.PID_CONSTANTS(), constants.PP_CONFIG.ANGULAR_PID_CONSTANTS() // Rotation PID constants
                 ),
@@ -169,13 +176,18 @@ public class Drivetrain extends SubsystemBase {
      *Needs to be called continuously
      * @param speeds the target speed of the robot
      */
+    @SuppressWarnings("unused")
     public void drive(ChassisSpeeds speeds) {
+
+        boolean hasBalls = Constants.USE_OBJECT_DETECTION && ObjectDetection.getInstance().hasBalls();
+
         previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, null,
                 ChassisConstants.LOOP_TIME_SECONDS, batteryVoltageSupplier.get());
 
         for (int i = 0; i < 4; i++){
             var targetSpeed = previousSetpoint.moduleStates()[i];
-            io[i].setTargetState(targetSpeed);
+            if (hasBalls) io[i].setTargetStateWithBalls(targetSpeed); 
+            else io[i].setTargetState(targetSpeed);
         }
         Logger.recordOutput("drivetrain/requested speeds", speeds);
         Logger.recordOutput("drivetrain/target speeds", previousSetpoint.robotRelativeSpeeds());
@@ -187,7 +199,6 @@ public class Drivetrain extends SubsystemBase {
      * @param speeds the target speed of the robot
      */
     public void driveWithoutPP(ChassisSpeeds speeds) {
-
         var targetSpeeds = kinematics.toWheelSpeeds(speeds);
         for (int i = 0; i < 4; i++){
             targetSpeeds[i].optimize(io[i].getState().angle);
@@ -209,7 +220,6 @@ public class Drivetrain extends SubsystemBase {
      */
     public void stop(){
 
-
         previousSetpoint = new SwerveSetpoint(new ChassisSpeeds(),kinematics.toSwerveModuleStates(new ChassisSpeeds()),ZEROS);
 
         for (int i = 0; i < 4; i++){
@@ -228,6 +238,15 @@ public class Drivetrain extends SubsystemBase {
     public void reset(Pose2d newPose){
         this.gyro.reset(newPose);
         poseEstimator.resetPosition(newPose.getRotation(), modulePositions, newPose);
+    }
+
+    /**
+     * Resets the gyros
+     */
+    public void resetOnlyGyro(){
+        Pose2d newPose = new Pose2d(getEstimatedPosition().getTranslation(), AllianceFlipUtil.apply(new Rotation2d()));
+
+        reset(newPose);
     }
 
     /**
@@ -281,11 +300,6 @@ public class Drivetrain extends SubsystemBase {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Command driveToPose(Pose2d goalPose, double distanceToStopPP){
-        return AutoBuilder.pathfindToPose(goalPose, constants.PATH_FINDING_CONSTRAINTS,
-                0, distanceToStopPP);
-    }
-
     /**
      * Set if the module is Brake or Coast
      * @param isBrake whether the module motor should resist outside change in disable
@@ -318,12 +332,43 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    /**
+     * Clear the displayed path
+     */
+    public void clearFiledPath(){
+        field.getObject("path").setPoses();
+    }
+
+    /**
+     * @param path the path to display
+     */
+    public void addPathToField(ArrayList<Pose2d> path){
+        field.getObject("path").setPoses(path);
+    }
+
+    /**
+     *
+     * @param goalPose goal position to drive to
+     * @return a command which drives the chasis to a position
+     */
+    public Command driveToPose(Pose2d goalPose){
+        return AutoBuilder.pathfindToPose(goalPose, constants.PATH_FINDING_CONSTRAINTS,
+                0, DriveToPoseConstants.DISTANCE_TO_STOP_PP);
+    }
+
+    /**
+     * @return a command that resets the gyro
+     */
+    public Command resetGyro(){
+        return new InstantCommand(this::resetOnlyGyro).ignoringDisable(true);
+    }
+
 
     @Override
     public void periodic() {
         inputs.gyroAngle = this.gyro.update();
 
-        for (int i=0;i<4;i++){
+        for (int i = 0; i < 4; i++){
             io[i].update();
             this.inputs.moduleStates[i] = io[i].getState();
             modulePositions[i] = io[i].getPosition();
@@ -344,6 +389,14 @@ public class Drivetrain extends SubsystemBase {
         String currentCommand = getCurrentCommand() == null ? "None" : getCurrentCommand().getName();
 
         Logger.recordOutput("drivetrain/current command", currentCommand);
+        
+        Logger.recordOutput("Distance to hub", 
+        getEstimatedPosition().getTranslation().getDistance(AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint).toTranslation2d()));
+
+        Logger.recordOutput("usFlipped", AllianceFlipUtil.apply(getEstimatedPosition()));
+        Logger.recordOutput("hubFLipped", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint));
+
     }
+
 }
 

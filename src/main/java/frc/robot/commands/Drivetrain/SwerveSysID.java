@@ -1,17 +1,13 @@
-package frc.robot.commands;
+package frc.robot.commands.Drivetrain;
 
 import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Volt;
 import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -46,17 +42,17 @@ public class SwerveSysID {
     /**
      * Voltage to use in dynamic mode for SYSID
      */
-   public static final double VOLT = 2;
+   public static final double VOLT = 7;
 
     /**
      * How many volts/second to add per second of the SYSID routine
      */
-   public static final double VOLT_RAMP_RATE = 0.5;
+   public static final double VOLT_RAMP_RATE = 4;
 
     /**
      * How many seconds to perform the test for the sysID routine
      */
-   public static final double TIMEOUT = 10;
+   public static final double TIMEOUT = 4;
 
     /**
      * Builds the Swerve SYSID check
@@ -127,9 +123,16 @@ public class SwerveSysID {
      */
    public void driveWithController(double voltage) {
 
-      Rotation2d fieldRelativeAngle = new Translation2d(-controller.getLeftX(), -controller.getLeftY()).getAngle();
+      Rotation2d fieldRelativeAngle = new Translation2d(-controller.getLeftY(), -controller.getLeftX()).getAngle();
       Rotation2d robotRelativeAngle = fieldRelativeToRobotRelative(fieldRelativeAngle, drivetrain);
       Rotation2d[] angleArray = {robotRelativeAngle, robotRelativeAngle, robotRelativeAngle, robotRelativeAngle};
+
+
+      if(voltage < 0){
+          for(int i = 0; i < angleArray.length; i++){
+              angleArray[i] = angleArray[i].rotateBy(Rotation2d.k180deg);
+          }
+      }
 
       drivetrain.setDriveVoltageAndSteerAngle(voltage, angleArray);
    }
@@ -139,9 +142,9 @@ public class SwerveSysID {
      */
    private final Rotation2d[] spinAngleArray = {
            Rotation2d.fromDegrees(135),
+           Rotation2d.fromDegrees(135-90),
            Rotation2d.fromDegrees(135+90),
-           Rotation2d.fromDegrees(135+180),
-           Rotation2d.fromDegrees(135+270)
+           Rotation2d.fromDegrees(135+180)
    };
 
     /**

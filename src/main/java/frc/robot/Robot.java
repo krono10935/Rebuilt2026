@@ -5,11 +5,23 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.PathfindingCommand;
+import com.ctre.phoenix6.SignalLogger;
+import com.revrobotics.util.StatusLogger;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.HubTiming;
+import frc.robot.subsystems.Shooter.ShotCalculator;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
+import frc.utils.Elastic;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
+import frc.utils.VirtualSubSystem;
 import io.github.captainsoccer.basicmotor.motorManager.MotorManager;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -20,36 +32,70 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot
 {
     private Command autonomousCommand;
-    
-
 
 
     public Robot()
     {
-//        Logger.recordMetadata("ProjectName", "*GENERIC_ROBOT_PROJECT*"); // Set a metadata value
+        initializeLogging(ModeFileHandling.isCompMode());
 
-        if (isReal()) {
-            Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-            Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        } else {
-            Logger.addDataReceiver(new NT4Publisher());
-        }
-
-        
-        Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+        new Trigger(()-> DriverStation.isDSAttached()).onTrue(new InstantCommand(() -> Elastic.selectTab("Autonomous")));
 
         RobotContainer.getInstance();
+    }
 
-        
-        CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
+    private void initializeLogging(boolean isOnField){
+        SignalLogger.enableAutoLogging(false);
+        SignalLogger.stop();
+
+        StatusLogger.disableAutoLogging();
+        StatusLogger.stop();
+
+        Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+        Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+        Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+        Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+        Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+        Logger.recordMetadata(
+            "GitDirty",
+            switch (BuildConstants.DIRTY) {
+            case 0 -> "All changes committed";
+            case 1 -> "Uncommitted changes";
+            default -> "Unknown";
+            });
+
+        // // TODO comment out before comp
+        // if (isReal()) {
+        //     Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+        //     Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        // } else {
+        //     Logger.addDataReceiver(new NT4Publisher());
+        // }
+
+        //TODO comment in before comp
+        if (RobotBase.isSimulation()){
+            Logger.addDataReceiver(new NT4Publisher());
+        } else {
+            if (true)
+                Logger.addDataReceiver(new WPILOGWriter());
+            else {
+                Logger.addDataReceiver(new NT4Publisher());
+            }
+        }
+
+        Logger.start();
     }
 
 
     @Override
     public void robotPeriodic() {
+        VirtualSubSystem.virtualperiodic();
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
+        ShotCalculator.getInstance().clearShootingParameters();
 
+        // if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
+        //     HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
+        // }
     }
     
     
@@ -69,7 +115,9 @@ public class Robot extends LoggedRobot
     
     
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+        RobotContainer.getInstance().drivetrain.setBrakeMode(true);
+    }
     
     
     @Override
@@ -80,6 +128,7 @@ public class Robot extends LoggedRobot
         if (autonomousCommand != null)
         {
             CommandScheduler.getInstance().schedule(autonomousCommand);
+            
         }
     }
     
@@ -89,7 +138,9 @@ public class Robot extends LoggedRobot
 
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+        HubTiming.setStartingTeam("R", DriverStation.getAlliance().get());
+    }
     
     
     @Override
@@ -101,17 +152,19 @@ public class Robot extends LoggedRobot
             autonomousCommand.cancel();
         }
 
+        RobotContainer.getInstance().drivetrain.reset(RobotContainer.getInstance().drivetrain.getEstimatedPosition());
+
     }
     
     
     @Override
-    public void teleopPeriodic() {
-//        RobotContainer.getInstance().drivetrain.drive(new ChassisSpeeds(2,0,2));
-    }
+    public void teleopPeriodic() {}
     
     
     @Override
-    public void teleopExit() {}
+    public void teleopExit() {
+        RobotContainer.getInstance().drivetrain.setBrakeMode(false);
+    }
     
     
     @Override
@@ -127,8 +180,4 @@ public class Robot extends LoggedRobot
     
     @Override
     public void testExit() {}
-
-
-
-
 }

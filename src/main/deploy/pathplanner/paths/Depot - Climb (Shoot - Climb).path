@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9389360700334817,
-        "y": 5.175790405273437
+        "x": 1.5499120512462796,
+        "y": 5.292292306082589
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5536636357129554,
-        "y": 3.438160059147039
+        "x": 1.6534048691937435,
+        "y": 5.519864792629828
       },
       "isLocked": false,
-      "linkedName": "a"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1697252546037946,
-        "y": 2.928533063616071
+        "x": 1.063,
+        "y": 4.637
       },
       "prevControl": {
-        "x": 2.0199725351076827,
-        "y": 2.7283478418750073
+        "x": 1.2719247065196877,
+        "y": 4.8981789535902065
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,24 +31,36 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "CloseIntake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "closeIntake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.2,
+    "maxAcceleration": 10.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Depot - Climb",
   "idealStartingState": {
-    "velocity": 0.0,
-    "rotation": 0.0
+    "velocity": 0,
+    "rotation": -14.999999999999998
   },
   "useDefaultConstraints": true
 }

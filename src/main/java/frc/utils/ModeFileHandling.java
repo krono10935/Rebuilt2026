@@ -1,13 +1,15 @@
 package frc.utils;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 public class ModeFileHandling {
     private static boolean fmsAttached = false;
     private static final String MODE_FILE_PATH = "/home/lvuser/isComp.txt";
+    private static final String PIT_COMPUTER_IP = "10.109.35.67";
 
     /**
      *
@@ -36,8 +38,9 @@ public class ModeFileHandling {
 
         fmsAttached = DriverStation.isFMSAttached();
 
-        //TODO: set actual check for pit mode
-        return true;
+        return Arrays.stream(NetworkTableInstance.getDefault()
+        .getConnections()).anyMatch(
+            (connection) -> connection.remote_ip.equals(PIT_COMPUTER_IP));
     }
 
 }

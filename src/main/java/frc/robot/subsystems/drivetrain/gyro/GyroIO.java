@@ -29,6 +29,6 @@ public interface GyroIO {
      * @return Get the new gyro angle
      */
     Rotation2d update();
-
+    
     record GyroPoseOutput(Pose2d pose, Matrix<N3, N1> stdDevs){}
 }

@@ -14,54 +14,71 @@ import io.github.captainsoccer.basicmotor.gains.PIDGains;
 public enum SwerveModulesMK5 {
 
     FRONT_LEFT(
-            6,  0.06, 12
+            6,  -0.435, 12
             ,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0.13666,
+            new PIDGains(7, 0.4, 0, 0, 0, 0),
+            new FeedForwardsGains(2.4805, 0.32),
+            0.32661,
             4,
-            new PIDGains(22, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0,0,
-            new Translation2d(0.3, 0.3)),
+            new PIDGains(30, 5, 0, 0, 0, 0),
+            new FeedForwardsGains(2.5776, 0),
+            2.5776,0.37782,
+            new Translation2d(0.3, 0.3),
+            new PIDGains(),
+            new FeedForwardsGains(),
+            new PIDGains(),
+            new FeedForwardsGains()),
 
 
     FRONT_RIGHT(
-            9,  0.05, 13
+            9,  -0.445, 13
             ,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0.13666,
+            new PIDGains(7, 0.4, 0, 0, 0, 0),
+            new FeedForwardsGains(2.3745, 0.32),
+            0.40069,
             5,
-            new PIDGains(22, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0,0,
-            new Translation2d(0.3, -0.3)),
+            new PIDGains(30, 5, 0, 0, 0, 0),
+            new FeedForwardsGains(2.4944, 0),
+            2.4944,1.3643,
+            new Translation2d(0.3, -0.3),
+            new PIDGains(),
+            new FeedForwardsGains(),
+            new PIDGains(),
+            new FeedForwardsGains()),
 
     BACK_LEFT(
-            7,  -0.23, 11
+            7,  0.263, 11
             ,
-            new PIDGains(0.1, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0.13666,
+            new PIDGains(7, 0.4, 0, 0, 0, 0),
+            new FeedForwardsGains(2.4752, 0.32),
+            0.91735,
             3,
-            new PIDGains(22, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0,0,
-            new Translation2d(-0.3, 0.3)),
+            new PIDGains(30, 5, 0, 0, 0, 0),
+            new FeedForwardsGains(2.4895, 0),
+            2.4895,0.83686,
+            new Translation2d(-0.3, 0.3),
+            new PIDGains(),
+            new FeedForwardsGains(),
+            new PIDGains(),
+            new FeedForwardsGains()),
 
 
     BACK_RIGHT(
-            8,  0.74, 10
+            8,  0.24, 10
             ,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0.13666,
+            new PIDGains(7, 0.4, 0, 0, 0, 0),
+            new FeedForwardsGains(2.3786, 0.32),
+            0.71613,
             2,
-            new PIDGains(22, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0,0,
-            new Translation2d(-0.3, 0.3)),;
+            new PIDGains(30, 5, 0, 0, 0, 0),
+            new FeedForwardsGains(2.5978, 0),
+            2.5978,0.53702,
+            new Translation2d(-0.3, -0.3),
+            new PIDGains(),
+            new FeedForwardsGains(),
+            new PIDGains(),
+            new FeedForwardsGains()),
+;
 
 
     SwerveModulesMK5(int canCoderID,
@@ -75,7 +92,12 @@ public enum SwerveModulesMK5 {
                      FeedForwardsGains steerFeedForwards,
                      double steerKV,
                      double steerKA,
-                     Translation2d location) {
+                     Translation2d location,
+                     PIDGains drivePIDGainsWithBalls,
+                     FeedForwardsGains driveFeedForwardsWithBalls,
+                     PIDGains steerPIDGainsWithBalls,
+                     FeedForwardsGains steerFeedForwardsWithBalls) {
+
         BasicTalonFXConfig driveConfig = getGenericConf().DRIVE_CONFIG().copy();
         BasicTalonFXConfig steerConfig = getGenericConf().STEER_CONFIG().copy();
 
@@ -88,6 +110,12 @@ public enum SwerveModulesMK5 {
         driveConfig.slot0Config.feedForwardConfig = BasicMotorConfig.FeedForwardConfig.fromFeedForwards(driveFeedForwards);
         steerConfig.slot0Config.feedForwardConfig = BasicMotorConfig.FeedForwardConfig.fromFeedForwards(steerFeedForwards);
 
+        driveConfig.slot1Config.feedForwardConfig = BasicMotorConfig.FeedForwardConfig.fromFeedForwards(driveFeedForwardsWithBalls);
+        steerConfig.slot1Config.feedForwardConfig = BasicMotorConfig.FeedForwardConfig.fromFeedForwards(steerFeedForwardsWithBalls);
+
+        driveConfig.slot1Config.pidConfig = BasicMotorConfig.PIDConfig.fromGains(drivePIDGainsWithBalls);
+        driveConfig.slot1Config.pidConfig = BasicMotorConfig.PIDConfig.fromGains(steerPIDGainsWithBalls);
+        
         driveConfig.simulationConfig.kA = driveKA;
 
         steerConfig.simulationConfig.kV = steerKV;
@@ -118,10 +146,14 @@ public enum SwerveModulesMK5 {
         driveConfig.motorConfig.idleMode = BasicMotor.IdleMode.COAST;
         driveConfig.motorConfig.motorType = DCMotor.getKrakenX60(1);
 
-        driveConfig.currentLimitConfig.statorCurrentLimit = 90;
+        driveConfig.currentLimitConfig.statorCurrentLimit = 120;
         driveConfig.currentLimitConfig.supplyCurrentLimit = 0;
 
+        driveConfig.enableFOC = true;
+
         var steerConfig = new BasicTalonFXConfig();
+
+        steerConfig.enableFOC = true;
 
         steerConfig.motorConfig.gearRatio = 26.1;
         steerConfig.motorConfig.idleMode = BasicMotor.IdleMode.COAST;

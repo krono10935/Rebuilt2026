@@ -34,14 +34,11 @@ public class SwerveModuleBasic extends SwerveModuleIO {
 
             // steeringMotor.resetEncoder(canCoder.getAbsolutePosition().getValueAsDouble());
 
-            ((BasicTalonFX)steeringMotor).useRemoteCanCoder(canCoder);
+            ((BasicTalonFX)steeringMotor).useFusedCanCoder(canCoder, constants.STEERING_CONFIG().motorConfig.gearRatio);
+//            ((BasicTalonFX)steeringMotor).useFusedCanCoder(canCoder, 1);
 
             canCoder.getMagnetHealth().setUpdateFrequency(4);
             canCoder.optimizeBusUtilization();
-            
-
-
-
         }
         else{
             drivingMotor = new BasicMotorSim(constants.DRIVING_CONFIG());
@@ -57,7 +54,7 @@ public class SwerveModuleBasic extends SwerveModuleIO {
     }
 
     @Override
-    protected double getDriveDistance() {
+    protected double getDrivePos() {
         return drivingMotor.getPosition();
     }
 
@@ -70,6 +67,13 @@ public class SwerveModuleBasic extends SwerveModuleIO {
     public void setTargetState(SwerveModuleState targetState) {
         drivingMotor.setControl(targetState.speedMetersPerSecond,ControlMode.VELOCITY);
         steeringMotor.setControl(targetState.angle.getRotations(),ControlMode.POSITION);
+    }
+
+    //TODO: tune pid with balls
+    @Override
+    public void setTargetStateWithBalls(SwerveModuleState targetState){
+        drivingMotor.setControl(targetState.speedMetersPerSecond, ControlMode.VELOCITY);
+        steeringMotor.setControl(targetState.angle.getRotations(), ControlMode.POSITION);
     }
 
     @Override
@@ -115,4 +119,6 @@ public class SwerveModuleBasic extends SwerveModuleIO {
         encoder.getConfigurator().apply(config);
         return encoder;
     }
+
+
 }

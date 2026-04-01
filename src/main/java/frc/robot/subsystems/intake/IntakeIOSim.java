@@ -1,0 +1,94 @@
+package frc.robot.subsystems.intake;
+
+import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
+import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
+
+public class IntakeIOSim implements IntakeIO {
+    private final BasicMotorSim intakeMotor;
+    private final BasicMotorSim positionMotor;
+
+    public IntakeIOSim() {
+
+        intakeMotor = new BasicMotorSim(IntakeConstants.intakeMotorConfig);
+
+        positionMotor = new BasicMotorSim(IntakeConstants.positionMotorConfig);
+
+    }
+
+    @Override
+    public boolean intakeMotorAtSetPoint() {
+        return intakeMotor.atSetpoint();
+    }
+
+    @Override
+    public void setIntake90PercentSpeed(double velocity) {
+        intakeMotor.setControl(velocity, ControlMode.VELOCITY);
+    }
+
+    @Override
+    public void stopIntakeMotor() {
+        intakeMotor.stop();
+    }
+
+    @Override
+    public void setIntakeMotorPercent(double dutyCycle){
+        intakeMotor.setPercentOutput(dutyCycle);
+    }
+
+    @Override
+    public boolean positionMotorAtSetPoint() {
+        return positionMotor.atSetpoint();
+    }
+
+    @Override
+    public double getIntakePosition() {
+        return positionMotor.getPosition();
+    }
+
+    @Override
+    public void setPositionMotor(double positionMeters) {
+        positionMotor.setControl(positionMeters, ControlMode.POSITION);
+    }
+
+    @Override
+    public void updateInputs(IntakeInputs inputs) {
+        inputs.position = positionMotor.getPosition();
+
+        inputs.velocity = intakeMotor.getVelocity(); 
+    }
+
+    @Override
+    public void stopPositiongMotor() {
+        positionMotor.stop();
+    }
+
+    @Override
+    public double getSpeedPositionMotor() {
+        return positionMotor.getPosition();
+    }
+
+    @Override
+    public boolean isInPositionControl() {
+        return positionMotor.getController().getControlMode().isPositionControl();
+    }
+
+    @Override
+    public boolean isInVelocityControl() {
+        return positionMotor.getController().getControlMode().isVelocityControl();
+    }
+
+    @Override
+    public void setPositionMotorPercent(double dutyCycle) {
+        positionMotor.setPercentOutput(dutyCycle);
+    }
+
+    @Override
+    public void setPositionMotorSlowly(double posMeters){
+        positionMotor.setControl(posMeters,ControlMode.PROFILED_POSITION, 1);
+    }
+
+    @Override
+    public void resetPositionMotor(double posMeters) {
+        positionMotor.resetEncoder(posMeters);
+    }
+}

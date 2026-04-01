@@ -25,7 +25,7 @@ public abstract class SwerveModuleIO {
     /**
      * @return The drive motor position in meters
      */
-    protected abstract double getDriveDistance();
+    protected abstract double getDrivePos();
 
     /**
      * @return The steer motor position in rotations
@@ -58,6 +58,12 @@ public abstract class SwerveModuleIO {
     public abstract void setSteerVoltage(double voltage);
 
     /**
+     * uses the PID and FF for when you have balls in the bot
+     * @param tagretState the state to set to the module
+     */
+    public abstract void setTargetStateWithBalls(SwerveModuleState tagretState);
+
+    /**
      *
      * @return the current state of the module
      */
@@ -81,7 +87,7 @@ public abstract class SwerveModuleIO {
         currentState.angle = Rotation2d.fromRotations(getSteerAngle());
         position.angle = currentState.angle;
         currentState.speedMetersPerSecond = getDriveVelocity();
-        position.distanceMeters = getDriveDistance();
+        position.distanceMeters = getDrivePos();
     }
 
 }
