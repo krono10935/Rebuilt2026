@@ -34,13 +34,7 @@ public class IndexerIOSim implements IndexerIO {
 
     @Override
     public void update(IndexerInputs inputs) {
-        inputs.isOn = isSpinning;
-    }
 
-    @Override
-    public boolean isStuck() {
-        return Math.abs(motorLeft.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND ||
-            Math.abs(motorRight.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND;
     }
 
      @Override

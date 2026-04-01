@@ -2,11 +2,16 @@ package frc.robot.subsystems.Indexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
+
 public interface IndexerIO {
     
     @AutoLog
     class IndexerInputs{
-        boolean isOn;
+        ControlMode controlMode;
+        double targetSpeedMPS;
+        double motorLeftSpeedMPS;
+        double motorRightSpeedMPS;
     }
 
     /**
@@ -24,10 +29,6 @@ public interface IndexerIO {
      */
     void turnOff();
 
-    /**
-     * @return Whether the indexer is stuck
-     */
-    boolean isStuck();
 
     void setSpeed(double speedRps);
 

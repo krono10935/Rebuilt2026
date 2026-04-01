@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.utils.ParallelRaceGroupWithWinner;
+import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 
 public class Indexer extends SubsystemBase {
 
@@ -90,7 +91,15 @@ public class Indexer extends SubsystemBase {
      * @return whether or not the indexer is stuck
      */
     public boolean isStuck(){
-        return io.isStuck();
+        if (inputs.controlMode == ControlMode.STOP || inputs.targetSpeedMPS == 0){
+            return false;
+        }
+        else{
+            return (Math.abs(inputs.motorLeftSpeedMPS) < IndexerConstants.SPEED_DEADBAND ||
+            Math.abs(inputs.motorRightSpeedMPS) < IndexerConstants.SPEED_DEADBAND);
+        }
+
+        
     }
 
     public void setSpeed(double rps){
