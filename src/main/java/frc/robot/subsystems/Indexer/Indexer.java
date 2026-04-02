@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.utils.ParallelRaceGroupWithWinner;
-import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 
 public class Indexer extends SubsystemBase {
 

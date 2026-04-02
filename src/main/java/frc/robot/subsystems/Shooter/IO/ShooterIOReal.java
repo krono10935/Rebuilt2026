@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Shooter.IO;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -29,10 +27,7 @@ public class ShooterIOReal implements ShooterIO {
 
     private final DutyCycleEncoder dutyCycleEncoder;
 
-    private boolean isKickerActive;
     private double targetVelocity;
-
-    private final DoubleSupplier leadShooterMotorDutyCycle;
 
     public ShooterIOReal(){
         leadConfig = ShootRealConstants.getLeadShootingMotorConfig();
@@ -47,14 +42,8 @@ public class ShooterIOReal implements ShooterIO {
 
         kickerMotor =  new BasicSparkMAX(ShootRealConstants.getKickerMotorConfig());
 
-        isKickerActive = false;
 
         leadShootingMotor.getController().setSendableSlot(1);
-
-        var spark = leadShootingMotor.getMotor();
-
-        leadShooterMotorDutyCycle = spark::getAppliedOutput;
-    
 
         CommandScheduler.getInstance().schedule(new InstantCommand(
                 () -> hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
@@ -70,7 +59,7 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     @Override
-    public void keepVelocity(double speedMPS){ // TODO WTF THIS SHOULD NOT WORK
+    public void keepVelocity(double speedMPS){
         targetVelocity = speedMPS;
         leadShootingMotor.setControl(targetVelocity , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
@@ -81,8 +70,7 @@ public class ShooterIOReal implements ShooterIO {
         leadShootingMotor.stop();
     }
 
-    @Override
-    public boolean isShooterAtGoal(){
+    private boolean isShooterAtGoal(){
         return Math.abs(leadShootingMotor.getController().getGoalAsDouble() -
          leadShootingMotor.getVelocity())
           <= ShooterConstants.SHOOTING_SPEED_TOLERANCE;
@@ -101,7 +89,6 @@ public class ShooterIOReal implements ShooterIO {
             kickerMotor.stop();
         }
 
-        isKickerActive = isActive;
     }
 
     @Override
@@ -109,34 +96,23 @@ public class ShooterIOReal implements ShooterIO {
         hoodMotor.setControl(angle.getRotations(), ControlMode.POSITION);
     }
 
-    @Override
-    public boolean isHoodAtSetpoint(){
+    private boolean isHoodAtSetpoint(){
         return (Math.abs(hoodMotor.getError()) <= ShootRealConstants.HOOD_TOLERANCE.getRotations());
     }
 
     @Override
     public void update(ShooterInputs inputs){
-
-        inputs.hoodAngle = Rotation2d.fromRotations(hoodMotor.getPosition());
-
-        inputs.isKickerActive = this.isKickerActive;
-
-        inputs.shooterSpeed = leadShootingMotor.getVelocity();
-
-        Logger.recordOutput("duty cycle", leadShooterMotorDutyCycle.getAsDouble());
-        Logger.recordOutput("duty cycle/ encoder", (dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
-        // hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8);
-
-        
+        inputs.shooterSpeedMPS = leadShootingMotor.getVelocity();
+        inputs.isFlywheelAtGoal = isShooterAtGoal();
+        inputs.isKickerStuck = isKickerStuck();
+        inputs.isHoodAtSetpoint = isHoodAtSetpoint();
     }
 
     @Override
     public void logSysID() {
         
     }
-
-    @Override
-    public boolean isKickerStuck() {
+    private boolean isKickerStuck() {
         return Math.abs(kickerMotor.getController().getSetpointAsDouble()) 
         < ShootRealConstants.KICKER_SPEED_DEADBAND;
     } 

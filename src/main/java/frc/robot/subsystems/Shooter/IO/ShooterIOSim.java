@@ -14,6 +14,7 @@ import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 public class ShooterIOSim implements ShooterIO {
 
     private final BasicMotor leadShootingMotor;
+    private final BasicMotor followShootingMotor;
 
     private final BasicMotor hoodMotor;
 
@@ -21,31 +22,31 @@ public class ShooterIOSim implements ShooterIO {
 
     private final BasicMotorConfig shooterConfig;
 
-    private boolean isKickerActive;
-
     private double targetVelocity;
 
     public ShooterIOSim(){
         shooterConfig = ShootRealConstants.getLeadShootingMotorConfig();
         leadShootingMotor = new BasicFlywheelSim(shooterConfig);
+        followShootingMotor = new BasicFlywheelSim(ShootRealConstants.getFollowShootingMotorConfig());
+
+        followShootingMotor.followMotor(leadShootingMotor, false); // The default should be not inverted
 
         hoodMotor =  new BasicMotorSim(ShootRealConstants.getHoodMotorConfig());
 
         kickerMotor =  new BasicMotorSim(ShootRealConstants.getKickerMotorConfig());
 
-        isKickerActive = false;
-
     }
 
-        @Override
+    @Override
     public void spinUp(double speedMPS){
         targetVelocity = speedMPS;
-        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY, 0);
+        leadShootingMotor.setControl(speedMPS , ControlMode.PROFILED_VELOCITY,0);
         Logger.recordOutput("Shooter/keeping", false);
     }
 
     @Override
-    public void keepVelocity(double speedMPS){ // TODO WTF THIS SHOULD NOT WORK
+    public void keepVelocity(double speedMPS){
+        targetVelocity = speedMPS;
         leadShootingMotor.setControl(targetVelocity , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
     }
@@ -55,8 +56,7 @@ public class ShooterIOSim implements ShooterIO {
         leadShootingMotor.stop();
     }
 
-    @Override
-    public boolean isShooterAtGoal(){
+    private boolean isShooterAtGoal(){
         return Math.abs(leadShootingMotor.getController().getGoalAsDouble() -
          leadShootingMotor.getVelocity())
           <= ShooterConstants.SHOOTING_SPEED_TOLERANCE;
@@ -75,7 +75,6 @@ public class ShooterIOSim implements ShooterIO {
             kickerMotor.stop();
         }
 
-        isKickerActive = isActive;
     }
 
     @Override
@@ -83,30 +82,25 @@ public class ShooterIOSim implements ShooterIO {
         hoodMotor.setControl(angle.getRotations(), ControlMode.POSITION);
     }
 
-     @Override
-    public boolean isHoodAtSetpoint(){
-        return hoodMotor.atSetpoint();
+    
+    private boolean isHoodAtSetpoint(){
+        return (Math.abs(hoodMotor.getError()) <= ShootRealConstants.HOOD_TOLERANCE.getRotations());
     }
 
     @Override
     public void update(ShooterInputs inputs){
-
-        inputs.hoodAngle = Rotation2d.fromRotations(hoodMotor.getPosition());
-
-        inputs.isKickerActive = this.isKickerActive;
-
-        inputs.shooterSpeed = leadShootingMotor.getVelocity();
-        
+        inputs.shooterSpeedMPS = leadShootingMotor.getVelocity();
+        inputs.isFlywheelAtGoal = isShooterAtGoal();
+        inputs.isKickerStuck = isKickerStuck();
+        inputs.isHoodAtSetpoint = isHoodAtSetpoint();
     }
 
     @Override
     public void logSysID() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'logSysID'");
-    }   
+        
+    }
 
-    @Override
-    public boolean isKickerStuck() {
+    private boolean isKickerStuck() {
         return false;
     } 
 }

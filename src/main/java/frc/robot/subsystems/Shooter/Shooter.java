@@ -90,7 +90,7 @@ public class Shooter extends SubsystemBase {
      * @return whether the shooter is at setpoint
      */
     public boolean isShooterAtGoal() {
-        return io.isShooterAtGoal();
+        return inputs.isFlywheelAtGoal;
     }
 
     /**
@@ -113,7 +113,7 @@ public class Shooter extends SubsystemBase {
      * @return whether or not the kicker is active
      */
     public boolean isKickerActive() {
-        return !io.isKickerStuck();
+        return !inputs.isKickerStuck;
     }
 
     /**
@@ -121,7 +121,7 @@ public class Shooter extends SubsystemBase {
      * @return whether the hood is at setpoint
      */
     public boolean isHoodAtSetpoint() {
-        return io.isHoodAtSetpoint();
+        return inputs.isHoodAtSetpoint;
     }
 
     /**
@@ -173,7 +173,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getShooterVelocity(){
-        return inputs.shooterSpeed;
+        return inputs.shooterSpeedMPS;
     }
 
 }

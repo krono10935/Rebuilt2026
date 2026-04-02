@@ -2,8 +2,6 @@ package frc.robot.subsystems.Indexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
-
 public interface IndexerIO {
     
     @AutoLog
