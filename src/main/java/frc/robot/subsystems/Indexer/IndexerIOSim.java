@@ -1,45 +1,51 @@
 package frc.robot.subsystems.Indexer;
 
+import org.littletonrobotics.junction.Logger;
+
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
 public class IndexerIOSim implements IndexerIO {
     private final BasicMotorSim motorLeft;
     private final BasicMotorSim motorRight;
-    private boolean isSpinning;
 
-    public IndexerIOSim() {
+    public IndexerIOSim( ){
         this.motorLeft = new BasicMotorSim(IndexerConstants.getLeftMotorConfig());
         this.motorRight = new BasicMotorSim(IndexerConstants.getRightMotorConfig());
-        motorRight.followMotor(motorLeft, true);
+        Logger.recordOutput("Indexer/Mode", IndexerMode.STOPPED);
     }
 
     @Override
     public void turnOn() {
-        motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.VELOCITY);
-        isSpinning = true;
+        motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
+        motorRight.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
+        Logger.recordOutput("Indexer/Mode", IndexerMode.FORWARD);
+
     }
 
     @Override
     public void reverse() {
         motorLeft.setControl(-IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
-        isSpinning = true;
+        motorRight.setControl(-IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
+        Logger.recordOutput("Indexer/Mode", IndexerMode.REVERSE);
     }
 
     @Override
     public void turnOff() {
         motorLeft.stop();
-        isSpinning = false;
+        motorRight.stop();
+        Logger.recordOutput("Indexer/Mode", IndexerMode.STOPPED);
     }
 
     @Override
     public void update(IndexerInputs inputs) {
+        if (motorLeft.getController().getControlMode() == ControlMode.STOP || 
+        motorLeft.getController().getGoal().velocity < IndexerConstants.SPEED_DEADBAND){
+            return;
+        }
 
+        inputs.isStuck = Math.abs(motorLeft.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND ||
+            Math.abs(motorRight.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND;
     }
 
-     @Override
-    public void setSpeed(double speedRps){
-        motorLeft.setControl(speedRps,ControlMode.VELOCITY);
-        motorRight.setControl(speedRps,ControlMode.VELOCITY);
-    }
 }

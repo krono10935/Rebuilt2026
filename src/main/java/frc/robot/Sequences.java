@@ -6,7 +6,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -14,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.FieldConstants.TowerSide;
 import frc.robot.commands.Drivetrain.*;
 import frc.robot.commands.IntakeCommands.*;
-import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Shooter.*;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.Vision.VisionConstants.CamerasConstants;
@@ -241,22 +239,6 @@ public class Sequences {
                 .beforeStarting(new InstantCommand(intake::stopIntakeMotor));
     }
 
-    /**
-     * Checks if chassis speeds match delivery target.
-     *
-     * @param speeds The current ChassisSpeeds
-     */
-    private static boolean matchesDeliveryChassisSpeeds(ChassisSpeeds speeds) {
-
-        return Math.abs(ShooterConstants.DELIVERY_CHASSIS_SPEEDS.vxMetersPerSecond - speeds.vxMetersPerSecond)
-                < ShooterConstants.XY_DELIVERY_SPEED_TOLERANCE
-
-                && Math.abs(ShooterConstants.DELIVERY_CHASSIS_SPEEDS.vyMetersPerSecond - speeds.vyMetersPerSecond)
-                < ShooterConstants.XY_DELIVERY_SPEED_TOLERANCE
-
-                && Math.abs(ShooterConstants.DELIVERY_CHASSIS_SPEEDS.omegaRadiansPerSecond - speeds.omegaRadiansPerSecond)
-                < ShooterConstants.OMEGA_DELIVERY_SPEED_TOLERANCE_RADIANS;
-    }
 
     private static LoggedNetworkNumber flyWheelSpeed = new LoggedNetworkNumber("Delivery/FlyWheelSpeed", 20);
 
@@ -293,9 +275,11 @@ public class Sequences {
                 shooter.spinUp(flyWheelSpeed.get());
 
                 if (Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) < 2) {
-                    shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean() ?
-                            -IndexerConstants.SPINNING_TARGET_VELOCITY :
-                            IndexerConstants.SPINNING_TARGET_VELOCITY);
+                        if (reverseIndexer.getAsBoolean()){
+                                shooter.getIndexer().reverse();
+                        } else {
+                                shooter.getIndexer().turnOn();
+                        }
                     shooter.toggleKicker(true);
 
 

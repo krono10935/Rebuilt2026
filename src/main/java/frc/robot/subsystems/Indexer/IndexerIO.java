@@ -8,10 +8,13 @@ public interface IndexerIO {
     
     @AutoLog
     class IndexerInputs{
-        ControlMode controlMode;
-        double targetSpeedMPS;
-        double motorLeftSpeedMPS;
-        double motorRightSpeedMPS;
+        boolean isStuck;
+    }
+
+    public enum IndexerMode{
+        REVERSE,
+        STOPPED,
+        FORWARD
     }
 
     /**
@@ -28,9 +31,6 @@ public interface IndexerIO {
      * Stops the motor
      */
     void turnOff();
-
-
-    void setSpeed(double speedRps);
 
     void update(IndexerInputs inputs);
 }

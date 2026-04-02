@@ -10,14 +10,12 @@ import com.revrobotics.util.StatusLogger;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HubTiming;
 import frc.robot.subsystems.Shooter.ShotCalculator;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.Elastic;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
