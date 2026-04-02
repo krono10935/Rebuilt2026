@@ -29,7 +29,7 @@ public class LEDConstants {
 
     public enum AllainceColor{
         BLUE(Color.kWhite, Color.kMidnightBlue, 60, 100),
-        RED(Color.kWhite, new Color("#800020"),60, 100);
+        RED(Color.kWhite, new Color(130,20,20),60, 100);
 
         public final Color MOVING_COLOR;
         public final Color BACKGORUND_COLOR;

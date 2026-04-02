@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -55,7 +54,6 @@ import frc.robot.subsystems.drivetrain.PPController;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.AllianceFlipUtil;
-import frc.utils.CheckFreeSpace;
 
 
 public class RobotContainer {
@@ -124,14 +122,11 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
-        SmartDashboard.putNumber("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage()); //TODO: fix
-        Logger.recordOutput("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
 
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
 
         CommandScheduler.getInstance().schedule(new InstantCommand(() -> {
-            led.setDefaultPattern(false);
-            led.blinkWithRSL(new Color(20,255,0));
+            led.putTestPattern();
             led.setLEDState(true);}).ignoringDisable(true));
 
 

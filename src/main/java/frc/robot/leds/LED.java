@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.leds.LEDConstants.AllainceColor;
 
 public class LED extends SubsystemBase {
@@ -28,6 +29,12 @@ public class LED extends SubsystemBase {
     AddressableLEDBuffer buffer;
     StripControl controlType = StripControl.ALL;
 
+    AddressableLEDBufferView bufferFirstSegment;
+    AddressableLEDBufferView bufferSecondSegment;
+    AddressableLEDBufferView bufferThirdSegment;
+    AddressableLEDBufferView bufferFourthSegment;
+    AddressableLEDBufferView bufferFifthSegment;
+    AddressableLEDBufferView bufferSixthSegment;
     AddressableLEDBufferView bufferFrontHalf;
     AddressableLEDBufferView bufferBackHalf;
 
@@ -52,10 +59,16 @@ public class LED extends SubsystemBase {
 
         buffer = new AddressableLEDBuffer(LEDConstants.LED_COUNT_TOTAL);
 
+        bufferFirstSegment = buffer.createView(0,LEDConstants.FIRST_SEGMENT);
+        bufferSecondSegment = buffer.createView(LEDConstants.FIRST_SEGMENT + 1,LEDConstants.SECOND_SEGMENT);
+        bufferThirdSegment = buffer.createView(LEDConstants.SECOND_SEGMENT + 1,LEDConstants.THIRD_SEGMENT);
+        bufferFourthSegment = buffer.createView(LEDConstants.THIRD_SEGMENT + 1,LEDConstants.FOURTH_SEGMENT);
+        bufferFifthSegment = buffer.createView(LEDConstants.FOURTH_SEGMENT + 1,LEDConstants.FIFTH_SEGMENT);
+        bufferSixthSegment = buffer.createView(LEDConstants.FIFTH_SEGMENT + 1,LEDConstants.SIXTH_SEGMENT);
         bufferFrontHalf = buffer.createView(0, LEDConstants.LED_COUNT_TOTAL / 2 - 1);
         bufferBackHalf = buffer.createView(LEDConstants.LED_COUNT_TOTAL / 2, LEDConstants.LED_COUNT_TOTAL - 1);
 
-        pattern = LEDPattern.solid(Color.kDarkRed);
+        pattern = LEDPattern.solid(Color.kDarkGreen);
         pattern.applyTo(buffer);
 
         led.setData(buffer);
@@ -159,6 +172,10 @@ public class LED extends SubsystemBase {
         pattern = LEDPattern.solid(color).synchronizedBlink(RobotController::getRSLState);
     }
 
+    public void blinkWithRSL(){
+        pattern = LEDPattern.solid(new Color(255,20,0)).synchronizedBlink(RobotController::getRSLState);
+    }
+
     public Command blinkWithRSLCommand(Color color){
         InstantCommand command = new InstantCommand(() -> blinkWithRSL(color));
 
@@ -191,7 +208,19 @@ public class LED extends SubsystemBase {
         pattern = pattern.mask(LEDPattern.progressMaskLayer(percent));
     }
 
-    public InstantCommand setProgressLayerCOmmand(DoubleSupplier percent){
+    public InstantCommand setProgressLayerCommand(DoubleSupplier percent){
         return new InstantCommand(() -> setProgressLayer(percent));
+    }
+
+    public void putTestPattern(){
+        LEDPattern pattern1 = LEDPattern.solid(Color.kOrange);
+        LEDPattern pattern2 = LEDPattern.solid(Color.kBlue);
+        pattern1.applyTo(bufferFirstSegment);
+        pattern2.applyTo(bufferSecondSegment);
+        pattern1.applyTo(bufferThirdSegment);
+        pattern2.applyTo(bufferFourthSegment);
+        pattern1.applyTo(bufferFifthSegment);
+        pattern2.applyTo(bufferSixthSegment);
+
     }
 }
