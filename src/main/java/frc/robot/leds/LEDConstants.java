@@ -28,8 +28,8 @@ public class LEDConstants {
     public static final double DEFAULT_SCROLL_SPEED = 20;
 
     public enum AllainceColor{
-        BLUE(Color.kWhite, new Color(Color.kIndianRed.green, Color.kIndianRed.red, Color.kIndianRed.blue), 60, 100),
-        RED(Color.kWhite, new Color(128.0/255.0,0,32.0), 40, 100);
+        BLUE(Color.kWhite, Color.kMidnightBlue, 60, 100),
+        RED(Color.kWhite, new Color("#800020"),60, 100);
 
         public final Color MOVING_COLOR;
         public final Color BACKGORUND_COLOR;

@@ -76,6 +76,7 @@ public class RobotContainer {
     public final Drivetrain drivetrain;
 
     private LED led;
+    
     private final LoggedDashboardChooser<Command> autoChooser;
 
     public boolean overrideShooting = false;
@@ -130,7 +131,7 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(new InstantCommand(() -> {
             led.setDefaultPattern(false);
-            led.putDefaultPattern();
+            led.blinkWithRSL(new Color(20,255,0));
             led.setLEDState(true);}).ignoringDisable(true));
 
 

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -47,6 +48,7 @@ public class LED extends SubsystemBase {
     public LED() {
         led = new AddressableLED(LEDConstants.LED_PORT);
         led.setLength(LEDConstants.LED_COUNT_TOTAL);
+        led.setColorOrder(ColorOrder.kRGB);
 
         buffer = new AddressableLEDBuffer(LEDConstants.LED_COUNT_TOTAL);
 
