@@ -5,7 +5,7 @@ public class CustomControllerConstants {
         public static final int SLIDER_AXIS = 2;
         public static final int FLAP_AXIS = 5;
 
-        public static final int RIGHT_ORANGE_BUTTON = 0;
+        public static final int RIGHT_ORANGE_BUTTON = 1;
     }
     
 }

@@ -137,9 +137,9 @@ public class RobotContainer {
 
         IntakeMode.initializeLinkedList();
 
-        // configureBindings();
-        // configureOperatorBindings();
-       test();
+        configureBindings();
+        configureOperatorBindings();
+    //    configureCustomHIDBindings();
     }
 
     /**
@@ -196,6 +196,9 @@ public class RobotContainer {
 
             return Constants.HubTiming.isActive(time - 5);
         };
+
+        shooter.setDefaultCommand(new SpinUp(shooter, drivetrain).onlyIf(() -> RobotState.isTeleop() &&
+         HubTiming.isActiveWithMargin(DriverStation.getMatchTime(), 3, 0)));
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
 

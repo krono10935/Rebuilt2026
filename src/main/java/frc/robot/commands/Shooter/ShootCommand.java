@@ -270,6 +270,7 @@ public class ShootCommand extends Command {
     public static Command operatorShootCommandFactory(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
     BooleanSupplier reverseIndexerSupplier, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier,
     BooleanSupplier immediatelyCloseIntake, CommandXboxController driverController){
+
         Command shootCommand = new ShootCommand(shooter, drivetrain, vision, intake, reverseIndexerSupplier,
          intakeModeSupplier, immediatelyShootSupplier, immediatelyCloseIntake)
          .alongWith(new DriveAndHomeToHubCommand(drivetrain, driverController))

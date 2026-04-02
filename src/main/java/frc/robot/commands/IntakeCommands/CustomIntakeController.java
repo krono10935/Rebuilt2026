@@ -46,10 +46,4 @@ public class CustomIntakeController extends Command {
     
     intake.setPosition(requestPos);
   }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    intake.setPosition(IntakeConstants.CLOSE_POSITION);
-  }
 }

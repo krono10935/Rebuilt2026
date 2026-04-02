@@ -111,10 +111,10 @@ public class IntakeConstants {
     
     public static class ResetConstants{
         public static final double INITIAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.4;
-        public static final double INITIAL_CURRENT_CHECK_FOR_CLOSE = 35;
+        public static final double INITIAL_CURRENT_CHECK_FOR_CLOSE = 12;
         public static final double FINAL_POSITION_CHECK_FOR_CLOSE = 0.05;
         public static final double FINAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.15;
-        public static final double FINAL_CURRENT_CHECK_FOR_CLOSE = 40;
+        public static final double FINAL_CURRENT_CHECK_FOR_CLOSE = 16;
 
         public static final double MAX_CURRENT_LIMIT = 50;
     }
@@ -123,7 +123,7 @@ public class IntakeConstants {
         TenBalls(CloseCommand::factory),
         TwentyBalls(SlowlyCloseOnce::factory),
         ThirtyBalls(TwoInOneOut::factory),
-        FourtyBalls((Intake intake) -> new InstantCommand(() -> {}));
+        FourtyBalls((Intake intake) -> new InstantCommand(() -> {}, intake));
 
         private Function<Intake, Command> commandGenerator;
 

@@ -31,7 +31,7 @@ public enum SwerveModulesMK5 {
 
 
     FRONT_RIGHT(
-            9,  -0.445, 13
+            8,  -0.445, 13
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
             new FeedForwardsGains(2.3745, 0.32),
@@ -64,7 +64,7 @@ public enum SwerveModulesMK5 {
 
 
     BACK_RIGHT(
-            8,  0.24, 10
+            9,  0.24, 10
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
             new FeedForwardsGains(2.3786, 0.32),
