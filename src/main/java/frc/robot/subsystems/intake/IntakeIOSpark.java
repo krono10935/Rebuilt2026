@@ -43,16 +43,10 @@ public class IntakeIOSpark implements IntakeIO {
         intakeMotorSpark.configure(rootIntakeMotor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
-    @Override
-    public boolean intakeMotorAtSetPoint() {
+    private boolean intakeMotorAtSetPoint() {
         return intakeMotor.atGoal();
     }
 
-    @Override
-    public void setIntake90PercentSpeed(double velocity) {
-        intakeMotor.setPercentOutput(0.9);
-        // intakeMotor.setControl(velocity, ControlMode.VELOCITY);
-    }
 
     @Override
     public void stopIntakeMotor() {
@@ -64,14 +58,8 @@ public class IntakeIOSpark implements IntakeIO {
         positionMotor.stop();
     }
 
-    @Override
-    public boolean positionMotorAtSetPoint() {
+    private boolean positionMotorAtSetPoint() {
         return positionMotor.atGoal();
-    }
-
-    @Override
-    public double getIntakePosition() {
-        return positionMotor.getPosition();
     }
 
     @Override
@@ -79,8 +67,7 @@ public class IntakeIOSpark implements IntakeIO {
         positionMotor.setControl(pos, ControlMode.PROFILED_POSITION, 0);
     }
 
-    @Override
-    public double getSpeedPositionMotor() {
+    private double getSpeedPositionMotor() {
         return positionMotor.getVelocity();
     }
 
@@ -91,20 +78,13 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.position = positionMotor.getPosition();
-        inputs.velocity = intakeMotor.getVelocity();
-        inputs.positionMotorCurrent = currentOutputSupplierPosition.getAsDouble();
-        inputs.intakeMotorCurrent = currentOutputSupplierIntake.getAsDouble();
-    }
-
-    @Override
-    public boolean isInPositionControl() {
-        return positionMotor.getController().getControlMode().isPositionControl();
-    }
-
-    @Override
-    public boolean isInVelocityControl() {
-        return positionMotor.getController().getControlMode().isVelocityControl();
+        inputs.intakePositionMeters = positionMotor.getPosition();
+        inputs.intakeMotorVelocityMPS = intakeMotor.getVelocity();
+        inputs.positionMotorCurrentAmps = currentOutputSupplierPosition.getAsDouble();
+        inputs.intakeMotorCurrentAmps = currentOutputSupplierIntake.getAsDouble();
+        inputs.isIntakeMotorAtSetPoint = intakeMotorAtSetPoint();
+        inputs.isPositionMotorAtSetPoint = positionMotorAtSetPoint();
+        inputs.positionMotorVelocityMPS = getSpeedPositionMotor();
     }
 
     @Override

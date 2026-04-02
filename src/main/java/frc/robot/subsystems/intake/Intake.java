@@ -13,18 +13,10 @@ public class Intake extends SubsystemBase{
     }
 
     /**
-     * Gives the intake roller a speed in MPS(not really, just sets it to 90% power)
-     * @param scam the speed MPS (ignored)
-     */
-    public void setIntake90PercentSpeed(double scam){
-        io.setIntake90PercentSpeed(scam);
-    }
-
-    /**
      * @return The position of the intake opening motor in meters
      */
     public double getIntakePosition(){
-        return io.getIntakePosition();
+        return inputs.intakePositionMeters;
     }
 
     /**
@@ -69,7 +61,7 @@ public class Intake extends SubsystemBase{
      * @return Whether or not the opening motor is at its setpoint (is it fully closed / open)
      */
     public boolean positionAtSetPoint(){
-        return io.positionMotorAtSetPoint();
+        return inputs.isPositionMotorAtSetPoint;
     }
 
     /**
@@ -84,7 +76,7 @@ public class Intake extends SubsystemBase{
      */
     public boolean isMoving(){
 
-        double intakeMotorSpeedMPS = io.getSpeedPositionMotor();
+        double intakeMotorSpeedMPS = inputs.intakeMotorVelocityMPS;
         boolean isAtZeroSpeed = Math.abs(intakeMotorSpeedMPS) < IntakeConstants.SPEED_DEADBAND;
 
         return !isAtZeroSpeed;
@@ -110,7 +102,7 @@ public class Intake extends SubsystemBase{
      * @return the electric current of the postion motor
      */
     public double getPositionMotorCurrent() {
-        return inputs.positionMotorCurrent;
+        return inputs.positionMotorCurrentAmps;
     }
 
     /**
@@ -118,7 +110,7 @@ public class Intake extends SubsystemBase{
      * @return the electric current of the intake motor
      */
     public double getIntakeMotorCurrent(){
-        return inputs.intakeMotorCurrent;
+        return inputs.intakeMotorCurrentAmps;
     }
 
     @Override

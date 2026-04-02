@@ -15,15 +15,12 @@ public class IntakeIOSim implements IntakeIO {
 
     }
 
-    @Override
-    public boolean intakeMotorAtSetPoint() {
+
+    private boolean intakeMotorAtSetPoint() {
         return intakeMotor.atSetpoint();
     }
 
-    @Override
-    public void setIntake90PercentSpeed(double velocity) {
-        intakeMotor.setControl(velocity, ControlMode.VELOCITY);
-    }
+
 
     @Override
     public void stopIntakeMotor() {
@@ -35,14 +32,8 @@ public class IntakeIOSim implements IntakeIO {
         intakeMotor.setPercentOutput(dutyCycle);
     }
 
-    @Override
-    public boolean positionMotorAtSetPoint() {
+    private boolean positionMotorAtSetPoint() {
         return positionMotor.atSetpoint();
-    }
-
-    @Override
-    public double getIntakePosition() {
-        return positionMotor.getPosition();
     }
 
     @Override
@@ -52,9 +43,11 @@ public class IntakeIOSim implements IntakeIO {
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.position = positionMotor.getPosition();
-
-        inputs.velocity = intakeMotor.getVelocity(); 
+        inputs.intakePositionMeters = positionMotor.getPosition();
+        inputs.isIntakeMotorAtSetPoint = intakeMotorAtSetPoint();
+        inputs.intakeMotorVelocityMPS = intakeMotor.getVelocity();
+        inputs.isPositionMotorAtSetPoint = positionMotorAtSetPoint();
+        inputs.positionMotorVelocityMPS = getSpeedPositionMotor();
     }
 
     @Override
@@ -62,19 +55,8 @@ public class IntakeIOSim implements IntakeIO {
         positionMotor.stop();
     }
 
-    @Override
-    public double getSpeedPositionMotor() {
-        return positionMotor.getPosition();
-    }
-
-    @Override
-    public boolean isInPositionControl() {
-        return positionMotor.getController().getControlMode().isPositionControl();
-    }
-
-    @Override
-    public boolean isInVelocityControl() {
-        return positionMotor.getController().getControlMode().isVelocityControl();
+    private double getSpeedPositionMotor() {
+        return positionMotor.getVelocity();
     }
 
     @Override
