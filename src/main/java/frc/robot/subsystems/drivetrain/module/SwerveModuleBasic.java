@@ -50,7 +50,10 @@ public class SwerveModuleBasic extends SwerveModuleIO {
 
     @Override
     protected double getDriveVelocity() {
-        return drivingMotor.getVelocity();
+        if (drivingMotor.isConnected())
+            return drivingMotor.getVelocity();
+        else
+            return 0;
     }
 
     @Override
