@@ -37,6 +37,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HubTiming;
@@ -126,7 +127,9 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
 
         CommandScheduler.getInstance().schedule(new InstantCommand(() -> {
-            led.putTestPattern();
+            if (DriverStation.getAlliance().isPresent())
+            led.setDefaultPattern(DriverStation.getAlliance().get() == Alliance.Red);
+            led.putDefaultPattern();
             led.setLEDState(true);}).ignoringDisable(true));
 
 
