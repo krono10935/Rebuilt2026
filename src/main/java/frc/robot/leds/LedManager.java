@@ -32,7 +32,7 @@ public class LedManager extends SubsystemBase {
     public LedManager() {
         rslStatus = NetworkTableInstance.getDefault().getTable("Led").getEntry("RslStatus");
 
-        strip = new LEDStrip(18);
+        strip = new LEDStrip(4);
 
         // pdh = new PowerDistribution();
         turnOnAllLED();

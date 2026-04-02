@@ -11,10 +11,13 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.*;
 import frc.robot.commands.IntakeCommands.*;
+import frc.robot.leds.LED;
 import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
@@ -72,6 +75,7 @@ public class RobotContainer {
 
     public final Drivetrain drivetrain;
 
+    private LED led;
     private final LoggedDashboardChooser<Command> autoChooser;
 
     public boolean overrideShooting = false;
@@ -99,6 +103,8 @@ public class RobotContainer {
 
         ledManager = new LedManager();
 
+        led = new LED();
+
         intake = new Intake();
 
         driverController = new CommandXboxController(0);
@@ -121,6 +127,13 @@ public class RobotContainer {
         Logger.recordOutput("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
 
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
+
+        CommandScheduler.getInstance().schedule(new InstantCommand(() -> {
+            led.setDefaultPattern(false);
+            led.putDefaultPattern();
+            led.setLEDState(true);}).ignoringDisable(true));
+
+
 
         // TODO enable for comp
         // if (ModeFileHandling.isCompMode()){
