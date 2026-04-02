@@ -54,6 +54,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.AllianceFlipUtil;
 import frc.utils.CheckFreeSpace;
+import frc.utils.CustomControllerConstants;
 
 
 public class RobotContainer {
@@ -136,77 +137,16 @@ public class RobotContainer {
 
         IntakeMode.initializeLinkedList();
 
-        configureBindings();
-        configureOperatorBindings();
-//        test();
+        // configureBindings();
+        // configureOperatorBindings();
+       test();
     }
 
     /**
      * Test bindings
      */
     private void test() {
-        //driverController.a().toggleOnTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision));
-        driverController.b().onTrue(Sequences.intakeOpenStart(intake));
-        driverController.x().onTrue(Sequences.stopIntakeAndClose(intake));
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
-        //driverController.a().onTrue(new InstantCommand(shooter.getIndexer()::turnOn));
-        SwerveSysID sysid = new SwerveSysID(drivetrain, driverController);
-
-        LoggedNetworkNumber volt = new LoggedNetworkNumber("drivetrain/kstest", 0);
-
-        Command spin = new RunCommand(() -> sysid.spin(volt.getAsDouble()));
-
-        spin.addRequirements(drivetrain);
-
-        driverController.a().onTrue(new DriveAndHomeToIntake(drivetrain, driverController));
-
-        driverController.povUp()
-                .toggleOnTrue(ShootCommand.basicShootCommandFactory(shooter, intake, operatorController));
-
-        driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setPercent(-0.9)))
-                .onFalse(new InstantCommand(() -> intake.stopIntakeMotor()));
-
-        driverController.y().onTrue(IntakeFactory.resetIntake(intake));
-
-        //TODO: add intake outtake functionality
-
-        driverController.rightBumper().onTrue(drivetrain.resetGyro());
-
-        operatorController.a().whileTrue(new InstantCommand(() -> shooter.getIndexer().reverse(), shooter.getIndexer()))
-                .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
-
-        operatorController.b().whileTrue(new InstantCommand(() -> shooter.getIndexer().turnOn(), shooter.getIndexer()))
-                .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
-
-        //driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.getIndexer().reverse()));
-
-        // Trigger closeEnoughToSpinUp = new Trigger(()
-        //         -> drivetrain.getEstimatedPosition().getTranslation().getDistance(
-        //         FieldConstants.getClosestTrench(drivetrain.getEstimatedPosition())
-        // ) < ShooterConstants.MIN_DISTANCE_FROM_AZ_TO_SPINUP);
-
-        // closeEnoughToSpinUp.and(RobotState::isTeleop).whileTrue(new SpinUpForEnterTrench(shooter,drivetrain).onlyIf(() ->
-        //                 shooter.getCurrentCommand() == shooter.getDefaultCommand()));
-
-
-        BooleanSupplier isHubActive = () -> {
-            double time = DriverStation.getMatchTime();
-
-            return Constants.HubTiming.isActive(time) ||
-                    Constants.HubTiming.isActive(time - Constants.HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE) ||
-                    Constants.HubTiming.isActive(time + Constants.HUB_ACTIVITY_DEABAND_AFTER_ACTIVE);
-        };
-
-//        AutoShoot = new Trigger(RobotState::isTeleop).
-//                and(() -> FieldConstants.isInAllianceZone(drivetrain.getEstimatedPosition())
-//                        && ObjectDetection.getInstance().hasBalls())
-//                .whileTrue(ShootCommand.shootCommandFactory(shooter ,drivetrain ,driverController, intake, vision))
-//                .onFalse(shooter.resetShooterCommand().alongWith(IntakeFactory.resetIntake(intake)));
-
-        Logger.recordOutput("alliancePose", FieldConstants.Hub.topCenterPoint);
-        Logger.recordOutput("alliancePoseAPplu", AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
-
-
+        
     }
 
     /**
@@ -378,6 +318,13 @@ public class RobotContainer {
             intakeController.button(3).onTrue(new InstantCommand(() -> currentIntakeMode = IntakeMode.FourtyBalls));
         }
 
+    }
+
+    private void configureCustomHIDBindings(){
+        intake.setDefaultCommand(new CustomIntakeController(intake, intakeController));
+        
+        intakeController.button(CustomControllerConstants.IntakeControllerConstants.RIGHT_ORANGE_BUTTON)
+        .onTrue(IntakeFactory.resetIntake(intake));
     }
 
     /**
