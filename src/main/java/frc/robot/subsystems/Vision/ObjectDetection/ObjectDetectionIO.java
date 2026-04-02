@@ -12,4 +12,16 @@ public interface ObjectDetectionIO {
     }
 
     public void updateInputs(ObjectDetectionInputsAutoLogged inputs);
+
+    public class ObjectDetectionIOReplay implements ObjectDetectionIO{
+
+        public ObjectDetectionIOReplay(){
+            
+        }
+
+        @Override
+        public void updateInputs(ObjectDetectionInputsAutoLogged inputs){ 
+        
+        }
+    }
 }

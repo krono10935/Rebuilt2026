@@ -7,12 +7,12 @@ package frc.robot.subsystems.Shooter;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
 import frc.robot.subsystems.Indexer.Indexer;
+import frc.robot.subsystems.Shooter.ShooterIO.ShooterIOReplay;
 import frc.robot.subsystems.Shooter.IO.ShooterIOReal;
 import frc.robot.subsystems.Shooter.IO.ShooterIOSim;
 
@@ -34,10 +34,12 @@ public class Shooter extends SubsystemBase {
 
         indexer = new Indexer();
 
-        if (!RobotBase.isReal()) {
-            io = new ShooterIOSim();
-        } else {
-            io = new ShooterIOReal();
+        switch (Constants.currentMode) {
+            case REAL -> io = new ShooterIOReal();
+
+            case SIM -> io = new ShooterIOSim();
+        
+            default -> io = new ShooterIOReplay();
         }
 
         inputs = new ShooterInputsAutoLogged();

@@ -55,4 +55,48 @@ public interface ShooterIO {
     void update(ShooterInputs inputs);
 
     void logSysID();
+
+    public class ShooterIOReplay implements ShooterIO{
+
+        @Override
+        public void spinUp(double speedMPS) {
+
+        }
+
+        @Override
+        public void keepVelocity(double speedMPS) {
+
+        }
+
+        @Override
+        public void stopFlyWheel() {
+
+        }
+
+        @Override
+        public void setFlyWheelVoltage(double voltage) {
+
+        }
+
+        @Override
+        public void toggleKicker(boolean isActive) {
+
+        }
+
+        @Override
+        public void setHoodAngle(Rotation2d angle) {
+
+        }
+
+        @Override
+        public void update(ShooterInputs inputs) {
+
+        }
+
+        @Override
+        public void logSysID() {
+
+        }
+
+    }
 }

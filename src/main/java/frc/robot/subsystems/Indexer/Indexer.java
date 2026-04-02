@@ -3,12 +3,13 @@ package frc.robot.subsystems.Indexer;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
+import frc.robot.subsystems.Indexer.IndexerIO.IndexerIOReplay;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.utils.ParallelRaceGroupWithWinner;
 
@@ -16,10 +17,18 @@ public class Indexer extends SubsystemBase {
 
     private final IndexerIO io;
 
-    private IndexerInputsAutoLogged inputs = new IndexerInputsAutoLogged();
+    private IndexerInputsAutoLogged inputs;
 
     public Indexer(){
-        this.io = RobotBase.isReal() ? new IndexerIOReal(): new IndexerIOSim();
+        switch (Constants.currentMode) {
+            case REAL -> io = new IndexerIOReal();
+
+            case SIM -> io = new IndexerIOSim();
+        
+            default -> io = new IndexerIOReplay();
+        }
+        
+        inputs = new IndexerInputsAutoLogged();
     }
 
     @Override

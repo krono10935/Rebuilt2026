@@ -31,4 +31,28 @@ public interface IndexerIO {
     void turnOff();
 
     void update(IndexerInputs inputs);
+
+    public class IndexerIOReplay implements IndexerIO{
+
+        @Override
+        public void turnOn() {
+
+        }
+
+        @Override
+        public void reverse() {
+
+        }
+
+        @Override
+        public void turnOff() {
+
+        }
+
+        @Override
+        public void update(IndexerInputs inputs) {
+
+        }
+        
+    }
 }

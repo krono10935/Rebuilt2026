@@ -6,9 +6,11 @@ package frc.robot.subsystems.Vision.ObjectDetection;
 
 import org.littletonrobotics.junction.Logger;
 
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
+import frc.robot.subsystems.Vision.ObjectDetection.ObjectDetectionIO.ObjectDetectionIOReplay;
 import frc.utils.VirtualSubSystem;
 
 /** Add your docs here. */
@@ -26,7 +28,15 @@ public class ObjectDetection extends VirtualSubSystem {
     }
     
     private ObjectDetection(){
-        io = new ObjectDetectionIOPhoton();
+
+        switch (Constants.currentMode) {
+            case REAL -> io = new ObjectDetectionIOPhoton();
+
+            case SIM -> io = new ObjectDetectionIOSim();
+        
+            default -> io = new ObjectDetectionIOReplay();
+        }
+
         inputs = new ObjectDetectionInputsAutoLogged();
     }
 
@@ -49,3 +59,4 @@ public class ObjectDetection extends VirtualSubSystem {
         Logger.processInputs("ObjectDetection", inputs);
     }
 }
+

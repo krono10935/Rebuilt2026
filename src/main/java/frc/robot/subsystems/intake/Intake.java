@@ -1,15 +1,27 @@
 package frc.robot.subsystems.intake;
-import edu.wpi.first.wpilibj.RobotBase;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.subsystems.intake.IntakeIO.IntakeIOReplay;
+
 
 public class Intake extends SubsystemBase{
   private final IntakeIO io;
-  private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
+  private final IntakeInputsAutoLogged inputs;
 
     public Intake() {
-        io = RobotBase.isReal() ? new IntakeIOSpark() : new IntakeIOSim();
+        
+        switch (Constants.currentMode) {
+            case REAL -> io = new IntakeIOSpark();
+
+            case SIM -> io = new IntakeIOSim();
+        
+            default -> io = new IntakeIOReplay();
+        }
+
+        inputs = new IntakeInputsAutoLogged();
+
     }
 
     /**

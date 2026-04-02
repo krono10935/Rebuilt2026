@@ -55,4 +55,52 @@ public interface IntakeIO {
 
     void updateInputs(IntakeInputs inputs);
 
+    public class IntakeIOReplay implements IntakeIO{
+
+        public IntakeIOReplay(){
+            
+        }
+
+        @Override
+        public void setIntakeMotorPercent(double dutyCycle) {
+
+        }
+
+        @Override
+        public void stopIntakeMotor() {
+
+        }
+
+        @Override
+        public void stopPositiongMotor() {
+
+        }
+
+        @Override
+        public void setPositionMotor(double positionMeters) {
+
+        }
+
+        @Override
+        public void resetPositionMotor(double posMeters) {
+
+        }
+
+        @Override
+        public void setPositionMotorPercent(double dutyCycle) {
+
+        }
+
+        @Override
+        public void setPositionMotorSlowly(double posMeters) {
+
+        }
+
+        @Override
+        public void updateInputs(IntakeInputs inputs) {
+
+        }
+        
+    }
+
 }
