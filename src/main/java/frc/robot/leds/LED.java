@@ -40,6 +40,7 @@ public class LED extends SubsystemBase {
 
     LEDPattern defaultPattern;
     LEDPattern pattern;
+    private LEDPattern[] segmentPatterns = new LEDPattern[6];
 
     LEDPattern closeFeederPattern;
     LEDPattern awayFeederPattern;
@@ -66,13 +67,32 @@ public class LED extends SubsystemBase {
         buffer = new AddressableLEDBuffer(LEDConstants.LED_COUNT_TOTAL);
 
         bufferFirstSegment = buffer.createView(0,LEDConstants.FIRST_SEGMENT);
-        bufferSecondSegment = buffer.createView(LEDConstants.FIRST_SEGMENT + 1,LEDConstants.SECOND_SEGMENT);
-        bufferThirdSegment = buffer.createView(LEDConstants.SECOND_SEGMENT + 1,LEDConstants.THIRD_SEGMENT);
-        bufferFourthSegment = buffer.createView(LEDConstants.THIRD_SEGMENT + 1,LEDConstants.FOURTH_SEGMENT);
-        bufferFifthSegment = buffer.createView(LEDConstants.FOURTH_SEGMENT + 1,LEDConstants.FIFTH_SEGMENT);
-        bufferSixthSegment = buffer.createView(LEDConstants.FIFTH_SEGMENT + 1,LEDConstants.SIXTH_SEGMENT);
+
+        int start = 0;
+
+        bufferFirstSegment = buffer.createView(start, start + LEDConstants.FIRST_SEGMENT - 1);
+        start += LEDConstants.FIRST_SEGMENT;
+
+        bufferSecondSegment = buffer.createView(start, start + LEDConstants.SECOND_SEGMENT - 1);
+        start += LEDConstants.SECOND_SEGMENT;
+
+        bufferThirdSegment = buffer.createView(start, start + LEDConstants.THIRD_SEGMENT - 1);
+        start += LEDConstants.THIRD_SEGMENT;
+
+        bufferFourthSegment = buffer.createView(start, start + LEDConstants.FOURTH_SEGMENT - 1);
+        start += LEDConstants.FOURTH_SEGMENT;
+
+        bufferFifthSegment = buffer.createView(start, start + LEDConstants.FIFTH_SEGMENT - 1);
+        start += LEDConstants.FIFTH_SEGMENT;
+
+        bufferSixthSegment = buffer.createView(start, start + LEDConstants.SIXTH_SEGMENT - 1);
+
         bufferFrontHalf = buffer.createView(0, LEDConstants.LED_COUNT_TOTAL / 2 - 1);
         bufferBackHalf = buffer.createView(LEDConstants.LED_COUNT_TOTAL / 2, LEDConstants.LED_COUNT_TOTAL - 1);
+
+        for (int i = 0; i < segmentPatterns.length; i++) {
+            segmentPatterns[i] = LEDPattern.solid(Color.kBlack);
+        }
 
         pattern = LEDPattern.solid(Color.kDarkGreen);
         pattern.applyTo(buffer);
@@ -87,19 +107,17 @@ public class LED extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
 
-        switch (controlType){
-            case ALL:
-                pattern.applyTo(buffer);
-                break;
-            case HALF:
-                pattern.applyTo(bufferFrontHalf);
-                pattern.reversed().applyTo(bufferBackHalf);
-                break;
+        segmentPatterns[0].applyTo(bufferFirstSegment);
+        segmentPatterns[1].applyTo(bufferSecondSegment);
+        segmentPatterns[2].applyTo(bufferThirdSegment);
+        segmentPatterns[3].applyTo(bufferFourthSegment);
+        segmentPatterns[4].applyTo(bufferFifthSegment);
+        segmentPatterns[5].applyTo(bufferSixthSegment);
+
+        if (!ledOn) {
+            LEDPattern.kOff.applyTo(buffer);
         }
-
-        if(!ledOn) LEDPattern.kOff.applyTo(buffer);
 
         led.setData(buffer);
     }
@@ -219,14 +237,11 @@ public class LED extends SubsystemBase {
     }
 
     public void putTestPattern(){
-        LEDPattern pattern1 = LEDPattern.solid(Color.kOrange);
-        LEDPattern pattern2 = LEDPattern.solid(Color.kBlue);
-        pattern1.applyTo(bufferFirstSegment);
-        pattern2.applyTo(bufferSecondSegment);
-        pattern1.applyTo(bufferThirdSegment);
-        pattern2.applyTo(bufferFourthSegment);
-        pattern1.applyTo(bufferFifthSegment);
-        pattern2.applyTo(bufferSixthSegment);
-        led.setData(buffer);
+        segmentPatterns[0] = LEDPattern.solid(Color.kOrange);
+        segmentPatterns[1] = LEDPattern.solid(Color.kBlue);
+        segmentPatterns[2] = LEDPattern.solid(Color.kOrange);
+        segmentPatterns[3] = LEDPattern.solid(Color.kBlue);
+        segmentPatterns[4] = LEDPattern.solid(Color.kOrange);
+        segmentPatterns[5] = LEDPattern.solid(Color.kBlue);
     }
 }
