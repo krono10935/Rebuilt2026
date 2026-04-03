@@ -16,22 +16,48 @@
     },
     {
       "anchor": {
-        "x": 0.7493238434098062,
+        "x": 0.8031198102016615,
         "y": 0.6835112692827148
       },
       "prevControl": {
-        "x": -0.2506761565901938,
-        "y": 0.6835112692827148
+        "x": -0.19688018979833855,
+        "y": 0.6835112692827149
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Outpost"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "z1",
+      "minWaypointRelativePos": 0.4356748224151551,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 0.8,
+        "maxAcceleration": 10.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "openIntake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.2,
     "maxAcceleration": 10.0,

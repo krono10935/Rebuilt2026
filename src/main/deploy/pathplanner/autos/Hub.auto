@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost - Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 4.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost - Shoot"
+            "pathName": "Hub"
           }
         },
         {
@@ -39,16 +27,16 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 10.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shootAndAimStationary"
+                        "waitTime": 15.0
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootAndAimStationary"
                 }
               }
             ]
