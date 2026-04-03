@@ -4,10 +4,14 @@
 
 package frc.robot.commands.Shooter;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.leds.LED;
+import frc.robot.leds.LEDConstants;
+import frc.robot.leds.PatternFactory;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
@@ -35,6 +39,7 @@ public class SpinUp extends Command {
   @Override
   public void initialize() {
 
+    LED.getInstance().setPattern(LEDConstants.Segments.ALL, PatternFactory.blue_pulse(Units.Hertz.of(2)));
   
     spinUpTimer.reset();
     shooter.spinUp(

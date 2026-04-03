@@ -117,7 +117,6 @@ public class Robot extends LoggedRobot
     
     @Override
     public void disabledPeriodic() {
-
         //Check if should switch to pit mode
         if(ModeFileHandling.isCompMode() && ModeFileHandling.shouldSwitchToPitMode()){
             ModeFileHandling.switchToPitMode();

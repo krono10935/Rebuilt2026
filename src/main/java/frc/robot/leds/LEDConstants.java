@@ -3,7 +3,9 @@ package frc.robot.leds;
 import static edu.wpi.first.units.Units.Percent;
 
 import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.intake.Intake;
 
@@ -13,19 +15,31 @@ import java.util.regex.Pattern;
 /** Add your docs here. */
 public class LEDConstants {
     public static final int LED_PORT = 4;
+    public static final int LED_COUNT_TOTAL = 97;
 
-    public static final int FIRST_SEGMENT = 12;
-    public static final int SECOND_SEGMENT = 8;
-    public static final int THIRD_SEGMENT = 14;
-    public static final int FOURTH_SEGMENT = 15;
-    public static final int FIFTH_SEGMENT = 17;
-    public static final int SIXTH_SEGMENT = 29;
+    public enum Segments {
+        ALL(0, LED_COUNT_TOTAL - 1),
+        RIO(0, 20),
+        PDH_RIGHT(21, 34),
+        PDH_LEFT(35, 49),
+        INDEXER(50, 67),
+        INTAKE(68, 96);
 
-    public static final int LED_COUNT_TOTAL = FIRST_SEGMENT + SECOND_SEGMENT + THIRD_SEGMENT + FOURTH_SEGMENT + FIFTH_SEGMENT + SIXTH_SEGMENT;
+        public final int start;
+        public final int end;
 
-    public static LedPattern pattern;
-
-    public static final double DEFAULT_SCROLL_SPEED = 20;
+        Segments(int start, int end) {
+            if (start < 0) {
+                throw new IllegalArgumentException("start index must be greater then 0");
+            } else if (end < start) {
+                throw new IllegalArgumentException("end index must be greater the start index");
+            } else if (end >= LED_COUNT_TOTAL) {
+                throw new IllegalArgumentException("end must be smaller then the buffer size");
+            }
+            this.start = start;
+            this.end = end;
+        }
+    }
 
     public enum AllainceColor{
         BLUE(Color.kWhite, Color.kMidnightBlue, 60, 100),

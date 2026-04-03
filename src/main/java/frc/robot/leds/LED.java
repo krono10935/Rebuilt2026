@@ -2,73 +2,17 @@
 
 package frc.robot.leds;
 
-import static edu.wpi.first.units.Units.Percent;
-import static edu.wpi.first.units.Units.Second;
-
-import java.util.Map;
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
-import edu.wpi.first.wpilibj.LEDPattern.GradientType;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.leds.LEDConstants.AllainceColor;
+
+import java.util.HashMap;
 
 public class LED extends SubsystemBase {
-    AddressableLED led;
-    AddressableLEDBuffer buffer;
+    private final AddressableLED led;
+    private final AddressableLEDBuffer buffer;
 
-    public enum Segments {
-        ALL,
-        RIO,
-        PDH,
-        INDEXER,
-        INTAKE;
-
-        private final AddressableLEDBufferView view;
-
-        private LEDPattern pattern = LEDPattern.kOff;
-
-        private double expiryTimeSeconds = 0;
-
-        Segments(int start, int end) {
-            if (start < 0) {
-                throw new IllegalArgumentException("start index must be greater then 0");
-            } else if (end < start) {
-                throw new IllegalArgumentException("end index must be greater the start index");
-            } else if (end >= getInstance().buffer.getLength()) {
-                throw new IllegalArgumentException("end must be smaller then the buffer size");
-            }
-            view = getInstance().buffer.createView(start, end);
-        }
-
-        public void setPattern(LEDPattern pattern, double timeOut) {
-            this.pattern = pattern;
-            this.expiryTimeSeconds = Timer.getTimestamp() + timeOut;
-        }
-
-        public void setPattern(LEDPattern pattern) {
-            setPattern(pattern, 0);
-        }
-
-        public void clearPattern() {
-            setPattern(LEDPattern.kOff, 0);
-        }
-
-        private void apply() {
-            if (expiryTimeSeconds != 0 && Timer.getTimestamp() >= expiryTimeSeconds) {
-                clearPattern();
-                return;
-            }
-
-            pattern.applyTo(view);
-        }
-    }
+    private final HashMap<LEDConstants.Segments, LedSegment> segments = new HashMap<>();
 
     private static LED instance;
 
@@ -90,16 +34,31 @@ public class LED extends SubsystemBase {
 
         buffer = new AddressableLEDBuffer(LEDConstants.LED_COUNT_TOTAL);
 
+        for(var segment : LEDConstants.Segments.values()){
+            var view = buffer.createView(segment.start, segment.end);
+            segments.put(segment, new LedSegment(view));
+        }
+
+        setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.Alliance.Red));
+
         led.setData(buffer);
         led.start();
     }
 
     @Override
     public void periodic() {
-        for(var segment : Segments.values()){
+        for(var segment : segments.values()){
             segment.apply();
         }
 
         led.setData(buffer);
+    }
+
+    public void setPattern(LEDConstants.Segments segment, LEDPattern pattern, double timeout){
+        segments.get(segment).setPattern(pattern, timeout);
+    }
+
+    public void setPattern(LEDConstants.Segments segment, LEDPattern pattern){
+        setPattern(segment, pattern, 0);
     }
 }

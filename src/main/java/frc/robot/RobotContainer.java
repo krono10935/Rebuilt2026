@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.*;
 import frc.robot.commands.IntakeCommands.*;
 import frc.robot.leds.LED;
+import frc.robot.leds.LEDConstants;
 import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
@@ -60,8 +61,6 @@ import frc.utils.AllianceFlipUtil;
 public class RobotContainer {
     private static RobotContainer instance;
 
-    public final LedManager ledManager;
-
     public final Vision vision;
 
     public final Shooter shooter;
@@ -101,8 +100,6 @@ public class RobotContainer {
 
         shooter = new Shooter();
 
-        ledManager = new LedManager();
-
         led = LED.getInstance();
 
         intake = new Intake();
@@ -122,17 +119,10 @@ public class RobotContainer {
         DriveToPoseConstants.POSE_TOLERANCE = 0.01;
 
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
-
-
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
 
-        CommandScheduler.getInstance().schedule(new InstantCommand(() -> {
-            if (DriverStation.getAlliance().isPresent())
-            led.setDefaultPattern(DriverStation.getAlliance().get() == Alliance.Red);
-            led.putDefaultPattern();
-            led.setLEDState(true);}).ignoringDisable(true));
 
-
+        new Trigger(DriverStation::isDSAttached).onTrue(new InstantCommand(() -> LED.getInstance().setPattern(LEDConstants.Segments.ALL, )).ignoringDisable(true));
 
         // TODO enable for comp
         // if (ModeFileHandling.isCompMode()){
