@@ -103,7 +103,7 @@ public class RobotContainer {
 
         ledManager = new LedManager();
 
-        led = new LED();
+        led = LED.getInstance();
 
         intake = new Intake();
 
