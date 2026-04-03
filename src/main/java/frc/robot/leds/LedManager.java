@@ -13,6 +13,7 @@ import frc.robot.Robot;
  * Manages the robot LED state by publishing it to NetworkTables.
  * <p>
  */
+@Deprecated
 public class LedManager extends SubsystemBase {
     /**
      * A list of all the strips connected to the LED controller

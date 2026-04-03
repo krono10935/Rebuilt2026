@@ -48,7 +48,13 @@ public class LED extends SubsystemBase {
 
     public enum StripControl{
         ALL,
-        HALF
+        HALF,
+        FIRST_SEGMENT,
+        SECOND_SEGMENT,
+        THIRD_SEGMENT,
+        FOURTH_SEGMENT,
+        FIFTH_SEGMENT,
+        SIXTH_SEGMENT
     }
 
     /** Creates a new LED. */
@@ -221,6 +227,6 @@ public class LED extends SubsystemBase {
         pattern2.applyTo(bufferFourthSegment);
         pattern1.applyTo(bufferFifthSegment);
         pattern2.applyTo(bufferSixthSegment);
-
+        led.setData(buffer);
     }
 }

@@ -4,7 +4,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 
 import java.util.ArrayList;
-
+@Deprecated
 public class LEDStrip {
     
     /**
