@@ -12,22 +12,22 @@
         {
             "groupId": "com.github.captainsoccer.BasicMotor",
             "artifactId": "basicmotor-core",
-            "version": "v6.7.0"
+            "version": "v6.7.1"
         },
         {
             "groupId": "com.github.captainsoccer.BasicMotor",
             "artifactId": "basicmotor-ctre",
-            "version": "v6.7.0"
+            "version": "v6.7.1"
         },
         {
             "groupId": "com.github.captainsoccer.BasicMotor",
             "artifactId": "basicmotor-rev",
-            "version": "v6.7.0"
+            "version": "v6.7.1"
         },
         {
             "groupId": "com.github.captainsoccer.BasicMotor",
             "artifactId": "basicmotor-ctre-brushed",
-            "version": "v6.7.0"
+            "version": "v6.7.1"
         }
     ],
     "jniDependencies": [],
