@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.*;
@@ -38,14 +38,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HubTiming;
 import frc.robot.commands.Shooter.BasicShootCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
-import frc.robot.leds.LedManager;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator;
@@ -122,7 +119,7 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
 
 
-        new Trigger(DriverStation::isDSAttached).onTrue(new InstantCommand(() -> LED.getInstance().setPattern(LEDConstants.Segments.ALL, )).ignoringDisable(true));
+        new Trigger(DriverStation::isDSAttached).onTrue(new InstantCommand(() -> LED.getInstance().setPattern(LEDConstants.Segments.ALL,LEDPattern.kOff)).ignoringDisable(true));
 
         // TODO enable for comp
         // if (ModeFileHandling.isCompMode()){

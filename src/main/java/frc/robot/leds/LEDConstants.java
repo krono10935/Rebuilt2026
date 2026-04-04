@@ -3,14 +3,9 @@ package frc.robot.leds;
 import static edu.wpi.first.units.Units.Percent;
 
 import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.wpilibj.AddressableLEDBufferView;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.subsystems.intake.Intake;
 
-import javax.swing.*;
-import java.util.regex.Pattern;
+import edu.wpi.first.wpilibj.util.Color;
+
 
 /** Add your docs here. */
 public class LEDConstants {
