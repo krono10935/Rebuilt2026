@@ -1,5 +1,6 @@
 package frc.robot.leds;
 
+import org.littletonrobotics.junction.LoggedPowerDistribution;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.networktables.*;
@@ -25,7 +26,7 @@ public class LedManager extends SubsystemBase {
      */
     private final NetworkTableEntry rslStatus;
 
-    // private final PowerDistribution pdh;
+    // private final LoggedPowerDistribution pdh;
 
     /**
      * Creates a new LED manager
@@ -35,8 +36,8 @@ public class LedManager extends SubsystemBase {
 
         strip = new LEDStrip(4);
 
-        // pdh = new PowerDistribution();
-        turnOnAllLED();
+        // pdh = LoggedPowerDistribution.getInstance();
+        // turnOnAllLED();
     }
 
     /**
@@ -49,13 +50,13 @@ public class LedManager extends SubsystemBase {
         strip.addPattern(state);
     }
 
-    public void turnOffAllLED(){
-        // pdh.setSwitchableChannel(false);
-    }
+    // public void turnOffAllLED(){
+    //     pdh.setSwitchableChannel(false);
+    // }
 
-    public void turnOnAllLED(){
-        // pdh.setSwitchableChannel(true);
-    }
+    // public void turnOnAllLED(){
+    //     pdh.setSwitchableChannel(true);
+    // }
 
     @Override
     public void periodic(){
