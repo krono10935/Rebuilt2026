@@ -5,12 +5,12 @@ public interface IntakeIO {
     @AutoLog
     class IntakeInputs {
         double intakePositionMeters;
-        double intakeMotorVelocityMPS;
+        double rollerMotorVelocityMPS;
         double positionMotorCurrentAmps;
-        double intakeMotorCurrentAmps;
-        boolean isIntakeMotorAtSetPoint;
+        boolean isRollerMotorAtSetPoint;
         boolean isPositionMotorAtSetPoint;
         double positionMotorVelocityMPS;
+        boolean isFullyOpen;
     }
 
 
@@ -18,40 +18,40 @@ public interface IntakeIO {
      * Sets the intake motor to a certain percent of power
      * @param dutyCycle the percent (0-1)
      */
-    void setIntakeMotorPercent(double dutyCycle);
+    void setRollerDutyCycle(double dutyCycle);
 
     /**
      * Stops the intake motor
      */
-    void stopIntakeMotor();
+    void stopIntakeRoller();
 
     /**
      * Stops the position motor
      */
-    void stopPositiongMotor();
+    void stopPositionMotor();
 
     /**
      * Sets the postion of the intake
      * @param positionMeters the current position of the intake motor in meters
      */
-    void setPositionMotor(double positionMeters);
+    void moveToPosition(double positionMeters);
 
     /**
      * Resets the position to a certain position in units of meters
      */
-    void resetPositionMotor(double posMeters);
+    void resetOpeningMotorEncoder(double posMeters);
 
     /**
      * Sets the power of the position motor in percent
      * @param dutyCycle the percent 
      */
-    void setPositionMotorPercent(double dutyCycle);
+    void setPositionMotorDutyCycle(double dutyCycle);
 
     /**
      * Sets the motor to a certain position. the motor will execute slowly
      * @param posMeters the position in meters
      */
-    void setPositionMotorSlowly(double posMeters);
+    void moveToPositionSlowly(double posMeters);
 
     void updateInputs(IntakeInputs inputs);
 
@@ -62,37 +62,37 @@ public interface IntakeIO {
         }
 
         @Override
-        public void setIntakeMotorPercent(double dutyCycle) {
+        public void setRollerDutyCycle(double dutyCycle) {
 
         }
 
         @Override
-        public void stopIntakeMotor() {
+        public void stopIntakeRoller() {
 
         }
 
         @Override
-        public void stopPositiongMotor() {
+        public void stopPositionMotor() {
 
         }
 
         @Override
-        public void setPositionMotor(double positionMeters) {
+        public void moveToPosition(double positionMeters) {
 
         }
 
         @Override
-        public void resetPositionMotor(double posMeters) {
+        public void resetOpeningMotorEncoder(double posMeters) {
 
         }
 
         @Override
-        public void setPositionMotorPercent(double dutyCycle) {
+        public void setPositionMotorDutyCycle(double dutyCycle) {
 
         }
 
         @Override
-        public void setPositionMotorSlowly(double posMeters) {
+        public void moveToPositionSlowly(double posMeters) {
 
         }
 

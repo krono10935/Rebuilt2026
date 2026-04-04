@@ -47,7 +47,7 @@ public class TwoInOneOut extends Command {
 
     @Override
     public boolean isFinished(){
-        return intake.positionAtSetPoint() && Math.abs(intake.getIntakePosition() - IntakeConstants.CLOSE_POSITION) 
+        return intake.isPositionAtSetPoint() && Math.abs(intake.getIntakePosition() - IntakeConstants.CLOSE_POSITION) 
             <= IntakeConstants.POSITION_TOLERANCE;
     }
 
@@ -55,19 +55,19 @@ public class TwoInOneOut extends Command {
         if (shouldStop() && isMovingOut){
             isMovingOut = false;
             setpoint -= distanceToMoveIn.getAsDouble();
-            intake.setPositionMotorPercent(-powerToMoveIn.getAsDouble());
+            intake.setPositionMotorDutyCycle(-powerToMoveIn.getAsDouble());
             
         } else if (shouldStop()){
             isMovingOut = true;
             setpoint += distanceToMoveOut.getAsDouble();
-            intake.setPositionMotorPercent(powerMoveOut.getAsDouble());
+            intake.setPositionMotorDutyCycle(powerMoveOut.getAsDouble());
         }
         Logger.recordOutput("TwoInOneOut/isMovingOut", isMovingOut);
         Logger.recordOutput("TwoInOneOut/setpoint", setpoint);
     }
 
     public void end(boolean interrupted){
-        intake.stopIntakeOpeningMotor();
+        intake.stopPositionMotor();
     }
 
 public boolean shouldStop(){

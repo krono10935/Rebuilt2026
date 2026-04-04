@@ -43,7 +43,7 @@ public class SlowlyClose extends Command {
 
     @Override
     public void initialize() {
-        intake.setPositionMotorSlowly(0);
+        intake.moveToPositionSlowly(0);
         // intake.setPercent(intakePercent.getAsDouble());
     }
 
@@ -53,26 +53,26 @@ public class SlowlyClose extends Command {
         // Gradually reduce open position and move intake
         if (Math.abs(intake.getIntakePosition()) <= 0.003) {
             openPos /= 2.0;
-            intake.setPosition(openPos);
+            intake.moveToPosition(openPos);
             closing = true;
-            intake.setPercent(intakePercent.getAsDouble());
+            intake.setRollerDutyCycle(intakePercent.getAsDouble());
         }
 
         if (closing && Math.abs(intake.getIntakePosition() - openPos) <= 0.003) {
             closing = false;
-            intake.setPositionMotorSlowly(0);
+            intake.moveToPositionSlowly(0);
             timerToOpenAgain.reset();
             timerToOpenAgain.start();
         }
 
         if (closing && intake.getIntakePosition() < spinReversePos.getAsDouble()) {
-            intake.setPercent(-intakePercent.getAsDouble());
+            intake.setRollerDutyCycle(-intakePercent.getAsDouble());
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.stopIntakeOpeningMotor();
+        intake.stopPositionMotor();
     }
 
     @Override

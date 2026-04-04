@@ -23,12 +23,12 @@ public class IntakeIOSim implements IntakeIO {
 
 
     @Override
-    public void stopIntakeMotor() {
+    public void stopIntakeRoller() {
         intakeMotor.stop();
     }
 
     @Override
-    public void setIntakeMotorPercent(double dutyCycle){
+    public void setRollerDutyCycle(double dutyCycle){
         intakeMotor.setPercentOutput(dutyCycle);
     }
 
@@ -37,21 +37,21 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
-    public void setPositionMotor(double positionMeters) {
+    public void moveToPosition(double positionMeters) {
         positionMotor.setControl(positionMeters, ControlMode.POSITION);
     }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
         inputs.intakePositionMeters = positionMotor.getPosition();
-        inputs.isIntakeMotorAtSetPoint = intakeMotorAtSetPoint();
-        inputs.intakeMotorVelocityMPS = intakeMotor.getVelocity();
+        inputs.isRollerMotorAtSetPoint = intakeMotorAtSetPoint();
+        inputs.rollerMotorVelocityMPS = intakeMotor.getVelocity();
         inputs.isPositionMotorAtSetPoint = positionMotorAtSetPoint();
         inputs.positionMotorVelocityMPS = getSpeedPositionMotor();
     }
 
     @Override
-    public void stopPositiongMotor() {
+    public void stopPositionMotor() {
         positionMotor.stop();
     }
 
@@ -60,17 +60,17 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
-    public void setPositionMotorPercent(double dutyCycle) {
+    public void setPositionMotorDutyCycle(double dutyCycle) {
         positionMotor.setPercentOutput(dutyCycle);
     }
 
     @Override
-    public void setPositionMotorSlowly(double posMeters){
+    public void moveToPositionSlowly(double posMeters){
         positionMotor.setControl(posMeters,ControlMode.PROFILED_POSITION, 1);
     }
 
     @Override
-    public void resetPositionMotor(double posMeters) {
+    public void resetOpeningMotorEncoder(double posMeters) {
         positionMotor.resetEncoder(posMeters);
     }
 }

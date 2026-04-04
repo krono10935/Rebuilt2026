@@ -40,7 +40,7 @@ public class SlowlyCloseOnce extends SlowlyClose {
     @Override
     public void initialize() {
         super.initialize();
-        intake.setPositionMotorSlowly(0);
+        intake.moveToPositionSlowly(0);
 
     }
 

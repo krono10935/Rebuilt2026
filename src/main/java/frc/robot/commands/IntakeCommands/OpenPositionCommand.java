@@ -33,12 +33,12 @@ public class OpenPositionCommand extends Command {
     @Override
     public void initialize() {
         System.out.println("init open\n skebob");
-    intake.setPosition(setpoint.getAsDouble());
+    intake.moveToPosition(setpoint.getAsDouble());
     }
 
     @Override
     public boolean isFinished(){
-    return intake.positionAtSetPoint();
+    return intake.isPositionAtSetPoint();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class OpenPositionCommand extends Command {
         if (interrupted) {
                     System.out.println("bad end");
 
-            intake.stopIntakeOpeningMotor();
+            intake.stopPositionMotor();
         }
     }
 

@@ -158,8 +158,8 @@ public class RobotContainer {
         driverController.povUp()
                 .toggleOnTrue(ShootCommand.basicShootCommandFactory(shooter, intake, operatorController));
 
-        driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setPercent(-0.9)))
-                .onFalse(new InstantCommand(() -> intake.stopIntakeMotor()));
+        driverController.leftBumper().whileTrue(new InstantCommand(() -> intake.setRollerDutyCycle(-0.9)))
+                .onFalse(new InstantCommand(() -> intake.stopIntakeRoller()));
 
         driverController.y().onTrue(IntakeFactory.resetIntake(intake));
 
@@ -167,10 +167,10 @@ public class RobotContainer {
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
 
-        operatorController.a().whileTrue(new InstantCommand(() -> shooter.getIndexer().reverse(), shooter.getIndexer()))
+        operatorController.a().whileTrue(new InstantCommand(() -> shooter.getIndexer().spinBackward(), shooter.getIndexer()))
                 .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
 
-        operatorController.b().whileTrue(new InstantCommand(() -> shooter.getIndexer().turnOn(), shooter.getIndexer()))
+        operatorController.b().whileTrue(new InstantCommand(() -> shooter.getIndexer().spinForward(), shooter.getIndexer()))
                 .onFalse(new InstantCommand(() -> shooter.getIndexer().turnOff(), shooter.getIndexer()));
 
         //driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.getIndexer().reverse()));
@@ -227,8 +227,8 @@ public class RobotContainer {
             CommandScheduler.getInstance().schedule(shooter.idle());
 
             intake.getCurrentCommand().cancel();
-            intake.stopIntakeMotor();
-            intake.stopIntakeOpeningMotor();
+            intake.stopIntakeRoller();
+            intake.stopPositionMotor();
             CommandScheduler.getInstance().schedule(intake.idle());
         }));
 
@@ -236,7 +236,7 @@ public class RobotContainer {
 
         driverController.y().onFalse(new CloseCommand(intake));
 
-        driverController.x().whileTrue(new IntakeCommand(intake).onlyIf(intake::isOpen));
+        driverController.x().whileTrue(new IntakeCommand(intake).onlyIf(intake::isFullyOpen));
 
         driverController.rightBumper().onTrue(drivetrain.resetGyro());
     }
@@ -259,8 +259,8 @@ public class RobotContainer {
         driverController.a().onTrue(new InstantCommand(() -> cancelAutomations = !cancelAutomations));
 
         driverController.leftBumper().whileTrue(new StartEndCommand(
-                () -> intake.setPercent(-0.5),
-                intake::stopIntakeMotor,
+                () -> intake.setRollerDutyCycle(-0.5),
+                intake::stopIntakeRoller,
                 intake
         ));
 
@@ -364,8 +364,8 @@ public class RobotContainer {
         operatorController.rightTrigger(0.3).onTrue(
                 new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getNext()));
 
-        operatorController.y().whileTrue(new StartEndCommand(() -> shooter.getIndexer().reverse(),
-         () -> shooter.getIndexer().turnOn(), shooter.getIndexer())
+        operatorController.y().whileTrue(new StartEndCommand(() -> shooter.getIndexer().spinBackward(),
+         () -> shooter.getIndexer().spinForward(), shooter.getIndexer())
          .onlyIf(() -> shooter.getIndexer().getCurrentCommand() == null));
 
 
@@ -458,7 +458,7 @@ public class RobotContainer {
                 new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
 
         NamedCommands.registerCommand("openIntakeAndReset",
-                Sequences.intakeOpenStart(intake).beforeStarting(new InstantCommand(() -> intake.resetEncoderOpen(0))));
+                Sequences.intakeOpenStart(intake).beforeStarting(new InstantCommand(() -> intake.resetOpeningMotorEncoder(0))));
 
 
         LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto", AutoBuilder.buildAutoChooser());

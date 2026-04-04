@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Indexer;
 
-import org.littletonrobotics.junction.Logger;
-
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
@@ -12,29 +10,24 @@ public class IndexerIOSim implements IndexerIO {
     public IndexerIOSim( ){
         this.motorLeft = new BasicMotorSim(IndexerConstants.getLeftMotorConfig());
         this.motorRight = new BasicMotorSim(IndexerConstants.getRightMotorConfig());
-        Logger.recordOutput("Indexer/Mode", IndexerMode.STOPPED);
     }
 
     @Override
-    public void turnOn() {
+    public void spinForward() {
         motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
         motorRight.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
-        Logger.recordOutput("Indexer/Mode", IndexerMode.FORWARD);
-
     }
 
     @Override
-    public void reverse() {
+    public void spinBackward() {
         motorLeft.setControl(-IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
         motorRight.setControl(-IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
-        Logger.recordOutput("Indexer/Mode", IndexerMode.REVERSE);
     }
 
     @Override
     public void turnOff() {
         motorLeft.stop();
         motorRight.stop();
-        Logger.recordOutput("Indexer/Mode", IndexerMode.STOPPED);
     }
 
     @Override

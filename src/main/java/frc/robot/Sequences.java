@@ -225,7 +225,7 @@ public class Sequences {
      * @param intake
      */
     public static Command intakeOpenStart(Intake intake) {
-        return OpenCommand.openWithErrorHandeling(intake).unless(intake::isOpen)
+        return OpenCommand.openWithErrorHandeling(intake).unless(intake::isFullyOpen)
                 .andThen(new IntakeCommand(intake));
     }
 
@@ -236,7 +236,7 @@ public class Sequences {
      */
     public static Command stopIntakeAndClose(Intake intake) {
         return CloseCommand.closeWithErrorHandeling(intake)
-                .beforeStarting(new InstantCommand(intake::stopIntakeMotor));
+                .beforeStarting(new InstantCommand(intake::stopIntakeRoller));
     }
 
 
@@ -276,9 +276,9 @@ public class Sequences {
 
                 if (Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) < 2) {
                         if (reverseIndexer.getAsBoolean()){
-                                shooter.getIndexer().reverse();
+                                shooter.getIndexer().spinBackward();
                         } else {
-                                shooter.getIndexer().turnOn();
+                                shooter.getIndexer().spinForward();
                         }
                     shooter.toggleKicker(true);
 

@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
@@ -104,16 +105,22 @@ public class ShooterIOReal implements ShooterIO {
     public void update(ShooterInputs inputs){
         inputs.shooterSpeedMPS = leadShootingMotor.getVelocity();
         inputs.isFlywheelAtGoal = isShooterAtGoal();
-        inputs.isKickerStuck = isKickerStuck();
         inputs.isHoodAtSetpoint = isHoodAtSetpoint();
+
+        if (kickerMotor.getController().getControlMode() == ControlMode.STOP || 
+            kickerMotor.getController().getGoal().velocity < IndexerConstants.SPEED_DEADBAND){
+                inputs.isKickerStuck = false;
+        } else {
+
+            inputs.isKickerStuck = Math.abs(kickerMotor.getController().getSetpointAsDouble())
+            < IndexerConstants.SPEED_DEADBAND || Math.abs(kickerMotor.getController().getSetpointAsDouble()) 
+            < IndexerConstants.SPEED_DEADBAND;
+        }
+    
     }
 
     @Override
     public void logSysID() {
         
     }
-    private boolean isKickerStuck() {
-        return Math.abs(kickerMotor.getController().getSetpointAsDouble()) 
-        < ShootRealConstants.KICKER_SPEED_DEADBAND;
-    } 
 }

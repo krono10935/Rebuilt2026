@@ -15,7 +15,6 @@ public class IntakeIOSpark implements IntakeIO {
     private final BasicMotor intakeMotor;
     private final BasicMotor positionMotor;
     private final DoubleSupplier currentOutputSupplierPosition;
-    private final DoubleSupplier currentOutputSupplierIntake;
     public IntakeIOSpark() {
 
         intakeMotor = new BasicSparkFlex(IntakeConstants.intakeMotorConfig);
@@ -32,15 +31,6 @@ public class IntakeIOSpark implements IntakeIO {
 
         positionMotorSpark.configure(rootPositionMotor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters); 
 
-        //intake
-        BasicSparkFlex rootIntakeMotor = ((BasicSparkFlex)intakeMotor);
-        SparkBase intakeMotorSpark = rootIntakeMotor.getMotor();
-
-        currentOutputSupplierIntake = intakeMotorSpark::getOutputCurrent;
-
-        rootIntakeMotor.getSparkConfig().signals.outputCurrentPeriodMs(10);
-
-        intakeMotorSpark.configure(rootIntakeMotor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     private boolean intakeMotorAtSetPoint() {
@@ -49,12 +39,12 @@ public class IntakeIOSpark implements IntakeIO {
 
 
     @Override
-    public void stopIntakeMotor() {
+    public void stopIntakeRoller() {
         intakeMotor.stop();
     }
 
     @Override
-    public void stopPositiongMotor() {
+    public void stopPositionMotor() {
         positionMotor.stop();
     }
 
@@ -63,7 +53,7 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
-    public void setPositionMotor(double pos) {
+    public void moveToPosition(double pos) {
         positionMotor.setControl(pos, ControlMode.PROFILED_POSITION, 0);
     }
 
@@ -72,33 +62,33 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
-    public void setIntakeMotorPercent(double dutyCycle){
+    public void setRollerDutyCycle(double dutyCycle){
         intakeMotor.setPercentOutput(dutyCycle);
     }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
         inputs.intakePositionMeters = positionMotor.getPosition();
-        inputs.intakeMotorVelocityMPS = intakeMotor.getVelocity();
+        inputs.rollerMotorVelocityMPS = intakeMotor.getVelocity();
         inputs.positionMotorCurrentAmps = currentOutputSupplierPosition.getAsDouble();
-        inputs.intakeMotorCurrentAmps = currentOutputSupplierIntake.getAsDouble();
-        inputs.isIntakeMotorAtSetPoint = intakeMotorAtSetPoint();
+        inputs.isRollerMotorAtSetPoint = intakeMotorAtSetPoint();
         inputs.isPositionMotorAtSetPoint = positionMotorAtSetPoint();
         inputs.positionMotorVelocityMPS = getSpeedPositionMotor();
+        inputs.isFullyOpen = positionMotor.getPosition() >= IntakeConstants.OPEN_POSITION - IntakeConstants.POSITION_TOLERANCE;
     }
 
     @Override
-    public void resetPositionMotor(double posMeters) {
+    public void resetOpeningMotorEncoder(double posMeters) {
         positionMotor.resetEncoder(posMeters);
     }
 
     @Override
-    public void setPositionMotorPercent(double dutyCycle) {
+    public void setPositionMotorDutyCycle(double dutyCycle) {
         positionMotor.setPercentOutput(dutyCycle);
     }
 
     @Override
-    public void setPositionMotorSlowly(double posMeters){
+    public void moveToPositionSlowly(double posMeters){
         positionMotor.setControl(posMeters, ControlMode.PROFILED_POSITION, 1);
     }
 }

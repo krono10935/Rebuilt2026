@@ -8,6 +8,4 @@ public class CloseSlowAndThenFast{
     public static Command factory(Intake intake){
         return new WaitCommand(1).andThen(new SlowlyCloseOnce(intake), new ShakeItOffCommand(intake));
     }
-
-    
 }

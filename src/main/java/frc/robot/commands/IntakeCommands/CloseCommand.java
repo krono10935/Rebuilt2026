@@ -34,13 +34,13 @@ public class CloseCommand extends Command {
 
     @Override
     public void initialize() {
-        intake.stopIntakeMotor();
-        intake.setPosition(IntakeConstants.CLOSE_POSITION);
+        intake.stopIntakeRoller();
+        intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
     }
 
     @Override
     public boolean isFinished() {
-        return intake.positionAtSetPoint();
+        return intake.isPositionAtSetPoint();
     }
 
     /**

@@ -29,6 +29,8 @@ public class Indexer extends SubsystemBase {
         }
         
         inputs = new IndexerInputsAutoLogged();
+
+        Logger.recordOutput("Indexer/Mode", IndexerIO.IndexerMode.STOPPED);
     }
 
     @Override
@@ -41,15 +43,17 @@ public class Indexer extends SubsystemBase {
     /**
      * Enables the indexer
      */
-    public void turnOn(){
-        io.turnOn();
+    public void spinForward(){
+        io.spinForward();
+        Logger.recordOutput("Indexer/Mode", IndexerIO.IndexerMode.FORWARD);
     }
 
     /**
      * Enables the indexer in reverse
      */
-    public void reverse(){
-        io.reverse();
+    public void spinBackward(){
+        io.spinBackward();
+        Logger.recordOutput("Indexer/Mode", IndexerIO.IndexerMode.BACKWARD);
     }
 
     /**
@@ -57,6 +61,7 @@ public class Indexer extends SubsystemBase {
      */
     public void turnOff(){
         io.turnOff();
+        Logger.recordOutput("Indexer/Mode", IndexerIO.IndexerMode.STOPPED);
     }
 
     /**
@@ -75,7 +80,7 @@ public class Indexer extends SubsystemBase {
 
 
         return new ParallelRaceGroupWithWinner(
-            new InstantCommand(this::turnOn)
+            new InstantCommand(this::spinForward)
 
                 .andThen(new WaitUntilCommand(() -> !isStuck()),
                 

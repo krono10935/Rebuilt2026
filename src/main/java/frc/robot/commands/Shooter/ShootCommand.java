@@ -163,13 +163,13 @@ public class ShootCommand extends Command {
             shooter.toggleKicker(true);
             
             if (reverseIndexer.getAsBoolean()){
-                shooter.getIndexer().reverse();
+                shooter.getIndexer().spinBackward();
             } else {
-                shooter.getIndexer().turnOn();
+                shooter.getIndexer().spinForward();;
             }
 
             if(immediatelyCloseIntake.getAsBoolean()){
-                intake.setPosition(IntakeConstants.CLOSE_POSITION);
+                intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
             } else if(RobotState.isTeleop()) {            
                 IntakeMode.chooseMode(intakeModeSupplier.get());
                 IntakeMode.dealWithChosenMode(intake);
@@ -183,7 +183,7 @@ public class ShootCommand extends Command {
             shooter.getIndexer().turnOff();
 
             if(immediatelyCloseIntake.getAsBoolean()){
-                intake.setPosition(IntakeConstants.CLOSE_POSITION);
+                intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
             } else {
                 IntakeMode.resetLastChosen(intake);
             }
@@ -253,7 +253,7 @@ public class ShootCommand extends Command {
         shooter.getIndexer().turnOff();
 
         if(immediatelyCloseIntake.getAsBoolean()){
-            intake.setPosition(IntakeConstants.CLOSE_POSITION);
+            intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
         } else {
             IntakeMode.resetLastChosen(intake);
         }

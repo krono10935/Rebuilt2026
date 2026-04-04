@@ -10,7 +10,7 @@ public interface IndexerIO {
     }
 
     public enum IndexerMode{
-        REVERSE,
+        BACKWARD,
         STOPPED,
         FORWARD
     }
@@ -18,12 +18,12 @@ public interface IndexerIO {
     /**
      * Sets the spindexer motor percent to the constant
      */
-    void turnOn();
+    void spinForward();
 
     /**
      * Sets the spindexer motor percent to the constant but reverse
      */
-    void reverse();
+    void spinBackward();
 
     /**
      * Stops the motor
@@ -35,12 +35,12 @@ public interface IndexerIO {
     public class IndexerIOReplay implements IndexerIO{
 
         @Override
-        public void turnOn() {
+        public void spinForward() {
 
         }
 
         @Override
-        public void reverse() {
+        public void spinBackward() {
 
         }
 

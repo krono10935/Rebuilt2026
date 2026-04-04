@@ -52,7 +52,7 @@ public class ManualIntake extends Command {
     public void execute() {
         double speed = getControllerInputs();
 
-        intake.setPositionMotorPercent(speed);
+        intake.setPositionMotorDutyCycle(speed);
     }
 
     /**
@@ -75,7 +75,7 @@ public class ManualIntake extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        intake.stopIntakeOpeningMotor();
+        intake.stopPositionMotor();
     }
 
     /**
