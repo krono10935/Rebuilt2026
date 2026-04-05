@@ -35,10 +35,10 @@ public class IndexerIOReal implements IndexerIO {
         if (motorLeft.getController().getControlMode() == ControlMode.STOP || 
         motorLeft.getController().getGoal().velocity < IndexerConstants.SPEED_DEADBAND){
             inputs.isStuck = false;
-        }
-
-        inputs.isStuck = Math.abs(motorLeft.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND ||
+        } else {
+            inputs.isStuck = Math.abs(motorLeft.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND ||
             Math.abs(motorRight.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND;
+        }
     }
 
 }
