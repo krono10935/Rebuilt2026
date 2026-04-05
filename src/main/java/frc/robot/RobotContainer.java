@@ -119,8 +119,7 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
 
 
-        new Trigger(DriverStation::isDSAttached).onTrue(new InstantCommand(() -> LED.getInstance().setPattern(LEDConstants.Segments.ALL,LEDPattern.kOff)).ignoringDisable(true));
-
+        //new Trigger(DriverStation::isDSAttached).onTrue(new InstantCommand(() -> LED.getInstance().setPattern(LEDConstants.Segments.ALL,LEDPattern.kOff)).ignoringDisable(true));
         // TODO enable for comp
         // if (ModeFileHandling.isCompMode()){
         //     configureBindings();
