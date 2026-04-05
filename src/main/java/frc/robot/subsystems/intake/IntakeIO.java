@@ -10,7 +10,6 @@ public interface IntakeIO {
         boolean isRollerMotorAtSetPoint;
         boolean isPositionMotorAtSetPoint;
         double positionMotorVelocityMPS;
-        boolean isFullyOpen;
     }
 
 

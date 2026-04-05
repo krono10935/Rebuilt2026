@@ -43,7 +43,7 @@ public class Intake extends SubsystemBase{
      * @return Whether or not the intake is open
      */
     public boolean isFullyOpen(){
-        return inputs.isFullyOpen;
+        return inputs.intakePositionMeters >= IntakeConstants.OPEN_POSITION - IntakeConstants.POSITION_TOLERANCE;
     }
 
     /**

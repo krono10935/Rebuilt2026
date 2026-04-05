@@ -6,7 +6,7 @@ package frc.robot.subsystems.Vision.ObjectDetection;
 
 import org.littletonrobotics.junction.Logger;
 
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
@@ -19,6 +19,9 @@ public class ObjectDetection extends VirtualSubSystem {
 
     private final ObjectDetectionIO io;
     private final ObjectDetectionInputsAutoLogged inputs;
+
+    private final Timer lastBallTimer = new Timer();
+    private boolean shotLastBall = true;
 
     public static ObjectDetection getInstance(){
         if (instance == null){
@@ -46,7 +49,7 @@ public class ObjectDetection extends VirtualSubSystem {
      * @return if the robot has balls
      */
     public boolean hasBalls(){
-        return inputs.hasBalls || !Constants.USE_OBJECT_DETECTION ;
+        return inputs.hasBalls || !shotLastBall || !Constants.USE_OBJECT_DETECTION ;
     }
 
     public Command waitUntilNoBalls(){
@@ -57,6 +60,22 @@ public class ObjectDetection extends VirtualSubSystem {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("ObjectDetection", inputs);
+
+        if (inputs.hasBalls){
+            shotLastBall = false;
+            lastBallTimer.stop();
+            lastBallTimer.reset();
+        }
+
+        Logger.recordOutput("ObjectDetection/lastBallTimer", lastBallTimer.get());
+
+        if (!inputs.hasBalls && shotLastBall && !lastBallTimer.isRunning()){
+            lastBallTimer.start();
+        } else if (lastBallTimer.hasElapsed(ObjectDetectionContstants.LAST_BALL_TIMEOUT)){
+            shotLastBall = true;
+            lastBallTimer.stop();
+            lastBallTimer.reset();
+        }
     }
 }
 

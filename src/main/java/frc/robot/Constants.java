@@ -13,7 +13,7 @@ public class Constants {
 
     public static final ChassisType CHASSIS_TYPE = ChassisType.COMPBOT;
 
-    public static final boolean USE_OBJECT_DETECTION = true && RobotBase.isReal();
+    public static final boolean USE_OBJECT_DETECTION = true;
 
     public static final Mode simMode = Mode.SIM;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;

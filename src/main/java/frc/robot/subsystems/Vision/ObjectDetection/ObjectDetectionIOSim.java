@@ -8,7 +8,8 @@ public class ObjectDetectionIOSim implements ObjectDetectionIO{
 
     @Override
     public void updateInputs(ObjectDetectionInputsAutoLogged inputs){ 
-    
+        inputs.hasBalls = true;
+        inputs.isConnected = true;
     }
 
 

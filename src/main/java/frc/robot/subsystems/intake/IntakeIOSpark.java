@@ -74,7 +74,6 @@ public class IntakeIOSpark implements IntakeIO {
         inputs.isRollerMotorAtSetPoint = intakeMotorAtSetPoint();
         inputs.isPositionMotorAtSetPoint = positionMotorAtSetPoint();
         inputs.positionMotorVelocityMPS = getSpeedPositionMotor();
-        inputs.isFullyOpen = positionMotor.getPosition() >= IntakeConstants.OPEN_POSITION - IntakeConstants.POSITION_TOLERANCE;
     }
 
     @Override

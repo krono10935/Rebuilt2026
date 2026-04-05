@@ -8,7 +8,6 @@ public interface ObjectDetectionIO {
     public class ObjectDetectionInputs{
         boolean isConnected;
         boolean hasBalls;
-        boolean shotLastBall;
     }
 
     public void updateInputs(ObjectDetectionInputsAutoLogged inputs);
