@@ -4,6 +4,7 @@ package frc.robot.leds;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class LED extends SubsystemBase {
     private LED() {
         led = new AddressableLED(LEDConstants.LED_PORT);
         led.setLength(LEDConstants.LED_COUNT_TOTAL);
-        led.setColorOrder(ColorOrder.kRGB);
+        led.setColorOrder(ColorOrder.kBGR);
 
         buffer = new AddressableLEDBuffer(LEDConstants.LED_COUNT_TOTAL);
 
@@ -39,7 +40,7 @@ public class LED extends SubsystemBase {
             segments.put(segment, new LedSegment(view));
         }
 
-        setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.Alliance.Red));
+        setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.Alliance.Blue));
 
         led.setData(buffer);
         led.start();
@@ -47,9 +48,10 @@ public class LED extends SubsystemBase {
 
     @Override
     public void periodic() {
-        for(var segment : segments.values()){
-            segment.apply();
-        }
+        // for(var segment : segments.values()){
+        //     segment.apply();
+        // }
+        LEDPattern.solid(Color.kGreen).applyTo(buffer);
 
         led.setData(buffer);
     }
