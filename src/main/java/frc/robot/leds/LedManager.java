@@ -24,7 +24,7 @@ public class LedManager extends SubsystemBase {
      */
     private final NetworkTableEntry rslStatus;
 
-    private final PowerDistribution pdh;
+    // private final PowerDistribution pdh;
 
     /**
      * Creates a new LED manager
@@ -34,7 +34,7 @@ public class LedManager extends SubsystemBase {
 
         strip = new LEDStrip(18);
 
-        pdh = new PowerDistribution();
+        // pdh = new PowerDistribution();
         turnOnAllLED();
     }
 
@@ -49,11 +49,11 @@ public class LedManager extends SubsystemBase {
     }
 
     public void turnOffAllLED(){
-        pdh.setSwitchableChannel(false);
+        // pdh.setSwitchableChannel(false);
     }
 
     public void turnOnAllLED(){
-        pdh.setSwitchableChannel(true);
+        // pdh.setSwitchableChannel(true);
     }
 
     @Override
