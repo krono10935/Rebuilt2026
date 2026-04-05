@@ -1,9 +1,6 @@
 package frc.robot.subsystems.Vision.ObjectDetection;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
-
-import edu.wpi.first.wpilibj.Timer;
 
 public class ObjectDetectionIOPhoton implements ObjectDetectionIO{
 
