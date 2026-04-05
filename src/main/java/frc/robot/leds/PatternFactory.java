@@ -16,13 +16,13 @@ public class PatternFactory {
     public static LEDPattern defaultPattern(DriverStation.Alliance alliance){
         if(defaultPatternInstance == null){
             Color primaryColor = Color.kWhite;
-            Color secondryColor = alliance == DriverStation.Alliance.Red ?
+            Color secondaryColor = alliance == DriverStation.Alliance.Red ?
                     new Color(130,20,20) :
-                    Color.kMidnightBlue;
+                    Color.kDarkBlue;
 
             LEDPattern background = LEDPattern.solid(primaryColor);
 
-            LEDPattern island = LEDPattern.steps(Map.of(0, Color.kBlack, 0.8, secondryColor)).atBrightness(Units.Percent.of(60));
+            LEDPattern island = LEDPattern.steps(Map.of(0, Color.kBlack, 0.8, secondaryColor)).atBrightness(Units.Percent.of(60));
 
             defaultPatternInstance =  island.overlayOn(island.reversed()).overlayOn(background);
         }
