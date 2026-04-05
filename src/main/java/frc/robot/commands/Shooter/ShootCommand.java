@@ -286,7 +286,7 @@ public class ShootCommand extends Command {
         Command shootCommand = (
             new BasicShootCommand(shooter, controller)  
             .alongWith(new TwoInOneOut(intake))
-        ).beforeStarting(new InstantCommand(() -> shooter.spinUp(17)));
+        ).beforeStarting(new InstantCommand(() -> shooter.spinUp(25)));
 
         return shootCommand.withName("Basic Shoot");
     }

@@ -64,14 +64,14 @@ public class Robot extends LoggedRobot
             });
 
         // // TODO comment out before comp
-        // if (isReal()) {
-        //     Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-        //     Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        // } else {
-        //     Logger.addDataReceiver(new NT4Publisher());
-        // }
+//         if (isReal()) {
+//             Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+//             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+//         } else {
+//             Logger.addDataReceiver(new NT4Publisher());
+//         }
 
-        //TODO comment in before comp
+//        //TODO comment in before comp
         if (RobotBase.isSimulation()){
             Logger.addDataReceiver(new NT4Publisher());
         } else {
@@ -80,7 +80,7 @@ public class Robot extends LoggedRobot
             else {
                 Logger.addDataReceiver(new NT4Publisher());
             }
-        }
+       }
 
         Logger.start();
     }

@@ -276,13 +276,12 @@ public class RobotContainer {
 
 
 
-       driverController.x().whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
-        operatorController.y(), () -> currentIntakeMode));
+       driverController.x().whileTrue(ShootCommand.basicShootCommandFactory(shooter,intake,driverController));
 
         //operatorController.a().whileTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y(), () -> currentIntakeMode));
 
 
-        driverController.y().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
+        //driverController.y().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         //autoShoot.whileTrue(Commands.print("autoshoot"));
 
@@ -336,23 +335,24 @@ public class RobotContainer {
                                 shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
                                 () -> overrideShooting, operatorController.b());
 
-        var immediateShootCommand = ShootCommand.operatorShootCommandFactory(
-                                shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting, operatorController.b()).onlyIf(()-> !shootCommand.isScheduled());
+//        var immediateShootCommand = ShootCommand.operatorShootCommandFactory(
+//                                shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
+//                                () -> overrideShooting, operatorController.b()).onlyIf(()-> !shootCommand.isScheduled());
         
         operatorController.b().onTrue(new CloseCommand(intake).onlyIf(() -> 
-                !shootCommand.isScheduled() && 
-                !immediateShootCommand.isScheduled()
+                !shootCommand.isScheduled() && true
+//                !immediateShootCommand.isScheduled()
         ));
         
-        operatorController.rightStick().toggleOnTrue(
-                new StartEndCommand(
-                        () -> overrideShooting = true,
-                        () -> overrideShooting = false)
-                .alongWith(
-                        immediateShootCommand));
+//        operatorController.rightStick().toggleOnTrue(
+//                new StartEndCommand(
+//                        () -> overrideShooting = true,
+//                        () -> overrideShooting = false)
+//                .alongWith(
+//                        immediateShootCommand));
 
-        operatorController.a().whileTrue(shootCommand);
+        ;
+        operatorController.a().whileTrue(shootCommand.alongWith(new DriveAndHomeToHubCommand(drivetrain,driverController)));
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
