@@ -15,9 +15,9 @@ public class LEDConstants {
     public enum Segments {
         ALL(0, LED_COUNT_TOTAL - 1),
         RIO(0, 20),
-        PDH_RIGHT(21, 34),
-        PDH_LEFT(35, 49),
-        INDEXER(50, 67),
+        PDH_RIGHT(21, 36),
+        PDH_LEFT(37, 51),
+        INDEXER(52, 68),
         INTAKE(68, 95);
 
         public final int start;

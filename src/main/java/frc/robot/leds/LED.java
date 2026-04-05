@@ -2,12 +2,15 @@
 
 package frc.robot.leds;
 
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class LED extends SubsystemBase {
     private final AddressableLED led;
@@ -31,8 +34,8 @@ public class LED extends SubsystemBase {
     private LED() {
         led = new AddressableLED(LEDConstants.LED_PORT);
         led.setLength(LEDConstants.LED_COUNT_TOTAL);
-        led.setColorOrder(ColorOrder.kBGR);
-
+        led.setColorOrder(ColorOrder.kRGB);
+        setPattern(LEDConstants.Segments.ALL,LEDPattern.kOff);
         buffer = new AddressableLEDBuffer(LEDConstants.LED_COUNT_TOTAL);
 
         for(var segment : LEDConstants.Segments.values()){
@@ -40,7 +43,15 @@ public class LED extends SubsystemBase {
             segments.put(segment, new LedSegment(view));
         }
 
-        setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.Alliance.Blue));
+        setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.getAlliance()));
+//      TEST PATTERN FOR CONSTANTS
+//        setPattern(LEDConstants.Segments.RIO, PatternFactory.solid(Color.kRed, Units.Percent.of(100)));
+//        setPattern(LEDConstants.Segments.PDH_RIGHT,PatternFactory.solid(Color.kBlue, Units.Percent.of(100)));
+//        setPattern(LEDConstants.Segments.PDH_LEFT,PatternFactory.solid(Color.kRed, Units.Percent.of(100)));
+//        setPattern(LEDConstants.Segments.INDEXER, PatternFactory.solid(Color.kBlue, Units.Percent.of(100)));
+//        setPattern(LEDConstants.Segments.INTAKE, PatternFactory.solid(Color.kRed, Units.Percent.of(100)));
+
+        setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(false));
 
         led.setData(buffer);
         led.start();
@@ -48,10 +59,9 @@ public class LED extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // for(var segment : segments.values()){
-        //     segment.apply();
-        // }
-        LEDPattern.solid(Color.kGreen).applyTo(buffer);
+        for(var segment : segments.values()){
+             segment.apply();
+        }
 
         led.setData(buffer);
     }

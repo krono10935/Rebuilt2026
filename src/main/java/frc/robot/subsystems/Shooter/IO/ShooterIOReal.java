@@ -3,6 +3,9 @@ package frc.robot.subsystems.Shooter.IO;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.leds.LED;
+import frc.robot.leds.LEDConstants;
+import frc.robot.leds.PatternFactory;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,6 +33,8 @@ public class ShooterIOReal implements ShooterIO {
 
     private double targetVelocity;
 
+    private final LED led;
+
     public ShooterIOReal(){
         leadConfig = ShootRealConstants.getLeadShootingMotorConfig();
 
@@ -46,6 +51,8 @@ public class ShooterIOReal implements ShooterIO {
 
         leadShootingMotor.getController().setSendableSlot(1);
 
+        led = LED.getInstance();
+    
         CommandScheduler.getInstance().schedule(new InstantCommand(
                 () -> hoodMotor.resetEncoder((dutyCycleEncoder.get() - ShootRealConstants.DUTY_CYCLE_ENCODER_ZERO_OFFSET) / 8))
                         .beforeStarting(new WaitUntilCommand(() -> dutyCycleEncoder.get() != 0)).ignoringDisable(true));
@@ -64,11 +71,13 @@ public class ShooterIOReal implements ShooterIO {
         targetVelocity = speedMPS;
         leadShootingMotor.setControl(targetVelocity , ControlMode.PROFILED_VELOCITY, 1);
         Logger.recordOutput("Shooter/keeping", true);
+        led.setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(true));
     }
 
     @Override
     public void stopFlyWheel(){
         leadShootingMotor.stop();
+        led.setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(false));
     }
 
     private boolean isShooterAtGoal(){
