@@ -50,8 +50,6 @@ public class UpdateWidgets extends SubsystemBase {
 
         SmartDashboard.putBoolean("overrideShooting", RobotContainer.getInstance().overrideShooting);
 
-        SmartDashboard.putBoolean("cancelAutomations", RobotContainer.getInstance().cancelAutomations);
-
         SmartDashboard.putNumber("RobotAngleOffset", params.robotAngleOffset().getDegrees());
         SmartDashboard.putNumber("HoodAngleOffset", params.hoodAngleOffset().getDegrees());
         SmartDashboard.putNumber("FlyWheelSpeedOffset", params.flyWheelOffset());

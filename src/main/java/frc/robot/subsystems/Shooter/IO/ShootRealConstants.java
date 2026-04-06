@@ -56,8 +56,8 @@ public class ShootRealConstants {
         config.slot0Config.pidConfig.iZone = 0.3;
         config.slot0Config.pidConfig.iMaxAccum = 2;
 
-        config.slot0Config.profileConfig.maximumMeasurementAcceleration = 20;
-        config.slot0Config.profileConfig.maximumMeasurementVelocity = 20;
+        config.slot0Config.profileConfig.maximumMeasurementAcceleration = 80;
+        config.slot0Config.profileConfig.maximumMeasurementVelocity = 80;
 
 
 
@@ -74,10 +74,15 @@ public class ShootRealConstants {
         config.slot1Config.pidConfig.iZone = 0.6;
         config.slot1Config.pidConfig.iMaxAccum = 2;
 
+        config.slot1Config.profileConfig.maximumMeasurementAcceleration = 80;
+        config.slot1Config.profileConfig.maximumMeasurementVelocity = 80;
+
         config.simulationConfig.kA = 0.023275;
         config.simulationConfig.kV = 0.31938;
 
         config.constraintsConfig.minOutput = 0;
+
+        
 
         return config;
     }

@@ -19,15 +19,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "waitUntilNoBalls"
-                      }
-                    },
-                    {
                       "type": "wait",
                       "data": {
-                        "waitTime": 15.0
+                        "waitTime": 20.0
                       }
                     }
                   ]

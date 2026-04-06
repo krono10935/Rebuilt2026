@@ -15,7 +15,7 @@ public class Constants {
 
     public static final boolean USE_OBJECT_DETECTION = true;
 
-    public static final Mode simMode = Mode.SIM;
+    public static final Mode simMode = Mode.REAL;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
     public static enum Mode {
@@ -38,7 +38,7 @@ public class Constants {
     public static final double HUB_ACTIVITY_DEABAND_BEFORE_ACTIVE = 2;
 
     public static final ProfiledPIDController THETA_CONTROLLER = 
-        new ProfiledPIDController(4,4,0,
+        new ProfiledPIDController(4,8,0.1,
         new Constraints(10, 5));
 
     static{
@@ -46,6 +46,7 @@ public class Constants {
         THETA_CONTROLLER.setIntegratorRange(-10, 10);
         THETA_CONTROLLER.setIZone(Rotation2d.fromDegrees(20).getRadians());
         THETA_CONTROLLER.setTolerance(Rotation2d.fromDegrees(2).getRadians());
+        SmartDashboard.putData(THETA_CONTROLLER);
     }
 
     public enum Phase{
@@ -139,21 +140,16 @@ public class Constants {
          * @return whether or not at a given timestamp the hub would be active for your team
          */
         public static boolean isActive(double time){
-            return true;
-            // Phase phase = Phase.getActivePhase(time);
-
-            // switch (phase) {
-            //     case AUTO,TranistionShift,EndGame:
-            //         return true;
-            //     case SecondShift,FourthShift:
-            //         // If red is inactive first and we are red, then we will be active shifts 2,4
-            //         // Otherwise we will be inactive in those Shifts
-            //         return isActiveFirst();
-            //     case FirstShift,ThirdShift:
-            //         return !isActiveFirst();
-            //     default:
-            //         return false;
-            // }
+             Phase phase = Phase.getActivePhase(time);
+            return switch (phase) {
+                case AUTO, TranistionShift, EndGame -> true;
+                case SecondShift, FourthShift ->
+                    // If red is inactive first and we are red, then we will be active shifts 2,4
+                    // Otherwise we will be inactive in those Shifts
+                        isActiveFirst();
+                case FirstShift, ThirdShift -> !isActiveFirst();
+                default -> false;
+            };
             
         }
 

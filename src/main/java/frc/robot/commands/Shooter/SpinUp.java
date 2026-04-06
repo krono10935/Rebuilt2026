@@ -58,6 +58,7 @@ public class SpinUp extends Command {
 
   public void end(boolean interrupted){
     if(interrupted) shooter.stopFlyWheel();
+    else LED.getInstance().setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(true));
   }
 
   @Override

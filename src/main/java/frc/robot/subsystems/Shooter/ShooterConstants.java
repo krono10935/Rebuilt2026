@@ -43,7 +43,7 @@ public class ShooterConstants {
 
 
 
-    public static final double ANGULAR_SPEED_DEADBAND_DEGREES = 0.5;
+    public static final double ANGULAR_SPEED_DEADBAND_DEGREES = 5;
     
     public static final double LINEAR_SPEED_DEADBAND_MPS = 0.3;
 

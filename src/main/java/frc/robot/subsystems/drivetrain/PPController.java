@@ -93,6 +93,13 @@ public class PPController implements PathFollowingController {
         Logger.recordOutput("PP/yError", yController.getError());
         Logger.recordOutput("PP/rotationError", rotationController.getError());
 
+        Logger.recordOutput("PP/xSetpoint", targetPose.getX());
+        Logger.recordOutput("PP/ySetpoint", targetPose.getY());
+        Logger.recordOutput("PP/rotationSetpoint", targetPose.getRotation().getRadians());
+
+        Logger.recordOutput("PP/xFF", xFF);
+        Logger.recordOutput("PP/yFF", yFF);
+        Logger.recordOutput("PP/rotationFF", rotationFF);
 
         if(thetaOutputOverride.isPresent()){
             rotationOutput = thetaOutputOverride.get().getAsDouble();

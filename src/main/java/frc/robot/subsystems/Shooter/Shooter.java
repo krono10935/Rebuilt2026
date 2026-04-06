@@ -80,7 +80,6 @@ public class Shooter extends SubsystemBase {
     public void keepVelocity(double speedMPS) {
         io.keepVelocity(speedMPS);
         isKeepingVelocity = true;
-        LED.getInstance().setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(true));
     }
 
     /**
@@ -182,5 +181,4 @@ public class Shooter extends SubsystemBase {
     public double getShooterVelocity(){
         return inputs.shooterSpeedMPS;
     }
-
 }

@@ -12,28 +12,26 @@ import java.util.function.BooleanSupplier;
 
 public class PatternFactory {
 
-    private static LEDPattern defaultPatternInstance;
-    private static DriverStation.Alliance lastAlliance = DriverStation.Alliance.Red;
+    private final static LEDPattern defaultRedPattern = createDefaultPattern(DriverStation.Alliance.Red);
+    private final static LEDPattern defaultBluePattern = createDefaultPattern(DriverStation.Alliance.Blue);
+
+    private static LEDPattern createDefaultPattern(DriverStation.Alliance alliance){
+        Color primaryColor = Color.kWhite;
+        Color secondaryColor;
+
+        secondaryColor = alliance == DriverStation.Alliance.Red ?
+                new Color(130, 20, 20) :
+                Color.kDarkBlue;
+
+        LEDPattern background = LEDPattern.solid(primaryColor);
+
+        LEDPattern island = LEDPattern.steps(Map.of(0, Color.kBlack, 0.8, secondaryColor)).scrollAtRelativeSpeed(Units.Hertz.of(1)).atBrightness(Units.Percent.of(60));
+
+        return island.overlayOn(island.reversed()).overlayOn(background);
+    }
 
     public static LEDPattern defaultPattern(DriverStation.Alliance alliance) {
-
-        if(defaultPatternInstance == null || lastAlliance != alliance){
-            lastAlliance = alliance;
-            Color primaryColor = Color.kWhite;
-            Color secondaryColor;
-
-            secondaryColor = alliance == DriverStation.Alliance.Red ?
-                    new Color(130, 20, 20) :
-                    Color.kDarkBlue;
-
-            LEDPattern background = LEDPattern.solid(primaryColor);
-
-            LEDPattern island = LEDPattern.steps(Map.of(0, Color.kBlack, 0.8, secondaryColor)).scrollAtRelativeSpeed(Units.Hertz.of(1)).atBrightness(Units.Percent.of(60));
-
-            defaultPatternInstance =  island.overlayOn(island.reversed()).overlayOn(background);
-        }
-
-        return defaultPatternInstance;
+        return alliance == DriverStation.Alliance.Red ? defaultRedPattern : defaultBluePattern;
     }
 
     /**
@@ -97,19 +95,37 @@ public class PatternFactory {
 //        return breathe.overlayOn(pattern).atBrightness(brightness);
     }
 
-    private static LEDPattern shooterSpunUpIndicatorInstance;
-    private static boolean lastSpunUp = false;
+    private final static LEDPattern shooterSpunUpPattern = createSpunUpPattern(true);
+    private final static LEDPattern shooterNotSpunUpPattern = createSpunUpPattern(false);
+
+    private static LEDPattern createSpunUpPattern(boolean isSpunUp){
+        Color spunUpColor = isSpunUp ? Color.kGreen : Color.kRed;
+
+        var pattern = LEDPattern.steps(Map.of(0.00, Color.kBlack, 0.85, spunUpColor)).scrollAtRelativeSpeed(Units.Hertz.of(1));
+
+         return pattern.overlayOn(pattern.reversed());
+    }
+
     public static LEDPattern shooterSpunUpIndicator(boolean isSpunUp){
-        if(shooterSpunUpIndicatorInstance == null || lastSpunUp != isSpunUp) {
-            lastSpunUp = isSpunUp;
+        return isSpunUp ? shooterSpunUpPattern : shooterNotSpunUpPattern;
+    }
 
-            Color spunUpColor = isSpunUp ? Color.kGreen : Color.kRed;
+    public static LEDPattern ballDotsPattern(){
+        var pattern1 = LEDPattern.steps(Map.of(0.125,Color.kYellow))
+                .atBrightness(Units.Percent.of(50))
+                .scrollAtRelativeSpeed(Units.Hertz.of(1))
+                .breathe(Units.Second.of(1));
 
-            var pattern = LEDPattern.steps(Map.of(0.00, Color.kBlack, 0.85, spunUpColor)).scrollAtRelativeSpeed(Units.Hertz.of(1));
+        var pattern2 = LEDPattern.steps(Map.of(0.0625,Color.kYellow))
+                .atBrightness(Units.Percent.of(80))
+                .scrollAtRelativeSpeed(Units.Hertz.of(0.5))
+                .breathe(Units.Second.of(2));
 
-            shooterSpunUpIndicatorInstance = pattern.overlayOn(pattern.reversed());
-        }
+         var pattern3 = LEDPattern.steps(Map.of(0.625,Color.kYellow))
+                 .atBrightness(Units.Percent.of(20))
+                 .scrollAtRelativeSpeed(Units.Hertz.of(2))
+                 .breathe(Units.Second.of(5));
 
-        return shooterSpunUpIndicatorInstance;
+         return pattern1.overlayOn(pattern2).overlayOn(pattern3);
     }
 }

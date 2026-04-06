@@ -23,7 +23,6 @@ import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.conduit.ConduitApi;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -77,14 +76,8 @@ public class RobotContainer {
 
     public boolean overrideShooting = false;
 
-    @AutoLogOutput(key = "ShootNOW")
-    public boolean immediatelyShoot = false;
-
-    public boolean cancelAutomations = false;
-
     public IntakeMode currentIntakeMode = IntakeMode.FourtyBalls;
 
-    public boolean closeIntakeImmediately = false;
 
     public static RobotContainer getInstance() {
         if (instance == null) {
@@ -98,8 +91,6 @@ public class RobotContainer {
 
         shooter = new Shooter();
 
-        led = LED.getInstance();
-
         intake = new Intake();
 
         driverController = new CommandXboxController(0);
@@ -107,6 +98,8 @@ public class RobotContainer {
         operatorController = new CommandXboxController(1);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
+
+        LED.getInstance();  
 
         autoChooser = registerNamedCommand(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
@@ -250,9 +243,7 @@ public class RobotContainer {
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
 
-        driverController.rightBumper().onTrue(drivetrain.resetGyro());
-
-        driverController.a().onTrue(new InstantCommand(() -> cancelAutomations = !cancelAutomations));
+        driverController.start().onTrue(drivetrain.resetGyro());
 
         driverController.leftBumper().whileTrue(new StartEndCommand(
                 () -> intake.setRollerDutyCycle(-0.5),
@@ -263,25 +254,14 @@ public class RobotContainer {
         var intakeCommand = Sequences.intakeOpenStart(intake)
                 .alongWith(new DriveIntakeCommand(drivetrain, driverController));
 
-        driverController.leftTrigger(0.2).whileTrue(intakeCommand)
-                .onFalse(new InstantCommand(() -> {
-                    cancelAutomations = true;
-                    //currentIntakeMode = IntakeMode.ThirtyBalls;
-                }));
+        driverController.leftTrigger(0.2).whileTrue(intakeCommand);
 
 
+        driverController.x().whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
+                operatorController.y(), () -> currentIntakeMode));
 
 
-       driverController.x().whileTrue(Sequences.delivery(drivetrain, shooter, intake, driverController,
-        operatorController.y(), () -> currentIntakeMode));
-
-        //operatorController.a().whileTrue(ShootCommand.shootCommandFactory(shooter, drivetrain, driverController, intake, vision, operatorController.y(), () -> currentIntakeMode));
-
-
-        driverController.y().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
-
-        //autoShoot.whileTrue(Commands.print("autoshoot"));
-
+        driverController.rightBumper().whileTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         new Trigger(hubAboutToActivate).onTrue(new InstantCommand(
                 () -> {
@@ -290,13 +270,13 @@ public class RobotContainer {
                     Logger.recordOutput("IsRumbling", true);
                 })
                 .andThen(new WaitCommand(1.5), new InstantCommand(
-                    () -> {
-                        driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                        Logger.recordOutput("IsRumbling", false);
-                    }
+                        () -> {
+                            driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+                            operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+                            Logger.recordOutput("IsRumbling", false);
+                        }
                 )));
-    
+
     }
 
     private void configureOperatorBindings() {
@@ -329,25 +309,26 @@ public class RobotContainer {
         operatorController.x().toggleOnTrue(IntakeFactory.resetIntake(intake));
 
         var shootCommand = ShootCommand.operatorShootCommandFactory(
-                                shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting, operatorController.b());
+                shooter, drivetrain, vision, intake, operatorController.y(), () -> currentIntakeMode,
+                () -> overrideShooting, operatorController.b());
 
         var immediateShootCommand = ShootCommand.operatorShootCommandFactory(
-                                shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
-                                () -> overrideShooting, operatorController.b()).onlyIf(()-> !shootCommand.isScheduled());
-        
-        operatorController.b().onTrue(new CloseCommand(intake).onlyIf(() -> 
-                !shootCommand.isScheduled() && 
-                !immediateShootCommand.isScheduled()
-        ));
-        
-        operatorController.rightStick().toggleOnTrue(
+                shooter, drivetrain, vision, intake, operatorController.y(), () -> currentIntakeMode,
+                () -> overrideShooting, operatorController.b()).onlyIf(() -> !shootCommand.isScheduled());
+
+        BooleanSupplier isShootCommandNotRunning =
+                () -> !shootCommand.isScheduled() && !immediateShootCommand.isScheduled();
+
+        operatorController.b().onTrue(new CloseCommand(intake).onlyIf(isShootCommandNotRunning));
+
+        operatorController.rightStick().whileTrue(
                 new StartEndCommand(
                         () -> overrideShooting = true,
                         () -> overrideShooting = false)
-                .alongWith(
-                        immediateShootCommand));
+                        .alongWith(
+                                immediateShootCommand));
 
+        ;
         operatorController.a().whileTrue(shootCommand);
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
@@ -356,18 +337,17 @@ public class RobotContainer {
 
         operatorController.leftTrigger(0.3).onTrue(
                 new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getPrev()));
-        
+
         operatorController.rightTrigger(0.3).onTrue(
                 new InstantCommand(() -> currentIntakeMode = currentIntakeMode.getNext()));
 
-        operatorController.y().whileTrue(new StartEndCommand(() -> shooter.getIndexer().spinBackward(),
-         () -> shooter.getIndexer().spinForward(), shooter.getIndexer())
-         .onlyIf(() -> shooter.getIndexer().getCurrentCommand() == null));
-
-
-
+        operatorController.y().whileTrue(
+                new StartEndCommand(
+                        shooter.getIndexer()::spinBackward,
+                        shooter.getIndexer()::turnOff,
+                        shooter.getIndexer())
+                        .onlyIf(isShootCommandNotRunning));
     }
-
     /**
      * @return the chosen autonomous command.
      */
@@ -376,7 +356,7 @@ public class RobotContainer {
 
         Command autoCommand =
                 selectedAuto
-                .andThen(drivetrain.idle());
+                        .andThen(drivetrain.idle());
 
         CommandScheduler.getInstance().removeComposedCommand(selectedAuto);
 
@@ -426,21 +406,25 @@ public class RobotContainer {
             PPController.setThetaOverride(driveAndHomeToHubCommand::calculateThetaPID);
         }, PPController::clearThetaOverride);
 
-        Command aimRobotStationary = new RunCommand(
-                () -> drivetrain.drive(new ChassisSpeeds(
-                        0, 0, driveAndHomeToHubCommand.calculateThetaPID())), drivetrain)
-                .beforeStarting(driveAndHomeToHubCommand::resetThetaController);
+        Command aimRobotStationary = new FunctionalCommand(
+                driveAndHomeToHubCommand::resetThetaController,
+                () -> drivetrain.drive(
+                        new ChassisSpeeds(0, 0,
+                                driveAndHomeToHubCommand.calculateThetaPID())),
+                (interrupted) -> drivetrain.stop(),
+                () -> false,
+                drivetrain);
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
-                ((new ShootCommand(shooter, drivetrain, vision, intake,  () -> false, () -> currentIntakeMode, 
-                () -> false, () -> false))
-                .alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
-                .alongWith(aimRobot));
+                ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode,
+                        () -> false, () -> false))
+                        .alongWith(new ShakeItOffCommand(intake))).beforeStarting(new SpinUp(shooter, drivetrain))
+                        .alongWith(aimRobot));
 
         NamedCommands.registerCommand("shootAndAimStationary",
-                ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode, 
-                () -> false, () -> false))
+                ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode,
+                        () -> false, () -> false))
                         .alongWith(new TwoInOneOut(intake), aimRobotStationary)));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17), shooter));

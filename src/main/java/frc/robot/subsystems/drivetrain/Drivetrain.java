@@ -197,6 +197,7 @@ public class Drivetrain extends SubsystemBase {
      */
     public void driveWithoutPP(ChassisSpeeds speeds) {
         var targetSpeeds = kinematics.toWheelSpeeds(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(targetSpeeds, constants.SPEED_CONFIG.maxLinearSpeed());
         for (int i = 0; i < 4; i++){
             targetSpeeds[i].optimize(io[i].getState().angle);
             targetSpeeds[i].cosineScale(io[i].getState().angle);
