@@ -182,9 +182,4 @@ public class Shooter extends SubsystemBase {
     public double getShooterVelocity(){
         return inputs.shooterSpeedMPS;
     }
-
-    public double getShooterVelocityError(){
-        return inputs.shootSpeedError;
-    }
-
 }

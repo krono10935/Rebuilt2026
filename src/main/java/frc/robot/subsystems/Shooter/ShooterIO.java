@@ -12,7 +12,6 @@ public interface ShooterIO {
        public boolean isFlywheelAtGoal;
        public boolean isKickerStuck;
        public boolean isHoodAtSetpoint;
-       public double shootSpeedError;
     }
 
     /**

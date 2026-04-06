@@ -130,14 +130,6 @@ public class ShootCommand extends Command {
             hasReachedTargetVelocity = false;
         }
 
-        if(shooter.getShooterVelocityError() <= 1.5){
-            shooter.keepVelocity(targetFlywheelSpeed);
-        }
-        else{
-            shooter.spinUp(targetFlywheelSpeed);
-        }
-
-
         shooter.setHoodAngle(targetHoodAngle);
 
         boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeToHubCommand.robotAngleTolerance.getRadians();
@@ -171,6 +163,7 @@ public class ShootCommand extends Command {
             handleKickerErrors();
 
             shooter.toggleKicker(true);
+            shooter.keepVelocity(targetFlywheelSpeed);
 
             if (reverseIndexer.getAsBoolean()) {
                 shooter.getIndexer().spinBackward();
@@ -189,7 +182,7 @@ public class ShootCommand extends Command {
 
         // otherwise open the kicker and start letting the shooter shoot
         else {
-
+            shooter.spinUp(targetFlywheelSpeed);
             shooter.toggleKicker(false);
             shooter.getIndexer().turnOff();
 
