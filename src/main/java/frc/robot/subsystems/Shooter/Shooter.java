@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems.Shooter;
 
+import frc.robot.leds.LED;
+import frc.robot.leds.LEDConstants;
+import frc.robot.leds.PatternFactory;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -77,6 +80,7 @@ public class Shooter extends SubsystemBase {
     public void keepVelocity(double speedMPS) {
         io.keepVelocity(speedMPS);
         isKeepingVelocity = true;
+        LED.getInstance().setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(true));
     }
 
     /**
@@ -85,6 +89,7 @@ public class Shooter extends SubsystemBase {
     public void stopFlyWheel() {
         io.stopFlyWheel();
         isKeepingVelocity = false;
+        LED.getInstance().setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(false));
     }
 
     /**

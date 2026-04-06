@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
  * @param end where does the pattern end of the strip
  * @param timeout how much time should the pattern be alive for, 0 is for always, any other value will cancel after the set amount
  */
+@Deprecated
 public record LedState(String pattern, Color mainColor, Color secondaryColor, 
                         double hz, double brightness, int start, int end, double timeout) {
 

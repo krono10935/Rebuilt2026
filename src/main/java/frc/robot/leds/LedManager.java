@@ -3,7 +3,6 @@ package frc.robot.leds;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.networktables.*;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -13,6 +12,7 @@ import frc.robot.Robot;
  * Manages the robot LED state by publishing it to NetworkTables.
  * <p>
  */
+@Deprecated
 public class LedManager extends SubsystemBase {
     /**
      * A list of all the strips connected to the LED controller
@@ -24,7 +24,7 @@ public class LedManager extends SubsystemBase {
      */
     private final NetworkTableEntry rslStatus;
 
-    // private final PowerDistribution pdh;
+    // private final LoggedPowerDistribution pdh;
 
     /**
      * Creates a new LED manager
@@ -32,10 +32,10 @@ public class LedManager extends SubsystemBase {
     public LedManager() {
         rslStatus = NetworkTableInstance.getDefault().getTable("Led").getEntry("RslStatus");
 
-        strip = new LEDStrip(18);
+        strip = new LEDStrip(4);
 
-        // pdh = new PowerDistribution();
-        turnOnAllLED();
+        // pdh = LoggedPowerDistribution.getInstance();
+        // turnOnAllLED();
     }
 
     /**
@@ -48,13 +48,13 @@ public class LedManager extends SubsystemBase {
         strip.addPattern(state);
     }
 
-    public void turnOffAllLED(){
-        // pdh.setSwitchableChannel(false);
-    }
+    // public void turnOffAllLED(){
+    //     pdh.setSwitchableChannel(false);
+    // }
 
-    public void turnOnAllLED(){
-        // pdh.setSwitchableChannel(true);
-    }
+    // public void turnOnAllLED(){
+    //     pdh.setSwitchableChannel(true);
+    // }
 
     @Override
     public void periodic(){

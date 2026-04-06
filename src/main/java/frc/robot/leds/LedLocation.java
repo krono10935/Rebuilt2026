@@ -3,6 +3,7 @@ package frc.robot.leds;
 /**
  * Location of the leds including Line id, start led, end led
  */
+@Deprecated
 public enum LedLocation{
     BASE(0,149),
     ARM(150,299),

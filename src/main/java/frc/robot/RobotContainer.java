@@ -11,10 +11,14 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.*;
 import frc.robot.commands.IntakeCommands.*;
+import frc.robot.leds.LED;
+import frc.robot.leds.LEDConstants;
+import frc.robot.leds.PatternFactory;
 import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
 import org.json.simple.parser.ParseException;
@@ -35,13 +39,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HubTiming;
 import frc.robot.commands.Shooter.BasicShootCommand;
 import frc.robot.commands.Shooter.ShootCommand;
 import frc.robot.commands.Shooter.SpinUp;
-import frc.robot.leds.LedManager;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShotCalculator;
@@ -52,13 +54,10 @@ import frc.robot.subsystems.drivetrain.PPController;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.AllianceFlipUtil;
-import frc.utils.CheckFreeSpace;
 
 
 public class RobotContainer {
     private static RobotContainer instance;
-
-    public final LedManager ledManager;
 
     public final Vision vision;
 
@@ -72,6 +71,8 @@ public class RobotContainer {
 
     public final Drivetrain drivetrain;
 
+    private LED led;
+    
     private final LoggedDashboardChooser<Command> autoChooser;
 
     public boolean overrideShooting = false;
@@ -97,7 +98,7 @@ public class RobotContainer {
 
         shooter = new Shooter();
 
-        ledManager = new LedManager();
+        led = LED.getInstance();
 
         intake = new Intake();
 
@@ -116,12 +117,7 @@ public class RobotContainer {
         DriveToPoseConstants.POSE_TOLERANCE = 0.01;
 
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
-
-        SmartDashboard.putNumber("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage()); //TODO: fix
-        Logger.recordOutput("Robot/Disk Used Space Percent", CheckFreeSpace.checkUsedPercentage());
-
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
-
         // TODO enable for comp
         // if (ModeFileHandling.isCompMode()){
         //     configureBindings();
