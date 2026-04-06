@@ -4,7 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [
     "Depot - Climb",
-    "Outpost - Climb",
+    "Hub",
+    "Outpost",
     "Testing",
     "Trench (L) - Trench (L) - Climb",
     "Trench (R) - Trench (R) - Climb"
