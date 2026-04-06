@@ -263,16 +263,18 @@ public class ShootCommand extends Command {
         }
     }
 
+    
     /**
-     * Smart shoot with auto calculated parameters but with spinUp attached
-     *
+     * 
      * @param shooter
-     * @param drivetrain               the drivetrain is used to calculate the shooting params
-     * @param vision                   used to config vision for shooting
-     * @param intake                   used to open clogs in the indexer
-     * @param reverseIndexer           whether or not the indexer should spin opposite direction (outwards from the kicker)
-     * @param intakeModeSupplier       what mode of intake opening clogs should we use
-     * @param immediatelyShootSupplier whether to override all tests other than being spun up and start shooting.
+     * @param drivetrain used to calculate the shooting parameters
+     * @param vision used to change camera configs
+     * @param intake used to hump balls into the indexer
+     * @param reverseIndexerSupplier whether to spin forward or backwards
+     * @param intakeModeSupplier which intake mode the driver is currently using
+     * @param immediatelyShootSupplier whether or not to immediately shoot disregarding all checks other than spun up
+     * @param immediatelyCloseIntake whether or not to ignore the intake mode and simply close normally
+     * @return
      */
     public static Command operatorShootCommandFactory(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
                                                       BooleanSupplier reverseIndexerSupplier, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier,
