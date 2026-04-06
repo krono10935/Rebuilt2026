@@ -14,7 +14,7 @@ import io.github.captainsoccer.basicmotor.gains.PIDGains;
 public enum SwerveModulesMK5 {
 
     FRONT_LEFT(
-            6,  -0.437, 12
+            6,  -0.430, 12
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
             new FeedForwardsGains(2.4805, 0.32),
@@ -31,7 +31,7 @@ public enum SwerveModulesMK5 {
 
 
     FRONT_RIGHT(
-            8,  0, 13
+            8,  -0.45, 13
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
             new FeedForwardsGains(2.3745, 0.32),
@@ -47,7 +47,7 @@ public enum SwerveModulesMK5 {
             new FeedForwardsGains()),
 
     BACK_LEFT(
-            7,  0.263, 11
+            7,  0.2624, 11
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
             new FeedForwardsGains(2.4752, 0.32),
@@ -64,7 +64,7 @@ public enum SwerveModulesMK5 {
 
 
     BACK_RIGHT(
-            9,  0, 10
+            9,  0.236, 10
             ,
             new PIDGains(7, 0.4, 0, 0, 0, 0),
             new FeedForwardsGains(2.3786, 0.32),

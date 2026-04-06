@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
@@ -240,7 +241,7 @@ public class Sequences {
     }
 
 
-    private static LoggedNetworkNumber flyWheelSpeed = new LoggedNetworkNumber("Delivery/FlyWheelSpeed", 20);
+    private static LoggedNetworkNumber flyWheelSpeed = new LoggedNetworkNumber("Delivery/FlyWheelSpeed", 4);
 
     private static LoggedNetworkNumber hoodAngle = new LoggedNetworkNumber("Delivery/HoodAngle", 28);
 
@@ -266,14 +267,21 @@ public class Sequences {
                 .minus(drivetrain.getEstimatedPosition().getTranslation())
                 .getAngle();
 
-        BooleanSupplier isRobotAligned =
-                () -> Math.abs(angle.get().getDegrees() - drivetrain.getEstimatedPosition().getRotation().getDegrees()) < 5;
+        Supplier<Double> speedSupllier = () -> {
+            var bumpLocation = bump.get();
+            var robotLocation = drivetrain.getEstimatedPosition().getTranslation();
 
-        BooleanSupplier isFlyWheelAtSpeed = () -> Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) < 2;
+            return MathUtil.clamp(bumpLocation.getDistance(robotLocation) * flyWheelSpeed.get(), 15, 29);
+        };
+
+        BooleanSupplier isRobotAligned =
+                () -> Math.abs(angle.get().getDegrees() - drivetrain.getEstimatedPosition().getRotation().getDegrees()) < 10;
+
+        BooleanSupplier isFlyWheelAtSpeed = () -> Math.abs(shooter.getShooterVelocity() - speedSupllier.get()) < 2;
 
         Command deliver = new RunCommand(() -> {
             shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
-            shooter.spinUp(flyWheelSpeed.get());
+            shooter.spinUp(speedSupllier.get());
 
             if (isRobotAligned.getAsBoolean()) {
                 if (isFlyWheelAtSpeed.getAsBoolean()) {

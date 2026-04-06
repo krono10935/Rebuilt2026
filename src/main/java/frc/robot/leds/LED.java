@@ -31,7 +31,6 @@ public class LED extends SubsystemBase {
         led = new AddressableLED(LEDConstants.LED_PORT);
         led.setLength(LEDConstants.LED_COUNT_TOTAL);
         led.setColorOrder(ColorOrder.kRGB);
-        setPattern(LEDConstants.Segments.ALL, LEDPattern.kOff);
         buffer = new AddressableLEDBuffer(LEDConstants.LED_COUNT_TOTAL);
 
         for (var segment : LEDConstants.Segments.values()) {
@@ -40,7 +39,7 @@ public class LED extends SubsystemBase {
         }
 
         setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.Alliance.Red));
-        setPattern(LEDConstants.Segments.INDEXER, PatternFactory.ballDotsPattern());
+//        setPattern(LEDConstants.Segments.INDEXER, PatternFactory.ballDotsPattern());
 
         led.setData(buffer);
         led.start();

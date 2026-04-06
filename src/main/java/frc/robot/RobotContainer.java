@@ -243,7 +243,7 @@ public class RobotContainer {
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
 
-        driverController.rightBumper().onTrue(drivetrain.resetGyro());
+        driverController.y().onTrue(drivetrain.resetGyro());
 
         driverController.leftBumper().whileTrue(new StartEndCommand(
                 () -> intake.setRollerDutyCycle(-0.5),
@@ -261,7 +261,7 @@ public class RobotContainer {
                 operatorController.y(), () -> currentIntakeMode));
 
 
-        driverController.y().toggleOnTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
+        driverController.rightBumper().whileTrue(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         new Trigger(hubAboutToActivate).onTrue(new InstantCommand(
                 () -> {
@@ -329,7 +329,7 @@ public class RobotContainer {
                                 immediateShootCommand));
 
         ;
-        operatorController.a().whileTrue(shootCommand.alongWith(new DriveAndHomeToHubCommand(drivetrain,driverController)));
+        operatorController.a().whileTrue(shootCommand);
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 

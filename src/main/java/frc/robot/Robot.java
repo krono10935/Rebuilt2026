@@ -191,8 +191,10 @@ public class Robot extends LoggedRobot
     @Override
     public void teleopExit() {
         RobotContainer.getInstance().drivetrain.setBrakeMode(false);
-        LED.getInstance().turnOffLed();
-        LED.getInstance().setPattern(LEDConstants.Segments.ALL, LEDPattern.rainbow(255, 255), 3);
+        if(DriverStation.isFMSAttached()){
+            LED.getInstance().turnOffLed();
+            LED.getInstance().setPattern(LEDConstants.Segments.ALL, LEDPattern.rainbow(255, 255), 3);
+        }
     }
     
     
