@@ -269,33 +269,32 @@ public class Sequences {
         BooleanSupplier isRobotAligned =
                 () -> Math.abs(angle.get().getDegrees() - drivetrain.getEstimatedPosition().getRotation().getDegrees()) < 5;
 
+        BooleanSupplier isFlyWheelAtSpeed = () -> Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) < 2;
+
         Command deliver = new RunCommand(() -> {
+            shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
+            shooter.spinUp(flyWheelSpeed.get());
+
             if (isRobotAligned.getAsBoolean()) {
-                shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
-                shooter.spinUp(flyWheelSpeed.get());
+                if (isFlyWheelAtSpeed.getAsBoolean()) {
 
-                if (Math.abs(shooter.getShooterVelocity() - flyWheelSpeed.get()) < 2) {
-                        if (reverseIndexer.getAsBoolean()){
-                                shooter.getIndexer().spinBackward();
-                        } else {
-                                shooter.getIndexer().spinForward();
-                        }
+                    if (reverseIndexer.getAsBoolean()) {
+                        shooter.getIndexer().spinBackward();
+                    } else {
+                        shooter.getIndexer().spinForward();
+                    }
+
                     shooter.toggleKicker(true);
-
 
                     IntakeMode.chooseMode(intakeModeSupplier.get());
                     IntakeMode.dealWithChosenMode(intake);
                 } else {
                     shooter.toggleKicker(false);
                     shooter.getIndexer().turnOff();
-                    IntakeMode.resetLastChosen(intake);
-
                 }
             } else {
-                shooter.stopFlyWheel();
                 shooter.toggleKicker(false);
                 shooter.getIndexer().turnOff();
-                IntakeMode.resetLastChosen(intake);
             }
         }, shooter).finallyDo(() -> {
             shooter.stopFlyWheel();

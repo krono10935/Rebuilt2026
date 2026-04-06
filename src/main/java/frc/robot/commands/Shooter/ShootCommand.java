@@ -130,7 +130,14 @@ public class ShootCommand extends Command {
             hasReachedTargetVelocity = false;
         }
 
-        shooter.keepVelocity(targetFlywheelSpeed);
+        if(shooter.getShooterVelocityError() <= 1.5){
+            shooter.keepVelocity(targetFlywheelSpeed);
+        }
+        else{
+            shooter.spinUp(targetFlywheelSpeed);
+        }
+
+
         shooter.setHoodAngle(targetHoodAngle);
 
         boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeToHubCommand.robotAngleTolerance.getRadians();
