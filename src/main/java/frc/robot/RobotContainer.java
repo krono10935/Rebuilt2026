@@ -369,9 +369,25 @@ public class RobotContainer {
          .onlyIf(() -> shooter.getIndexer().getCurrentCommand() == null));
 
 
+        var DriveAndHomeToHub = new DriveAndHomeToHubCommand(drivetrain,driverController);
+
+        operatorController.y().whileTrue(DriveAndHomeToHub);
+
+        operatorController.a().whileTrue(Commands.sequence(
+                (new SpinUp(shooter,drivetrain).repeatedly())
+                        .until(DriveAndHomeToHub::isScheduled),
+                new SpinUp(shooter,drivetrain),
+                ShootCommand.operatorShootCommandFactory(
+                        shooter, drivetrain, vision, intake, operatorController.y() ,() -> currentIntakeMode,
+                        () -> overrideShooting, operatorController.b())
+        ));
+
+//        LoggedNetworkNumber intakePos = new LoggedNetworkNumber("pos", 0.3);
+//        driverController.a().onTrue(new InstantCommand(() -> intake.setPosition(intakePos.get())));
+
+
 
     }
-
     /**
      * @return the chosen autonomous command.
      */
