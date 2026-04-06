@@ -348,7 +348,7 @@ public class RobotContainer {
                 .alongWith(
                         immediateShootCommand));
 
-        operatorController.a().whileTrue(shootCommand);
+        operatorController.a().toggleOnTrue(shootCommand);
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
@@ -426,10 +426,14 @@ public class RobotContainer {
             PPController.setThetaOverride(driveAndHomeToHubCommand::calculateThetaPID);
         }, PPController::clearThetaOverride);
 
-        Command aimRobotStationary = new RunCommand(
-                () -> drivetrain.drive(new ChassisSpeeds(
-                        0, 0, driveAndHomeToHubCommand.calculateThetaPID())), drivetrain)
-                .beforeStarting(driveAndHomeToHubCommand::resetThetaController);
+        Command aimRobotStationary = new FunctionalCommand(
+                driveAndHomeToHubCommand::resetThetaController,
+                () -> drivetrain.drive(
+                        new ChassisSpeeds(0, 0,
+                         driveAndHomeToHubCommand.calculateThetaPID())),
+                (interrupted) -> drivetrain.stop(),
+                () -> false,
+                drivetrain);
 
 
         NamedCommands.registerCommand("shootAndAimMoving",
