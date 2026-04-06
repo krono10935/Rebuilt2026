@@ -181,7 +181,6 @@ public class Robot extends LoggedRobot
         }
 
         RobotContainer.getInstance().drivetrain.reset(RobotContainer.getInstance().drivetrain.getEstimatedPosition());
-
     }
     
     

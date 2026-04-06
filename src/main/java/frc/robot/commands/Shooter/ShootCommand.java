@@ -34,7 +34,9 @@ import org.littletonrobotics.junction.Logger;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
-    /** Creates a new ShootCommand. */
+    /**
+     * Creates a new ShootCommand.
+     */
 
     private static boolean overrideObjectDetection = true;
 
@@ -60,35 +62,36 @@ public class ShootCommand extends Command {
 
     private final BooleanSupplier reverseIndexer;
 
-    
+
     private boolean hasReachedTargetVelocity = false;
     private double lastTargetVelocity = 0;
 
-    private Supplier<IntakeMode> intakeModeSupplier;
-    private BooleanSupplier immediatelyShootSupplier;
-    private BooleanSupplier immediatelyCloseIntake;
+    private final Supplier<IntakeMode> intakeModeSupplier;
+    private final BooleanSupplier immediatelyShootSupplier;
+    private final BooleanSupplier immediatelyCloseIntake;
 
     /**
      * Smart shoot with auto calculated parameters
+     *
      * @param shooter
-     * @param drivetrain the drivetrain is used to calculate the shooting params
-     * @param vision used to config vision for shooting
-     * @param intake used to open clogs in the indexer
-     * @param reverseIndexer whether or not the indexer should spin opposite direction (outwards from the kicker)
-     * @param intakeModeSupplier what mode of intake opening clogs should we use
+     * @param drivetrain               the drivetrain is used to calculate the shooting params
+     * @param vision                   used to config vision for shooting
+     * @param intake                   used to open clogs in the indexer
+     * @param reverseIndexer           whether or not the indexer should spin opposite direction (outwards from the kicker)
+     * @param intakeModeSupplier       what mode of intake opening clogs should we use
      * @param immediatelyShootSupplier whether to override all tests other than being spun up and start shooting.
-     * @param immediatelyCloseIntake whether to close the intake immediately
+     * @param immediatelyCloseIntake   whether to close the intake immediately
      */
     public ShootCommand(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
-             BooleanSupplier reverseIndexer, Supplier<IntakeMode> intakeModeSupplier, 
-             BooleanSupplier immediatelyShootSupplier, BooleanSupplier immediatelyCloseIntake) {
+                        BooleanSupplier reverseIndexer, Supplier<IntakeMode> intakeModeSupplier,
+                        BooleanSupplier immediatelyShootSupplier, BooleanSupplier immediatelyCloseIntake) {
         // Use addRequirements() here to declare subsystem dependencies.
 
         this.shooter = shooter;
         this.drivetrain = drivetrain;
         this.vision = vision;
         this.intake = intake;
-        this.reverseIndexer  = reverseIndexer;
+        this.reverseIndexer = reverseIndexer;
 
         hoodSetpointTimer = new Timer();
         hoodFailedToSetpoint = new Alert("Hood failed to reach setpoint", AlertType.kError);
@@ -110,19 +113,19 @@ public class ShootCommand extends Command {
     }
 
     @Override
-    public void initialize(){
+    public void initialize() {
         vision.setCamAsPriority(CamerasConstants.SHOOTER_CAMERA);
     }
 
     @Override
     public void execute() {
         ShootingParameters params = ShotCalculator.getInstance().getParameters(drivetrain.getEstimatedPosition(),
-        drivetrain.getChassisSpeeds());
+                drivetrain.getChassisSpeeds());
 
         double targetFlywheelSpeed = params.flywheelSpeed();
         Rotation2d targetHoodAngle = params.hoodAngle();
 
-        if(Math.abs(targetFlywheelSpeed - lastTargetVelocity) > 0.3){
+        if (Math.abs(targetFlywheelSpeed - lastTargetVelocity) > 0.3) {
             lastTargetVelocity = targetFlywheelSpeed;
             hasReachedTargetVelocity = false;
         }
@@ -132,7 +135,7 @@ public class ShootCommand extends Command {
 
         boolean thetaAtSetpoint = Math.abs(drivetrain.getEstimatedPosition().getRotation().minus(params.robotAngle()).getRadians()) <= DriveAndHomeToHubCommand.robotAngleTolerance.getRadians();
 
-        if(!hasReachedTargetVelocity && shooter.isShooterAtGoal()){
+        if (!hasReachedTargetVelocity && shooter.isShooterAtGoal()) {
             hasReachedTargetVelocity = true;
         }
 
@@ -140,49 +143,50 @@ public class ShootCommand extends Command {
         Logger.recordOutput("ShootCommand/validity state", params.validityState());
         Logger.recordOutput("ShootCommand/hood", shooter.isHoodAtSetpoint());
         Logger.recordOutput("ShootCommand/shooter", hasReachedTargetVelocity);
-    //    Logger.recordOutput("ShootCommand/thetaAtSetpoint", thetaAtSetpoint);
+        //    Logger.recordOutput("ShootCommand/thetaAtSetpoint", thetaAtSetpoint);
 
-            // is the robot is in the shooting zone
+        // is the robot is in the shooting zone
         boolean shouldShoot =
-            params.validityState() == ValidityState.VALID &&
-            thetaAtSetpoint &&
-            hasReachedTargetVelocity && shooter.isHoodAtSetpoint() &&
-            (ObjectDetection.getInstance().hasBalls()
-            || overrideObjectDetection);
+                params.validityState() == ValidityState.VALID &&
+                        thetaAtSetpoint &&
+                        hasReachedTargetVelocity && shooter.isHoodAtSetpoint() &&
+                        (ObjectDetection.getInstance().hasBalls()
+                                || overrideObjectDetection);
 
         shouldShoot = shouldShoot || (immediatelyShootSupplier.getAsBoolean() && hasReachedTargetVelocity);
 
 
         // robot it isn't in shooting zone, go to spin up mode and turn off kicker
-        if (shouldShoot){
+        if (shouldShoot) {
             handleHoodErrors();
             handleFlyWheelErrors();
             handleIndexerErrors();
             handleKickerErrors();
 
             shooter.toggleKicker(true);
-            
-            if (reverseIndexer.getAsBoolean()){
+
+            if (reverseIndexer.getAsBoolean()) {
                 shooter.getIndexer().spinBackward();
             } else {
-                shooter.getIndexer().spinForward();;
+                shooter.getIndexer().spinForward();
+                ;
             }
 
-            if(immediatelyCloseIntake.getAsBoolean()){
+            if (immediatelyCloseIntake.getAsBoolean()) {
                 intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
-            } else if(RobotState.isTeleop()) {            
+            } else if (RobotState.isTeleop()) {
                 IntakeMode.chooseMode(intakeModeSupplier.get());
                 IntakeMode.dealWithChosenMode(intake);
             }
         }
 
         // otherwise open the kicker and start letting the shooter shoot
-        else{
-            
+        else {
+
             shooter.toggleKicker(false);
             shooter.getIndexer().turnOff();
 
-            if(immediatelyCloseIntake.getAsBoolean()){
+            if (immediatelyCloseIntake.getAsBoolean()) {
                 intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
             } else {
                 IntakeMode.resetLastChosen(intake);
@@ -190,69 +194,69 @@ public class ShootCommand extends Command {
         }
     }
 
-    private void handleHoodErrors(){
-        if (!hoodSetpointTimer.isRunning()){
+    private void handleHoodErrors() {
+        if (!hoodSetpointTimer.isRunning()) {
             hoodSetpointTimer.start();
         }
 
-        if (shooter.isHoodAtSetpoint()){
+        if (shooter.isHoodAtSetpoint()) {
             hoodSetpointTimer.reset();
             hoodFailedToSetpoint.set(false);
-        } else if (hoodSetpointTimer.get() > ShootRealConstants.HOOD_SETPOINT_ARRIVAL_TIME){
+        } else if (hoodSetpointTimer.get() > ShootRealConstants.HOOD_SETPOINT_ARRIVAL_TIME) {
             hoodFailedToSetpoint.set(true);
         }
     }
 
-    private void handleFlyWheelErrors(){
-        if (!flyWheelSetpointTimer.isRunning()){
+    private void handleFlyWheelErrors() {
+        if (!flyWheelSetpointTimer.isRunning()) {
             flyWheelSetpointTimer.start();
         }
 
-        if (shooter.isShooterAtGoal()){
+        if (shooter.isShooterAtGoal()) {
             flyWheelSetpointTimer.reset();
             flyWheelFailedToSetpoint.set(false);
 
-        } else if (flyWheelSetpointTimer.get() > ShootRealConstants.FLYWHEEL_TIME_TO_REACH_GOAL){
+        } else if (flyWheelSetpointTimer.get() > ShootRealConstants.FLYWHEEL_TIME_TO_REACH_GOAL) {
             flyWheelFailedToSetpoint.set(true);
         }
     }
 
-    private void handleKickerErrors(){
-        if (!kickerStuckTimer.isRunning()){
+    private void handleKickerErrors() {
+        if (!kickerStuckTimer.isRunning()) {
             kickerStuckTimer.start();
         }
 
-        if (shooter.isKickerActive()){
+        if (shooter.isKickerActive()) {
             kickerStuckTimer.reset();
             kickerStuck.set(false);
-        } else if (kickerStuckTimer.get() > ShootRealConstants.TIME_TO_NOT_BE_DEADBAND){
+        } else if (kickerStuckTimer.get() > ShootRealConstants.TIME_TO_NOT_BE_DEADBAND) {
             kickerStuck.set(true);
         }
     }
 
-    private void handleIndexerErrors(){
-        if (!indexerStuckTimer.isRunning()){
+    private void handleIndexerErrors() {
+        if (!indexerStuckTimer.isRunning()) {
             indexerStuckTimer.start();
         }
 
-        if (!shooter.getIndexer().isStuck()){
+        if (!shooter.getIndexer().isStuck()) {
             indexerStuckTimer.reset();
             indexerStuck.set(false);
 
-        } else if (indexerStuckTimer.get() > ShootRealConstants.TIME_TO_NOT_BE_DEADBAND){
+        } else if (indexerStuckTimer.get() > ShootRealConstants.TIME_TO_NOT_BE_DEADBAND) {
             indexerStuck.set(true);
         }
     }
 
 
     @Override
-    public void end(boolean interrupted){
+    public void end(boolean interrupted) {
 
         shooter.stopFlyWheel();
         shooter.toggleKicker(false);
         shooter.getIndexer().turnOff();
 
-        if(immediatelyCloseIntake.getAsBoolean()){
+        if (immediatelyCloseIntake.getAsBoolean()) {
             intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
         } else {
             IntakeMode.resetLastChosen(intake);
@@ -261,40 +265,42 @@ public class ShootCommand extends Command {
 
     /**
      * Smart shoot with auto calculated parameters but with spinUp attached
+     *
      * @param shooter
-     * @param drivetrain the drivetrain is used to calculate the shooting params
-     * @param vision used to config vision for shooting
-     * @param intake used to open clogs in the indexer
-     * @param reverseIndexer whether or not the indexer should spin opposite direction (outwards from the kicker)
-     * @param intakeModeSupplier what mode of intake opening clogs should we use
+     * @param drivetrain               the drivetrain is used to calculate the shooting params
+     * @param vision                   used to config vision for shooting
+     * @param intake                   used to open clogs in the indexer
+     * @param reverseIndexer           whether or not the indexer should spin opposite direction (outwards from the kicker)
+     * @param intakeModeSupplier       what mode of intake opening clogs should we use
      * @param immediatelyShootSupplier whether to override all tests other than being spun up and start shooting.
      */
     public static Command operatorShootCommandFactory(Shooter shooter, Drivetrain drivetrain, Vision vision, Intake intake,
-    BooleanSupplier reverseIndexerSupplier, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier,
-    BooleanSupplier immediatelyCloseIntake){
+                                                      BooleanSupplier reverseIndexerSupplier, Supplier<IntakeMode> intakeModeSupplier, BooleanSupplier immediatelyShootSupplier,
+                                                      BooleanSupplier immediatelyCloseIntake) {
         Command shootCommand = new ShootCommand(shooter, drivetrain, vision, intake, reverseIndexerSupplier,
-         intakeModeSupplier, immediatelyShootSupplier, immediatelyCloseIntake).beforeStarting(new SpinUp(shooter, drivetrain));
+                intakeModeSupplier, immediatelyShootSupplier, immediatelyCloseIntake).beforeStarting(new SpinUp(shooter, drivetrain));
 
-         return shootCommand.withName("Operator shoot");
+        return shootCommand.withName("Operator shoot");
     }
 
     /**
      * Simple shooting factory for tests
+     *
      * @param shooter
      * @param intake
      * @param controller
      * @return
      */
-    public static Command basicShootCommandFactory(Shooter shooter, Intake intake, CommandXboxController controller){
+    public static Command basicShootCommandFactory(Shooter shooter, Intake intake, CommandXboxController controller) {
         Command shootCommand = (
-            new BasicShootCommand(shooter, controller)  
-            .alongWith(new TwoInOneOut(intake))
+                new BasicShootCommand(shooter, controller)
+                        .alongWith(new TwoInOneOut(intake))
         ).beforeStarting(new InstantCommand(() -> shooter.spinUp(17)));
 
         return shootCommand.withName("Basic Shoot");
     }
 
-    public static void setOverrideObjectDetection(boolean mode){
+    public static void setOverrideObjectDetection(boolean mode) {
         overrideObjectDetection = mode;
     }
 }
