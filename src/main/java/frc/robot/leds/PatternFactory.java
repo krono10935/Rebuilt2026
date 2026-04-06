@@ -12,28 +12,26 @@ import java.util.function.BooleanSupplier;
 
 public class PatternFactory {
 
-    private static LEDPattern defaultPatternInstance;
-    private static DriverStation.Alliance lastAlliance = DriverStation.Alliance.Red;
+    private final static LEDPattern defaultRedPattern = createDefaultPattern(DriverStation.Alliance.Red);
+    private final static LEDPattern defaultBluePattern = createDefaultPattern(DriverStation.Alliance.Blue);
+
+    private static LEDPattern createDefaultPattern(DriverStation.Alliance alliance){
+        Color primaryColor = Color.kWhite;
+        Color secondaryColor;
+
+        secondaryColor = alliance == DriverStation.Alliance.Red ?
+                new Color(130, 20, 20) :
+                Color.kDarkBlue;
+
+        LEDPattern background = LEDPattern.solid(primaryColor);
+
+        LEDPattern island = LEDPattern.steps(Map.of(0, Color.kBlack, 0.8, secondaryColor)).scrollAtRelativeSpeed(Units.Hertz.of(1)).atBrightness(Units.Percent.of(60));
+
+        return island.overlayOn(island.reversed()).overlayOn(background);
+    }
 
     public static LEDPattern defaultPattern(DriverStation.Alliance alliance) {
-
-        if(defaultPatternInstance == null || lastAlliance != alliance){
-            lastAlliance = alliance;
-            Color primaryColor = Color.kWhite;
-            Color secondaryColor;
-
-            secondaryColor = alliance == DriverStation.Alliance.Red ?
-                    new Color(130, 20, 20) :
-                    Color.kDarkBlue;
-
-            LEDPattern background = LEDPattern.solid(primaryColor);
-
-            LEDPattern island = LEDPattern.steps(Map.of(0, Color.kBlack, 0.8, secondaryColor)).scrollAtRelativeSpeed(Units.Hertz.of(1)).atBrightness(Units.Percent.of(60));
-
-            defaultPatternInstance =  island.overlayOn(island.reversed()).overlayOn(background);
-        }
-
-        return defaultPatternInstance;
+        return alliance == DriverStation.Alliance.Red ? defaultRedPattern : defaultBluePattern;
     }
 
     /**
@@ -97,16 +95,8 @@ public class PatternFactory {
 //        return breathe.overlayOn(pattern).atBrightness(brightness);
     }
 
-    private static LEDPattern shooterSpunUpPattern;
-    private static LEDPattern shooterNotSpunUpPattern;
-    public static LEDPattern shooterSpunUpIndicator(boolean isSpunUp){
-        if(shooterSpunUpPattern == null) {
-            shooterSpunUpPattern = createSpunUpPattern(true);
-            shooterNotSpunUpPattern = createSpunUpPattern(false);
-        }
-
-        return isSpunUp ? shooterSpunUpPattern : shooterNotSpunUpPattern;
-    }
+    private final static LEDPattern shooterSpunUpPattern = createSpunUpPattern(true);
+    private final static LEDPattern shooterNotSpunUpPattern = createSpunUpPattern(false);
 
     private static LEDPattern createSpunUpPattern(boolean isSpunUp){
         Color spunUpColor = isSpunUp ? Color.kGreen : Color.kRed;
@@ -116,4 +106,7 @@ public class PatternFactory {
          return pattern.overlayOn(pattern.reversed());
     }
 
+    public static LEDPattern shooterSpunUpIndicator(boolean isSpunUp){
+        return isSpunUp ? shooterSpunUpPattern : shooterNotSpunUpPattern;
+    }
 }
