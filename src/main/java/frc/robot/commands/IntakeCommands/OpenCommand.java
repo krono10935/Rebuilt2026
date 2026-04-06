@@ -27,18 +27,18 @@ public class OpenCommand extends Command {
 
     @Override
     public void initialize() {
-        intake.setPosition(IntakeConstants.OPEN_POSITION);
+        intake.moveToPosition(IntakeConstants.OPEN_POSITION);
     }
 
     @Override
     public boolean isFinished() {
-        return intake.positionAtSetPoint();
+        return intake.isPositionAtSetPoint();
     }
 
     @Override
     public void end(boolean interrupted) {
         if (interrupted) {
-            intake.stopIntakeOpeningMotor();
+            intake.stopPositionMotor();
         }
     }
 

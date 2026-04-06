@@ -9,23 +9,23 @@ import com.ctre.phoenix6.SignalLogger;
 import com.revrobotics.util.StatusLogger;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HubTiming;
 import frc.robot.subsystems.Shooter.ShotCalculator;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.utils.Elastic;
 import frc.utils.ModeFileHandling;
 import frc.utils.SwitchedToPitModeException;
 import frc.utils.VirtualSubSystem;
 import io.github.captainsoccer.basicmotor.motorManager.MotorManager;
+
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 
@@ -72,15 +72,27 @@ public class Robot extends LoggedRobot
         // }
 
         //TODO comment in before comp
-        if (RobotBase.isSimulation()){
-            Logger.addDataReceiver(new NT4Publisher());
-        } else {
-            if (true)
-                Logger.addDataReceiver(new WPILOGWriter());
-            else {
-                Logger.addDataReceiver(new NT4Publisher());
-            }
-        }
+          // Set up data receivers & replay source
+    switch (Constants.currentMode) {
+      case REAL:
+        // Running on a real robot, log to a USB stick ("/U/logs")
+        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case SIM:
+        // Running a physics simulator, log to NT
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case REPLAY:
+        // Replaying a log, set up replay source
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
+    }
 
         Logger.start();
     }

@@ -120,9 +120,9 @@ public class BasicShootCommand extends Command {
 
       shooter.toggleKicker(true);
       if (controller.a().getAsBoolean()) {
-        shooter.getIndexer().reverse();
+        shooter.getIndexer().spinBackward();
       } else {
-        shooter.getIndexer().turnOn();
+        shooter.getIndexer().spinForward();
       }
     }
 

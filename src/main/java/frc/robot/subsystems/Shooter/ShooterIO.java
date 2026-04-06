@@ -8,12 +8,10 @@ public interface ShooterIO {
 
     @AutoLog
     class ShooterInputs{
-        
-        public Rotation2d hoodAngle;
-
-        public double shooterSpeed; // m/s
-
-        public boolean isKickerActive;
+       public double shooterSpeedMPS;
+       public boolean isFlywheelAtGoal;
+       public boolean isKickerStuck;
+       public boolean isHoodAtSetpoint;
     }
 
     /**
@@ -34,12 +32,6 @@ public interface ShooterIO {
 
     /**
      * 
-     * @return Whether or not the shooter is at it's setpoint
-     */
-    boolean isShooterAtGoal();
-
-    /**
-     * 
      * @param voltage to apply to the flywheel motor(s)
      */
     void setFlyWheelVoltage(double voltage);
@@ -51,21 +43,10 @@ public interface ShooterIO {
     void toggleKicker(boolean isActive);
 
     /**
-     * @return Whether or not the kicker is active
-     */
-    boolean isKickerStuck();
-
-    /**
      * 
      * @param angle the angle to set the hood to
      */
     void setHoodAngle(Rotation2d angle);
-
-    /**
-     * 
-     * @return Whether or not the hood is at it's setpoint
-     */
-    boolean isHoodAtSetpoint();
 
     /**
      * 
@@ -74,4 +55,48 @@ public interface ShooterIO {
     void update(ShooterInputs inputs);
 
     void logSysID();
+
+    public class ShooterIOReplay implements ShooterIO{
+
+        @Override
+        public void spinUp(double speedMPS) {
+
+        }
+
+        @Override
+        public void keepVelocity(double speedMPS) {
+
+        }
+
+        @Override
+        public void stopFlyWheel() {
+
+        }
+
+        @Override
+        public void setFlyWheelVoltage(double voltage) {
+
+        }
+
+        @Override
+        public void toggleKicker(boolean isActive) {
+
+        }
+
+        @Override
+        public void setHoodAngle(Rotation2d angle) {
+
+        }
+
+        @Override
+        public void update(ShooterInputs inputs) {
+
+        }
+
+        @Override
+        public void logSysID() {
+
+        }
+
+    }
 }

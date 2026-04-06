@@ -6,46 +6,39 @@ import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 public class IndexerIOSim implements IndexerIO {
     private final BasicMotorSim motorLeft;
     private final BasicMotorSim motorRight;
-    private boolean isSpinning;
 
-    public IndexerIOSim() {
+    public IndexerIOSim( ){
         this.motorLeft = new BasicMotorSim(IndexerConstants.getLeftMotorConfig());
         this.motorRight = new BasicMotorSim(IndexerConstants.getRightMotorConfig());
-        motorRight.followMotor(motorLeft, true);
     }
 
     @Override
-    public void turnOn() {
-        motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.VELOCITY);
-        isSpinning = true;
+    public void spinForward() {
+        motorLeft.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
+        motorRight.setControl(IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
     }
 
     @Override
-    public void reverse() {
+    public void spinBackward() {
         motorLeft.setControl(-IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
-        isSpinning = true;
+        motorRight.setControl(-IndexerConstants.SPINNING_TARGET_VELOCITY, ControlMode.PROFILED_VELOCITY);
     }
 
     @Override
     public void turnOff() {
         motorLeft.stop();
-        isSpinning = false;
+        motorRight.stop();
     }
 
     @Override
     public void update(IndexerInputs inputs) {
-        inputs.isOn = isSpinning;
-    }
+        if (motorLeft.getController().getControlMode() == ControlMode.STOP || 
+        motorLeft.getController().getGoal().velocity < IndexerConstants.SPEED_DEADBAND){
+            return;
+        }
 
-    @Override
-    public boolean isStuck() {
-        return Math.abs(motorLeft.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND ||
+        inputs.isStuck = Math.abs(motorLeft.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND ||
             Math.abs(motorRight.getController().getSetpointAsDouble()) < IndexerConstants.SPEED_DEADBAND;
     }
 
-     @Override
-    public void setSpeed(double speedRps){
-        motorLeft.setControl(speedRps,ControlMode.VELOCITY);
-        motorRight.setControl(speedRps,ControlMode.VELOCITY);
-    }
 }

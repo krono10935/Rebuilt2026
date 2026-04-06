@@ -15,80 +15,62 @@ public class IntakeIOSim implements IntakeIO {
 
     }
 
-    @Override
-    public boolean intakeMotorAtSetPoint() {
+
+    private boolean intakeMotorAtSetPoint() {
         return intakeMotor.atSetpoint();
     }
 
-    @Override
-    public void setIntake90PercentSpeed(double velocity) {
-        intakeMotor.setControl(velocity, ControlMode.VELOCITY);
-    }
+
 
     @Override
-    public void stopIntakeMotor() {
+    public void stopIntakeRoller() {
         intakeMotor.stop();
     }
 
     @Override
-    public void setIntakeMotorPercent(double dutyCycle){
+    public void setRollerDutyCycle(double dutyCycle){
         intakeMotor.setPercentOutput(dutyCycle);
     }
 
-    @Override
-    public boolean positionMotorAtSetPoint() {
+    private boolean positionMotorAtSetPoint() {
         return positionMotor.atSetpoint();
     }
 
     @Override
-    public double getIntakePosition() {
-        return positionMotor.getPosition();
-    }
-
-    @Override
-    public void setPositionMotor(double positionMeters) {
+    public void moveToPosition(double positionMeters) {
         positionMotor.setControl(positionMeters, ControlMode.POSITION);
     }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.position = positionMotor.getPosition();
-
-        inputs.velocity = intakeMotor.getVelocity(); 
+        inputs.intakePositionMeters = positionMotor.getPosition();
+        inputs.isRollerMotorAtSetPoint = intakeMotorAtSetPoint();
+        inputs.rollerMotorVelocityMPS = intakeMotor.getVelocity();
+        inputs.isPositionMotorAtSetPoint = positionMotorAtSetPoint();
+        inputs.positionMotorVelocityMPS = getSpeedPositionMotor();
     }
 
     @Override
-    public void stopPositiongMotor() {
+    public void stopPositionMotor() {
         positionMotor.stop();
     }
 
-    @Override
-    public double getSpeedPositionMotor() {
-        return positionMotor.getPosition();
+    private double getSpeedPositionMotor() {
+        return positionMotor.getVelocity();
     }
 
     @Override
-    public boolean isInPositionControl() {
-        return positionMotor.getController().getControlMode().isPositionControl();
-    }
-
-    @Override
-    public boolean isInVelocityControl() {
-        return positionMotor.getController().getControlMode().isVelocityControl();
-    }
-
-    @Override
-    public void setPositionMotorPercent(double dutyCycle) {
+    public void setPositionMotorDutyCycle(double dutyCycle) {
         positionMotor.setPercentOutput(dutyCycle);
     }
 
     @Override
-    public void setPositionMotorSlowly(double posMeters){
+    public void moveToPositionSlowly(double posMeters){
         positionMotor.setControl(posMeters,ControlMode.PROFILED_POSITION, 1);
     }
 
     @Override
-    public void resetPositionMotor(double posMeters) {
+    public void resetOpeningMotorEncoder(double posMeters) {
         positionMotor.resetEncoder(posMeters);
     }
 }

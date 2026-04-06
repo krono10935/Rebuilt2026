@@ -61,7 +61,7 @@ public class ShakeItOffCommand extends Command {
         beginTimer.reset();
         beginTimer.start();
 
-        intake.setPercent(intakeSpeed.get());
+        intake.setRollerDutyCycle(intakeSpeed.get());
         cycles = 0;
     }
 
@@ -78,7 +78,7 @@ public class ShakeItOffCommand extends Command {
                         ? openPos.getAsDouble() * Math.pow(closeLessPercent.getAsDouble(), cycles)
                         : closePos.getAsDouble();
 
-                intake.setPosition(targetPosition);
+                intake.moveToPosition(targetPosition);
                 timer.reset();
             }
           }
@@ -86,6 +86,6 @@ public class ShakeItOffCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        intake.stopIntakeMotor();
+        intake.stopIntakeRoller();
     }
 }

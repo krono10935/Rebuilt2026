@@ -78,7 +78,7 @@ public class ShakeItOffCommandBangBang extends Command {
         hasOpened = false;
         shouldOpen = false;
 
-        intake.setPercent(intakeSpeed.getAsDouble());
+        intake.setRollerDutyCycle(intakeSpeed.getAsDouble());
 
         setpoint = intake.getIntakePosition();
 
@@ -99,7 +99,7 @@ public class ShakeItOffCommandBangBang extends Command {
                 }
 
                 shouldOpen = !shouldOpen;
-                intake.setPositionMotorPercent(shouldOpen ? openingDutyCycle.getAsDouble() *
+                intake.setPositionMotorDutyCycle(shouldOpen ? openingDutyCycle.getAsDouble() *
                 Math.pow(Math.sqrt(openLessMultiplier.getAsDouble()), cycles) : 
                 -closingDutyCycle.getAsDouble());
             }
@@ -123,7 +123,7 @@ public class ShakeItOffCommandBangBang extends Command {
     }
 
     public void end(boolean interrupted){
-        intake.stopIntakeOpeningMotor();
-        intake.stopIntakeMotor();
+        intake.stopPositionMotor();
+        intake.stopIntakeRoller();
     }
 }

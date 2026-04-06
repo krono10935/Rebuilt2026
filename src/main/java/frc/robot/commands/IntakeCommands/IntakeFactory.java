@@ -12,24 +12,24 @@ public class IntakeFactory {
     public static Command resetIntake(Intake intake) {
         FunctionalCommand initialReset = new FunctionalCommand(
                 () -> {
-                    intake.setPositionMotorPercent(ResetConstants.INITIAL_DUTY_CYCLE_CHECK_FOR_CLOSE);
+                    intake.setPositionMotorDutyCycle(ResetConstants.INITIAL_DUTY_CYCLE_CHECK_FOR_CLOSE);
                     Logger.recordOutput("intake/reset state", "waiting for initial current");
                 },
                 () -> {
                 },
                 (interrupted) -> {
-                    intake.stopIntakeOpeningMotor();
-                    intake.resetEncoderOpen(0);
+                    intake.stopPositionMotor();
+                    intake.resetOpeningMotorEncoder(0);
                     Logger.recordOutput("intake/reset state", "found for initial current");
                 },
-                () -> intake.getPositionMotorCurrent() > ResetConstants.INITIAL_CURRENT_CHECK_FOR_CLOSE &&
-                        intake.getPositionMotorCurrent() < ResetConstants.MAX_CURRENT_LIMIT,
+                () -> intake.getPositionMotorCurrentAmps() > ResetConstants.INITIAL_CURRENT_CHECK_FOR_CLOSE &&
+                        intake.getPositionMotorCurrentAmps() < ResetConstants.MAX_CURRENT_LIMIT,
                 intake
         );
 
         FunctionalCommand moveBack = new FunctionalCommand(
                 () -> {
-                    intake.setPosition(ResetConstants.FINAL_POSITION_CHECK_FOR_CLOSE);
+                    intake.moveToPosition(ResetConstants.FINAL_POSITION_CHECK_FOR_CLOSE);
                     Logger.recordOutput("intake/reset state", "started moving back");
                 },
                 () -> {
@@ -41,19 +41,19 @@ public class IntakeFactory {
 
         FunctionalCommand secondReset = new FunctionalCommand(
                 () -> {
-                    intake.setPositionMotorPercent(ResetConstants.FINAL_DUTY_CYCLE_CHECK_FOR_CLOSE);
+                    intake.setPositionMotorDutyCycle(ResetConstants.FINAL_DUTY_CYCLE_CHECK_FOR_CLOSE);
                     Logger.recordOutput("intake/reset state", "waiting for second current");
                 },
                 () -> {
                 },
                 (interrupted) -> {
-                    intake.stopIntakeOpeningMotor();
-                    intake.resetEncoderOpen(0);
-                    intake.setPosition(0);
+                    intake.stopPositionMotor();
+                    intake.resetOpeningMotorEncoder(0);
+                    intake.moveToPosition(0);
                     Logger.recordOutput("intake/reset state", "found for second current");
                 },
-                () -> intake.getPositionMotorCurrent() > ResetConstants.FINAL_CURRENT_CHECK_FOR_CLOSE &&
-                        intake.getPositionMotorCurrent() < ResetConstants.MAX_CURRENT_LIMIT
+                () -> intake.getPositionMotorCurrentAmps() > ResetConstants.FINAL_CURRENT_CHECK_FOR_CLOSE &&
+                        intake.getPositionMotorCurrentAmps() < ResetConstants.MAX_CURRENT_LIMIT
         );
 
         return Commands.sequence(initialReset, moveBack, secondReset);

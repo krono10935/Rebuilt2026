@@ -6,30 +6,53 @@ public interface IndexerIO {
     
     @AutoLog
     class IndexerInputs{
-        boolean isOn;
+        boolean isStuck;
+    }
+
+    public enum IndexerMode{
+        BACKWARD,
+        STOPPED,
+        FORWARD
     }
 
     /**
      * Sets the spindexer motor percent to the constant
      */
-    void turnOn();
+    void spinForward();
 
     /**
      * Sets the spindexer motor percent to the constant but reverse
      */
-    void reverse();
+    void spinBackward();
 
     /**
      * Stops the motor
      */
     void turnOff();
 
-    /**
-     * @return Whether the indexer is stuck
-     */
-    boolean isStuck();
-
-    void setSpeed(double speedRps);
-
     void update(IndexerInputs inputs);
+
+    public class IndexerIOReplay implements IndexerIO{
+
+        @Override
+        public void spinForward() {
+
+        }
+
+        @Override
+        public void spinBackward() {
+
+        }
+
+        @Override
+        public void turnOff() {
+
+        }
+
+        @Override
+        public void update(IndexerInputs inputs) {
+
+        }
+        
+    }
 }

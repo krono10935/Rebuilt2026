@@ -29,28 +29,19 @@ public class IntakeCommand extends Command {
         addRequirements(intake);
     }
 
-    /**
-     * 
-     * @return if the intake roller is stuck
-     */
-    public boolean isStuck(){
-        return intake.getIntakeMotorCurrent() > IntakeConstants.MAX_INTAKE_CURRENT_TOLERANCE;
-    }
 
     @Override
     public void initialize(){
-      intake.setPercent(IntakeConstants.INTAKE_DUTYCYCLE);
+      intake.setRollerDutyCycle(IntakeConstants.INTAKE_DUTYCYCLE);
       hasBallTimer.reset();
       hasBallTimer.start();
-      if(isStuck()){
-        intake.setPercent(-IntakeConstants.INTAKE_DUTYCYCLE);
-      }
+
       Elastic.selectTab("Intake Camera");
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.stopIntakeMotor();
+        intake.stopIntakeRoller();
         hasBallTimer.stop();
     }
 }

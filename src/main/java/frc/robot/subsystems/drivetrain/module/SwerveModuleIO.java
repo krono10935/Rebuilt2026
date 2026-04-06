@@ -89,5 +89,4 @@ public abstract class SwerveModuleIO {
         currentState.speedMetersPerSecond = getDriveVelocity();
         position.distanceMeters = getDrivePos();
     }
-
 }

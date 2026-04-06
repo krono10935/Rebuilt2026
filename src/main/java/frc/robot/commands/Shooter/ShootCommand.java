@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Drivetrain.DriveAndHomeToHubCommand;
 import frc.robot.commands.IntakeCommands.TwoInOneOut;
-import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
@@ -162,11 +161,15 @@ public class ShootCommand extends Command {
             handleKickerErrors();
 
             shooter.toggleKicker(true);
-            shooter.getIndexer().setSpeed(reverseIndexer.getAsBoolean() ? -IndexerConstants.SPINNING_TARGET_VELOCITY : 
-            IndexerConstants.SPINNING_TARGET_VELOCITY);
+            
+            if (reverseIndexer.getAsBoolean()){
+                shooter.getIndexer().spinBackward();
+            } else {
+                shooter.getIndexer().spinForward();;
+            }
 
             if(immediatelyCloseIntake.getAsBoolean()){
-                intake.setPosition(IntakeConstants.CLOSE_POSITION);
+                intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
             } else if(RobotState.isTeleop()) {            
                 IntakeMode.chooseMode(intakeModeSupplier.get());
                 IntakeMode.dealWithChosenMode(intake);
@@ -180,7 +183,7 @@ public class ShootCommand extends Command {
             shooter.getIndexer().turnOff();
 
             if(immediatelyCloseIntake.getAsBoolean()){
-                intake.setPosition(IntakeConstants.CLOSE_POSITION);
+                intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
             } else {
                 IntakeMode.resetLastChosen(intake);
             }
@@ -250,7 +253,7 @@ public class ShootCommand extends Command {
         shooter.getIndexer().turnOff();
 
         if(immediatelyCloseIntake.getAsBoolean()){
-            intake.setPosition(IntakeConstants.CLOSE_POSITION);
+            intake.moveToPosition(IntakeConstants.CLOSE_POSITION);
         } else {
             IntakeMode.resetLastChosen(intake);
         }

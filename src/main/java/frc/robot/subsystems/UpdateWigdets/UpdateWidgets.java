@@ -21,7 +21,7 @@ public class UpdateWidgets extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putBoolean("Are there Balls", ObjectDetection.getInstance().hasBalls());
         SmartDashboard.putNumber("Battery Voltage", ConduitApi.getInstance().getPDPVoltage());
-        SmartDashboard.putBoolean("Intake Open", RobotContainer.getInstance().intake.isOpen());
+        SmartDashboard.putBoolean("Intake Open", RobotContainer.getInstance().intake.isFullyOpen());
         SmartDashboard.putBoolean("Intake moving", RobotContainer.getInstance().intake.isMoving());
         SmartDashboard.putBoolean("Shooter spun up", RobotContainer.getInstance().shooter.isKeepingVelocity());
 

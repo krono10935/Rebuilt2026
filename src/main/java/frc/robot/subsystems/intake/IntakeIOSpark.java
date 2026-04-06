@@ -15,7 +15,6 @@ public class IntakeIOSpark implements IntakeIO {
     private final BasicMotor intakeMotor;
     private final BasicMotor positionMotor;
     private final DoubleSupplier currentOutputSupplierPosition;
-    private final DoubleSupplier currentOutputSupplierIntake;
     public IntakeIOSpark() {
 
         intakeMotor = new BasicSparkFlex(IntakeConstants.intakeMotorConfig);
@@ -32,93 +31,63 @@ public class IntakeIOSpark implements IntakeIO {
 
         positionMotorSpark.configure(rootPositionMotor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters); 
 
-        //intake
-        BasicSparkFlex rootIntakeMotor = ((BasicSparkFlex)intakeMotor);
-        SparkBase intakeMotorSpark = rootIntakeMotor.getMotor();
-
-        currentOutputSupplierIntake = intakeMotorSpark::getOutputCurrent;
-
-        rootIntakeMotor.getSparkConfig().signals.outputCurrentPeriodMs(10);
-
-        intakeMotorSpark.configure(rootIntakeMotor.getSparkConfig(),ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
-    @Override
-    public boolean intakeMotorAtSetPoint() {
+    private boolean intakeMotorAtSetPoint() {
         return intakeMotor.atGoal();
     }
 
-    @Override
-    public void setIntake90PercentSpeed(double velocity) {
-        intakeMotor.setPercentOutput(0.9);
-        // intakeMotor.setControl(velocity, ControlMode.VELOCITY);
-    }
 
     @Override
-    public void stopIntakeMotor() {
+    public void stopIntakeRoller() {
         intakeMotor.stop();
     }
 
     @Override
-    public void stopPositiongMotor() {
+    public void stopPositionMotor() {
         positionMotor.stop();
     }
 
-    @Override
-    public boolean positionMotorAtSetPoint() {
+    private boolean positionMotorAtSetPoint() {
         return positionMotor.atGoal();
     }
 
     @Override
-    public double getIntakePosition() {
-        return positionMotor.getPosition();
-    }
-
-    @Override
-    public void setPositionMotor(double pos) {
+    public void moveToPosition(double pos) {
         positionMotor.setControl(pos, ControlMode.PROFILED_POSITION, 0);
     }
 
-    @Override
-    public double getSpeedPositionMotor() {
+    private double getSpeedPositionMotor() {
         return positionMotor.getVelocity();
     }
 
     @Override
-    public void setIntakeMotorPercent(double dutyCycle){
+    public void setRollerDutyCycle(double dutyCycle){
         intakeMotor.setPercentOutput(dutyCycle);
     }
 
     @Override
     public void updateInputs(IntakeInputs inputs) {
-        inputs.position = positionMotor.getPosition();
-        inputs.velocity = intakeMotor.getVelocity();
-        inputs.positionMotorCurrent = currentOutputSupplierPosition.getAsDouble();
-        inputs.intakeMotorCurrent = currentOutputSupplierIntake.getAsDouble();
+        inputs.intakePositionMeters = positionMotor.getPosition();
+        inputs.rollerMotorVelocityMPS = intakeMotor.getVelocity();
+        inputs.positionMotorCurrentAmps = currentOutputSupplierPosition.getAsDouble();
+        inputs.isRollerMotorAtSetPoint = intakeMotorAtSetPoint();
+        inputs.isPositionMotorAtSetPoint = positionMotorAtSetPoint();
+        inputs.positionMotorVelocityMPS = getSpeedPositionMotor();
     }
 
     @Override
-    public boolean isInPositionControl() {
-        return positionMotor.getController().getControlMode().isPositionControl();
-    }
-
-    @Override
-    public boolean isInVelocityControl() {
-        return positionMotor.getController().getControlMode().isVelocityControl();
-    }
-
-    @Override
-    public void resetPositionMotor(double posMeters) {
+    public void resetOpeningMotorEncoder(double posMeters) {
         positionMotor.resetEncoder(posMeters);
     }
 
     @Override
-    public void setPositionMotorPercent(double dutyCycle) {
+    public void setPositionMotorDutyCycle(double dutyCycle) {
         positionMotor.setPercentOutput(dutyCycle);
     }
 
     @Override
-    public void setPositionMotorSlowly(double posMeters){
+    public void moveToPositionSlowly(double posMeters){
         positionMotor.setControl(posMeters, ControlMode.PROFILED_POSITION, 1);
     }
 }

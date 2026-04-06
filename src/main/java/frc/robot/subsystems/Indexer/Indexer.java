@@ -3,12 +3,13 @@ package frc.robot.subsystems.Indexer;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
+import frc.robot.subsystems.Indexer.IndexerIO.IndexerIOReplay;
 import frc.robot.subsystems.Shooter.IO.ShootRealConstants;
 import frc.utils.ParallelRaceGroupWithWinner;
 
@@ -16,10 +17,20 @@ public class Indexer extends SubsystemBase {
 
     private final IndexerIO io;
 
-    private IndexerInputsAutoLogged inputs = new IndexerInputsAutoLogged();
+    private IndexerInputsAutoLogged inputs;
 
     public Indexer(){
-        this.io = RobotBase.isReal() ? new IndexerIOReal(): new IndexerIOSim();
+        switch (Constants.currentMode) {
+            case REAL -> io = new IndexerIOReal();
+
+            case SIM -> io = new IndexerIOSim();
+        
+            default -> io = new IndexerIOReplay();
+        }
+        
+        inputs = new IndexerInputsAutoLogged();
+
+        Logger.recordOutput("Indexer/Mode", IndexerIO.IndexerMode.STOPPED);
     }
 
     @Override
@@ -32,15 +43,17 @@ public class Indexer extends SubsystemBase {
     /**
      * Enables the indexer
      */
-    public void turnOn(){
-        io.turnOn();
+    public void spinForward(){
+        io.spinForward();
+        Logger.recordOutput("Indexer/Mode", IndexerIO.IndexerMode.FORWARD);
     }
 
     /**
      * Enables the indexer in reverse
      */
-    public void reverse(){
-        io.reverse();
+    public void spinBackward(){
+        io.spinBackward();
+        Logger.recordOutput("Indexer/Mode", IndexerIO.IndexerMode.BACKWARD);
     }
 
     /**
@@ -48,6 +61,7 @@ public class Indexer extends SubsystemBase {
      */
     public void turnOff(){
         io.turnOff();
+        Logger.recordOutput("Indexer/Mode", IndexerIO.IndexerMode.STOPPED);
     }
 
     /**
@@ -66,7 +80,7 @@ public class Indexer extends SubsystemBase {
 
 
         return new ParallelRaceGroupWithWinner(
-            new InstantCommand(this::turnOn)
+            new InstantCommand(this::spinForward)
 
                 .andThen(new WaitUntilCommand(() -> !isStuck()),
                 
@@ -90,10 +104,6 @@ public class Indexer extends SubsystemBase {
      * @return whether or not the indexer is stuck
      */
     public boolean isStuck(){
-        return io.isStuck();
-    }
-
-    public void setSpeed(double rps){
-        io.setSpeed(rps);
+        return inputs.isStuck;
     }
 }

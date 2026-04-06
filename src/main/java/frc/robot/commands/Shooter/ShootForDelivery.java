@@ -24,7 +24,7 @@ public class ShootForDelivery extends Command {
     public void initialize(){
         shooter.setHoodAngle(Rotation2d.fromDegrees(hoodAngle.get()));
         shooter.spinUp(flyWheelSpeed.get());
-        shooter.getIndexer().turnOn();
+        shooter.getIndexer().spinForward();
         shooter.toggleKicker(true);
     }
 

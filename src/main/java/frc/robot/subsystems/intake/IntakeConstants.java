@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.IntakeCommands.CloseCommand;
-import frc.robot.commands.IntakeCommands.ShakeItOffCommandBangBang;
 import frc.robot.commands.IntakeCommands.SlowlyCloseOnce;
 import frc.robot.commands.IntakeCommands.TwoInOneOut;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
