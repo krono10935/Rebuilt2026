@@ -29,7 +29,7 @@ public class IntakeConstants {
     public static final double INTAKE_VELOCITY = 4;
 
     public static final double PINION_DIAMETER = 0.03069;
-    public static final double INTAKE_DUTYCYCLE = 0.9;
+    public static final double INTAKE_DUTYCYCLE = 0.6;
 
     public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final double TIME_FOR_INTAKE_TO_OPEN = 4;
@@ -109,11 +109,11 @@ public class IntakeConstants {
     }
     
     public static class ResetConstants{
-        public static final double INITIAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.4;
-        public static final double INITIAL_CURRENT_CHECK_FOR_CLOSE = 35;
+        public static final double INITIAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.3;
+        public static final double INITIAL_CURRENT_CHECK_FOR_CLOSE = 36;
         public static final double FINAL_POSITION_CHECK_FOR_CLOSE = 0.05;
         public static final double FINAL_DUTY_CYCLE_CHECK_FOR_CLOSE = -0.15;
-        public static final double FINAL_CURRENT_CHECK_FOR_CLOSE = 40;
+        public static final double FINAL_CURRENT_CHECK_FOR_CLOSE = 30;
 
         public static final double MAX_CURRENT_LIMIT = 50;
     }

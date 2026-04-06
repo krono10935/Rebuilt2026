@@ -95,7 +95,7 @@ public class DriveCommand extends Command {
     public void execute() {
         ChassisSpeeds speeds = getControllerInputs();
 
-        drivetrain.drive(
+        drivetrain.driveWithoutPP(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
                         speeds.vxMetersPerSecond,
                         speeds.vyMetersPerSecond,

@@ -243,7 +243,7 @@ public class RobotContainer {
 
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
 
-        driverController.y().onTrue(drivetrain.resetGyro());
+        driverController.start().onTrue(drivetrain.resetGyro());
 
         driverController.leftBumper().whileTrue(new StartEndCommand(
                 () -> intake.setRollerDutyCycle(-0.5),
@@ -321,7 +321,7 @@ public class RobotContainer {
 
         operatorController.b().onTrue(new CloseCommand(intake).onlyIf(isShootCommandNotRunning));
 
-        operatorController.rightStick().toggleOnTrue(
+        operatorController.rightStick().whileTrue(
                 new StartEndCommand(
                         () -> overrideShooting = true,
                         () -> overrideShooting = false)

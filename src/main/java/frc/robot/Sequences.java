@@ -241,7 +241,7 @@ public class Sequences {
     }
 
 
-    private static LoggedNetworkNumber flyWheelSpeed = new LoggedNetworkNumber("Delivery/FlyWheelSpeed", 4);
+    private static LoggedNetworkNumber flyWheelSpeed = new LoggedNetworkNumber("Delivery/FlyWheelSpeed", 5);
 
     private static LoggedNetworkNumber hoodAngle = new LoggedNetworkNumber("Delivery/HoodAngle", 28);
 
