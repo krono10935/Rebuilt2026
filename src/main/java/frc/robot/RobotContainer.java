@@ -91,8 +91,6 @@ public class RobotContainer {
 
         shooter = new Shooter();
 
-        led = LED.getInstance();
-
         intake = new Intake();
 
         driverController = new CommandXboxController(0);
@@ -100,6 +98,8 @@ public class RobotContainer {
         operatorController = new CommandXboxController(1);
 
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getEstimatedPosition);
+
+        LED.getInstance();  
 
         autoChooser = registerNamedCommand(new DriveAndHomeToHubCommand(drivetrain, driverController));
 

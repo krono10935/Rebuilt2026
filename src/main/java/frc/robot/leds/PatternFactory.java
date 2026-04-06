@@ -109,4 +109,23 @@ public class PatternFactory {
     public static LEDPattern shooterSpunUpIndicator(boolean isSpunUp){
         return isSpunUp ? shooterSpunUpPattern : shooterNotSpunUpPattern;
     }
+
+    public static LEDPattern ballDotsPattern(){
+        var pattern1 = LEDPattern.steps(Map.of(0.2,Color.kYellow))
+                .atBrightness(Units.Percent.of(50))
+                .scrollAtRelativeSpeed(Units.Hertz.of(1))
+                .breathe(Units.Second.of(1));
+
+        var pattern2 = LEDPattern.steps(Map.of(0.1,Color.kYellow))
+                .atBrightness(Units.Percent.of(80))
+                .scrollAtRelativeSpeed(Units.Hertz.of(0.5))
+                .breathe(Units.Second.of(2));
+
+         var pattern3 = LEDPattern.steps(Map.of(0.8,Color.kYellow))
+                 .atBrightness(Units.Percent.of(20))
+                 .scrollAtRelativeSpeed(Units.Hertz.of(2))
+                 .breathe(Units.Second.of(5));
+
+         return pattern1.overlayOn(pattern2).overlayOn(pattern3);
+    }
 }
