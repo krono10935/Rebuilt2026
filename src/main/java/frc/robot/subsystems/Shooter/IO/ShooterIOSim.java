@@ -14,7 +14,6 @@ import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 public class ShooterIOSim implements ShooterIO {
 
     private final BasicMotor leadShootingMotor;
-    private final BasicMotor followShootingMotor;
 
     private final BasicMotor hoodMotor;
 
@@ -27,9 +26,6 @@ public class ShooterIOSim implements ShooterIO {
     public ShooterIOSim(){
         shooterConfig = ShootRealConstants.getLeadShootingMotorConfig();
         leadShootingMotor = new BasicFlywheelSim(shooterConfig);
-        followShootingMotor = new BasicFlywheelSim(ShootRealConstants.getFollowShootingMotorConfig());
-
-        followShootingMotor.followMotor(leadShootingMotor, false); // The default should be not inverted
 
         hoodMotor =  new BasicMotorSim(ShootRealConstants.getHoodMotorConfig());
 

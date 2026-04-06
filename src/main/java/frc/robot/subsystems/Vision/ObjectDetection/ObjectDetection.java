@@ -68,8 +68,9 @@ public class ObjectDetection extends VirtualSubSystem {
         }
 
         Logger.recordOutput("ObjectDetection/lastBallTimer", lastBallTimer.get());
+        Logger.recordOutput("ObjectDetection/hasBalls", hasBalls());
 
-        if (!inputs.hasBalls && shotLastBall && !lastBallTimer.isRunning()){
+        if (!inputs.hasBalls && !shotLastBall && !lastBallTimer.isRunning()){
             lastBallTimer.start();
         } else if (lastBallTimer.hasElapsed(ObjectDetectionContstants.LAST_BALL_TIMEOUT)){
             shotLastBall = true;
