@@ -328,7 +328,8 @@ public class RobotContainer {
                         .alongWith(
                                 immediateShootCommand));
 
-        operatorController.a().toggleOnTrue(shootCommand);
+        ;
+        operatorController.a().whileTrue(shootCommand.alongWith(new DriveAndHomeToHubCommand(drivetrain,driverController)));
 
         operatorController.start().onTrue(new InstantCommand(() -> HubTiming.setHumanActiveFirst(true)).ignoringDisable(true));
 
@@ -347,7 +348,6 @@ public class RobotContainer {
                         shooter.getIndexer())
                         .onlyIf(isShootCommandNotRunning));
     }
-
     /**
      * @return the chosen autonomous command.
      */

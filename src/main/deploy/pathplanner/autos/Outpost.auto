@@ -13,7 +13,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 4.0
+            "waitTime": 5.0
           }
         },
         {
@@ -31,24 +31,18 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "waitUntilNoBalls"
-                      }
-                    },
-                    {
                       "type": "wait",
                       "data": {
-                        "waitTime": 10.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shootAndAimStationary"
+                        "waitTime": 20.0
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootAndAimStationary"
                 }
               }
             ]
