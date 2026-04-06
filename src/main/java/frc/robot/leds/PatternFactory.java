@@ -97,19 +97,23 @@ public class PatternFactory {
 //        return breathe.overlayOn(pattern).atBrightness(brightness);
     }
 
-    private static LEDPattern shooterSpunUpIndicatorInstance;
-    private static boolean lastSpunUp = false;
+    private static LEDPattern shooterSpunUpPattern;
+    private static LEDPattern shooterNotSpunUpPattern;
     public static LEDPattern shooterSpunUpIndicator(boolean isSpunUp){
-        if(shooterSpunUpIndicatorInstance == null || lastSpunUp != isSpunUp) {
-            lastSpunUp = isSpunUp;
-
-            Color spunUpColor = isSpunUp ? Color.kGreen : Color.kRed;
-
-            var pattern = LEDPattern.steps(Map.of(0.00, Color.kBlack, 0.85, spunUpColor)).scrollAtRelativeSpeed(Units.Hertz.of(1));
-
-            shooterSpunUpIndicatorInstance = pattern.overlayOn(pattern.reversed());
+        if(shooterSpunUpPattern == null) {
+            shooterSpunUpPattern = createSpunUpPattern(true);
+            shooterNotSpunUpPattern = createSpunUpPattern(false);
         }
 
-        return shooterSpunUpIndicatorInstance;
+        return isSpunUp ? shooterSpunUpPattern : shooterNotSpunUpPattern;
     }
+
+    private static LEDPattern createSpunUpPattern(boolean isSpunUp){
+        Color spunUpColor = isSpunUp ? Color.kGreen : Color.kRed;
+
+        var pattern = LEDPattern.steps(Map.of(0.00, Color.kBlack, 0.85, spunUpColor)).scrollAtRelativeSpeed(Units.Hertz.of(1));
+
+         return pattern.overlayOn(pattern.reversed());
+    }
+
 }
