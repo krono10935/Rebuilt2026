@@ -29,7 +29,7 @@ public class IntakeConstants {
     public static final double INTAKE_VELOCITY = 4;
 
     public static final double PINION_DIAMETER = 0.03069;
-    public static final double INTAKE_DUTYCYCLE = 0.6;
+    public static final double INTAKE_DUTYCYCLE = 0.75;
 
     public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final double TIME_FOR_INTAKE_TO_OPEN = 4;

@@ -21,7 +21,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
  */
 public class DriveAndHomeToHubCommand extends DriveAndHomeToSupplierCommand {
     /** Allowed angular error for being "on target". */
-    public static final Rotation2d robotAngleTolerance = Rotation2d.fromDegrees(2);
+    public static final Rotation2d robotAngleTolerance = Rotation2d.fromDegrees(5);
 
     /**
      * Creates a new DriveAndHomeCommand.

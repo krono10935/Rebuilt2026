@@ -111,17 +111,17 @@ public class PatternFactory {
     }
 
     public static LEDPattern ballDotsPattern(){
-        var pattern1 = LEDPattern.steps(Map.of(0.2,Color.kYellow))
+        var pattern1 = LEDPattern.steps(Map.of(0.125,Color.kYellow))
                 .atBrightness(Units.Percent.of(50))
                 .scrollAtRelativeSpeed(Units.Hertz.of(1))
                 .breathe(Units.Second.of(1));
 
-        var pattern2 = LEDPattern.steps(Map.of(0.1,Color.kYellow))
+        var pattern2 = LEDPattern.steps(Map.of(0.0625,Color.kYellow))
                 .atBrightness(Units.Percent.of(80))
                 .scrollAtRelativeSpeed(Units.Hertz.of(0.5))
                 .breathe(Units.Second.of(2));
 
-         var pattern3 = LEDPattern.steps(Map.of(0.8,Color.kYellow))
+         var pattern3 = LEDPattern.steps(Map.of(0.625,Color.kYellow))
                  .atBrightness(Units.Percent.of(20))
                  .scrollAtRelativeSpeed(Units.Hertz.of(2))
                  .breathe(Units.Second.of(5));

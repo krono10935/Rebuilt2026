@@ -2,11 +2,16 @@
 
 package frc.robot.leds;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.leds.LEDConstants.Segments;
 
 import java.util.HashMap;
+
+import com.revrobotics.ColorSensorV3.LEDCurrent;
 
 public class LED extends SubsystemBase {
     private final AddressableLED led;
@@ -39,7 +44,13 @@ public class LED extends SubsystemBase {
         }
 
         setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.Alliance.Red));
-//        setPattern(LEDConstants.Segments.INDEXER, PatternFactory.ballDotsPattern());
+        setPattern(LEDConstants.Segments.INDEXER, PatternFactory.ballDotsPattern());
+        setPattern(Segments.RIO, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
+        setPattern(Segments.PDH_RIGHT, PatternFactory.solid(Color.kBlue,Units.Percent.of(100)));
+        setPattern(Segments.PDH_LEFT, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
+        setPattern(Segments.INDEXER, PatternFactory.solid(Color.kBlue,Units.Percent.of(100)));
+         setPattern(Segments.INTAKE, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
+
 
         led.setData(buffer);
         led.start();
