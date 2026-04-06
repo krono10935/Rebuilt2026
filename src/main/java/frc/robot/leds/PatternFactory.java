@@ -3,29 +3,29 @@ package frc.robot.leds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Frequency;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 public class PatternFactory {
 
     private static LEDPattern defaultPatternInstance;
-    public static LEDPattern defaultPattern(Optional<DriverStation.Alliance> alliance) {
-        if(defaultPatternInstance == null){
+    private static DriverStation.Alliance lastAlliance = DriverStation.Alliance.Red;
+
+    public static LEDPattern defaultPattern(DriverStation.Alliance alliance) {
+
+        if(defaultPatternInstance == null || lastAlliance != alliance){
+            lastAlliance = alliance;
             Color primaryColor = Color.kWhite;
             Color secondaryColor;
-            if(alliance.isEmpty()){
-                secondaryColor = new Color(130,20,20);
-            }else {
-                secondaryColor = alliance.get() == DriverStation.Alliance.Red ?
-                        new Color(130, 20, 20) :
-                        Color.kDarkBlue;
-            }
+
+            secondaryColor = alliance == DriverStation.Alliance.Red ?
+                    new Color(130, 20, 20) :
+                    Color.kDarkBlue;
+
             LEDPattern background = LEDPattern.solid(primaryColor);
 
             LEDPattern island = LEDPattern.steps(Map.of(0, Color.kBlack, 0.8, secondaryColor)).scrollAtRelativeSpeed(Units.Hertz.of(1)).atBrightness(Units.Percent.of(60));
@@ -98,8 +98,11 @@ public class PatternFactory {
     }
 
     private static LEDPattern shooterSpunUpIndicatorInstance;
+    private static boolean lastSpunUp = false;
     public static LEDPattern shooterSpunUpIndicator(boolean isSpunUp){
-        if(shooterSpunUpIndicatorInstance == null) {
+        if(shooterSpunUpIndicatorInstance == null || lastSpunUp != isSpunUp) {
+            lastSpunUp = isSpunUp;
+
             Color spunUpColor = isSpunUp ? Color.kGreen : Color.kRed;
 
             var pattern = LEDPattern.steps(Map.of(0.00, Color.kBlack, 0.85, spunUpColor)).scrollAtRelativeSpeed(Units.Hertz.of(1));

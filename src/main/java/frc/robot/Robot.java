@@ -9,11 +9,15 @@ import com.ctre.phoenix6.SignalLogger;
 import com.revrobotics.util.StatusLogger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HubTiming;
+import frc.robot.leds.LED;
+import frc.robot.leds.LEDConstants;
+import frc.robot.leds.PatternFactory;
 import frc.robot.subsystems.Shooter.ShotCalculator;
 import frc.utils.Elastic;
 import frc.utils.ModeFileHandling;
@@ -114,13 +118,21 @@ public class Robot extends LoggedRobot
     @Override
     public void disabledInit() {}
     
-    
+    private DriverStation.Alliance lastAlliance = DriverStation.Alliance.Red;
     @Override
     public void disabledPeriodic() {
         //Check if should switch to pit mode
         if(ModeFileHandling.isCompMode() && ModeFileHandling.shouldSwitchToPitMode()){
             ModeFileHandling.switchToPitMode();
             throw new SwitchedToPitModeException("Switched to pit mode");
+        }
+
+        var alliance = DriverStation.getAlliance();
+
+        if(alliance.isPresent() && alliance.get() != lastAlliance){
+            lastAlliance = alliance.get();
+
+            LED.getInstance().setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(lastAlliance));
         }
     }
     
@@ -135,6 +147,11 @@ public class Robot extends LoggedRobot
     public void autonomousInit()
     {
         autonomousCommand = RobotContainer.getInstance().getAutonomousCommand();
+
+        if(DriverStation.getAlliance().isPresent()){
+            LED.getInstance().setPattern(LEDConstants.Segments.ALL,
+                    PatternFactory.defaultPattern(DriverStation.getAlliance().get()));
+        }
         
         if (autonomousCommand != null)
         {
@@ -175,6 +192,8 @@ public class Robot extends LoggedRobot
     @Override
     public void teleopExit() {
         RobotContainer.getInstance().drivetrain.setBrakeMode(false);
+        LED.getInstance().turnOffLed();
+        LED.getInstance().setPattern(LEDConstants.Segments.ALL, LEDPattern.rainbow(255, 255), 3);
     }
     
     

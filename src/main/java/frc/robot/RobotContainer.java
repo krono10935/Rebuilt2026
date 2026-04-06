@@ -118,10 +118,6 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
         CommandScheduler.getInstance().schedule(ShotCalculator.getInstance().warmUpShotCalculator());
-
-        new Trigger(DriverStation::isDSAttached).onTrue(new InstantCommand(
-                () -> LED.getInstance().setPattern(LEDConstants.Segments.ALL,PatternFactory.defaultPattern(DriverStation.getAlliance())))
-                .ignoringDisable(true));
         // TODO enable for comp
         // if (ModeFileHandling.isCompMode()){
         //     configureBindings();
