@@ -10,15 +10,15 @@ import edu.wpi.first.wpilibj.util.Color;
 /** Add your docs here. */
 public class LEDConstants {
     public static final int LED_PORT = 4;
-    public static final int LED_COUNT_TOTAL = 101;
+    public static final int LED_COUNT_TOTAL = 98;
 
     public enum Segments {
         ALL(0, LED_COUNT_TOTAL - 1),
         RIO(0, 20),
         PDH_RIGHT(21, 36),
         PDH_LEFT(37, 51),
-        INDEXER(52, 68),
-        INTAKE(68, 100);
+        INDEXER(52, 61),
+        INTAKE(62, 97);
 
         public final int start;
         public final int end;
