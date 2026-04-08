@@ -9,12 +9,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.leds.LEDConstants.Segments;
 
-import java.nio.Buffer;
 import java.util.HashMap;
 
-import org.littletonrobotics.junction.Logger;
-
-import com.revrobotics.ColorSensorV3.LEDCurrent;
 
 public class LED extends SubsystemBase {
     private final AddressableLED led;
@@ -46,13 +42,15 @@ public class LED extends SubsystemBase {
             segments.put(segment, new LedSegment(view));
         }
 
-        // setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.Alliance.Red));
+        LEDPattern.kOff.applyTo(buffer);
+        setPattern(LEDConstants.Segments.ALL, PatternFactory.defaultPattern(DriverStation.Alliance.Red));
         // setPattern(LEDConstants.Segments.INDEXER, PatternFactory.ballDotsPattern());
-        setPattern(Segments.RIO, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
-        setPattern(Segments.PDH_RIGHT, PatternFactory.solid(Color.kBlue,Units.Percent.of(100)));
-        setPattern(Segments.PDH_LEFT, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
-        setPattern(Segments.INDEXER, PatternFactory.solid(Color.kBlue,Units.Percent.of(100)));
-        setPattern(Segments.INTAKE, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
+        // setPattern(Segments.RIO, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
+        // setPattern(Segments.PDH_RIGHT, PatternFactory.solid(Color.kBlue,Units.Percent.of(100)));
+        // setPattern(Segments.PDH_LEFT, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
+        // setPattern(Segments.INDEXER, PatternFactory.solid(Color.kBlue,Units.Percent.of(100)));
+        // setPattern(Segments.SEGMENT_INTAKE, PatternFactory.solid(Color.kRed,Units.Percent.of(100)));
+
 
 
         led.setData(buffer);
@@ -65,18 +63,7 @@ public class LED extends SubsystemBase {
             segment.apply();
         }
 
-        LEDPattern.solid(Color.kGreen).applyTo(buffer);
         led.setData(buffer);
-        logLedState();
-    }
-
-    public void logLedState(){
-        String[] bufferColors = new String[buffer.getLength()];
-        for (int i = 0; i < buffer.getLength(); i++){
-            bufferColors[i] = buffer.getLED(i).toHexString();
-            Logger.recordOutput("Leds/Colors/" + i, buffer.getLED(i));
-        }
-        // Logger.recordOutput("Leds/Colors", bufferColors);
     }
 
     public void setPattern(LEDConstants.Segments segment, LEDPattern pattern, double timeout) {

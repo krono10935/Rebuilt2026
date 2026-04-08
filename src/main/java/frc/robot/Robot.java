@@ -109,6 +109,8 @@ public class Robot extends LoggedRobot
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();
 
+        Logger.recordOutput("67", 67);
+
         // if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
         //     HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
         // }

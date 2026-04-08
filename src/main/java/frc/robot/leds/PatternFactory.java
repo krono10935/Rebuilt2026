@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
+
 public class PatternFactory {
 
     private final static LEDPattern defaultRedPattern = createDefaultPattern(DriverStation.Alliance.Red);
@@ -93,6 +94,21 @@ public class PatternFactory {
         return LEDPattern.solid(Color.kGray);
 
 //        return breathe.overlayOn(pattern).atBrightness(brightness);
+    }
+
+    private final static LEDPattern intakeThetaDriveOn = createThetaDrivePattern(true);
+    private final static LEDPattern intakeThetaDriveOff = createThetaDrivePattern(false);
+
+    private static LEDPattern createThetaDrivePattern(boolean thetaDriveOn){
+        Color spunUpColor = thetaDriveOn ? Color.kPurple : Color.kRed;
+
+        var pattern = LEDPattern.steps(Map.of(0.00, Color.kBlack, 0.85, spunUpColor)).scrollAtRelativeSpeed(Units.Hertz.of(1));
+
+         return pattern.overlayOn(pattern.reversed());
+    }
+
+    public static LEDPattern thetaDriveIndicator(boolean thetaDriveOn){
+        return thetaDriveOn ? shooterSpunUpPattern : shooterNotSpunUpPattern;
     }
 
     private final static LEDPattern shooterSpunUpPattern = createSpunUpPattern(true);

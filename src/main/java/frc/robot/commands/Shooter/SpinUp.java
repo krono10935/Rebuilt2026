@@ -39,7 +39,6 @@ public class SpinUp extends Command {
   @Override
   public void initialize() {
 
-    LED.getInstance().setPattern(LEDConstants.Segments.ALL, PatternFactory.blue_pulse(Units.Hertz.of(2)));
   
     spinUpTimer.reset();
     shooter.spinUp(
@@ -58,7 +57,7 @@ public class SpinUp extends Command {
 
   public void end(boolean interrupted){
     if(interrupted) shooter.stopFlyWheel();
-    else LED.getInstance().setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(true));
+    else LED.getInstance().setPattern(LEDConstants.Segments.SEGMENT_INTAKE, PatternFactory.shooterSpunUpIndicator(true));
   }
 
   @Override

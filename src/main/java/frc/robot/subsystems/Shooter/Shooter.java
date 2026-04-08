@@ -88,7 +88,7 @@ public class Shooter extends SubsystemBase {
     public void stopFlyWheel() {
         io.stopFlyWheel();
         isKeepingVelocity = false;
-        LED.getInstance().setPattern(LEDConstants.Segments.INTAKE, PatternFactory.shooterSpunUpIndicator(false));
+        LED.getInstance().setPattern(LEDConstants.Segments.SEGMENT_INTAKE, PatternFactory.shooterSpunUpIndicator(false));
     }
 
     /**

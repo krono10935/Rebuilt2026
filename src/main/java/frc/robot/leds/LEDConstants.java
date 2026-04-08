@@ -17,8 +17,9 @@ public class LEDConstants {
         RIO(0, 20),
         PDH_RIGHT(21, 36),
         PDH_LEFT(37, 51),
-        INDEXER(52, 61),
-        INTAKE(62, 97);
+        INDEXER(52, 71),
+        INTAKE(0, 0),
+        SEGMENT_INTAKE(72,97);
 
         public final int start;
         public final int end;
