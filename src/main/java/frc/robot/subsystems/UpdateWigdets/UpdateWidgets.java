@@ -61,23 +61,6 @@ public class UpdateWidgets extends SubsystemBase {
             Logger.recordOutput("IntakeMode" , mode.name());
             SmartDashboard.putBoolean(mode.name(), isOn);
         }
-
-        String wonAuto;
-    
-        switch (DataSource.getDataSource()){
-            case FMS:
-                wonAuto = HubTiming.isActiveFirst() ? "The fms said we lost auto" : "The fms said we won auto";
-                break;
-            case HUMAN:
-                wonAuto = HubTiming.isActiveFirst() ? "The operator said we lost auto" : "The operator said we won auto";
-                break;
-            default:
-                wonAuto = HubTiming.isActiveFirst() ? "The code said we lost auto" : "The code said we won auto";
-                break;
-
-        }
-
-        SmartDashboard.putString("Who won auto", wonAuto);
     }
 
 }

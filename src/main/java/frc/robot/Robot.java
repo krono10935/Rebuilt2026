@@ -81,7 +81,8 @@ public class Robot extends LoggedRobot
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        if (ModeFileHandling.isCompMode()){
+          Logger.recordMetadata("IsCompMode", "" + ModeFileHandling.isCompMode());
+          if (Constants.isPit){
             Logger.addDataReceiver(new WPILOGWriter());
         } else {
             Logger.addDataReceiver(new NT4Publisher());
@@ -118,6 +119,7 @@ public class Robot extends LoggedRobot
         for (int i = 0; i < conduit.getPDPChannelCount(); i++){
             Logger.recordOutput("PDH/ChannelPower/" + 1, conduit.getPDPChannelCurrent(i) * voltage);
         }
+        Logger.recordOutput("PDH/Total Power", conduit.getPDPTotalCurrent() * voltage);
 
         // if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
         //     HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
