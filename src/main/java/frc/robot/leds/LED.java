@@ -11,8 +11,6 @@ import frc.robot.leds.LEDConstants.Segments;
 
 import java.util.HashMap;
 
-import com.revrobotics.ColorSensorV3.LEDCurrent;
-
 public class LED extends SubsystemBase {
     private final AddressableLED led;
     private final AddressableLEDBuffer buffer;

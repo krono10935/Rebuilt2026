@@ -25,6 +25,7 @@ import frc.utils.SwitchedToPitModeException;
 import frc.utils.VirtualSubSystem;
 import io.github.captainsoccer.basicmotor.motorManager.MotorManager;
 
+import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -67,21 +68,24 @@ public class Robot extends LoggedRobot
             default -> "Unknown";
             });
 
-         // TODO comment out before comp
-         if (isReal()) {
-             Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-         } else {
-             Logger.addDataReceiver(new NT4Publisher());
-         }
+        //  // TODO comment out before comp
+        //  if (isReal()) {
+        //      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+        //      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        //  } else {
+        //      Logger.addDataReceiver(new NT4Publisher());
+        //  }
 
         //TODO comment in before comp
           // Set up data receivers & replay source
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new WPILOGWriter());
-        Logger.addDataReceiver(new NT4Publisher());
+        if (ModeFileHandling.isCompMode()){
+            Logger.addDataReceiver(new WPILOGWriter());
+        } else {
+            Logger.addDataReceiver(new NT4Publisher());
+        }
         break;
 
       case SIM:
@@ -108,6 +112,12 @@ public class Robot extends LoggedRobot
         CommandScheduler.getInstance().run();
         MotorManager.getInstance().periodic(); // must run AFTER CommandScheduler
         ShotCalculator.getInstance().clearShootingParameters();
+
+        var conduit = ConduitApi.getInstance();
+        double voltage = conduit.getPDPVoltage();
+        for (int i = 0; i < conduit.getPDPChannelCount(); i++){
+            Logger.recordOutput("PDH/ChannelPower/" + 1, conduit.getPDPChannelCurrent(i) * voltage);
+        }
 
         // if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
         //     HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());

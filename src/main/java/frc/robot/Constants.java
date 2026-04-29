@@ -1,5 +1,8 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -90,10 +93,19 @@ public class Constants {
         private static Boolean isActiveFirst = null;
         private static Boolean isActiveFirstHuman = null;
 
-        static {
-            SmartDashboard.putBoolean("received FMS data", true);
-            SmartDashboard.putBoolean("Human sent first", false);
+        public enum DataSource{
+            FMS,
+            HUMAN,
+            CODE;
+
+            @AutoLogOutput(key = "Hubtiming/Datasource")
+            private static DataSource current = CODE;
+
+            public static DataSource getDataSource(){
+                return current;
+            }
         }
+
         /**
          * 
          * @param team Get from driverstations game specific message the team
@@ -108,7 +120,7 @@ public class Constants {
                 isActiveFirst = true;
             }
 
-            SmartDashboard.putBoolean("received FMS data", true);
+           DataSource.current = DataSource.FMS;
         }
 
         public static Boolean getAutoIsActiveDetection(){
@@ -117,7 +129,7 @@ public class Constants {
 
         public static void setHumanActiveFirst(boolean isActiveFirstHumanInput){
             isActiveFirstHuman = isActiveFirstHumanInput;
-            SmartDashboard.putBoolean("Human sent first", isActiveFirst == null);
+            DataSource.current = DataSource.getDataSource() != DataSource.FMS ? DataSource.FMS: DataSource.HUMAN;
         }
 
         public static double timeRemainingToShift(double time){
@@ -125,9 +137,13 @@ public class Constants {
             return time - phase.FINSIHING_TIME;
         }
         public static boolean isActiveFirst(){
-            if (isActiveFirst != null) return isActiveFirst;
-            if (isActiveFirstHuman != null) return isActiveFirstHuman;
-            return true;
+            boolean currentIsActiveFirst = false;
+            if (isActiveFirst != null) currentIsActiveFirst = isActiveFirst;
+            if (isActiveFirstHuman != null) currentIsActiveFirst = isActiveFirstHuman;
+
+            Logger.recordOutput("isActiveFirst", currentIsActiveFirst);
+
+            return currentIsActiveFirst;
         }
 
         public static double timeToNextShift(double time){

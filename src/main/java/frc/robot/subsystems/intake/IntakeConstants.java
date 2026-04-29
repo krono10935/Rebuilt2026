@@ -132,8 +132,8 @@ public class IntakeConstants {
 
         private IntakeMode prev = null;
 
-        private static IntakeMode previousIntakeMode = FourtyBalls;
-        private static IntakeMode currentIntakeMode = FourtyBalls;
+        private static IntakeMode previousIntakeMode = ThirtyBalls;
+        private static IntakeMode currentIntakeMode = ThirtyBalls;
 
         IntakeMode(Function<Intake, Command> commandGenerator){
             this.commandGenerator = commandGenerator;
