@@ -180,8 +180,8 @@ public class Constants {
                 case SecondShift, FourthShift ->
                     // If red is inactive first and we are red, then we will be active shifts 2,4
                     // Otherwise we will be inactive in those Shifts
-                        isActiveFirst();
-                case FirstShift, ThirdShift -> !isActiveFirst();
+                        !isActiveFirst();
+                case FirstShift, ThirdShift -> isActiveFirst();
                 default -> false;
             };
 
