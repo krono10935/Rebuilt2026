@@ -121,9 +121,6 @@ public class Robot extends LoggedRobot
         }
         Logger.recordOutput("PDH/Total Power", conduit.getPDPTotalCurrent() * voltage);
 
-        // if (HubTiming.getAutoIsActiveDetection() == null && !DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
-        //     HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
-        // }
     }
     
     
@@ -178,9 +175,7 @@ public class Robot extends LoggedRobot
 
 
     @Override
-    public void autonomousExit() {
-        HubTiming.setStartingTeam("R", DriverStation.getAlliance().get());
-    }
+    public void autonomousExit() {}
     
     
     @Override
@@ -188,7 +183,6 @@ public class Robot extends LoggedRobot
     {
         if (autonomousCommand != null)
         {
-
             autonomousCommand.cancel();
         }
 
@@ -197,7 +191,11 @@ public class Robot extends LoggedRobot
     
     
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        if (!DriverStation.getGameSpecificMessage().isEmpty() && DriverStation.getAlliance().isPresent()){
+            HubTiming.setStartingTeam(DriverStation.getGameSpecificMessage(), DriverStation.getAlliance().get());
+        }
+    }
     
     
     @Override

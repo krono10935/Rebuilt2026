@@ -1,5 +1,6 @@
 package frc.robot;
 
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -98,7 +99,10 @@ public class Constants {
 
     public static class HubTiming {
 
+        @AutoLogOutput(key = "isActiveFirst")
         private static boolean isActiveFirst = false;
+
+        @AutoLogOutput(key = "dataSource")
         private static DataSource dataSource = DataSource.CODE;
 
         public enum DataSource {
@@ -118,6 +122,10 @@ public class Constants {
          * @param alliance Get from driverstation
          */
         public static void setStartingTeam(String team, Alliance alliance) {
+            if (dataSource == DataSource.FMS){
+                return;
+            }
+
             boolean isRed = alliance == Alliance.Red;
 
             if ((team.charAt(0) == 'R' && isRed) || (team.charAt(0) == 'B' && !isRed)) {
@@ -152,6 +160,7 @@ public class Constants {
         }
 
         public static boolean isActiveFirst() {
+            Logger.recordOutput("isActiveFirst", isActiveFirst);
             return isActiveFirst;
         }
 

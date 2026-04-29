@@ -37,7 +37,7 @@ public class ShooterConstants {
 
 
 
-    public static final double SHOOTING_SPEED_TOLERANCE = 0.2;
+    public static final double SHOOTING_SPEED_TOLERANCE = 0.5;
 
     public static final boolean FLYWHEEL_MOTORS_OPPOSITE = true;
 
