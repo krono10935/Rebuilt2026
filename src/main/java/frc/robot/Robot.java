@@ -82,7 +82,7 @@ public class Robot extends LoggedRobot
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
           Logger.recordMetadata("IsCompMode", "" + ModeFileHandling.isCompMode());
-          if (Constants.isPit){
+          if (!Constants.isPit){
             Logger.addDataReceiver(new WPILOGWriter());
         } else {
             Logger.addDataReceiver(new NT4Publisher());
