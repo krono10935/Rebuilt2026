@@ -81,7 +81,7 @@ public class Robot extends LoggedRobot
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-          Logger.recordMetadata("IsCompMode", "" + ModeFileHandling.isCompMode());
+          Logger.recordMetadata("IsCompMode", "" + ModeFileHandling.shouldSwitchToPitMode());
           if (!Constants.isPit){
             Logger.addDataReceiver(new WPILOGWriter());
         } else {
@@ -117,7 +117,7 @@ public class Robot extends LoggedRobot
         var conduit = ConduitApi.getInstance();
         double voltage = conduit.getPDPVoltage();
         for (int i = 0; i < conduit.getPDPChannelCount(); i++){
-            Logger.recordOutput("PDH/ChannelPower/" + 1, conduit.getPDPChannelCurrent(i) * voltage);
+            Logger.recordOutput("PDH/ChannelPower/" + i, conduit.getPDPChannelCurrent(i) * voltage);
         }
         Logger.recordOutput("PDH/Total Power", conduit.getPDPTotalCurrent() * voltage);
 

@@ -147,7 +147,9 @@ public enum SwerveModulesMK5 {
         driveConfig.motorConfig.motorType = DCMotor.getKrakenX60(1);
 
         driveConfig.currentLimitConfig.statorCurrentLimit = 120;
-        driveConfig.currentLimitConfig.supplyCurrentLimit = 0;
+        driveConfig.currentLimitConfig.supplyCurrentLimit = 65;
+        driveConfig.currentLimitConfig.lowerCurrentLimit = 40;
+        driveConfig.currentLimitConfig.lowerLimitTime = 0.2;
 
         driveConfig.enableFOC = true;
 
