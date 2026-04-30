@@ -5,6 +5,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.publishTimeToNextShift;
 import frc.robot.commands.IntakeCommands.CloseCommand;
 import frc.robot.commands.IntakeCommands.SlowlyCloseOnce;
 import frc.robot.commands.IntakeCommands.TwoInOneOut;
@@ -29,12 +30,14 @@ public class IntakeConstants {
     public static final double INTAKE_VELOCITY = 4;
 
     public static final double PINION_DIAMETER = 0.03069;
-    public static final double INTAKE_DUTYCYCLE = 0.75;
+    public static final double INTAKE_DUTYCYCLE = 0.5;
 
     public static final double TIME_FOR_INTAKE_TO_CLOSE = 4;
     public static final double TIME_FOR_INTAKE_TO_OPEN = 4;
 
     public static double MAX_INTAKE_CURRENT_TOLERANCE = 39;
+
+    public static final int INTAKE_MOTOR_CHANNEL = 0;//TODO: be the real channel
 
 
     public static final BasicMotorConfig intakeMotorConfig = new BasicSparkConfig();
