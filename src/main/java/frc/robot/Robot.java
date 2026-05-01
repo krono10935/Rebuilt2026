@@ -25,11 +25,14 @@ import frc.utils.SwitchedToPitModeException;
 import frc.utils.VirtualSubSystem;
 import io.github.captainsoccer.basicmotor.motorManager.MotorManager;
 
+import java.io.File;
+
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.rlog.RLOGServer;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
@@ -83,7 +86,15 @@ public class Robot extends LoggedRobot
         // Running on a real robot, log to a USB stick ("/U/logs")
           Logger.recordMetadata("IsCompMode", "" + ModeFileHandling.shouldSwitchToPitMode());
           if (!Constants.isPit){
-            Logger.addDataReceiver(new WPILOGWriter());
+            File disk = new File("/U");
+
+            if(disk.exists()){
+                Logger.addDataReceiver(new WPILOGWriter());
+            }
+            else{
+                Logger.addDataReceiver(new WPILOGWriter("/home/lvuser"));
+            }
+            
         } else {
             Logger.addDataReceiver(new NT4Publisher());
         }
