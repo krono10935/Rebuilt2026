@@ -22,7 +22,7 @@ public class Constants {
     public static final Mode simMode = Mode.REAL;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
-    public static final boolean isPit = false;//TODO update before match
+    public static final boolean isPit = true;//TODO update before match
 
     public static enum Mode {
         /**
