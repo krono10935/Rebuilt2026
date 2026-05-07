@@ -259,6 +259,10 @@ public class Drivetrain extends SubsystemBase {
      */
     // @Override
     public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs) {
+        Logger.recordOutput("VisionMeasurement/Pose", pose);
+        Logger.recordOutput("VisionMeasurement/timestamp", timestamp);
+        Logger.recordOutput("VisionMeasurement/stdDevs", stdDevs);
+
         poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
     }
 

@@ -13,7 +13,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 7.5
+            "waitTime": 4.0
           }
         },
         {
@@ -42,7 +42,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "shootAndAimStationary"
+                  "name": "shootAndAimStationaryOverShoot"
                 }
               }
             ]

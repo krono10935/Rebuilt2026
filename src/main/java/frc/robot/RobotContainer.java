@@ -415,6 +415,16 @@ public class RobotContainer {
                 () -> false,
                 drivetrain);
 
+        Command aimRobotStationaryOverShoot = new FunctionalCommand(
+                driveAndHomeToHubCommand::resetThetaController,
+                () -> drivetrain.drive(
+                        new ChassisSpeeds(0, 0,
+                                driveAndHomeToHubCommand.calculateThetaPID())),
+                (interrupted) -> drivetrain.stop(),
+                () -> false,
+                drivetrain).alongWith(new InstantCommand( () -> {
+                        ShotCalculator.getInstance().addflyWheelOffset(0.467);
+                })).andThen(new InstantCommand(() -> ShotCalculator.getInstance().resetOffsets()));
 
         NamedCommands.registerCommand("shootAndAimMoving",
                 ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode,
@@ -426,6 +436,11 @@ public class RobotContainer {
                 ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode,
                         () -> false, () -> false))
                         .alongWith(new TwoInOneOut(intake), aimRobotStationary)));
+
+        NamedCommands.registerCommand("shootAndAimStationaryOverShoot",
+                ((new ShootCommand(shooter, drivetrain, vision, intake, () -> false, () -> currentIntakeMode,
+                        () -> false, () -> false))
+                        .alongWith(new TwoInOneOut(intake), aimRobotStationaryOverShoot)));
 
         NamedCommands.registerCommand("spinUp", new RunCommand(() -> shooter.spinUp(17), shooter));
 
