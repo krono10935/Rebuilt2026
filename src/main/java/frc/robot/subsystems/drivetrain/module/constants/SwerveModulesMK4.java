@@ -164,7 +164,7 @@ public enum SwerveModulesMK4 {
         driveConfig.motorConfig.idleMode = BasicMotor.IdleMode.COAST;
         driveConfig.motorConfig.motorType = DCMotor.getKrakenX60(1);
 
-        driveConfig.currentLimitConfig.statorCurrentLimit = 90;
+        driveConfig.currentLimitConfig.statorCurrentLimit = 60;
         driveConfig.currentLimitConfig.supplyCurrentLimit = 0;
 
         var steerConfig = new BasicTalonFXConfig();

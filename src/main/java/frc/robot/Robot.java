@@ -146,7 +146,7 @@ public class Robot extends LoggedRobot
     @Override
     public void autonomousInit()
     {
-        autonomousCommand = RobotContainer.getInstance().getAutonomousCommand();
+        // autonomousCommand = RobotContainer.getInstance().getAutonomousCommand();
 
         if(DriverStation.getAlliance().isPresent()){
             LED.getInstance().setPattern(LEDConstants.Segments.ALL,

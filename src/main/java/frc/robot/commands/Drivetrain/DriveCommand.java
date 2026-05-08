@@ -142,7 +142,7 @@ public class DriveCommand extends Command {
      */
     public ChassisSpeeds getControllerInputs() {
 
-        double triggerValue = CONTROLLER_MODE.calculateTrigger(1 - controller.getRightTriggerAxis());
+        double triggerValue = CONTROLLER_MODE.calculateTrigger(0);
 
         double speed = interpolate(triggerValue);
         double angularSpeed = angularInterpolate(triggerValue);
