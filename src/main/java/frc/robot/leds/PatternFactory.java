@@ -128,4 +128,37 @@ public class PatternFactory {
 
          return pattern1.overlayOn(pattern2).overlayOn(pattern3);
     }
+
+
+    private static LEDPattern intakeBallModeIndicatorInstance;
+    private static int lastIntakeBallMode = 4;
+    public static LEDPattern intakeBallModeIndicator(int mode){
+        if(intakeBallModeIndicatorInstance == null || lastIntakeBallMode != mode){
+            lastIntakeBallMode = mode;
+            int speed = 0;
+            switch (mode){
+                case 1:
+
+                    break; case 2:
+                        break;
+                        case 3:
+                            break;
+                            case 4:
+                                break;
+
+
+
+            }
+
+
+
+            var pattern1 = LEDPattern.steps(Map.of(0.2,Color.kYellow)).atBrightness(Units.Percent.of(50)).scrollAtRelativeSpeed(Units.Hertz.of(1));
+            var pattern2 = LEDPattern.steps(Map.of(0.16,Color.kYellow)).atBrightness(Units.Percent.of(30)).scrollAtRelativeSpeed(Units.Hertz.of(0.5));
+            var pattern3 = LEDPattern.steps(Map.of(0.12,Color.kYellow)).atBrightness(Units.Percent.of(20)).scrollAtRelativeSpeed(Units.Hertz.of(0.3));
+
+            intakeBallModeIndicatorInstance = pattern1.overlayOn(pattern2).overlayOn(pattern3);
+        }
+
+        return  intakeBallModeIndicatorInstance;
+    }
 }

@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOReplay;
 
-
+@Deprecated
 public class Intake extends SubsystemBase{
   private final IntakeIO io;
   private final IntakeInputsAutoLogged inputs;

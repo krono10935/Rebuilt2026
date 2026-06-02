@@ -2,7 +2,7 @@ package frc.robot.subsystems.intake;
 
 import io.github.captainsoccer.basicmotor.controllers.Controller.ControlMode;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
-
+@Deprecated
 public class IntakeIOSim implements IntakeIO {
     private final BasicMotorSim intakeMotor;
     private final BasicMotorSim positionMotor;

@@ -13,7 +13,7 @@ import io.github.captainsoccer.basicmotor.BasicMotor.IdleMode;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig.SlotConfig;
 import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
-
+@Deprecated
 public class IntakeConstants {
 
     //The tolerance of the position of the intake

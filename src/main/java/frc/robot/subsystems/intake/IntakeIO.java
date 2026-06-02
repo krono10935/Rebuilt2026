@@ -1,6 +1,6 @@
 package frc.robot.subsystems.intake;
 import org.littletonrobotics.junction.AutoLog;
-
+@Deprecated
 public interface IntakeIO {
     @AutoLog
     class IntakeInputs {
