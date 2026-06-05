@@ -10,20 +10,23 @@ public interface IsrIntakeIO {
     class IsrIntakeInputs{
         double positionMotorMeters;
         double rollerMotorVelocityMPS;
-        double positionMotorVelocityMPS;
-        double positionMotorPositionMPS;
         boolean isRollerMotorAtSetPoint;
         boolean isPositionMotorAtSetPoint;
     }
 
-    void setRollerMotorDutyCycle(double dutyCycle);
+    boolean isrRollerMotorAtSetPoint();
 
-    void stopRollerMotor();
+    void stopIsrRollerMotor();
 
-    void stopPositionMotor();
+    void setIsrRollerMotorDutyCycle(double dutyCycle);
 
-    void moveToPositions(double positionMeters);
+    boolean isrPositionMotorAtSetPoint();
+
+    void moveToPosition(double positionMeters);
+
 
     void updateInputs(IsrIntakeInputs inputs);
+
+
 
 }

@@ -3,7 +3,7 @@ package frc.robot.subsystems.IsrIntake;
 import io.github.captainsoccer.basicmotor.controllers.Controller;
 import io.github.captainsoccer.basicmotor.sim.motor.BasicMotorSim;
 
-public class IsrIntakeIOSim {
+public class IsrIntakeIOSim implements IsrIntakeIO{
     private final BasicMotorSim isrRollerMotor;
     private final BasicMotorSim isrPositionMotor;
 
@@ -15,33 +15,38 @@ public class IsrIntakeIOSim {
 
     }
 
-    private boolean isrRollerMotorAtSetPoint(){
-        return isrPositionMotor.atSetpoint();
+    @Override
+    public boolean isrRollerMotorAtSetPoint(){
+        return isrRollerMotor.atSetpoint();
     }
 
+    @Override
     public void stopIsrRollerMotor(){
         isrRollerMotor.stop();
     }
 
+    @Override
     public void setIsrRollerMotorDutyCycle(double dutyCycle){
         isrRollerMotor.setPercentOutput(dutyCycle);
     }
 
-    private boolean isrPositionMotorAtSetPoint(){
+    @Override
+    public boolean isrPositionMotorAtSetPoint(){
         return isrPositionMotor.atSetpoint();
     }
 
+    @Override
     public void moveToPosition(double positionMeters){
         isrPositionMotor.setControl(positionMeters,Controller.ControlMode.POSITION);
     }
 
+    @Override
     public void updateInputs(IsrIntakeIO.IsrIntakeInputs isrIntakeInputs){
         isrIntakeInputs.positionMotorMeters = isrPositionMotor.getPosition();
         isrIntakeInputs.isRollerMotorAtSetPoint = isrRollerMotorAtSetPoint();
         isrIntakeInputs.rollerMotorVelocityMPS = isrRollerMotor.getVelocity();
         isrIntakeInputs.isPositionMotorAtSetPoint = isrPositionMotorAtSetPoint();
-        isrIntakeInputs.positionMotorVelocityMPS = isrPositionMotor.getVelocity();
-    }
 
+    }
 
 }
