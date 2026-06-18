@@ -1,9 +1,7 @@
 package frc.robot.subsystems.IsrIntake;
 
-import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.intake.IntakeInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
 
 public class IsrIntake extends SubsystemBase {
@@ -19,14 +17,14 @@ public class IsrIntake extends SubsystemBase {
 
     public double getIsrIntakePosition(){ return isrIntakeInputs.positionMotorMeters; }
 
-    public void setIsrPositionMotorDutyCycle(double DutyCycle){ io.setIsrRollerMotorDutyCycle(DutyCycle);}
+    public void setIsrPositionMotorDutyCycle(double dutyCycle){ io.setIsrRollerMotorDutyCycle(dutyCycle);}
 
     public void moveToPosition(double positionMeters){
         io.moveToPosition(positionMeters);
     }
 
-    public void setIsrRollerDutyCycle(double DutyCycle){
-        io.setIsrRollerMotorDutyCycle(DutyCycle);
+    public void setIsrRollerDutyCycle(double dutyCycle){
+        io.setIsrRollerMotorDutyCycle(dutyCycle);
     }
 
     public void stopIsrRollerMotor(){
@@ -43,7 +41,7 @@ public class IsrIntake extends SubsystemBase {
         Logger.processInputs(getName(), isrIntakeInputs);
 
         String currCommand = getCurrentCommand() == null ? "None" : getCurrentCommand().getName();
-        Logger.recordOutput("IsrIntake/Current Command ", currCommand);
+        Logger.recordOutput("IsrIntake/Current Command", currCommand);
     }
 
 
