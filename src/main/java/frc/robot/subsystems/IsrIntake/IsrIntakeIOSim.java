@@ -15,8 +15,7 @@ public class IsrIntakeIOSim implements IsrIntakeIO{
 
     }
 
-    @Override
-    public boolean isrRollerMotorAtSetPoint(){
+    private boolean isrRollerMotorAtSetPoint(){
         return isrRollerMotor.atSetpoint();
     }
 
@@ -30,8 +29,7 @@ public class IsrIntakeIOSim implements IsrIntakeIO{
         isrRollerMotor.setPercentOutput(dutyCycle);
     }
 
-    @Override
-    public boolean isrPositionMotorAtSetPoint(){
+    private boolean isrPositionMotorAtSetPoint(){
         return isrPositionMotor.atSetpoint();
     }
 

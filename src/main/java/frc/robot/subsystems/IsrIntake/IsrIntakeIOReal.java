@@ -13,12 +13,11 @@ public class IsrIntakeIOReal implements IsrIntakeIO {
 
         isrRollerMotor = new BasicSparkFlex(IsrIntakeConstants.isrRollerMotorConfig);
 
-        isrPositionMotor = new BasicSparkFlex(IsrIntakeConstants.isrPositionMotorConfig);
+        isrPositionMotor = new BasicSparkMAX(IsrIntakeConstants.isrPositionMotorConfig);
 
     }
 
-    @Override
-    public boolean isrRollerMotorAtSetPoint (){
+    private boolean isrRollerMotorAtSetPoint (){
         return isrRollerMotor.atSetpoint();
     }
 
@@ -32,8 +31,7 @@ public class IsrIntakeIOReal implements IsrIntakeIO {
         isrRollerMotor.setPercentOutput(dutyCycle);
     }
 
-    @Override
-    public boolean isrPositionMotorAtSetPoint(){
+    private boolean isrPositionMotorAtSetPoint(){
         return isrPositionMotor.atSetpoint();
     }
 
@@ -49,7 +47,4 @@ public class IsrIntakeIOReal implements IsrIntakeIO {
         isrIntakeInputs.rollerMotorVelocityMPS = isrRollerMotor.getVelocity();
         isrIntakeInputs.isPositionMotorAtSetPoint = isrPositionMotorAtSetPoint();
     }
-
-
-
 }

@@ -14,16 +14,11 @@ public interface IsrIntakeIO {
         boolean isPositionMotorAtSetPoint;
     }
 
-    boolean isrRollerMotorAtSetPoint();
-
     void stopIsrRollerMotor();
 
     void setIsrRollerMotorDutyCycle(double dutyCycle);
 
-    boolean isrPositionMotorAtSetPoint();
-
     void moveToPosition(double positionMeters);
-
 
     void updateInputs(IsrIntakeInputs inputs);
 
