@@ -4,13 +4,19 @@
   "holonomicMode": true,
   "pathFolders": [
     "Depot - Climb",
+<<<<<<< HEAD
     "Hub",
     "Outpost",
+=======
+    "ISR auto",
+    "Outpost - Climb",
+>>>>>>> c475f1c (started working on comp auto)
     "Testing",
     "Trench (L) - Trench (L) - Climb",
     "Trench (R) - Trench (R) - Climb"
   ],
   "autoFolders": [
+    "ISR 2026",
     "Testing"
   ],
   "defaultMaxVel": 3.2,
