@@ -4,12 +4,14 @@
   "holonomicMode": true,
   "pathFolders": [
     "Depot - Climb",
+    "ISR auto",
     "Outpost - Climb",
     "Testing",
     "Trench (L) - Trench (L) - Climb",
     "Trench (R) - Trench (R) - Climb"
   ],
   "autoFolders": [
+    "ISR 2026",
     "Testing"
   ],
   "defaultMaxVel": 3.2,
