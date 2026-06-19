@@ -166,7 +166,21 @@
       "rotationDegrees": 0.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 4.865179437439413,
+      "maxWaypointRelativePos": 5.439379243452947,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 10.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -207,7 +221,7 @@
     "rotation": 0.7742201649280823
   },
   "reversed": false,
-  "folder": "ISR auto",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
