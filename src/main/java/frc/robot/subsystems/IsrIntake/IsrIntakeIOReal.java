@@ -1,5 +1,8 @@
 package frc.robot.subsystems.IsrIntake;
 
+import static edu.wpi.first.units.Units.Rotation;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
@@ -36,13 +39,13 @@ public class IsrIntakeIOReal implements IsrIntakeIO {
     }
 
     @Override
-    public void moveToPosition(double positionMeters){
-        isrPositionMotor.setControl(positionMeters, Controller.ControlMode.POSITION);
+    public void moveToPosition(Rotation2d positionMotorAngle){
+        isrPositionMotor.setControl(positionMotorAngle.getDegrees(), Controller.ControlMode.POSITION);
     }
 
     @Override
     public void updateInputs(IsrIntakeIO.IsrIntakeInputs isrIntakeInputs){
-        isrIntakeInputs.positionMotorMeters =  isrPositionMotor.getPosition();
+        isrIntakeInputs.positionMotorAngle =  Rotation2d.fromDegrees(isrPositionMotor.getPosition());
         isrIntakeInputs.isRollerMotorAtSetPoint = isrRollerMotorAtSetPoint();
         isrIntakeInputs.rollerMotorVelocityMPS = isrRollerMotor.getVelocity();
         isrIntakeInputs.isPositionMotorAtSetPoint = isrPositionMotorAtSetPoint();

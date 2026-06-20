@@ -25,6 +25,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.subsystems.IsrIntake.IsrIntake;
+import frc.robot.subsystems.IsrIntake.IsrIntake.PositionState;
+import frc.robot.subsystems.IsrIntake.IsrIntake.RollerState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 
@@ -66,15 +68,14 @@ public class RobotContainer {
      */
     private void configureBindings() {
 
-        BooleanSupplier hubAboutToActivate = () -> {
-            double time = DriverStation.getMatchTime();
-
-            return Constants.HubTiming.isActive(time - 5);
-        };
-
         drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
 
         driverController.start().onTrue(drivetrain.resetGyro());
+
+        driverController.a().onTrue(intake.setRollerStateCommand(RollerState.FORWARD));
+        driverController.b().onTrue(intake.setRollerStateCommand(RollerState.OFF));
+        driverController.y().onTrue(intake.setRollerStateCommand(RollerState.REVERSE));
+
     }
 
     /**

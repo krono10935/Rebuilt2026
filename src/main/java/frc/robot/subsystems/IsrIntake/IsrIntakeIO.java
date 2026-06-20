@@ -3,12 +3,14 @@ package frc.robot.subsystems.IsrIntake;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface IsrIntakeIO {
 
 
     @AutoLog
     class IsrIntakeInputs{
-        double positionMotorMeters;
+        Rotation2d positionMotorAngle;
         double rollerMotorVelocityMPS;
         boolean isRollerMotorAtSetPoint;
         boolean isPositionMotorAtSetPoint;
@@ -18,7 +20,7 @@ public interface IsrIntakeIO {
 
     void setIsrRollerMotorDutyCycle(double dutyCycle);
 
-    void moveToPosition(double positionMeters);
+    void moveToPosition(Rotation2d positionMotorAngle);
 
     void updateInputs(IsrIntakeInputs inputs);
 
