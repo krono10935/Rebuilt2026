@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.266870967741937,
-        "y": 4.342209677419356
+        "x": 3.415488636363636,
+        "y": 4.354511363636364
       },
       "isLocked": false,
       "linkedName": null
@@ -119,18 +119,12 @@
     {
       "name": "Intake",
       "waypointRelativePos": 2.0084269662921392,
-      "endWaypointRelativePos": null,
+      "endWaypointRelativePos": 2.9084380610412848,
       "command": null
     },
     {
       "name": "closeIntake",
       "waypointRelativePos": 3.2397003745318402,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "driveToPose",
-      "waypointRelativePos": 4.344569288389474,
       "endWaypointRelativePos": null,
       "command": null
     }
