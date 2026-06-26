@@ -11,7 +11,7 @@ public class IsrIntakeConstants {
     public static final Rotation2d OPEN_POS = Rotation2d.kCW_90deg;
     public static final Rotation2d CLOSED_POS = Rotation2d.kZero;
 
-    public static final double ROLLER_DUTYCYCLE = 0.3;
+    public static final double ROLLER_DUTYCYCLE = 1;
 
     public static final double ROLLER_RADIUS_METERS = 1;
 
