@@ -61,7 +61,7 @@ public enum SwerveModulesMK4 {
     //         new Translation2d(0.29, 0.29));
 
     FRONT_LEFT(
-            8, -0.258, 10,
+            6, -0.258, 10,
             new PIDGains(5, 7, 0, 0, 0, 0),
             new FeedForwardsGains(2.6604),
             0.92927,
@@ -85,11 +85,11 @@ public enum SwerveModulesMK4 {
 
 
     BACK_LEFT(
-            9, 0, 13,
+            8, 0, 12,
             new PIDGains(5, 7, 0, 0, 0, 0),
             new FeedForwardsGains(2.6604),
             0.92927,
-            5,
+            4,
             new PIDGains(15, 40, 0, 0.05, 1, 0.001),
             new FeedForwardsGains(0),
             1.4682,0.19615,
@@ -97,12 +97,11 @@ public enum SwerveModulesMK4 {
 
 
     BACK_RIGHT(
-            6,  -0.242, 12
-            ,
+            9,  -0.242, 13,
             new PIDGains(5, 7, 0, 0, 0, 0),
             new FeedForwardsGains(2.6773),
             1.3182,
-            4,
+            5,
             new PIDGains(15, 40, 0, 0.05, 1, 0.001),
             new FeedForwardsGains(0),
             1.4759,0.15598,
