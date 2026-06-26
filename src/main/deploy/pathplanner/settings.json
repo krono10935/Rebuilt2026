@@ -1,49 +1,34 @@
 {
-  "robotWidth": 0.81,
-  "robotLength": 0.81,
+  "robotWidth": 0.9,
+  "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [
-    "Depot - Climb",
-<<<<<<< HEAD
-    "Hub",
-    "Outpost",
-=======
-    "ISR auto",
-    "Outpost - Climb",
->>>>>>> c475f1c (started working on comp auto)
-    "Testing",
-    "Trench (L) - Trench (L) - Climb",
-    "Trench (R) - Trench (R) - Climb"
-  ],
-  "autoFolders": [
-    "ISR 2026",
-    "Testing"
-  ],
-  "defaultMaxVel": 3.2,
-  "defaultMaxAccel": 10.0,
+  "pathFolders": [],
+  "autoFolders": [],
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 61.23,
-  "robotMOI": 13.979120339,
+  "robotMass": 74.088,
+  "robotMOI": 6.883,
   "robotTrackwidth": 0.546,
-  "driveWheelRadius": 0.051,
-  "driveGearing": 6.03,
-  "maxDriveSpeed": 4.5,
-  "driveMotorType": "krakenX60FOC",
-  "driveCurrentLimit": 100.0,
-  "wheelCOF": 1.0,
-  "flModuleX": 0.27,
-  "flModuleY": 0.27,
-  "frModuleX": 0.27,
-  "frModuleY": -0.27,
-  "blModuleX": -0.27,
-  "blModuleY": 0.27,
-  "brModuleX": -0.27,
-  "brModuleY": -0.27,
+  "driveWheelRadius": 0.048,
+  "driveGearing": 5.143,
+  "maxDriveSpeed": 5.45,
+  "driveMotorType": "krakenX60",
+  "driveCurrentLimit": 60.0,
+  "wheelCOF": 1.2,
+  "flModuleX": 0.273,
+  "flModuleY": 0.273,
+  "frModuleX": 0.273,
+  "frModuleY": -0.273,
+  "blModuleX": -0.273,
+  "blModuleY": 0.273,
+  "brModuleX": -0.273,
+  "brModuleY": -0.273,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
   "robotFeatures": [
-    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.575,\"y\":0.0},\"size\":{\"width\":0.85,\"length\":0.3},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.55,\"y\":0.0},\"size\":{\"width\":0.855,\"length\":0.2},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
   ]
 }

@@ -94,6 +94,10 @@
   ],
   "rotationTargets": [
     {
+      "waypointRelativePos": 0.23873873873873824,
+      "rotationDegrees": 0.0
+    },
+    {
       "waypointRelativePos": 1.0,
       "rotationDegrees": -90.0
     },
@@ -153,8 +157,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.2,
-    "maxAcceleration": 10.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
