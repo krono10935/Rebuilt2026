@@ -10,9 +10,9 @@ public class IsrIntakeIOSim implements IsrIntakeIO{
 
     public IsrIntakeIOSim() {
 
-        isrRollerMotor = new BasicMotorSim(IsrIntakeConstants.isrRollerMotorConfig);
+        isrRollerMotor = new BasicMotorSim(IsrIntakeConstants.isrLeadRollerMotorConfig);
 
-        isrPositionMotor = new BasicMotorSim(IsrIntakeConstants.isrPositionMotorConfig);
+        isrPositionMotor = new BasicMotorSim(IsrIntakeConstants.isrLeadPositionMotorConfig);
 
     }
 

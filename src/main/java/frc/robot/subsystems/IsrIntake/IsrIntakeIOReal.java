@@ -1,53 +1,65 @@
 package frc.robot.subsystems.IsrIntake;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.controllers.Controller;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkFlex;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkMAX;
 
 public class IsrIntakeIOReal implements IsrIntakeIO {
-    private final BasicMotor isrRollerMotor;
-    private final BasicMotor isrPositionMotor;
+    private final BasicMotor isrLeadRollerMotor;
+    private final BasicMotor isrLeadPositionMotor;
+
+    private final BasicMotor isrFollowRollerMotor;
+    private final BasicMotor isrFollowPositionMotor;
 
     public IsrIntakeIOReal(){
 
-        isrRollerMotor = new BasicSparkFlex(IsrIntakeConstants.isrRollerMotorConfig);
+        isrLeadRollerMotor = new BasicSparkFlex(IsrIntakeConstants.isrLeadRollerMotorConfig);
+        isrFollowRollerMotor = new BasicSparkFlex(IsrIntakeConstants.isrFollowRollerMotorConfig);
 
-        isrPositionMotor = new BasicSparkMAX(IsrIntakeConstants.isrPositionMotorConfig);
+        isrFollowRollerMotor.followMotor(isrLeadRollerMotor, true);
+
+        SmartDashboard.putData(isrLeadRollerMotor.getController());
+
+        isrLeadPositionMotor = new BasicSparkMAX(IsrIntakeConstants.isrLeadPositionMotorConfig);
+        isrFollowPositionMotor = new BasicSparkFlex(IsrIntakeConstants.isrFollowPositionMotorConfig);
+
+        isrFollowPositionMotor.followMotor(isrLeadRollerMotor, true);
+
+
 
     }
 
     private boolean isrRollerMotorAtSetPoint (){
-        return isrRollerMotor.atSetpoint();
+        return isrLeadRollerMotor.atSetpoint();
     }
 
     @Override
     public void stopIsrRollerMotor(){
-        isrRollerMotor.stop();
+        isrLeadRollerMotor.stop();
     }
 
     @Override
     public void setIsrRollerMotorDutyCycle(double dutyCycle){
-        isrRollerMotor.setPercentOutput(dutyCycle);
+        isrLeadRollerMotor.setPercentOutput(dutyCycle);
     }
 
     private boolean isrPositionMotorAtSetPoint(){
-        return isrPositionMotor.atSetpoint();
+        return isrLeadPositionMotor.atSetpoint();
     }
 
     @Override
     public void moveToPosition(Rotation2d positionMotorAngle){
-        isrPositionMotor.setControl(positionMotorAngle.getDegrees(), Controller.ControlMode.POSITION);
+        isrLeadPositionMotor.setControl(positionMotorAngle.getDegrees(), Controller.ControlMode.POSITION);
     }
 
     @Override
     public void updateInputs(IsrIntakeIO.IsrIntakeInputs isrIntakeInputs){
-        isrIntakeInputs.positionMotorAngle =  Rotation2d.fromDegrees(isrPositionMotor.getPosition());
+        isrIntakeInputs.positionMotorAngle =  Rotation2d.fromDegrees(isrLeadPositionMotor.getPosition());
         isrIntakeInputs.isRollerMotorAtSetPoint = isrRollerMotorAtSetPoint();
-        isrIntakeInputs.rollerMotorVelocityMPS = isrRollerMotor.getVelocity();
+        isrIntakeInputs.rollerMotorVelocityMPS = isrLeadRollerMotor.getVelocity();
         isrIntakeInputs.isPositionMotorAtSetPoint = isrPositionMotorAtSetPoint();
     }
 }
