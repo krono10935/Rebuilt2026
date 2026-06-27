@@ -11,11 +11,11 @@ import frc.robot.subsystems.drivetrain.constants.ChassisType;
 
 public class Constants {
 
-    public static final ChassisType CHASSIS_TYPE = ChassisType.COMPBOT;
+    public static final ChassisType CHASSIS_TYPE = ChassisType.DEVBOT;
 
     public static final boolean USE_OBJECT_DETECTION = true;
 
-    public static final Mode simMode = Mode.REAL;
+    public static final Mode simMode = Mode.SIM;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
     public static enum Mode {

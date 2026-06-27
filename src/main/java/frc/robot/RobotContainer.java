@@ -6,11 +6,13 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Drivetrain.*;
 import frc.robot.subsystems.UpdateWigdets.UpdateWidgets;
 import frc.robot.subsystems.drivetrain.configsStructure.ChassisConstants;
@@ -37,9 +39,13 @@ public class RobotContainer {
 
     public final Drivetrain drivetrain;
 
-    private IsrIntake intake;
+    private final SwerveSysID sysID;
+
+    public final IsrIntake intake;
 
     private final LoggedDashboardChooser<Command> autoChooser;
+
+    private boolean isBabyMode;
 
     public static RobotContainer getInstance() {
         if (instance == null) {
@@ -55,9 +61,13 @@ public class RobotContainer {
 
         driverController = new CommandXboxController(0);
 
+        sysID = new SwerveSysID(drivetrain, driverController);
+
         autoChooser = registerNamedCommand(new DriveAndHomeToHubCommand(drivetrain, driverController));
 
         new UpdateWidgets();
+
+        isBabyMode = false;
 
         configureBindings();
     }
@@ -68,13 +78,22 @@ public class RobotContainer {
      */
     private void configureBindings() {
 
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController));
+        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driverController, () -> isBabyMode));
 
-        driverController.start().onTrue(drivetrain.resetGyro());
+        driverController.rightBumper().onTrue(drivetrain.resetGyro().ignoringDisable(true));
 
-        driverController.a().onTrue(intake.setRollerStateCommand(RollerState.FORWARD));
-        driverController.b().onTrue(intake.setRollerStateCommand(RollerState.OFF));
-        driverController.y().onTrue(intake.setRollerStateCommand(RollerState.REVERSE));
+        driverController.leftTrigger().whileTrue(intake.setRollerStateCommand(RollerState.FORWARD));
+        driverController.leftBumper().whileTrue(intake.setRollerStateCommand(RollerState.REVERSE));
+        driverController.leftTrigger().or(driverController.leftBumper())
+        .whileFalse(intake.setRollerStateCommand(RollerState.OFF));
+
+        driverController.a().onTrue(new InstantCommand(() -> isBabyMode = !isBabyMode));
+
+        driverController.b().onTrue(intake.setPositionStateCommand(PositionState.OPEN));
+
+        driverController.y().onTrue(intake.setPositionStateCommand(PositionState.CLOSED));
+
+
 
     }
 

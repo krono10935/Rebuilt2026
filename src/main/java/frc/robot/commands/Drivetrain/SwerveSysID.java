@@ -52,7 +52,7 @@ public class SwerveSysID {
     /**
      * How many seconds to perform the test for the sysID routine
      */
-   public static final double TIMEOUT = 4;
+   public static final double TIMEOUT = 3;
 
     /**
      * Builds the Swerve SYSID check

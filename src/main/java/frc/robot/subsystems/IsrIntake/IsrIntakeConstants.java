@@ -1,27 +1,37 @@
 package frc.robot.subsystems.IsrIntake;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import io.github.captainsoccer.basicmotor.BasicMotor;
 import io.github.captainsoccer.basicmotor.BasicMotorConfig;
+import io.github.captainsoccer.basicmotor.gains.ConstraintsGains.ConstraintType;
 import io.github.captainsoccer.basicmotor.rev.BasicSparkConfig;
 
 public class IsrIntakeConstants {
 
-    public static final Rotation2d OPEN_POS = Rotation2d.kCW_90deg;
-    public static final Rotation2d CLOSED_POS = Rotation2d.kZero;
+    public static final Rotation2d OPEN_POS = Rotation2d.fromDegrees(-25);
+    public static final Rotation2d CLOSED_POS = Rotation2d.fromDegrees(95);
 
     public static final double ROLLER_DUTYCYCLE = 1;
 
-    public static final double ROLLER_RADIUS_METERS = 1;
+    private static final double kG = 0.64;
 
-    private static final double kG = 0;
+    public static final int DUTY_CYCLE_ENCODER_PORT = 0;
 
+    public static final boolean DUTY_CYCLE_ENCODER_INVERTED = false;
+
+    public static final Rotation2d DUTY_CYCLE_ENCODER_OFFSET = Rotation2d.fromRotations(0.0);
 
     public static final BasicMotorConfig isrLeadRollerMotorConfig = new BasicSparkConfig();
 
-
     public static final BasicMotorConfig isrFollowRollerMotorConfig = new BasicSparkConfig();
+
+    public static Queue<Double> setpoints = new ConcurrentLinkedQueue<>();
     static {
         isrLeadRollerMotorConfig.motorConfig.name = "Roller Lead";
         isrLeadRollerMotorConfig.motorConfig.id = 22;
@@ -29,7 +39,6 @@ public class IsrIntakeConstants {
         isrLeadRollerMotorConfig.motorConfig.idleMode = BasicMotor.IdleMode.COAST;
         isrLeadRollerMotorConfig.motorConfig.gearRatio = 29.0/14;
         isrLeadRollerMotorConfig.motorConfig.motorType = DCMotor.getNeoVortex(2);
-        isrLeadRollerMotorConfig.motorConfig.unitConversion = 2 * Math.PI * ROLLER_RADIUS_METERS;
 
         isrLeadRollerMotorConfig.slot0Config.pidConfig.kP = 0;
         isrLeadRollerMotorConfig.slot0Config.pidConfig.kI = 0;
@@ -38,8 +47,8 @@ public class IsrIntakeConstants {
         isrLeadRollerMotorConfig.simulationConfig.kA = 0.023275; // Not calculated
         isrLeadRollerMotorConfig.simulationConfig.kV = 0.31938; // Not calculated
 
-        ((BasicSparkConfig)isrFollowRollerMotorConfig).currentLimitConfig.freeSpeedCurrentLimit = 70;
-        ((BasicSparkConfig)isrFollowRollerMotorConfig).currentLimitConfig.freeSpeedRPM = 4000;
+        ((BasicSparkConfig)isrLeadRollerMotorConfig).currentLimitConfig.freeSpeedCurrentLimit = 70;
+        ((BasicSparkConfig)isrLeadRollerMotorConfig).currentLimitConfig.freeSpeedRPM = 4000;
 
     }
 
@@ -61,18 +70,35 @@ public class IsrIntakeConstants {
         isrLeadPositionMotorConfig.motorConfig.id = 62;
         isrLeadPositionMotorConfig.motorConfig.inverted = false;
         isrLeadPositionMotorConfig.motorConfig.idleMode = BasicMotor.IdleMode.BRAKE;
-        isrLeadPositionMotorConfig.motorConfig.gearRatio = 5;
+        isrLeadPositionMotorConfig.motorConfig.gearRatio = 45;
         isrLeadPositionMotorConfig.motorConfig.motorType = DCMotor.getNEO(2);
         isrLeadPositionMotorConfig.motorConfig.unitConversion = 360;
 
-        isrLeadPositionMotorConfig.slot0Config.pidConfig.kP = 0;
+        isrLeadPositionMotorConfig.slot0Config.pidConfig.kP = 0.2;
         isrLeadPositionMotorConfig.slot0Config.pidConfig.kI = 0;
         isrLeadPositionMotorConfig.slot0Config.pidConfig.kD = 0;
-        isrLeadPositionMotorConfig.slot0Config.feedForwardConfig.customFeedForward =
+        isrLeadPositionMotorConfig.slot0Config.pidConfig.iZone = 10;
+        isrLeadPositionMotorConfig.slot0Config.pidConfig.iMaxAccum = 1;
+        isrLeadPositionMotorConfig.slot0Config.pidConfig.tolerance = 3;
+
+        isrLeadPositionMotorConfig.slot0Config.profileConfig.maximumMeasurementAcceleration = 120;
+        isrLeadPositionMotorConfig.slot0Config.profileConfig.maximumMeasurementVelocity = 160;
+
+        isrLeadPositionMotorConfig.slot0Config.feedForwardConfig.frictionFeedForward = 0.045;
+        isrLeadPositionMotorConfig.slot0Config.feedForwardConfig.customFeedForward = 
             (setpoint) -> kG * Math.cos(setpoint * (2 * Math.PI / 360)); // Gravity feedforward
 
         isrLeadPositionMotorConfig.simulationConfig.kA = 0.023275; // Not calculated
         isrLeadPositionMotorConfig.simulationConfig.kV = 0.31938; // Not calculated
+
+        // isrLeadPositionMotorConfig.constraintsConfig.constraintType = ConstraintType.LIMITED;
+        // isrLeadPositionMotorConfig.constraintsConfig.maxOutput = 90.0;
+        // isrLeadPositionMotorConfig.constraintsConfig.minOutput = Rotation2d.fromRotations(-0.001816).getDegrees();
+        isrLeadPositionMotorConfig.constraintsConfig.voltageDeadband = 0.1;
+
+        ((BasicSparkConfig)isrLeadPositionMotorConfig).currentLimitConfig.freeSpeedCurrentLimit = 70;
+        ((BasicSparkConfig)isrLeadPositionMotorConfig).currentLimitConfig.freeSpeedRPM = 4000;
+        ((BasicSparkConfig)isrLeadPositionMotorConfig).currentLimitConfig.stallCurrentLimit = 60;
 
 
     }

@@ -61,51 +61,51 @@ public enum SwerveModulesMK4 {
     //         1.3854,0.83239,
     //         new Translation2d(-0.29, -0.29));
 
-        FRONT_LEFT(
-            6, 0, 10,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0,
+    FRONT_LEFT(
+            6, 0.2528, 10,
+            new PIDGains(5, 7, 0, 0, 0, 0),
+            new FeedForwardsGains(3.1123),
+            1.616,
             2,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(60.0, 30, 0, 0.05, 1, 0.001),
             new FeedForwardsGains(0),
-            0,0,
+            1.5076,0.10699,
             new Translation2d(-0.29, -0.29)),
 
 
     FRONT_RIGHT(
-            7, 0, 11,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0,
+            7, -0.01, 11,
+            new PIDGains(5, 7, 0, 0, 0, 0),
+            new FeedForwardsGains(3.6539),
+            2.7969,
             3,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(60.0, 30, 0, 0.05, 1, 0.001),
             new FeedForwardsGains(0),
-            0,0,
+            1.5345,0.16544,
             new Translation2d(-0.29, 0.29)),
 
 
     BACK_LEFT(
-            8, 0, 12,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0,
+            8, 0.01, 12,
+            new PIDGains(5, 7, 0, 0, 0, 0),
+            new FeedForwardsGains(2.8187),
+            1.0431,
             4,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(60.0, 30, 0, 0.05, 1, 0.001),
             new FeedForwardsGains(0),
-            0,0,
+            1.5415,0.24924,
             new Translation2d(0.29, -0.29)),
 
 
     BACK_RIGHT(
-            9,  0, 13,
-            new PIDGains(0, 0, 0, 0, 0, 0),
-            new FeedForwardsGains(0),
-            0,
+            9,  0.3681, 13,
+            new PIDGains(5, 7, 0, 0, 0, 0),
+            new FeedForwardsGains(3.9855),
+            4.2179,
             5,
-            new PIDGains(0, 0, 0, 0, 0, 0),
+            new PIDGains(60.0, 30, 0, 0.05, 1, 0.001),
             new FeedForwardsGains(0),
-            0,0,
+            1.5558,0.14972,
             new Translation2d(0.29, 0.29));
 
 

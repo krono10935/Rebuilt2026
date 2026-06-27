@@ -1,12 +1,15 @@
 package frc.robot.commands.Drivetrain;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.IsrIntake.IsrIntake.RollerState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.utils.AllianceFlipUtil;
 
@@ -59,6 +62,7 @@ public class DriveCommand extends Command {
     protected final Drivetrain drivetrain;
     protected final CommandXboxController controller;
 
+    private final BooleanSupplier isBabyMode;
     protected double MAX_LINEAR_SPEED;
     protected double MIN_LINEAR_SPEED;
     protected double MAX_ANGULAR_SPEED;
@@ -76,6 +80,25 @@ public class DriveCommand extends Command {
         this.controller = controller;
 
         addRequirements(drivetrain);
+
+
+        MAX_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.maxLinearSpeed();
+        MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed();
+        MAX_ANGULAR_SPEED = drivetrain.getConstants().MAX_ANGULAR_SPEED;
+        MIN_ANGULAR_SPEED = drivetrain.getConstants().MIN_ANGULAR_SPEED;
+
+        isBabyMode = null;
+
+    }
+
+    public DriveCommand(Drivetrain drivetrain, CommandXboxController controller, BooleanSupplier isBabyMode) {
+        this.drivetrain = drivetrain;
+        this.controller = controller;
+
+        addRequirements(drivetrain);
+
+        
+        this.isBabyMode = isBabyMode;
 
         MAX_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.maxLinearSpeed();
         MIN_LINEAR_SPEED = drivetrain.getConstants().SPEED_CONFIG.minLinearSpeed();
@@ -144,14 +167,20 @@ public class DriveCommand extends Command {
 
         double triggerValue = CONTROLLER_MODE.calculateTrigger(1 - controller.getRightTriggerAxis());
 
-        double speed = interpolate(triggerValue);
-        double angularSpeed = angularInterpolate(triggerValue);
+        double speed = interpolate(triggerValue) * 0.75 
+        * (RobotContainer.getInstance().intake.getRollerState() != RollerState.OFF 
+        ? 1 : 0.7);
+        double angularSpeed = angularInterpolate(triggerValue) * 0.75;
+        if (isBabyMode != null && isBabyMode.getAsBoolean()){
+            speed *= 0.8;
+            angularSpeed *= 0.8;
+        }
 
         Logger.recordOutput("DriveCommand/trigger value calculated", triggerValue);
 
         double xSpeed = CONTROLLER_MODE.calculateStick(deadband(-controller.getLeftY())) * speed;
         double ySpeed = CONTROLLER_MODE.calculateStick(deadband(-controller.getLeftX())) * speed;
-        double thetaSpeed = CONTROLLER_MODE.calculateStick(deadband(-controller.getRightX())) * angularSpeed;
+        double thetaSpeed = CONTROLLER_MODE.calculateStick(deadband(controller.getRightX())) * angularSpeed * 0.75;
 
         return new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed);
     }
