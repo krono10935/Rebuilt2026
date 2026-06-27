@@ -13,6 +13,12 @@
                 "data": {
                   "pathName": "Depot - dump"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "outTake"
+                }
               }
             ]
           }
@@ -21,6 +27,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "isr_2026",
   "choreoAuto": false
 }

@@ -19,6 +19,7 @@ import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -166,6 +167,21 @@ public class RobotContainer {
         //         new SequentialCommandGroup(Sequences.intakeOpenStart(intake)));
         // NamedCommands.registerCommand("closeIntake",
         //         new SequentialCommandGroup(Sequences.stopIntakeAndClose(intake)));
+
+        NamedCommands.registerCommand("openIntake", 
+        intake.setPositionStateCommand(PositionState.OPEN));
+
+        NamedCommands.registerCommand("startIntake",
+        intake.setRollerStateCommand(RollerState.FORWARD));
+        
+        NamedCommands.registerCommand("stop", 
+        intake.setRollerStateCommand(RollerState.OFF));
+
+        NamedCommands.registerCommand("outTake", 
+        intake.setRollerStateCommand(RollerState.REVERSE));
+
+        NamedCommands.registerCommand("closeIntake",
+        intake.setRollerStateCommand(RollerState.OFF).andThen(intake.setPositionStateCommand(PositionState.CLOSED)));
 
         // NamedCommands.registerCommand("openIntakeAndReset",
         //         Sequences.intakeOpenStart(intake).beforeStarting(new InstantCommand(() -> intake.resetOpeningMotorEncoder(0))));

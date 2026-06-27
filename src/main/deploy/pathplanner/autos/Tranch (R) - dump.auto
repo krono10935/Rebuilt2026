@@ -9,11 +9,17 @@
           "data": {
             "pathName": "Tranch (R) - dump"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outTake"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "isr_2026",
   "choreoAuto": false
 }

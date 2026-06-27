@@ -36,28 +36,28 @@
         "y": 4.817653225807525
       },
       "prevControl": {
-        "x": 7.904274193551789,
-        "y": 6.375645161291395
+        "x": 7.794556451612904,
+        "y": 6.478048387096774
       },
       "nextControl": {
-        "x": 7.801558727250486,
-        "y": 3.640845871019269
+        "x": 7.882055610917158,
+        "y": 3.6405756498490565
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.971153225809665,
-        "y": 7.414306451612904
+        "x": 4.89800806451613,
+        "y": 7.516709677419355
       },
       "prevControl": {
-        "x": 7.03627665502904,
-        "y": 7.430254980068246
+        "x": 6.963131493735505,
+        "y": 7.5326582058746965
       },
       "nextControl": {
-        "x": 3.076887096780622,
-        "y": 7.399677419355869
+        "x": 3.0037419354870867,
+        "y": 7.502080645162319
       },
       "isLocked": false,
       "linkedName": null
@@ -130,7 +130,41 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "openIntake",
+      "waypointRelativePos": 0.722599418040737,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "openIntake"
+        }
+      }
+    },
+    {
+      "name": "startIntake",
+      "waypointRelativePos": 1.1881668283220146,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startIntake"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "waypointRelativePos": 2.5072744907856337,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "stop"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

@@ -68,7 +68,7 @@
         "y": 0.6776370967741945
       },
       "prevControl": {
-        "x": 1.7747096774193556,
+        "x": 1.7747096774193554,
         "y": 2.425806451612903
       },
       "nextControl": null,
@@ -114,13 +114,13 @@
       "command": null
     },
     {
-      "name": "Intake",
+      "name": "startIntake",
       "waypointRelativePos": 1.0084269662921392,
-      "endWaypointRelativePos": 2.9084380610412848,
+      "endWaypointRelativePos": null,
       "command": null
     },
     {
-      "name": "closeIntake",
+      "name": "stop",
       "waypointRelativePos": 2.2397003745318402,
       "endWaypointRelativePos": null,
       "command": null
@@ -139,7 +139,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "isr 2026",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

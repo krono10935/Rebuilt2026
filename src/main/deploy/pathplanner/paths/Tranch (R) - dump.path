@@ -135,25 +135,34 @@
       "name": "openIntake",
       "waypointRelativePos": 0.45,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "openIntake"
+        }
+      }
     },
     {
-      "name": "Intake",
+      "name": "startIntake",
       "waypointRelativePos": 1.0224719101123725,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startIntake"
+        }
+      }
     },
     {
-      "name": "CloseIntake",
+      "name": "stop",
       "waypointRelativePos": 2.9925093632958815,
       "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "driveToPose",
-      "waypointRelativePos": 4.580524344569179,
-      "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "stop"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -169,7 +178,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "isr 2026",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
