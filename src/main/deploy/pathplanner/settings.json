@@ -2,14 +2,27 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
+<<<<<<< HEAD
   "pathFolders": [],
   "autoFolders": [],
+=======
+  "pathFolders": [
+    "isr 2026"
+  ],
+  "autoFolders": [
+    "isr_2026"
+  ],
+>>>>>>> origin/Isr_comp_2026
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
+<<<<<<< HEAD
   "robotMass": 74.086,
+=======
+  "robotMass": 74.088,
+>>>>>>> origin/Isr_comp_2026
   "robotMOI": 6.883,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.048,
@@ -28,5 +41,11 @@
   "brModuleY": -0.273,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
+<<<<<<< HEAD
   "robotFeatures": []
+=======
+  "robotFeatures": [
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.55,\"y\":0.0},\"size\":{\"width\":0.855,\"length\":0.2},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+  ]
+>>>>>>> origin/Isr_comp_2026
 }

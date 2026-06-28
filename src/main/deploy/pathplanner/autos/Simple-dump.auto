@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New New Path"
+            "pathName": "Simple - dump"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outTake"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "isr_2026",
   "choreoAuto": false
 }

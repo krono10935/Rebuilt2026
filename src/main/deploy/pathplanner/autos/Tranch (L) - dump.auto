@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Trench (L) - dump"
+            "pathName": "Tranch(L) - dump"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outTake"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "ISR 2026",
+  "folder": "isr_2026",
   "choreoAuto": false
 }
