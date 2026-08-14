@@ -9,11 +9,6 @@ public interface IndexerIO {
         boolean isStuck;
     }
 
-    public enum IndexerMode{
-        BACKWARD,
-        STOPPED,
-        FORWARD
-    }
 
     /**
      * Sets the spindexer motor percent to the constant
